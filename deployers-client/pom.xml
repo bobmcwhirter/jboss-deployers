@@ -1,0 +1,60 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.jboss.microcontainer</groupId>
+    <artifactId>jboss-microcontainer</artifactId>
+    <version>2.0.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>jboss-deployers-client</artifactId>
+  <packaging>jar</packaging>
+  <name>JBoss Deployers Client</name>
+  <url>http://www.jboss.com/products/jbossmc</url>
+  <description>JBoss Deployers Client</description>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>	   	   
+    </plugins>
+  </build>
+  <!-- Do not add version information here, use ../build/pom.xml instead -->
+  <dependencies>
+    <!-- Global dependencies -->
+    <dependency>
+    <groupId>org.jboss.microcontainer</groupId>
+      <artifactId>jboss-deployers-client-spi</artifactId>
+    </dependency>
+     <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.jboss</groupId>
+      <artifactId>jboss-test</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>jboss</groupId>
+          <artifactId>jboss-common-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jboss</groupId>
+          <artifactId>jboss-common-logging-spi</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+	    <groupId>junit</groupId>
+	    <artifactId>junit</artifactId>
+    </dependency>
+    <dependency>
+    <groupId>org.jboss.microcontainer</groupId>
+      <artifactId>jboss-deployers-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>  
+</project>

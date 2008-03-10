@@ -1,0 +1,20 @@
+<projectDescription>
+  <name>jboss-deployers-client</name>
+  <comment>JBoss Deployers Client</comment>
+  <projects>
+    <project>jboss-deployers-client-spi</project>
+    <project>jboss-deployers-core-spi</project>
+    <project>jboss-managed</project>
+    <project>jboss-container</project>
+    <project>jboss-metatype</project>
+    <project>jboss-deployers-core</project>
+  </projects>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+  </natures>
+</projectDescription>
