@@ -1,0 +1,22 @@
+<projectDescription>
+  <name>jboss-deployers-structure-spi</name>
+  <comment>JBoss Deployers Structure SPI</comment>
+  <projects>
+    <project>jboss-container</project>
+    <project>jboss-dependency</project>
+    <project>jboss-deployers-client</project>
+    <project>jboss-deployers-core-spi</project>
+    <project>jboss-deployers-client-spi</project>
+    <project>jboss-managed</project>
+    <project>jboss-metatype</project>
+    <project>jboss-deployers-core</project>
+  </projects>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+  </natures>
+</projectDescription>
