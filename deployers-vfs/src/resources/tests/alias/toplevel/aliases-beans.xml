@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<deployment xmlns="urn:jboss:bean-deployer:2.0">
+   <alias name="Test">MyAlias</alias>
+
+   <bean name="Injectee" class="org.jboss.test.deployers.vfs.deployer.bean.support.SimpleInjectee">      
+      <property name="simple"><inject bean="MyAlias" /></property>
+   </bean>
+</deployment>

@@ -1,0 +1,10 @@
+<deployment xmlns="urn:jboss:bean-deployer:2.0">
+
+   <classloader name="test4" xmlns="urn:jboss:classloader:1.0">
+      <requirements>
+         <module name="test3"/>
+      </requirements>
+      <root>${test.classloader.url}/external-deployment2</root>
+   </classloader>
+
+</deployment>

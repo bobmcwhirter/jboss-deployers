@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<deployment xmlns="urn:jboss:bean-deployer:2.0">
+   <bean name="AnnotatedBean" class="org.jboss.test.deployers.vfs.deployer.bean.support.AnnotatedBean">
+      <annotation>@org.jboss.managed.api.annotation.ManagementComponent(type="MCBean",subtype="AnnotationTest")</annotation>
+      <!-- Test -->
+	   <property name="propWithXmlOverride">
+	      <annotation>@org.jboss.managed.api.annotation.ManagementProperty(name="prop3", mappedName="propWithXmlOverride", description="ManagedProperty defined via xml annotation")</annotation>10</property>
+   </bean>
+   <bean name="Simple" class="org.jboss.test.deployers.vfs.deployer.bean.support.Simple" />
+</deployment>
