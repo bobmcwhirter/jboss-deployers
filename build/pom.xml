@@ -37,6 +37,7 @@
     <version.jboss.common.core>2.2.3.GA</version.jboss.common.core>
     <version.jboss.common.logging.spi>2.0.4.GA</version.jboss.common.logging.spi>
     <version.jbossxb>2.0.0.CR7</version.jbossxb>
+    <version.jboss.aop>2.0.0.CR3</version.jboss.aop>
     <version.jboss.vfs>2.0.0.Beta7</version.jboss.vfs>
     <version.org.jboss.test>1.0.4.GA</version.org.jboss.test>
     <version.junit>3.8.1</version.junit>
@@ -297,6 +298,11 @@
         <groupId>org.jboss</groupId>
         <artifactId>jboss-vfs</artifactId>
         <version>${version.jboss.vfs}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.aop</groupId>
+        <artifactId>jboss-aop</artifactId>
+        <version>${version.jboss.aop}</version>
       </dependency>
       <!-- test dependencies -->
       <dependency>
