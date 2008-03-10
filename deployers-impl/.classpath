@@ -3,12 +3,16 @@
 	<classpathentry kind="src" path="src/main"/>
 	<classpathentry kind="src" output="target/tests-classes" path="src/tests"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="src" path="/jboss-aop-mc-int"/>
 	<classpathentry exported="true" kind="src" path="/jboss-deployers-spi"/>
 	<classpathentry exported="true" kind="src" path="/jboss-deployers-client"/>
 	<classpathentry exported="true" kind="src" path="/jboss-deployers-core"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/org/jboss/jboss-classloading-spi/5.0.0.Beta3/jboss-classloading-spi-5.0.0.Beta3.jar" sourcepath="M2_REPO/org/jboss/jboss-classloading-spi/5.0.0.Beta3/jboss-classloading-spi-5.0.0.Beta3-sources.jar"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/org/jboss/cl/jboss-classloader/2.0.0-SNAPSHOT/jboss-classloader-2.0.0-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/org/jboss/cl/jboss-classloading/2.0.0-SNAPSHOT/jboss-classloading-2.0.0-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="var" path="M2_REPO/org/jboss/microcontainer/jboss-kernel/2.0.0-SNAPSHOT/jboss-kernel-2.0.0-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="var" path="M2_REPO/org/jboss/jboss-reflect/2.0.0.Beta11/jboss-reflect-2.0.0.Beta11.jar"/>
+	<classpathentry exported="true" kind="var" path="M2_REPO/org/jboss/aop/jboss-aop/2.0.0.CR3/jboss-aop-2.0.0.CR3.jar"/>
+	<classpathentry exported="true" kind="var" path="M2_REPO/trove/trove/2.1.1//trove-2.1.1.jar"/>
+	<classpathentry exported="true" kind="var" path="M2_REPO/org/jboss/javassist/3.6.0.GA/javassist-3.6.0.GA.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

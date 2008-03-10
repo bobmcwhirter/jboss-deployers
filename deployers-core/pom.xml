@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
-    <groupId>org.jboss.microcontainer</groupId>
-    <artifactId>jboss-microcontainer</artifactId>
+    <groupId>org.jboss.deployers</groupId>
+    <artifactId>jboss-deployers</artifactId>
     <version>2.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -36,10 +36,38 @@
   <dependencies>
     <!-- Global dependencies -->
     <dependency>
-      <groupId>org.jboss.microcontainer</groupId>
+      <groupId>org.jboss.deployers</groupId>
       <artifactId>jboss-deployers-core-spi</artifactId>
     </dependency>
-	  <!-- Test dependencies -->
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-common-logging-spi</artifactId>
+      <version>2.0.4.GA</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss</groupId>
+      <artifactId>jboss-common-core</artifactId>
+      <version>2.2.3.GA</version>
+      <exclusions>
+        <exclusion>
+          <groupId>jboss</groupId>
+          <artifactId>jboss-common-logging-spi</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>apache-httpclient</groupId>
+          <artifactId>commons-httpclient</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>apache-slide</groupId>
+          <artifactId>webdavlib</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>apache-xerces</groupId>
+          <artifactId>xml-apis</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+     <!-- Test dependencies -->
     <dependency>
       <groupId>org.jboss</groupId>
       <artifactId>jboss-test</artifactId>
