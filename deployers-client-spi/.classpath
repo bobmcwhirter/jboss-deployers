@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/main"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="target/classes"/>
+	<classpathentry exported="true" kind="src" path="/jboss-deployers-core-spi"/>
+	<classpathentry exported="true" kind="var" path="M2_REPO/org/jboss/man/jboss-metatype/2.0.0.Beta11/jboss-metatype-2.0.0.Beta11.jar"/>
+	<classpathentry exported="true" kind="var" path="M2_REPO/org/jboss/man/jboss-managed/2.0.0.Beta11/jboss-managed-2.0.0.Beta11.jar"/>
+</classpath>

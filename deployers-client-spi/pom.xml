@@ -1,0 +1,25 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.jboss.microcontainer</groupId>
+    <artifactId>jboss-microcontainer</artifactId>
+    <version>2.0.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>jboss-deployers-client-spi</artifactId>
+  <packaging>jar</packaging>
+  <name>JBoss Deployers Client SPI</name>
+  <url>http://www.jboss.com/products/jbossmc</url>
+  <description>JBoss Deployers Client SPI</description>
+  <!-- Do not add version information here, use ../build/pom.xml instead -->
+  <dependencies>
+    <!-- Global dependencies -->
+    <dependency>
+      <groupId>org.jboss.microcontainer</groupId>
+      <artifactId>jboss-deployers-core-spi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.man</groupId>
+      <artifactId>jboss-managed</artifactId>
+    </dependency>
+  </dependencies>  
+</project>
