@@ -146,7 +146,7 @@ public abstract class AbstractStructureTest extends BaseTestCase
    protected void assertClassPath(VFSDeploymentContext context, VFSDeploymentContext reference, String... paths) throws Exception
    {
       List<VirtualFile> classPath = context.getClassPath();
-      if (paths == null)
+      if (paths == null || paths.length == 0)
       {
          if (classPath != null)
             assertEmpty(classPath);

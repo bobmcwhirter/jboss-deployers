@@ -21,28 +21,19 @@
 */
 package org.jboss.test.deployers.vfs.structure.ear.test;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import org.jboss.deployers.vfs.plugins.structure.file.FileStructure;
-import org.jboss.deployers.vfs.plugins.structure.jar.JARStructure;
-import org.jboss.deployers.vfs.plugins.structure.war.WARStructure;
-import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
-import org.jboss.test.deployers.vfs.structure.AbstractStructureTest;
-import org.jboss.test.deployers.vfs.structure.ear.support.MockEarStructureDeployer;
-import org.jboss.virtual.plugins.context.jar.JarUtils;
 
 /**
  * Mock ear structure deployer tests
  * 
+ * @author Ales.Justin@jboss.org
  * @author Scott.Stark@jboss.org
  * @author adrian@jboss.org
  * @version $Revision: 61684 $
  */
-public class EARStructureUnitTestCase extends AbstractStructureTest
+public class EARStructureUnitTestCase extends AbstractEARStructureTest
 {
    public static Test suite()
    {
@@ -54,33 +45,15 @@ public class EARStructureUnitTestCase extends AbstractStructureTest
       super(name);
    }
 
-   @Override
-   protected void setUp() throws Exception
+   /**
+    * Validate packaged ear.
+    * @throws Throwable for any error
+    */
+   public void testPackedEAR() throws Throwable
    {
-      super.setUp();
-      enableTrace("org.jboss.deployers");
-   }
-
-   protected VFSDeploymentContext determineStructure(VFSDeployment deployment) throws Exception
-   {
-      Set<String> defaultSuffixes = JarUtils.getSuffixes();
-      JARStructure jarStructure = new JARStructure();
-      try
-      {
-         Set<String> suffixes = new HashSet<String>(jarStructure.getSuffixes());
-         suffixes.add(".ejb3");
-         jarStructure.setSuffixes(suffixes);
-         return determineStructureWithStructureDeployers(deployment, new FileStructure(), new WARStructure(), jarStructure, new MockEarStructureDeployer());
-      }
-      finally
-      {
-         jarStructure.setSuffixes(defaultSuffixes);
-      }
-   }
-   
-   public void testNotAnEAR() throws Throwable
-   {
-      // TODO JBMICROCONT-185 This gets recognised by the jar deployer assertNotValid("/structure/ear", "notanear");
+      VFSDeploymentContext ear = assertDeploy("/structure/ear", "archive.ear");
+      assertClassPath(ear, "lib/log5j.jar");
+      assertChildContexts(ear, "module-bean1ejb.jar");
    }
 
    /**

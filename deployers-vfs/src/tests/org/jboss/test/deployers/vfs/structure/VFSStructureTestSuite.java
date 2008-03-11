@@ -26,6 +26,7 @@ import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
 import org.jboss.test.deployers.vfs.structure.ear.test.EARStructureUnitTestCase;
+import org.jboss.test.deployers.vfs.structure.ear.test.EARStructureRecognizeTestCase;
 import org.jboss.test.deployers.vfs.structure.explicit.test.DeclaredStructureUnitTestCase;
 import org.jboss.test.deployers.vfs.structure.file.test.CombinedFileStructureUnitTestCase;
 import org.jboss.test.deployers.vfs.structure.file.test.ConfiguredSuffixFileStructureUnitTestCase;
@@ -64,6 +65,7 @@ public class VFSStructureTestSuite extends TestSuite
       suite.addTest(FileMatcherTestCase.suite());
       suite.addTest(DeclaredStructureUnitTestCase.suite());
       suite.addTest(EARStructureUnitTestCase.suite());
+      suite.addTest(EARStructureRecognizeTestCase.suite());
       suite.addTest(CombinedJARStructureUnitTestCase.suite());
       suite.addTest(CombinedWARStructureUnitTestCase.suite());
       suite.addTest(CombinedFileStructureUnitTestCase.suite());

@@ -74,7 +74,7 @@ public class MockEarStructureDeployer extends AbstractStructureDeployer
    /**
     * Set the earLibFilter.
     * 
-    * @param earLibFilter
+    * @param earLibFilter the filter
     * @throws IllegalArgumentException for a null filter
     */
    public void setEarLibFilter(VirtualFileFilter earLibFilter)
@@ -86,8 +86,8 @@ public class MockEarStructureDeployer extends AbstractStructureDeployer
 
    public boolean determineStructure(VirtualFile root, VirtualFile parent, VirtualFile file, StructureMetaData metaData, VFSStructuralDeployers deployers) throws DeploymentException
    {
-      ContextInfo context = null;
-      boolean valid = false;
+      ContextInfo context;
+      boolean valid;
       try
       {
          if (file.isLeaf() == true || file.getName().endsWith(".ear") == false)
@@ -115,10 +115,9 @@ public class MockEarStructureDeployer extends AbstractStructureDeployer
             }
          }
          // Add the ear lib contents to the classpath
-         String libDir = "lib";
          try
          {
-            VirtualFile lib = file.findChild(libDir);
+            VirtualFile lib = file.getChild("lib");
             if (lib != null)
             {
                List<VirtualFile> archives = lib.getChildren(earLibFilter);
@@ -149,7 +148,7 @@ public class MockEarStructureDeployer extends AbstractStructureDeployer
                {
                   try
                   {
-                     VirtualFile module = file.findChild(fileName);
+                     VirtualFile module = file.getChild(fileName);
                      if (module == null)
                      {
                         throw new RuntimeException(fileName
@@ -189,9 +188,9 @@ public class MockEarStructureDeployer extends AbstractStructureDeployer
       VirtualFile metaFile = null;
       try
       {
-         metaFile = file.findChild(path);
+         metaFile = file.getChild(path);
       }
-      catch (IOException e)
+      catch (IOException ignored)
       {
       }
       return metaFile;
