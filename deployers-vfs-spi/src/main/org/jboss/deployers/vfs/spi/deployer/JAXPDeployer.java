@@ -169,7 +169,7 @@ public abstract class JAXPDeployer<T> extends AbstractVFSParsingDeployer<T>
       
       log.trace("Parsing: " + file.getName());
       
-      InputStream is = SecurityActions.openStream(file);
+      InputStream is = openStreamAndValidate(file);
       try
       {
          DocumentBuilder parser = getDocumentBuilderFactory().newDocumentBuilder();

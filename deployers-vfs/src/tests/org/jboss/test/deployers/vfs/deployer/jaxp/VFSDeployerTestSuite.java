@@ -22,6 +22,7 @@
 package org.jboss.test.deployers.vfs.deployer.jaxp;
 
 import org.jboss.test.deployers.vfs.deployer.jaxp.test.JAXPDeployerUnitTestCase;
+import org.jboss.test.deployers.vfs.deployer.validate.test.DeployersValidateInputTestCase;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -45,7 +46,8 @@ public class VFSDeployerTestSuite extends TestSuite
       TestSuite suite = new TestSuite("VFS Deployer Tests");
 
       suite.addTest(JAXPDeployerUnitTestCase.suite());
-      
+      suite.addTest(DeployersValidateInputTestCase.suite());
+
       return suite;
    }
 }

@@ -62,7 +62,7 @@ public class Properties2BeansDeployer extends AbstractVFSParsingDeployer<KernelD
    protected KernelDeployment parse(VFSDeploymentUnit unit, VirtualFile file, KernelDeployment root) throws Exception
    {
       Properties properties = new Properties();
-      InputStream is = file.openStream();
+      InputStream is = openStreamAndValidate(file);
       try
       {
          properties.load(is);

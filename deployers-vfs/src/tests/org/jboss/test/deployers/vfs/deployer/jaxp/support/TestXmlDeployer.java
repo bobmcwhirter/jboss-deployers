@@ -5,6 +5,9 @@ import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.virtual.VirtualFile;
 import org.w3c.dom.Document;
 
+/**
+ * @author adrian@jboss.org
+ */
 public class TestXmlDeployer extends JAXPDeployer<SomeBean>
 {
    private SomeBean lastBean;

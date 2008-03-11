@@ -19,52 +19,35 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.test.deployers.vfs.deployer.nonmetadata.support;
+package org.jboss.test.deployers.vfs.deployer.validate.support;
 
-import java.io.InputStream;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.List;
+import java.util.Collections;
 
-import org.jboss.deployers.vfs.spi.deployer.FileMatcher;
-import org.jboss.deployers.vfs.spi.deployer.AbstractVFSParsingDeployer;
-import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
+import org.jboss.deployers.vfs.plugins.structure.AbstractVFSDeploymentContext;
 import org.jboss.virtual.VirtualFile;
 
 /**
- * Mock .bsh deployer.
- *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class MockBshDeployer extends AbstractVFSParsingDeployer<BshScript> implements FileMatcher
+public class MyVFSDeploymentContext extends AbstractVFSDeploymentContext
 {
-   private Set<BshScript> scipts = new HashSet<BshScript>();
-
-   public MockBshDeployer()
+   public MyVFSDeploymentContext()
    {
-      super(BshScript.class);
-      setSuffix(".bsh");
    }
 
-   protected BshScript parse(VFSDeploymentUnit unit, VirtualFile file, BshScript root) throws Exception
+   public MyVFSDeploymentContext(VirtualFile root, String relativePath)
    {
-      InputStream inputStream = openStreamAndValidate(file);
-      try
-      {
-         return new BshScript(inputStream);         
-      }
-      finally
-      {
-         inputStream.close();
-      }
+      super(root, relativePath);
    }
 
-   protected void init(VFSDeploymentUnit unit, BshScript metaData, VirtualFile file) throws Exception
+   public VirtualFile getMetaDataFile(String name)
    {
-      scipts.add(metaData);
+      return getRoot();
    }
 
-   public Set<BshScript> getScipts()
+   public List<VirtualFile> getMetaDataFiles(String name, String suffix)
    {
-      return scipts;
+      return Collections.singletonList(getRoot());
    }
 }

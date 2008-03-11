@@ -102,7 +102,7 @@ public abstract class JAXBDeployer<T> extends AbstractVFSParsingDeployer<T>
    protected T parse(VFSDeploymentUnit unit, VirtualFile file, T root) throws Exception
    {
       Unmarshaller unmarshaller = context.createUnmarshaller();
-      InputStream is = file.openStream();
+      InputStream is = openStreamAndValidate(file);
       try
       {
          InputSource source = new InputSource(is);

@@ -22,6 +22,8 @@
 package org.jboss.deployers.vfs.spi.deployer;
 
 import java.util.List;
+import java.io.InputStream;
+import java.io.IOException;
 
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.helpers.AbstractParsingDeployerWithOutput;
@@ -81,6 +83,25 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
          return false;
       }
       return accepts((VFSDeploymentUnit) unit);
+   }
+
+   /**
+    * Open stream and validate if not null.
+    *
+    * @param file the virtual file
+    * @return non-null input stream
+    * @throws Exception for any error or if file's stream is null
+    */
+   protected InputStream openStreamAndValidate(VirtualFile file) throws Exception
+   {
+      if (file == null)
+         throw new IllegalArgumentException("Null file");
+
+      InputStream inputStream = SecurityActions.openStream(file);
+      if (inputStream == null)
+         throw new IOException("Null file stream: " + file);
+
+      return inputStream;
    }
 
    @Override

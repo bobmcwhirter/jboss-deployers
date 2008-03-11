@@ -113,7 +113,7 @@ public class SchemaResolverDeployer<T> extends AbstractVFSParsingDeployer<T>
       Unmarshaller unmarshaller = factory.newUnmarshaller();
       unmarshaller.setSchemaValidation(isUseSchemaValidation());
       unmarshaller.setValidation(isUseValidation());
-      InputStream is = file.openStream();
+      InputStream is = openStreamAndValidate(file);
       Object parsed = null;
       try
       {

@@ -19,52 +19,42 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.test.deployers.vfs.deployer.nonmetadata.support;
+package org.jboss.test.deployers.vfs.deployer.validate.support;
 
-import java.io.InputStream;
-import java.util.Set;
-import java.util.HashSet;
-
-import org.jboss.deployers.vfs.spi.deployer.FileMatcher;
-import org.jboss.deployers.vfs.spi.deployer.AbstractVFSParsingDeployer;
+import org.jboss.test.deployers.vfs.deployer.jaxp.support.SomeBean;
+import org.jboss.deployers.vfs.spi.deployer.JAXPDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.virtual.VirtualFile;
+import org.w3c.dom.Document;
 
 /**
- * Mock .bsh deployer.
- *
- * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
+ * @author ales.justin@jboss.org
  */
-public class MockBshDeployer extends AbstractVFSParsingDeployer<BshScript> implements FileMatcher
+public class TestXmlDeployer extends JAXPDeployer<SomeBean>
 {
-   private Set<BshScript> scipts = new HashSet<BshScript>();
+   private SomeBean lastBean;
 
-   public MockBshDeployer()
+   public TestXmlDeployer()
    {
-      super(BshScript.class);
-      setSuffix(".bsh");
+      super(SomeBean.class);
+      setSuffix(".jbean");
    }
 
-   protected BshScript parse(VFSDeploymentUnit unit, VirtualFile file, BshScript root) throws Exception
+   public SomeBean getLastBean()
    {
-      InputStream inputStream = openStreamAndValidate(file);
-      try
-      {
-         return new BshScript(inputStream);         
-      }
-      finally
-      {
-         inputStream.close();
-      }
+      return lastBean;
    }
 
-   protected void init(VFSDeploymentUnit unit, BshScript metaData, VirtualFile file) throws Exception
+   @Override
+   protected SomeBean parse(VFSDeploymentUnit unit, VirtualFile file, Document doc) throws Exception
    {
-      scipts.add(metaData);
-   }
+      String name = doc.getDocumentElement().getAttribute("name");
+      String version = doc.getDocumentElement().getAttribute("version");
 
-   public Set<BshScript> getScipts()
-   {
-      return scipts;
+      SomeBean bean = new SomeBean();
+      bean.setName(name);
+      bean.setVersion(version);
+      lastBean = bean;
+      return bean;
    }
 }
