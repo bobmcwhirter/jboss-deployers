@@ -21,6 +21,7 @@
 */
 package org.jboss.deployers.vfs.plugins.classloader;
 
+import java.net.URL;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -146,6 +147,12 @@ public class VFSDeploymentClassLoaderPolicyModule extends AbstractDeploymentClas
       policy.setBlackListable(isBlackListable());
       policy.setDelegates(getDelegates());
       return policy;
+   }
+
+   @Override
+   public URL getDynamicClassRoot()
+   {
+      return getDeploymentUnit().getAttachment(InMemoryClassesDeployer.DYNAMIC_CLASS_URL_KEY, URL.class);
    }
 
    @Override
