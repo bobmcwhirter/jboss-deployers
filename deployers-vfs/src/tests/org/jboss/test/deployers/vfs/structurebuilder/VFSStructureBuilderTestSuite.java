@@ -26,6 +26,7 @@ import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
 import org.jboss.test.deployers.vfs.structurebuilder.test.VFSStructureBuilderUnitTestCase;
+import org.jboss.test.deployers.vfs.structurebuilder.test.FilesStructureBuilderUnitTestCase;
 
 /**
  * VFSStructureBuilderTestSuite.
@@ -45,7 +46,8 @@ public class VFSStructureBuilderTestSuite extends TestSuite
       TestSuite suite = new TestSuite("VFS Structure Builder Tests");
 
       suite.addTest(VFSStructureBuilderUnitTestCase.suite());
-      
+      suite.addTest(FilesStructureBuilderUnitTestCase.suite());
+
       return suite;
    }
 }

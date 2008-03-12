@@ -1,0 +1,9 @@
+<structure>
+	<context>
+		<path name=""/>
+      <classpath>
+			<path name="cp1.txt"/>
+			<path name="cp2.txt"/>
+		</classpath>
+	</context>
+</structure>

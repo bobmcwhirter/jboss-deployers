@@ -38,6 +38,7 @@ import org.jboss.test.BaseTestCase;
 /**
  * AbstractStructureBuilderTest.
  * 
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @author <a href="adrian@jboss.org">Adrian Brock</a>
  * @version $Revision: 1.1 $
  */
@@ -65,6 +66,13 @@ public abstract class AbstractStructureBuilderTest extends BaseTestCase
 
    public void testSimple() throws Exception
    {
+      Deployment deployment = createSimple();
+      DeploymentContext context = build(deployment);
+      checkDeployment(context, deployment);
+   }
+
+   protected Deployment createSimple() throws Exception
+   {
       Deployment deployment = createDeployment();
       StructureMetaData structure = StructureMetaDataFactory.createStructureMetaData();
       MutableAttachments attachments = (MutableAttachments) deployment.getPredeterminedManagedObjects();
@@ -72,12 +80,17 @@ public abstract class AbstractStructureBuilderTest extends BaseTestCase
 
       DeploymentFactory factory = getDeploymentFactory();
       factory.addContext(deployment, "");
+      return deployment;
+   }
 
+   public void testSimpleWithAttachment() throws Exception
+   {
+      Deployment deployment = createSimpleWithAttachment();
       DeploymentContext context = build(deployment);
       checkDeployment(context, deployment);
    }
-   
-   public void testSimpleWithAttachment() throws Exception
+
+   protected Deployment createSimpleWithAttachment() throws Exception
    {
       Deployment deployment = createDeployment();
       StructureMetaData structure = StructureMetaDataFactory.createStructureMetaData();
@@ -87,53 +100,71 @@ public abstract class AbstractStructureBuilderTest extends BaseTestCase
 
       DeploymentFactory factory = getDeploymentFactory();
       factory.addContext(deployment, "");
+      return deployment;
+   }
 
+   public void testOneChild() throws Exception
+   {
+      Deployment deployment = createOneChild();
       DeploymentContext context = build(deployment);
       checkDeployment(context, deployment);
    }
-   
-   public void testOneChild() throws Exception
+
+   protected Deployment createOneChild() throws Exception
    {
       DeploymentFactory factory = getDeploymentFactory();
       Deployment deployment = createDeployment(factory);
       factory.addContext(deployment, "child1");
-      
+      return deployment;
+   }
+
+   public void testManyChildren() throws Exception
+   {
+      Deployment deployment = createManyChildren();
       DeploymentContext context = build(deployment);
       checkDeployment(context, deployment);
    }
-   
-   public void testManyChildren() throws Exception
+
+   protected Deployment createManyChildren() throws Exception
    {
       DeploymentFactory factory = getDeploymentFactory();
       Deployment deployment = createDeployment(factory);
       factory.addContext(deployment, "child1");
       factory.addContext(deployment, "child2");
       factory.addContext(deployment, "child3");
-      
+      return deployment;
+   }
+
+   public void testMetaDataLocation() throws Exception
+   {
+      Deployment deployment = createMetaDataLocation();
       DeploymentContext context = build(deployment);
       checkDeployment(context, deployment);
    }
-   
-   public void testMetaDataLocation() throws Exception
+
+   protected Deployment createMetaDataLocation() throws Exception
    {
       DeploymentFactory factory = getDeploymentFactory();
       Deployment deployment = createDeployment();
       factory.addContext(deployment, "", ContextInfo.DEFAULT_METADATA_PATH, DeploymentFactory.createClassPath(""));
-      
+      return deployment;
+   }
+
+   public void testClasspathEntries() throws Exception
+   {
+      Deployment deployment = createClasspathEntries();
       DeploymentContext context = build(deployment);
       checkDeployment(context, deployment);
    }
-   
-   public void testClasspathEntries() throws Exception
+
+   protected Deployment createClasspathEntries() throws Exception
    {
       DeploymentFactory factory = getDeploymentFactory();
       Deployment deployment = createDeployment();
       ContextInfo contextInfo = factory.addContext(deployment, "");
       contextInfo.addClassPathEntry(DeploymentFactory.createClassPathEntry("cp1.txt"));
       contextInfo.addClassPathEntry(DeploymentFactory.createClassPathEntry("cp2.txt"));
-
-      DeploymentContext context = build(deployment);
-      checkDeployment(context, deployment);
+      return deployment;
    }
 
    protected void checkDeployment(DeploymentContext context, Deployment deployment) throws Exception
@@ -145,6 +176,8 @@ public abstract class AbstractStructureBuilderTest extends BaseTestCase
       MutableAttachments attachments = (MutableAttachments) deployment.getPredeterminedManagedObjects();
       StructureMetaData structure = attachments.getAttachment(StructureMetaData.class);
       checkAttachments(context, deployment);
+
+      assertNotNull(structure);
       checkDeployment(context, structure);
 
       ContextInfo contextInfo = structure.getContext("");
@@ -175,6 +208,7 @@ public abstract class AbstractStructureBuilderTest extends BaseTestCase
    protected void checkDeployment(DeploymentContext context, StructureMetaData structure) throws Exception
    {
       assertNotNull(context);
+      assertNotNull(structure);
       
       List<ContextInfo> contextInfos = structure.getContexts();
       int numContexts = contextInfos.size();

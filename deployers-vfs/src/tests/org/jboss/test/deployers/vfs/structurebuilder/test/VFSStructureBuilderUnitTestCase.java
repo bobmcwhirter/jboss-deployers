@@ -27,15 +27,13 @@ import java.util.List;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
-import org.jboss.deployers.client.spi.Deployment;
 import org.jboss.deployers.client.spi.DeploymentFactory;
 import org.jboss.deployers.spi.structure.ClassPathEntry;
 import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.deployers.structure.spi.DeploymentContext;
-import org.jboss.deployers.structure.spi.StructureBuilder;
 import org.jboss.deployers.vfs.plugins.client.AbstractVFSDeployment;
 import org.jboss.deployers.vfs.plugins.structure.VFSStructureBuilder;
+import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.client.VFSDeploymentFactory;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.test.deployers.structure.structurebuilder.StructureBuilderTest;
@@ -60,12 +58,12 @@ public class VFSStructureBuilderUnitTestCase extends StructureBuilderTest
       super(name);
    }
 
-   protected StructureBuilder getStructureBuilder()
+   protected VFSStructureBuilder getStructureBuilder()
    {
       return new VFSStructureBuilder();
    }
 
-   protected Deployment createDeployment()
+   protected VFSDeployment createDeployment()
    {
       URL url = getDeploymentURL();
       try
