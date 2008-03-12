@@ -179,7 +179,7 @@ public class DeploymentFactory
       // Nothing predetermined yet
       if (attachments == null)
       {
-         mutable = AttachmentsFactory.createMutableAttachments();;
+         mutable = AttachmentsFactory.createMutableAttachments();
          context.setPredeterminedManagedObjects(mutable);
       }
       // Some predetermined but needs to be made mutable

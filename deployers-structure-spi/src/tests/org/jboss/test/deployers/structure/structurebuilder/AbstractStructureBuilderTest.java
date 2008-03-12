@@ -55,7 +55,7 @@ public abstract class AbstractStructureBuilderTest extends BaseTestCase
    protected abstract DeploymentFactory getDeploymentFactory();
 
    protected abstract String getDeploymentName();
-   
+
    public void testSimple() throws Exception
    {
       Deployment deployment = createDeployment();
@@ -105,12 +105,24 @@ public abstract class AbstractStructureBuilderTest extends BaseTestCase
    {
       DeploymentFactory factory = getDeploymentFactory();
       Deployment deployment = createDeployment();
-      factory.addContext(deployment, "", ContextInfo.DEFAULT_METADATA_PATH, factory.createClassPath(""));
+      factory.addContext(deployment, "", ContextInfo.DEFAULT_METADATA_PATH, DeploymentFactory.createClassPath(""));
       
       DeploymentContext context = build(deployment);
       checkDeployment(context, deployment);
    }
    
+   public void testClasspathEntries() throws Exception
+   {
+      DeploymentFactory factory = getDeploymentFactory();
+      Deployment deployment = createDeployment();
+      ContextInfo contextInfo = factory.addContext(deployment, "");
+      contextInfo.addClassPathEntry(DeploymentFactory.createClassPathEntry("cp1.txt"));
+      contextInfo.addClassPathEntry(DeploymentFactory.createClassPathEntry("cp2.txt"));
+
+      DeploymentContext context = build(deployment);
+      checkDeployment(context, deployment);
+   }
+
    protected void checkDeployment(DeploymentContext context, Deployment deployment) throws Exception
    {
       assertNotNull(context);

@@ -132,7 +132,22 @@ public class VFSStructureBuilderUnitTestCase extends StructureBuilderTest
          assertNull(classPath);
       else
       {
-         // TODO JBMICROCONT-185 test it got the correct classpath
+         int cpeSize = classPathEntries.size();
+         int cpSize = classPath != null ? classPath.size() : 0;
+         assertTrue(cpeSize >= cpSize);
+         for(int i = 0; i < cpeSize; i++)
+         {
+            ClassPathEntry entry = classPathEntries.get(i);
+            VirtualFile file = (i < cpSize) ? classPath.get(i) : null;
+            String path = entry.getPath();
+            if ("".equals(path))
+               assertTrue(file == null || "".equals(file.getPathName()));
+            else
+            {
+               assertNotNull(file);
+               assertEquals(path, file.getPathName());
+            }
+         }
       }
    }
 }
