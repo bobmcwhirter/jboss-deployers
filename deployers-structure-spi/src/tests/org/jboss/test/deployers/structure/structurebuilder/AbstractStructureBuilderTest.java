@@ -56,13 +56,23 @@ public abstract class AbstractStructureBuilderTest extends BaseTestCase
 
    protected abstract String getDeploymentName();
 
+   protected Deployment createDeployment(DeploymentFactory factory)
+   {
+      Deployment deployment = createDeployment();
+      factory.addContext(deployment, "");
+      return deployment;
+   }
+
    public void testSimple() throws Exception
    {
       Deployment deployment = createDeployment();
       StructureMetaData structure = StructureMetaDataFactory.createStructureMetaData();
       MutableAttachments attachments = (MutableAttachments) deployment.getPredeterminedManagedObjects();
       attachments.addAttachment(StructureMetaData.class, structure);
-      
+
+      DeploymentFactory factory = getDeploymentFactory();
+      factory.addContext(deployment, "");
+
       DeploymentContext context = build(deployment);
       checkDeployment(context, deployment);
    }
@@ -74,7 +84,10 @@ public abstract class AbstractStructureBuilderTest extends BaseTestCase
       MutableAttachments attachments = (MutableAttachments) deployment.getPredeterminedManagedObjects();
       attachments.addAttachment(StructureMetaData.class, structure);
       attachments.addAttachment("test", "hello");
-      
+
+      DeploymentFactory factory = getDeploymentFactory();
+      factory.addContext(deployment, "");
+
       DeploymentContext context = build(deployment);
       checkDeployment(context, deployment);
    }
@@ -82,7 +95,7 @@ public abstract class AbstractStructureBuilderTest extends BaseTestCase
    public void testOneChild() throws Exception
    {
       DeploymentFactory factory = getDeploymentFactory();
-      Deployment deployment = createDeployment();
+      Deployment deployment = createDeployment(factory);
       factory.addContext(deployment, "child1");
       
       DeploymentContext context = build(deployment);
@@ -92,7 +105,7 @@ public abstract class AbstractStructureBuilderTest extends BaseTestCase
    public void testManyChildren() throws Exception
    {
       DeploymentFactory factory = getDeploymentFactory();
-      Deployment deployment = createDeployment();
+      Deployment deployment = createDeployment(factory);
       factory.addContext(deployment, "child1");
       factory.addContext(deployment, "child2");
       factory.addContext(deployment, "child3");
@@ -135,8 +148,7 @@ public abstract class AbstractStructureBuilderTest extends BaseTestCase
       checkDeployment(context, structure);
 
       ContextInfo contextInfo = structure.getContext("");
-      if (contextInfo == null)
-         contextInfo = StructureMetaDataFactory.createContextInfo();
+      assertNotNull(contextInfo);
       checkContextInfo(context, contextInfo);
    }
    
