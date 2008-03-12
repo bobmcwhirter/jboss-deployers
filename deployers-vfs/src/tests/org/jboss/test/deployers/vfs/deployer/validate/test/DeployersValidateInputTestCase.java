@@ -56,7 +56,7 @@ public class DeployersValidateInputTestCase extends BaseTestCase
 
    public void testNullStream() throws Exception
    {
-      AbstractVFSParsingDeployer[] deployers = new AbstractVFSParsingDeployer[]
+      AbstractVFSParsingDeployer<?>[] deployers = new AbstractVFSParsingDeployer<?>[]
             {
                   new Properties2BeansDeployer(),
                   new MockBshDeployer(),
@@ -69,7 +69,7 @@ public class DeployersValidateInputTestCase extends BaseTestCase
       AbstractVFSDeploymentContext context = new MyVFSDeploymentContext(root, "");
       DeploymentUnit unit = context.getDeploymentUnit();
 
-      for(AbstractVFSParsingDeployer deployer : deployers)
+      for(AbstractVFSParsingDeployer<?> deployer : deployers)
       {
          try
          {
