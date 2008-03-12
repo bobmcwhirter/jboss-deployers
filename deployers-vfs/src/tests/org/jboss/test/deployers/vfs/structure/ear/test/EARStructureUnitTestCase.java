@@ -57,6 +57,36 @@ public class EARStructureUnitTestCase extends AbstractEARStructureTest
    }
 
    /**
+    * Validate scanning of ear.
+    * @throws Throwable for any error
+    */
+   public void testScanEAR() throws Throwable
+   {
+      VFSDeploymentContext ear = assertDeploy("/structure/ear", "noappxml.ear");
+      assertChildContexts(ear, "client.jar", "foobar.sar", "known.jar", "mf.jar", "ts.rar", "webapp.war");
+   }
+
+   /**
+    * Validate mixed ear.
+    * @throws Throwable for any error
+    */
+   public void testMixedEAR() throws Throwable
+   {
+      VFSDeploymentContext ear = assertDeploy("/structure/ear", "someappxml.ear");
+      assertChildContexts(ear, "client.jar", "foobar.sar", "known.jar", "mf.jar", "ts.rar", "webapp.war");
+   }
+
+   /**
+    * Validate strict ear.
+    * @throws Throwable for any error
+    */
+   public void testStrictEAR() throws Throwable
+   {
+      VFSDeploymentContext ear = assertDeploy("/structure/ear", "strict.ear");
+      assertChildContexts(ear, "known.jar", "ts.rar");
+   }
+
+   /**
     * Validate a basic ear with modules having no subdeployments 
     * @throws Throwable for any problem
     */
