@@ -382,7 +382,7 @@ public abstract class AbstractDeployer implements Deployer
 
    /**
     * Get the type.
-    * 
+    *
     * @return the type.
     */
    public String getType()

@@ -402,11 +402,6 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
       this.comparator = comparator;
    }
 
-   public Set<String> getTypes()
-   {
-      return deploymentTypes;
-   }
-   
    public ScopeKey getScope()
    {
       if (scope == null)
@@ -469,7 +464,6 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
       if (deployment == null)
          throw new IllegalArgumentException("Null deployment");
       this.deployment = deployment;
-      this.deployment.setTypes(getTypes());
    }
 
    public DeploymentUnit getDeploymentUnit()

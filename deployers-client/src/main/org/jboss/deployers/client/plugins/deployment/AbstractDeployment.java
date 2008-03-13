@@ -42,8 +42,6 @@ public class AbstractDeployment extends PredeterminedManagedObjectAttachmentsImp
    
    /** The name of the deployment */
    private String name;
-   /** The types associated with the deployment */
-   private Set<String> types;
 
    /**
     * Create a new AbstractDeployment.
@@ -94,15 +92,6 @@ public class AbstractDeployment extends PredeterminedManagedObjectAttachmentsImp
       if (name == null)
           throw new IllegalArgumentException("Null name");
       this.name = name;
-   }
-
-   public Set<String> getTypes()
-   {
-      return types;
-   }
-   public void setTypes(Set<String> types)
-   {
-      this.types = types;
    }
 
    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException

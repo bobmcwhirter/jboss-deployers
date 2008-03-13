@@ -36,14 +36,13 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
 public interface Deployer extends Ordered
 {
    /**
-    * Get the type of the deployer. This should be reflected in
-    * the DeploymentUnit deploymentType set of deployments the
-    * Deployer processes.
-    * 
+    * Get the type of the deployer.
+    * This should reflect in the Managed* api.
+    *
     * @return the deployer type.
     */
    String getType();
-   
+
    /**
     * Get the deployment stage for this deployer
     * 

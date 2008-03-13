@@ -247,9 +247,6 @@ public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsi
             result = parse(unit, name, result);
          else
             result = parse(unit, name, suffix, result);
-         // Add the associated deployer type if there is a result
-         if( result != null )
-            unit.getTypes().add(getType());
       }
       catch (Exception e)
       {

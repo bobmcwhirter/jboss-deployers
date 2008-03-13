@@ -58,14 +58,14 @@ public class TestSimpleDeployer extends AbstractRealDeployer
    public TestSimpleDeployer(int relativeOrder)
    {
       setRelativeOrder(relativeOrder);
-      this.setType("test");
+      setType("test");
       name = "TestSimpleDeployer" + relativeOrder;
    }
 
    public TestSimpleDeployer(DeploymentStage stage)
    {
       setStage(stage);
-      this.setType("test");
+      setType("test");
       name = super.toString();
    }
 
@@ -99,7 +99,6 @@ public class TestSimpleDeployer extends AbstractRealDeployer
    public void internalDeploy(DeploymentUnit unit) throws DeploymentException
    {
       log.debug(this + " deploy  : " + unit.getName());
-      unit.getTypes().add(getType());
       deployed.add(unit.getName());
       if (this.equals(unit.getAttachment("fail")))
       {

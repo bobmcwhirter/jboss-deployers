@@ -22,7 +22,6 @@
 package org.jboss.test.deployers.managed.test;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -80,11 +79,6 @@ public class DeployerManagedObjectUnitTestCase extends AbstractDeployerTest
       Deployment context = createSimpleDeployment("deploy");
       main.addDeployment(context);
       main.process();
-
-      // Check the deployment types
-      HashSet<String> expectedTypes = new HashSet<String>();
-      expectedTypes.add("TestManagedObjectDeployer");
-      assertEquals(expectedTypes, context.getTypes());
 
       // Check the default settings
       assertNotNull(deployer.lastAttachment);

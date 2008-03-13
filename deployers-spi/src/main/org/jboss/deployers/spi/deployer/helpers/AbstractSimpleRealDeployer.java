@@ -59,11 +59,7 @@ public abstract class AbstractSimpleRealDeployer<T> extends AbstractRealDeployer
    {
       T deployment = unit.getAttachment(getInput());
       if (deployment != null)
-      {
-         // Set the deployer type
-         unit.getTypes().add(getType());
          deploy(unit, deployment);
-      }
    }
 
    public void internalUndeploy(DeploymentUnit unit)

@@ -102,7 +102,6 @@ public class TestFlowDeployer extends AbstractRealDeployer
 
    public void internalDeploy(DeploymentUnit unit) throws DeploymentException
    {
-      unit.getTypes().add(getType());
       deployed.put(unit.getName(), ++order);
    }
 

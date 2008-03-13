@@ -95,7 +95,7 @@ public class DeployerWrapper implements Deployer, ManagedObjectCreator
    {
       return deployer.getType();
    }
-   
+
    public int getRelativeOrder()
    {
       return deployer.getRelativeOrder();
