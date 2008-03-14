@@ -70,9 +70,6 @@ public abstract class AbstractDeployer implements Deployer
    
    /** The output name */
    private Set<String> outputs;
-
-   /** The type */
-   private String type;
    
    /** Whether to process parents first */
    private boolean parentFirst = true;
@@ -378,21 +375,6 @@ public abstract class AbstractDeployer implements Deployer
          throw new IllegalArgumentException("Null output");
       
       addOutput(output.getName());
-   }
-
-   /**
-    * Get the type.
-    *
-    * @return the type.
-    */
-   public String getType()
-   {
-      return type;
-   }
-
-   public void setType(String type)
-   {
-      this.type = type;
    }
 
    public boolean isParentFirst()
