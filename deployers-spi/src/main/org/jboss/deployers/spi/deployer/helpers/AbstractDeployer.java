@@ -392,6 +392,12 @@ public abstract class AbstractDeployer implements Deployer
       this.parentFirst = parentFirst;
    }
 
+   @Deprecated
+   public void setType(String type)
+   {
+      log.warn("Types should be set using Managed* api for " + this);
+   }
+
    public void undeploy(DeploymentUnit unit)
    {
       // Nothing
