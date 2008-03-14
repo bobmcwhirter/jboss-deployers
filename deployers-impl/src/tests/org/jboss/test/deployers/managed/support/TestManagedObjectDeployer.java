@@ -42,6 +42,11 @@ public class TestManagedObjectDeployer extends AbstractDeployer implements Manag
 {
    public static TestAttachment lastAttachment;
 
+   public TestManagedObjectDeployer()
+   {
+      setType("TestManagedObjectDeployer");
+   }
+
    public void deploy(DeploymentUnit unit) throws DeploymentException
    {
       lastAttachment = unit.getAttachment(TestAttachment.class);

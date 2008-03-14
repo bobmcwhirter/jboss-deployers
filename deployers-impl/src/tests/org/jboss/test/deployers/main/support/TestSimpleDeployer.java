@@ -58,12 +58,14 @@ public class TestSimpleDeployer extends AbstractRealDeployer
    public TestSimpleDeployer(int relativeOrder)
    {
       setRelativeOrder(relativeOrder);
+      setType("test");
       name = "TestSimpleDeployer" + relativeOrder;
    }
 
    public TestSimpleDeployer(DeploymentStage stage)
    {
       setStage(stage);
+      setType("test");
       name = super.toString();
    }
 

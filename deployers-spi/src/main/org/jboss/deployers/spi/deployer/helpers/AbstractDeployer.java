@@ -70,6 +70,9 @@ public abstract class AbstractDeployer implements Deployer
    
    /** The output name */
    private Set<String> outputs;
+
+   /** The type */
+   private String type;
    
    /** Whether to process parents first */
    private boolean parentFirst = true;
@@ -377,6 +380,21 @@ public abstract class AbstractDeployer implements Deployer
       addOutput(output.getName());
    }
 
+   /**
+    * Get the type.
+    *
+    * @return the type.
+    */
+   public String getType()
+   {
+      return type;
+   }
+
+   public void setType(String type)
+   {
+      this.type = type;
+   }
+
    public boolean isParentFirst()
    {
       return parentFirst;
@@ -390,12 +408,6 @@ public abstract class AbstractDeployer implements Deployer
    public void setParentFirst(boolean parentFirst)
    {
       this.parentFirst = parentFirst;
-   }
-
-   @Deprecated
-   public void setType(String type)
-   {
-      log.warn("Types should be set using Managed* api for " + this);
    }
 
    public void undeploy(DeploymentUnit unit)
