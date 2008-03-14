@@ -22,6 +22,7 @@
 package org.jboss.deployers.client.spi;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import org.jboss.deployers.spi.attachments.PredeterminedManagedObjectAttachments;
 
@@ -46,4 +47,20 @@ public interface Deployment extends PredeterminedManagedObjectAttachments, Seria
     * @return the name
     */
    String getSimpleName();
+
+   /**
+    * Get the types.
+    * 
+    * @return the types.
+    */
+   @Deprecated
+   Set<String> getTypes();
+
+   /**
+    * Set the types.
+    * 
+    * @param types the types.
+    */
+   @Deprecated
+   void setTypes(Set<String> types);
 }

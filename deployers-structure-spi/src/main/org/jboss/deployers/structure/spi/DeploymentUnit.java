@@ -78,7 +78,15 @@ public interface DeploymentUnit extends MutableAttachments
     * @return the top-level deployment relative path
     */
    String getRelativePath();
-   
+
+   /**
+    * Get the types.
+    * 
+    * @return the types.
+    */
+   @Deprecated
+   Set<String> getTypes();
+
    /**
     * Get the scope
     * 

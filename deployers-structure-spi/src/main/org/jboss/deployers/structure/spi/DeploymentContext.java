@@ -124,7 +124,15 @@ public interface DeploymentContext extends ManagedObjectsWithTransientAttachment
     * @param comparator the comparator.
     */
    void setComparator(Comparator<DeploymentContext> comparator);
-   
+
+   /**
+    * Get the types.
+    * 
+    * @return the types.
+    */
+   @Deprecated
+   Set<String> getTypes();
+
    /**
     * Get the scope
     * 

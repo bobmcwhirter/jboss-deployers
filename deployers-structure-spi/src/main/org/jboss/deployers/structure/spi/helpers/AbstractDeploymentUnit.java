@@ -115,6 +115,12 @@ public class AbstractDeploymentUnit extends AbstractMutableAttachments implement
       return deploymentContext.getRelativePath();
    }
 
+   @Deprecated
+   public Set<String> getTypes()
+   {
+      return deploymentContext.getTypes();
+   }
+   
    public ScopeKey getScope()
    {
       return deploymentContext.getScope();
