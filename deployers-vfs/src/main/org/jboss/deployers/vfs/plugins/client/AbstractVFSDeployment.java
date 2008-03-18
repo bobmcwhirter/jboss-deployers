@@ -90,7 +90,7 @@ public class AbstractVFSDeployment extends AbstractDeployment implements VFSDepl
    @Override
    public String getSimpleName()
    {
-      return root.getPathName();
+      return root.getName();
    }
 
    
