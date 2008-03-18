@@ -20,6 +20,12 @@
     <dependency>
       <groupId>org.jboss.man</groupId>
       <artifactId>jboss-managed</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss</groupId>
+          <artifactId>jboss-reflect</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>  
 </project>

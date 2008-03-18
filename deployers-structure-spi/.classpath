@@ -7,6 +7,6 @@
 	<classpathentry exported="true" kind="src" path="/jboss-deployers-core"/>
 	<classpathentry exported="true" kind="src" path="/jboss-deployers-client"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/org/jboss/microcontainer/jboss-dependency/2.0.0-SNAPSHOT/jboss-dependency-2.0.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="var" path="M2_REPO/org/jboss/jboss-mdr/2.0.0.Beta11/jboss-mdr-2.0.0.Beta11.jar"/>
+	<classpathentry exported="true" kind="var" path="M2_REPO/org/jboss/jboss-mdr/2.0.0-SNAPSHOT/jboss-mdr-2.0.0-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

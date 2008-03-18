@@ -38,6 +38,12 @@
     <dependency>
       <groupId>org.jboss</groupId>
       <artifactId>jbossxb</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss</groupId>
+          <artifactId>jboss-reflect</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>  
 </project>

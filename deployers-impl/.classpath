@@ -10,7 +10,7 @@
 	<classpathentry exported="true" kind="var" path="M2_REPO/org/jboss/cl/jboss-classloader/2.0.0-SNAPSHOT/jboss-classloader-2.0.0-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/org/jboss/cl/jboss-classloading/2.0.0-SNAPSHOT/jboss-classloading-2.0.0-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/org/jboss/microcontainer/jboss-kernel/2.0.0-SNAPSHOT/jboss-kernel-2.0.0-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="var" path="M2_REPO/org/jboss/jboss-reflect/2.0.0.Beta11/jboss-reflect-2.0.0.Beta11.jar"/>
+	<classpathentry exported="true" kind="var" path="M2_REPO/org/jboss/jboss-reflect/2.0.0-SNAPSHOT/jboss-reflect-2.0.0-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/org/jboss/aop/jboss-aop/2.0.0.CR3/jboss-aop-2.0.0.CR3.jar"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/trove/trove/2.1.1//trove-2.1.1.jar"/>
 	<classpathentry exported="true" kind="var" path="M2_REPO/org/jboss/javassist/3.6.0.GA/javassist-3.6.0.GA.jar"/>
