@@ -23,10 +23,7 @@ package org.jboss.test.deployers.main.test;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
-import java.util.Set;
 
 import junit.framework.Test;
 
@@ -40,16 +37,10 @@ import org.jboss.deployers.structure.spi.DeploymentContext;
 import org.jboss.deployers.structure.spi.StructuralDeployers;
 import org.jboss.deployers.structure.spi.StructureBuilder;
 import org.jboss.deployers.structure.spi.helpers.AbstractStructureBuilder;
-import org.jboss.test.deployers.main.support.AddDeploymentRunnable;
 import org.jboss.test.deployers.main.support.AddProcessRemoveProcessRunnable;
-import org.jboss.test.deployers.main.support.DeployRunnable;
 import org.jboss.test.deployers.main.support.DeployUndeployRunnable;
 import org.jboss.test.deployers.main.support.DeployerTestRunnable;
 import org.jboss.test.deployers.main.support.FailedDeployUndeployRunnable;
-import org.jboss.test.deployers.main.support.ProcessRunnable;
-import org.jboss.test.deployers.main.support.ShutdownRunnable;
-import org.jboss.test.deployers.main.support.TestDeployment;
-import org.jboss.test.deployers.main.support.UndeployRunnable;
 
 /**
  * Single deployment API test case.
@@ -282,47 +273,5 @@ public class DeployerSingleDeploymentTestCase extends AbstractMainDeployerTest
          threads[i].join();
          assertTrue(runnables[i].toString(), runnables[i].isValid());
       }
-   }
-
-   public void testMultiThreadsAndShutdown() throws Exception
-   {
-      DeployerClient main = getMainDeployer();
-      int n = 30;
-      // let the shutdown be in first half of started threads
-      int shutdown = new Random().nextInt(n / 2);
-      log.info("Shutdown order: " + shutdown);
-      DeployerTestRunnable[] runnables = new DeployerTestRunnable[n];
-      Set<String> names = new HashSet<String>();
-      String[] dname = new String[]{"deploy", "add", "undeploy", "error"};
-      for(int i = 0; i < n; i++)
-      {
-         if (i == shutdown)
-            runnables[i] = new ShutdownRunnable(main);
-         else if (i % 4 == 3)
-            runnables[i] = new ProcessRunnable(main);
-         else
-         {
-            Deployment deployment = new TestDeployment(dname[i % 4] + i, names);
-
-            if (i % 4 == 0)
-               runnables[i] = new DeployRunnable(main, deployment);
-            else if (i % 4 == 1)
-               runnables[i] = new AddDeploymentRunnable(main, deployment);
-            else if (i % 4 == 2)
-               runnables[i] = new UndeployRunnable(main, deployment);
-         }
-      }
-      Thread[] threads = new Thread[n];
-      for(int i = 0; i < n; i++)
-      {
-         threads[i] = new Thread(runnables[i]);
-         threads[i].start();
-      }
-      for(int i = 0; i < n; i++)
-      {
-         threads[i].join();
-         assertTrue(runnables[i].toString(), runnables[i].isValid());
-      }
-      log.info("Names: " + names.size() + " - " + names);
    }
 }

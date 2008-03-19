@@ -33,6 +33,11 @@ import org.jboss.deployers.client.spi.DeployerClient;
 public interface MainDeployer extends DeployerClient
 {
    /**
+    * Tell the main deployer we are about to shutdown
+    */
+   void prepareShutdown();
+   
+   /**
     * Shutdown. Removes all the deployments.
     */
    void shutdown();

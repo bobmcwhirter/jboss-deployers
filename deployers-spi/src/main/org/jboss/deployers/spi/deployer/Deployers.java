@@ -97,4 +97,9 @@ public interface Deployers
     * @throws DeploymentException when the deployment is not complete
     */
    void checkStructureComplete(DeploymentContext... contexts) throws DeploymentException;
+
+   /**
+    * Shutdown. Stops any further deployment
+    */
+   void shutdown();
 }

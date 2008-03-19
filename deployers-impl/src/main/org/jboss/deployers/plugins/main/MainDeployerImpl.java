@@ -618,9 +618,15 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
       }
    }
 
-   // enable locking - so that we don't pick up current single deployments
+   public void prepareShutdown()
+   {
+      if (deployers != null)
+         deployers.shutdown();
+   }
+
    public void shutdown()
    {
+      prepareShutdown();
       lockWrite();
       try
       {

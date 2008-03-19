@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.jboss.dependency.spi.Controller;
 import org.jboss.dependency.spi.ControllerContext;
@@ -70,6 +71,9 @@ public class DeployersImpl implements Deployers, ControllerContextActions
 {
    /** The log */
    private static final Logger log = Logger.getLogger(DeployersImpl.class);
+   
+   /** Whether we are shutdown */
+   private AtomicBoolean shutdown = new AtomicBoolean(false);
    
    /** The dependency state machine */
    private Controller controller;
@@ -128,6 +132,20 @@ public class DeployersImpl implements Deployers, ControllerContextActions
       // Create the deployers
       if (deployers != null)
          setDeployers(deployers);
+   }
+   
+   public void shutdown()
+   {
+      shutdown.set(true);
+   }
+
+   /**
+    * Check whether we are shutdown
+    */
+   protected void checkShutdown()
+   {
+      if (shutdown.get())
+         throw new IllegalStateException("Deployers are shutdown");
    }
    
    /**
@@ -339,6 +357,8 @@ public class DeployersImpl implements Deployers, ControllerContextActions
       if (context == null)
          throw new IllegalArgumentException("Null context");
       
+      checkShutdown();
+      
       Map<String, ManagedObject> managedObjects = new HashMap<String, ManagedObject>();
       for (DeployerWrapper deployer : deployers)
          deployer.build(context.getDeploymentUnit(), managedObjects);
@@ -412,6 +432,8 @@ public class DeployersImpl implements Deployers, ControllerContextActions
       DeploymentControllerContext deploymentControllerContext = context.getTransientAttachments().getAttachment(ControllerContext.class.getName(), DeploymentControllerContext.class);
       if (deploymentControllerContext == null)
          throw new DeploymentException("Deployment " + context.getName() + " has no deployment controller context");
+
+      checkShutdown();
       
       ControllerState state = new ControllerState(stageName);
       try
@@ -515,6 +537,8 @@ public class DeployersImpl implements Deployers, ControllerContextActions
          // Create the controller contexts
          for (DeploymentContext context : deploy)
          {
+            checkShutdown();
+
             DeploymentControllerContext deploymentControllerContext = new DeploymentControllerContext(context, this);
             try
             {
@@ -549,6 +573,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
                int currentIdx = states.indexOf(current);
                if (currentIdx != -1 && currentIdx < i)
                {
+                  checkShutdown();
                   try
                   {
                      controller.change(deploymentControllerContext, state);
