@@ -34,23 +34,6 @@
 
     <!-- JAR Structure -->
     <bean name="JARStructure" class="org.jboss.deployers.vfs.plugins.structure.jar.JARStructure">
-       <!-- Unless specified the default list of suffixes is .zip, .ear, .jar, ,.rar, .war, .sar, .har, .aop -->
-       <constructor>
-          <parameter>
-             <set elementClass="java.lang.String">
-                <value>.zip</value>
-                <value>.ear</value>
-                <value>.jar</value>
-                <value>.rar</value>
-                <value>.war</value>
-                <value>.sar</value>
-                <value>.har</value>
-                <value>.aop</value>
-                <value>.deployer</value>
-                <value>.beans</value>
-             </set>
-          </parameter>
-       </constructor>
        <property name="candidateStructureVisitorFactory">
           <!-- Any file that is not an ordinary directory is a candidate -->
           <bean name="JARStructureCandidates" class="org.jboss.deployers.vfs.spi.structure.helpers.DefaultCandidateStructureVisitorFactory">
