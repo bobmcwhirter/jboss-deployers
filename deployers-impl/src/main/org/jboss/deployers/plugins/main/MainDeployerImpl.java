@@ -179,6 +179,7 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
       return context.getDeployment();
    }
 
+   @Deprecated
    public DeploymentContext getDeploymentContext(String name)
    {
       if (name == null)
@@ -187,6 +188,7 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
       return allDeployments.get(name);
    }
 
+   @Deprecated
    public DeploymentContext getDeploymentContext(String name, boolean errorNotFound) throws DeploymentException
    {
       DeploymentContext context = getDeploymentContext(name);

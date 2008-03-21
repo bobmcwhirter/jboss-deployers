@@ -63,7 +63,7 @@ public abstract class AbstractDeployerTest extends BaseTestCase
    
    protected DeployerClient createMainDeployer()
    {
-      return createMainDeployer(null);
+      return createMainDeployer((Deployer[]) null);
    }
    
    protected DeployerClient createMainDeployer(Deployer... deployers)
@@ -138,12 +138,14 @@ public abstract class AbstractDeployerTest extends BaseTestCase
       return deployersImpl.getDeployerWrappers();
    }
    
+   @Deprecated
    protected DeploymentContext getDeploymentContext(DeployerClient main, String name)
    {
       MainDeployerImpl mainDeployerImpl = (MainDeployerImpl) main;
       return mainDeployerImpl.getDeploymentContext(name);
    }
    
+   @Deprecated
    protected DeploymentContext assertDeploymentContext(DeployerClient main, String name)
    {
       DeploymentContext context = getDeploymentContext(main, name);
