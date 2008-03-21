@@ -21,6 +21,8 @@
  */
 package org.jboss.test.deployers.vfs.classloader.test;
 
+import java.net.URL;
+
 import junit.framework.Test;
 
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
@@ -42,6 +44,13 @@ public class ManualDependsOnDeploymentClassLoaderUnitTestCase extends BootstrapD
    public ManualDependsOnDeploymentClassLoaderUnitTestCase(String name)
    {
       super(name);
+   }
+   
+   protected void setUp() throws Exception
+   {
+      super.setUp();
+      URL classLoaderResource = getResource("/classloader");
+      System.setProperty("test.classloader.url", classLoaderResource.toString());
    }
 
    public void testDependencyCorrectWay() throws Exception
