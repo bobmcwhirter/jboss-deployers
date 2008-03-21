@@ -9,8 +9,8 @@
   <classpathentry kind="src" path="/jboss-deployers-client-spi"/>
   <classpathentry kind="src" path="/jboss-deployers-core"/>
   <classpathentry kind="src" path="/jboss-deployers-core-spi"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/man/jboss-managed/2.0.0-SNAPSHOT/jboss-managed-2.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/jboss/man/jboss-managed/2.0.0-SNAPSHOT/jboss-managed-2.0.0-SNAPSHOT-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/man/jboss-metatype/2.0.0-SNAPSHOT/jboss-metatype-2.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/jboss/man/jboss-metatype/2.0.0-SNAPSHOT/jboss-metatype-2.0.0-SNAPSHOT-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/man/jboss-managed/2.0.0.Beta12/jboss-managed-2.0.0.Beta12.jar" sourcepath="M2_REPO/org/jboss/man/jboss-managed/2.0.0.Beta12/jboss-managed-2.0.0.Beta12-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/man/jboss-metatype/2.0.0.Beta12/jboss-metatype-2.0.0.Beta12.jar" sourcepath="M2_REPO/org/jboss/man/jboss-metatype/2.0.0.Beta12/jboss-metatype-2.0.0.Beta12-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-test/1.0.5.GA/jboss-test-1.0.5.GA.jar" sourcepath="M2_REPO/org/jboss/jboss-test/1.0.5.GA/jboss-test-1.0.5.GA-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/junit/junit/4.4/junit-4.4.jar" sourcepath="M2_REPO/junit/junit/4.4/junit-4.4-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/log4j/log4j/1.2.14/log4j-1.2.14.jar" sourcepath="M2_REPO/log4j/log4j/1.2.14/log4j-1.2.14-sources.jar"/>
