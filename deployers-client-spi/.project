@@ -3,9 +3,6 @@
   <comment>JBoss Deployers Client SPI</comment>
   <projects>
     <project>jboss-deployers-core-spi</project>
-    <project>jboss-managed</project>
-    <project>jboss-container</project>
-    <project>jboss-metatype</project>
   </projects>
   <buildSpec>
     <buildCommand>

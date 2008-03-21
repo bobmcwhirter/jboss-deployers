@@ -29,13 +29,25 @@
   <dependencies>
     <!-- Global dependencies -->
     <dependency>
-    <groupId>org.jboss.deployers</groupId>
+      <groupId>org.jboss.deployers</groupId>
       <artifactId>jboss-deployers-client-spi</artifactId>
     </dependency>
      <!-- Test dependencies -->
     <dependency>
-      <groupId>org.jboss</groupId>
-      <artifactId>jboss-test</artifactId>
+      <groupId>org.jboss.deployers</groupId>
+      <artifactId>jboss-deployers-core</artifactId>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.deployers</groupId>
+          <artifactId>jboss-deployers-core-spi</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-common-logging-log4j</artifactId>
+      <scope>test</scope>
       <exclusions>
         <exclusion>
           <groupId>jboss</groupId>
@@ -48,12 +60,47 @@
       </exclusions>
     </dependency>
     <dependency>
-	    <groupId>junit</groupId>
-	    <artifactId>junit</artifactId>
+      <groupId>org.jboss</groupId>
+      <artifactId>jboss-test</artifactId>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss</groupId>
+          <artifactId>jboss-common-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jboss</groupId>
+          <artifactId>jboss-common-logging-spi</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jboss</groupId>
+          <artifactId>jboss-common-logging-log4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jboss.profiler.jvmti</groupId>
+          <artifactId>jboss-profiler-jvmti</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.ant</groupId>
+          <artifactId>ant</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.ant</groupId>
+          <artifactId>ant-junit</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
-    <groupId>org.jboss.deployers</groupId>
-      <artifactId>jboss-deployers-core</artifactId>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>  

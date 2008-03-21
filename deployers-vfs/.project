@@ -2,19 +2,13 @@
   <name>jboss-deployers-vfs</name>
   <comment>JBoss Deployers VFS</comment>
   <projects>
-    <project>jboss-container</project>
-    <project>jboss-classloader</project>
-    <project>jboss-dependency</project>
     <project>jboss-deployers-client</project>
-    <project>jboss-deployers-core-spi</project>
     <project>jboss-deployers-client-spi</project>
-    <project>jboss-managed</project>
-    <project>jboss-metatype</project>
     <project>jboss-deployers-core</project>
+    <project>jboss-deployers-core-spi</project>
     <project>jboss-deployers-impl</project>
-    <project>jboss-kernel</project>
-    <project>jboss-deployers-structure-spi</project>
     <project>jboss-deployers-spi</project>
+    <project>jboss-deployers-structure-spi</project>
     <project>jboss-deployers-vfs-spi</project>
   </projects>
   <buildSpec>
