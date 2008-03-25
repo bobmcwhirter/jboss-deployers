@@ -701,7 +701,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
                   dependency = iDependOn.toString();
                   ControllerContext other = controller.getContext(iDependOn, null);
                   if (other == null)
-                     actualStateString = "** NOT FOUND **";
+                     actualStateString = "** NOT FOUND " + item.toHumanReadableString() + " **";
                   else
                   {
                      actualState = other.getState();
