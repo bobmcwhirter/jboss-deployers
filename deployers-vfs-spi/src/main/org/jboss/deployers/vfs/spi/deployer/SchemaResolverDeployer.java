@@ -26,11 +26,11 @@ import java.io.InputStream;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.virtual.VirtualFile;
+import org.jboss.xb.annotations.JBossXmlSchema;
 import org.jboss.xb.binding.Unmarshaller;
 import org.jboss.xb.binding.UnmarshallerFactory;
-import org.jboss.xb.binding.sunday.unmarshalling.SchemaBindingResolver;
+import org.jboss.xb.binding.sunday.unmarshalling.DefaultSchemaResolver;
 import org.jboss.xb.binding.sunday.unmarshalling.SingletonSchemaResolverFactory;
-import org.jboss.xb.annotations.JBossXmlSchema;
 
 /**
  * SchemaResolverDeployer.
@@ -46,8 +46,8 @@ public class SchemaResolverDeployer<T> extends AbstractVFSParsingDeployer<T>
    /** Unmarshaller factory */
    private static final UnmarshallerFactory factory = UnmarshallerFactory.newInstance();
 
-   /** The resolver */
-   private static final SchemaBindingResolver resolver = SingletonSchemaResolverFactory.getInstance().getSchemaBindingResolver();
+   /** The singleton schema resolver */
+   private static DefaultSchemaResolver resolver = (DefaultSchemaResolver)SingletonSchemaResolverFactory.getInstance().getSchemaBindingResolver();
 
    /** Whether the Unmarshaller will use schema validation */
    private boolean useSchemaValidation = true;
@@ -136,8 +136,18 @@ public class SchemaResolverDeployer<T> extends AbstractVFSParsingDeployer<T>
    {
       if (isRegisterWithJBossXB())
       {
-         SingletonSchemaResolverFactory schemaResolverFactory = SingletonSchemaResolverFactory.getInstance();
-         schemaResolverFactory.addJaxbSchema(findNamespace(), getOutput().getName());
+         resolver.addClassBinding(findNamespace(), getOutput());
+      }
+   }
+
+   /**
+    * Remove registered schema
+    */
+   public void destroy()
+   {
+      if (isRegisterWithJBossXB())
+      {
+         resolver.removeClassBinding(findNamespace());
       }
    }
 
@@ -156,7 +166,7 @@ public class SchemaResolverDeployer<T> extends AbstractVFSParsingDeployer<T>
          jBossXmlSchema = pckg.getAnnotation(JBossXmlSchema.class);
       }
       if (jBossXmlSchema == null)
-         throw new IllegalArgumentException("RegisterWithJBossXB equals true, but cannot find @JBossXmlSchema on class or package.");
+         throw new IllegalArgumentException("RegisterWithJBossXB is enabled, but cannot find @JBossXmlSchema on class or package.");
 
       return jBossXmlSchema.namespace();
    }
