@@ -84,6 +84,7 @@ public class TestComponentMetaDataLoader extends AbstractMetaDataLoader
       return new SimpleAnnotationsItem(items);
    }
 
+   // FIXME JBDEPLOY-19 Remove workaround this as it is now done in the Abstract super class
    @SuppressWarnings("unchecked")
    public MetaDataItem retrieveMetaData(String name)
    {
