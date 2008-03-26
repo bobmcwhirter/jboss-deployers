@@ -30,11 +30,13 @@ import org.jboss.xb.binding.Unmarshaller;
 import org.jboss.xb.binding.UnmarshallerFactory;
 import org.jboss.xb.binding.sunday.unmarshalling.SchemaBindingResolver;
 import org.jboss.xb.binding.sunday.unmarshalling.SingletonSchemaResolverFactory;
+import org.jboss.xb.annotations.JBossXmlSchema;
 
 /**
  * SchemaResolverDeployer.
  * 
  * @param <T> the expected type 
+ * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
  * @author Scott.Stark@jboss.org
  * @version $Revision 1.1 $
@@ -52,6 +54,9 @@ public class SchemaResolverDeployer<T> extends AbstractVFSParsingDeployer<T>
 
    /** Whether to validate */
    private boolean useValidation = true;
+
+   /** Whether we register with  jbossxb */
+   private boolean registerWithJBossXB;
 
    /**
     * Create a new SchemaResolverDeployer.
@@ -102,6 +107,58 @@ public class SchemaResolverDeployer<T> extends AbstractVFSParsingDeployer<T>
    public void setUseValidation(boolean useValidation)
    {
       this.useValidation = useValidation;
+   }
+
+   /**
+    * Get the registerWithJBossXB.
+    *
+    * @return the registerWithJBossXB
+    */
+   public boolean isRegisterWithJBossXB()
+   {
+      return registerWithJBossXB;
+   }
+
+   /**
+    * Set the registerWithJBossXB.
+    *
+    * @param registerWithJBossXB the registerWithJBossXB
+    */
+   public void setRegisterWithJBossXB(boolean registerWithJBossXB)
+   {
+      this.registerWithJBossXB = registerWithJBossXB;
+   }
+
+   /**
+    * Check if we need to register schema to jbossxb.
+    */
+   public void create()
+   {
+      if (isRegisterWithJBossXB())
+      {
+         SingletonSchemaResolverFactory schemaResolverFactory = SingletonSchemaResolverFactory.getInstance();
+         schemaResolverFactory.addJaxbSchema(findNamespace(), getOutput().getName());
+      }
+   }
+
+   /**
+    * Find the namespace on class/package
+    *
+    * @return jboss xml schema namespace
+    */
+   protected String findNamespace()
+   {
+      Class<T> metadata = getOutput();
+      JBossXmlSchema jBossXmlSchema = metadata.getAnnotation(JBossXmlSchema.class);
+      if (jBossXmlSchema == null)
+      {
+         Package pckg = metadata.getPackage();
+         jBossXmlSchema = pckg.getAnnotation(JBossXmlSchema.class);
+      }
+      if (jBossXmlSchema == null)
+         throw new IllegalArgumentException("RegisterWithJBossXB equals true, but cannot find @JBossXmlSchema on class or package.");
+
+      return jBossXmlSchema.namespace();
    }
 
    protected T parse(VFSDeploymentUnit unit, VirtualFile file, T root) throws Exception

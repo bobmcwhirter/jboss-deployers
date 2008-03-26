@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="urn:jboss:classloader:1.0"
+            xmlns="urn:jboss:classloader:1.0"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            version="1.0">
+
+   <xsd:annotation>
+      <xsd:documentation>
+         <![CDATA[
+         An xml schema for the deployers xml that can be used in a -beans.xml
+         to create a schema resolver deployer.
+
+         Typical usage:
+            <jbossxb-parser xmlns="urn:jboss:deployers:2.0"
+                            name="FooParser"
+                            class="com.foo.MetaData"
+                            suffix="-foo.xml"/>         ]]>
+      </xsd:documentation>
+   </xsd:annotation>
+
+   <xsd:element name="jbossxb-parser" type="parserType">
+      <xsd:annotation>
+         <xsd:documentation>
+            <![CDATA[
+            The root classloader element
+            ]]>
+         </xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+
+   <xsd:complexType name="parserType">
+      <xsd:annotation>
+         <xsd:documentation>
+            <![CDATA[
+               This parser element/type has a bunch of attributes.
+               To see which they are, check the SchemaResolverDeployer class.
+            ]]>
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:attribute name="name" type="xsd:string" required="true" />
+      <xsd:attribute name="metadata" type="xsd:string" required="true" />
+      <xsd:attribute name="suffix" type="xsd:string" required="false" />
+      <xsd:attribute name="file-name" type="xsd:string" required="false" />
+      <xsd:attribute name="use-schema-validation" type="xsd:boolean" required="false" />
+      <xsd:attribute name="use-validation" type="xsd:boolean" required="false" />
+      <xsd:attribute name="register-with-jbossxb" type="xsd:boolean" required="false" />
+      <xsd:attribute name="jar-extension" type="xsd:string" required="false" />
+      <xsd:attribute name="include-deployment-file" type="xsd:boolean" required="false" />
+      <xsd:attribute name="build-managed-object" type="xsd:boolean" required="false" />
+   </xsd:complexType>
+</xsd:schema>

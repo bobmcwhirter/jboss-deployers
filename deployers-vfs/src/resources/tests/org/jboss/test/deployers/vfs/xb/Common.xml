@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<deployment xmlns="urn:jboss:bean-deployer:2.0">
+
+   <bean name="SchemaResolverConfig" class="org.jboss.xb.binding.sunday.unmarshalling.SchemaResolverConfig">
+      <property name="bindingClasses">
+         <map keyClass="java.lang.String" valueClass="java.lang.String">
+            <entry>
+               <key>urn:jboss:deployers:2.0</key>
+               <value>org.jboss.deployers.vfs.plugins.xb.SchemaResolverDeployerMetaData</value>
+            </entry>
+         </map>
+      </property>
+   </bean>
+
+</deployment>
