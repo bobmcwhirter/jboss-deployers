@@ -19,40 +19,28 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.test.deployers.vfs.xb.test;
+package org.jboss.test.deployers.vfs.xb.support.other;
 
-import junit.framework.Test;
-import org.jboss.test.deployers.vfs.xb.support.TestMetaData;
+import java.io.Serializable;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Schema resolver JBossXB test case.
- *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class SchemaResolverXBTestCase extends AbstractSchemaResolverXBTest<TestMetaData>
+@XmlRootElement(name="jboss-other")
+public class OtherMetaData implements Serializable
 {
-   public SchemaResolverXBTestCase(String name)
+   private String name;
+
+   public String getName()
    {
-      super(name);
+      return name;
    }
 
-   public static Test suite()
+   @XmlAttribute(required = true)
+   public void setName(String name)
    {
-      return suite(SchemaResolverXBTestCase.class);
-   }
-
-   protected Class<TestMetaData> getOutput()
-   {
-      return TestMetaData.class;
-   }
-
-   protected String getSuffix()
-   {
-      return "-foobar.xml";
-   }
-
-   protected String getName(TestMetaData metadata)
-   {
-      return metadata.getName();
+      this.name = name;
    }
 }

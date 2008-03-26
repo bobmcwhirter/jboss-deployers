@@ -22,36 +22,36 @@
 package org.jboss.test.deployers.vfs.xb.test;
 
 import junit.framework.Test;
-import org.jboss.test.deployers.vfs.xb.support.TestMetaData;
+import org.jboss.test.deployers.vfs.xb.support.other.OtherMetaData;
 
 /**
- * Schema resolver JBossXB test case.
+ * Schema resolver JBossXB package test case.
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class SchemaResolverXBTestCase extends AbstractSchemaResolverXBTest<TestMetaData>
+public class SchemaResolverXBPackageTestCase extends AbstractSchemaResolverXBTest<OtherMetaData>
 {
-   public SchemaResolverXBTestCase(String name)
+   public SchemaResolverXBPackageTestCase(String name)
    {
       super(name);
    }
 
    public static Test suite()
    {
-      return suite(SchemaResolverXBTestCase.class);
+      return suite(SchemaResolverXBPackageTestCase.class);
    }
 
-   protected Class<TestMetaData> getOutput()
+   protected Class<OtherMetaData> getOutput()
    {
-      return TestMetaData.class;
+      return OtherMetaData.class;
    }
 
    protected String getSuffix()
    {
-      return "-foobar.xml";
+      return "-other.xml";
    }
 
-   protected String getName(TestMetaData metadata)
+   protected String getName(OtherMetaData metadata)
    {
       return metadata.getName();
    }

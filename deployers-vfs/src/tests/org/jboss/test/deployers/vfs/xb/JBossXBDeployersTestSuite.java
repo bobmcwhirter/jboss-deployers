@@ -25,6 +25,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 import org.jboss.test.deployers.vfs.xb.test.SchemaResolverXBTestCase;
+import org.jboss.test.deployers.vfs.xb.test.SchemaResolverXBPackageTestCase;
 
 /**
  * JBossXB deployers extensions.
@@ -43,6 +44,7 @@ public class JBossXBDeployersTestSuite extends TestSuite
       TestSuite suite = new TestSuite("JBossXB Deployers Tests");
 
       suite.addTest(SchemaResolverXBTestCase.suite());
+      suite.addTest(SchemaResolverXBPackageTestCase.suite());
 
       return suite;
    }
