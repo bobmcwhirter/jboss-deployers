@@ -30,6 +30,7 @@ import org.jboss.metadata.spi.retrieval.MetaDataItem;
 import org.jboss.metadata.spi.retrieval.MetaDataRetrieval;
 import org.jboss.metadata.spi.retrieval.simple.SimpleAnnotationItem;
 import org.jboss.metadata.spi.retrieval.simple.SimpleAnnotationsItem;
+import org.jboss.metadata.spi.retrieval.simple.SimpleMetaDataItem;
 import org.jboss.metadata.spi.scope.ScopeKey;
 import org.jboss.metadata.spi.signature.Signature;
 
@@ -86,7 +87,11 @@ public class TestComponentMetaDataLoader extends AbstractMetaDataLoader
    @SuppressWarnings("unchecked")
    public MetaDataItem retrieveMetaData(String name)
    {
-      // TODO Non annotations go here
+      for (Annotation annotation : componentMetaData.classAnnotations)
+      {
+         if (annotation.annotationType().getName().equals(name))
+            return new SimpleMetaDataItem(name, annotation);
+      }
       return null;
    }
 }
