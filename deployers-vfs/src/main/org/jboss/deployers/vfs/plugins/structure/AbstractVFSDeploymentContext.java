@@ -287,7 +287,7 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
          log.trace("ClassPath for " + root.getPathName() + " is " + VFSUtils.getPathsString(paths));
    }
 
-   public void addClassPath(List<VirtualFile> files)
+   public void appendClassPath(List<VirtualFile> files)
    {
       if (files == null)
          throw new IllegalArgumentException("Null files");
@@ -305,7 +305,45 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
       setClassPath(classPath);
    }
 
-   public void addClassPath(VirtualFile... files)
+   public void prependClassPath(VirtualFile... files)
+   {
+      if (files == null)
+         throw new IllegalArgumentException("Null files");
+
+      List<VirtualFile> classPath = getClassPath();
+      if (classPath == null)
+         classPath = new ArrayList<VirtualFile>();
+      
+      for (int i = files.length-1; i >= 0; --i)
+      {
+         VirtualFile file = files[i];
+         if (file == null)
+            throw new IllegalArgumentException("Null virtual file in " + files);
+         classPath.add(0, file);
+      }
+      setClassPath(classPath);
+   }
+
+   public void prependClassPath(List<VirtualFile> files)
+   {
+      if (files == null)
+         throw new IllegalArgumentException("Null files");
+
+      List<VirtualFile> classPath = getClassPath();
+      if (classPath == null)
+         classPath = new ArrayList<VirtualFile>();
+      
+      for (int i = files.size()-1; i >= 0; --i)
+      {
+         VirtualFile file = files.get(i);
+         if (file == null)
+            throw new IllegalArgumentException("Null virtual file in " + files);
+         classPath.add(0, file);
+      }
+      setClassPath(classPath);
+   }
+
+   public void appendClassPath(VirtualFile... files)
    {
       if (files == null)
          throw new IllegalArgumentException("Null files");

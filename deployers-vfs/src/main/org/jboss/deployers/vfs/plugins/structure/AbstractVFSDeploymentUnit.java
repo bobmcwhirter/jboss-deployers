@@ -94,14 +94,34 @@ public class AbstractVFSDeploymentUnit extends AbstractDeploymentUnit implements
       getDeploymentContext().setClassPath(classPath);
    }
    
+   public void prependClassPath(List<VirtualFile> files)
+   {
+      getDeploymentContext().prependClassPath(files);
+   }
+
+   public void prependClassPath(VirtualFile... files)
+   {
+      getDeploymentContext().prependClassPath(files);
+   }
+   
+   public void appendClassPath(List<VirtualFile> files)
+   {
+      getDeploymentContext().appendClassPath(files);
+   }
+
+   public void appendClassPath(VirtualFile... files)
+   {
+      getDeploymentContext().appendClassPath(files);
+   }
+   
    public void addClassPath(List<VirtualFile> files)
    {
-      getDeploymentContext().addClassPath(files);
+      getDeploymentContext().appendClassPath(files);
    }
 
    public void addClassPath(VirtualFile... files)
    {
-      getDeploymentContext().addClassPath(files);
+      getDeploymentContext().appendClassPath(files);
    }
 
    @Override

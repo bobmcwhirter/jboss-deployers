@@ -72,7 +72,7 @@ public class InMemoryClassesDeployer extends AbstractVFSRealDeployer
          VirtualFile classes = factory.createDirectory(classesURL).getVirtualFile();
          unit.addAttachment(DYNAMIC_CLASS_URL_KEY, dynamicClassRoot);
          unit.addAttachment(DYNAMIC_CLASS_KEY, classes);
-         unit.addClassPath(classes);
+         unit.prependClassPath(classes);
          log.debug("Dynamic class root for " + unit.getName() + " is " + dynamicClassRoot);
       }
       catch (Exception e)
