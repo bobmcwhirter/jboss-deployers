@@ -163,7 +163,8 @@ public class SchemaResolverDeployer<T> extends AbstractVFSParsingDeployer<T>
       if (jBossXmlSchema == null)
       {
          Package pckg = metadata.getPackage();
-         jBossXmlSchema = pckg.getAnnotation(JBossXmlSchema.class);
+         if (pckg != null)
+            jBossXmlSchema = pckg.getAnnotation(JBossXmlSchema.class);
       }
       if (jBossXmlSchema == null)
          throw new IllegalArgumentException("RegisterWithJBossXB is enabled, but cannot find @JBossXmlSchema on class or package.");
