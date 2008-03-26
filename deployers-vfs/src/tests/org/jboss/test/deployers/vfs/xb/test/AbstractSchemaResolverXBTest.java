@@ -34,7 +34,7 @@ import org.jboss.virtual.VFS;
 import org.jboss.virtual.VirtualFile;
 
 /**
- * Schema resolver JBossXB package test case.
+ * Abstract schema resolver JBossXB test.
  *
  * @param <T> exact output type
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
