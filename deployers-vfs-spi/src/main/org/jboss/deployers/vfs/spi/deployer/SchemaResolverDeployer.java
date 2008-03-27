@@ -27,6 +27,7 @@ import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.virtual.VirtualFile;
 import org.jboss.xb.annotations.JBossXmlSchema;
+import org.jboss.xb.annotations.JBossXmlConstants;
 import org.jboss.xb.binding.Unmarshaller;
 import org.jboss.xb.binding.UnmarshallerFactory;
 import org.jboss.xb.binding.sunday.unmarshalling.DefaultSchemaResolver;
@@ -136,7 +137,14 @@ public class SchemaResolverDeployer<T> extends AbstractVFSParsingDeployer<T>
    {
       if (isRegisterWithJBossXB())
       {
-         resolver.addClassBinding(findNamespace(), getOutput());
+         String namespace = findNamespace();
+         if (namespace == null || JBossXmlConstants.DEFAULT.equals(namespace))
+            throw new IllegalArgumentException(
+                  "RegisterWithJBossXB is enabled, but cannot find namespace on class or package: " + getOutput() +
+                  ", perhaps missing @JBossXmlSchema or using default namespace attribute."
+            );
+
+         resolver.addClassBinding(namespace, getOutput());
       }
    }
 
@@ -147,6 +155,7 @@ public class SchemaResolverDeployer<T> extends AbstractVFSParsingDeployer<T>
    {
       if (isRegisterWithJBossXB())
       {
+         // namespace should exist, since we got past create
          resolver.removeClassBinding(findNamespace());
       }
    }
@@ -166,10 +175,7 @@ public class SchemaResolverDeployer<T> extends AbstractVFSParsingDeployer<T>
          if (pckg != null)
             jBossXmlSchema = pckg.getAnnotation(JBossXmlSchema.class);
       }
-      if (jBossXmlSchema == null)
-         throw new IllegalArgumentException("RegisterWithJBossXB is enabled, but cannot find @JBossXmlSchema on class or package.");
-
-      return jBossXmlSchema.namespace();
+      return jBossXmlSchema != null ? jBossXmlSchema.namespace() : null;
    }
 
    protected T parse(VFSDeploymentUnit unit, VirtualFile file, T root) throws Exception
