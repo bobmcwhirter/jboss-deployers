@@ -59,6 +59,9 @@ public class SchemaResolverDeployer<T> extends AbstractVFSParsingDeployer<T>
    /** Whether we register with  jbossxb */
    private boolean registerWithJBossXB;
 
+   /** The namespace */
+   private String namespace;
+
    /**
     * Create a new SchemaResolverDeployer.
     * 
@@ -131,13 +134,23 @@ public class SchemaResolverDeployer<T> extends AbstractVFSParsingDeployer<T>
    }
 
    /**
+    * Get the namespace, if it was set.
+    *
+    * @return the namespace
+    */
+   public String getNamespace()
+   {
+      return namespace;
+   }
+
+   /**
     * Check if we need to register schema to jbossxb.
     */
    public void create()
    {
       if (isRegisterWithJBossXB())
       {
-         String namespace = findNamespace();
+         namespace = findNamespace();
          if (namespace == null || JBossXmlConstants.DEFAULT.equals(namespace))
             throw new IllegalArgumentException(
                   "RegisterWithJBossXB is enabled, but cannot find namespace on class or package: " + getOutput() +
@@ -156,7 +169,7 @@ public class SchemaResolverDeployer<T> extends AbstractVFSParsingDeployer<T>
       if (isRegisterWithJBossXB())
       {
          // namespace should exist, since we got past create
-         resolver.removeClassBinding(findNamespace());
+         resolver.removeClassBinding(namespace);
       }
    }
 
