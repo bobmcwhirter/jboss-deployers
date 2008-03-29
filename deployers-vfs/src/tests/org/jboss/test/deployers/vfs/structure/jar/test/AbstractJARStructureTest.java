@@ -44,13 +44,14 @@ public abstract class AbstractJARStructureTest extends AbstractStructureTest
    
    public void testRootNotAnArchive() throws Throwable
    {
-      assertNotValid("/structure/jar/notanarchive", "NotAnArchive.jar");
-      assertNotValid("/structure/jar/notanarchive", "NotAnArchive.zip");
+      assertDeployNoChildren("/structure/jar/notanarchive", "NotAnArchive.jar");
+      assertDeployNoChildren("/structure/jar/notanarchive", "NotAnArchive.zip");
    }
    
    public void testSubdeploymentNotAnArchive() throws Throwable
    {
-      assertDeployNoChildren("/structure/jar", "notanarchive");
+      VFSDeploymentContext context = deploy("/structure/jar", "notanarchive");
+      assertChildContexts(context, "NotAnArchive.jar", "NotAnArchive.zip");
    }
 
    public void testJarAsRoot() throws Throwable

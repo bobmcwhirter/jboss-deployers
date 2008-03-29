@@ -53,8 +53,7 @@ public class CombinedWARStructureUnitTestCase extends AbstractWARStructureTest
 
    public void testNotAnArchive() throws Throwable
    {
-      // should not be valid
-      assertNotValid("/structure/war/notanarchive", "notanarchive.war");
+      assertDeployNoChildren("/structure/war/notanarchive", "notanarchive.war");
    }
 
    protected VFSDeploymentContext determineStructure(VFSDeployment deployment) throws Exception

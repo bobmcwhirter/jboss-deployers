@@ -47,9 +47,8 @@ public class CombinedJARStructureUnitTestCase extends AbstractJARStructureTest
 
    public void testRootNotAnArchive() throws Throwable
    {
-      // should not be valid anymore!
-      assertNotValid("/structure/jar/notanarchive", "NotAnArchive.jar");
-      assertNotValid("/structure/jar/notanarchive", "NotAnArchive.zip");
+      assertDeployNoChildren("/structure/jar/notanarchive", "NotAnArchive.jar");
+      assertDeployNoChildren("/structure/jar/notanarchive", "NotAnArchive.zip");
    }
 
    public void testSubdeploymentIsKnownFile() throws Throwable
