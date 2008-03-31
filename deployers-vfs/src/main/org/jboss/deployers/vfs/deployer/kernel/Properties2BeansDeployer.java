@@ -50,6 +50,7 @@ public class Properties2BeansDeployer extends AbstractVFSParsingDeployer<KernelD
       setSuffix("-beans.properties");
       // Enable ManagedObject creation based on annotations by default
       setBuildManagedObject(true);
+      setAllowMultipleFiles(true);
    }
 
    @Override

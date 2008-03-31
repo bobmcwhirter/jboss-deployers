@@ -36,10 +36,14 @@ import org.jboss.virtual.VirtualFile;
  *
  * @param <T> the type of output
  * @author <a href="adrian@jboss.org">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeployerWithOutput<T> implements FileMatcher
 {
+   /** The allow multiple fiels flag */
+   private boolean allowMultipleFiles;
+
    /**
     * Create a new AbstractVFSParsingDeployer.
     * 
@@ -131,19 +135,66 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
       // Try to find the metadata
       VFSDeploymentUnit vfsDeploymentUnit = (VFSDeploymentUnit) unit;
       List<VirtualFile> files = vfsDeploymentUnit.getMetaDataFiles(name, suffix);
-      if (files.size() == 0)
-         return null;
-      
-      // TODO JBMICROCONT-184 remove this limitation
-      if (files.size() > 1)
-         throw new DeploymentException("Only one file is allowed, found=" + files);
 
-      VirtualFile file = files.get(0);
-      
-      T result = parse(vfsDeploymentUnit, file, root);
-      if (result != null)
-         init(vfsDeploymentUnit, result, file);
-      return result;
+      if (files.size() == 0)
+      {
+         return null;
+      }
+      else if (files.size() > 1)
+      {
+         return handleMultipleFiles(vfsDeploymentUnit, root, files);
+      }
+      else
+      {
+         VirtualFile file = files.get(0);
+
+         T result = parse(vfsDeploymentUnit, file, root);
+         if (result != null)
+            init(vfsDeploymentUnit, result, file);
+         return result;
+      }
+   }
+
+   /**
+    * Handle multiple files.
+    *
+    * @param unit the vfs deployment unit
+    * @param root possibly null pre-existing root
+    * @param files the matching files
+    * @return null or merged single result
+    * @throws Exception for any error
+    */
+   protected T handleMultipleFiles(VFSDeploymentUnit unit, T root, List<VirtualFile> files) throws Exception
+   {
+      if (allowsMultipleFiles(files) == false)
+         throw new IllegalArgumentException("Multiple matching files not allowed: " + files);
+
+      for (VirtualFile file : files)
+      {
+         T result = parse(unit, file, root);
+         if (result != null)
+         {
+            init(unit, result, file);
+            unit.addAttachment(file.toURL().toString(), result, getOutput());
+         }
+      }
+
+      return null;
+   }
+
+   /**
+    * Check if we allow multiple files.
+    *
+    * Make sure you have deployers down
+    * the chain that will handle generated
+    * multiple attachments if this method returns true.
+    * 
+    * @param files the matching files
+    * @return true if we allow, false otherwise
+    */
+   protected boolean allowsMultipleFiles(List<VirtualFile> files)
+   {
+      return allowMultipleFiles;
    }
 
    /**
@@ -167,5 +218,15 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
     */
    protected void init(VFSDeploymentUnit unit, T metaData, VirtualFile file) throws Exception
    {
+   }
+
+   /**
+    * Set allow multiple files.
+    *
+    * @param allowMultipleFiles the allow multiple files flag
+    */
+   public void setAllowMultipleFiles(boolean allowMultipleFiles)
+   {
+      this.allowMultipleFiles = allowMultipleFiles;
    }
 }

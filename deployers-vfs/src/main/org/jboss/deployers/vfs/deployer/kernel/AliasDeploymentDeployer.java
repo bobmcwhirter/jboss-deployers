@@ -31,6 +31,8 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.kernel.spi.deployment.KernelDeployment;
 
 /**
+ * Handle alias components.
+ *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
 public class AliasDeploymentDeployer extends AbstractComponentDeployer<KernelDeployment, NamedAliasMetaData>

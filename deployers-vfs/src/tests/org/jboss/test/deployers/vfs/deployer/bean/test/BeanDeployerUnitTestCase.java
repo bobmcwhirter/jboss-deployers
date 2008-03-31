@@ -33,6 +33,7 @@ import org.jboss.kernel.Kernel;
  * BeanDeployerUnitTestCase.
  * 
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public class BeanDeployerUnitTestCase extends AbstractDeployerUnitTestCase
@@ -77,4 +78,15 @@ public class BeanDeployerUnitTestCase extends AbstractDeployerUnitTestCase
       assertNull(controller.getContext("Test", null));
    }
 
+   public void testMultipleMatchingFiles() throws Exception
+   {
+      VFSDeployment context = createDeployment("/bean", "multiple/test.jar");
+      assertDeploy(context);
+      assertNotNull(controller.getInstalledContext("Test1"));
+      assertNotNull(controller.getInstalledContext("Test2"));
+
+      assertUndeploy(context);
+      assertNull(controller.getContext("Test2", null));
+      assertNull(controller.getContext("Test1", null));
+   }
 }
