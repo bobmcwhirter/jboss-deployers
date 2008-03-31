@@ -23,13 +23,13 @@ package org.jboss.test.deployers.vfs.deployer.bean.test;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.vfs.deployer.kernel.BeanDeployer;
 import org.jboss.deployers.vfs.deployer.kernel.BeanMetaDataDeployer;
 import org.jboss.deployers.vfs.deployer.kernel.KernelDeploymentDeployer;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.kernel.Kernel;
+import org.jboss.test.deployers.vfs.deployer.AbstractDeployerUnitTest;
 import org.jboss.test.deployers.vfs.deployer.bean.support.Simple;
 import org.jboss.test.deployers.vfs.deployer.bean.support.TestClassLoaderDeployer;
 
@@ -39,7 +39,7 @@ import org.jboss.test.deployers.vfs.deployer.bean.support.TestClassLoaderDeploye
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
  * @version $Revision: 1.1 $
  */
-public class BeanDeployerClassLoaderUnitTestCase extends AbstractDeployerUnitTestCase
+public class BeanDeployerClassLoaderUnitTestCase extends AbstractDeployerUnitTest
 {
    public static Test suite()
    {

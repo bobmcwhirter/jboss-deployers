@@ -211,6 +211,16 @@ public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsi
       return false;
    }
 
+   /**
+    * Do we have a single name set.
+    *
+    * @return true is just one matching name is set
+    */
+   private boolean hasSingleName()
+   {
+      return names == null || names.size() == 1;
+   }
+
    public void deploy(DeploymentUnit unit) throws DeploymentException
    {
       if (accepts(unit) == false)
@@ -285,16 +295,6 @@ public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsi
    protected void createMetaData(DeploymentUnit unit, String name, String suffix, String key) throws DeploymentException
    {
       createMetaData(unit, Collections.singleton(name), suffix, key);
-   }
-
-   /**
-    * Do we have a single name set.
-    *
-    * @return true is just one matching name is set
-    */
-   private boolean hasSingleName()
-   {
-      return names == null || names.size() == 1;
    }
 
    /**

@@ -19,12 +19,12 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.test.deployers.vfs.deployer.jaxp;
+package org.jboss.test.deployers.vfs.deployer;
 
+import org.jboss.test.deployers.BaseDeployersVFSTest;
 import org.jboss.deployers.client.spi.DeployerClient;
 import org.jboss.deployers.client.spi.Deployment;
 import org.jboss.deployers.spi.DeploymentState;
-import org.jboss.test.deployers.BaseDeployersVFSTest;
 
 /**
  * DeployerClientTestCase.
@@ -32,11 +32,11 @@ import org.jboss.test.deployers.BaseDeployersVFSTest;
  *
  * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  */
-public abstract class DeployerClientTestCase extends BaseDeployersVFSTest
+public abstract class DeployerClientTest extends BaseDeployersVFSTest
 {
    protected DeployerClient main;
 
-   public DeployerClientTestCase(String name)
+   public DeployerClientTest(String name)
    {
       super(name);
    }

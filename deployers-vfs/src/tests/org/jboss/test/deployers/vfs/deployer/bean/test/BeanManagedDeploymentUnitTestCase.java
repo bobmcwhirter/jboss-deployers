@@ -25,7 +25,6 @@ import java.util.Map;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.jboss.deployers.vfs.deployer.kernel.BeanDeployer;
 import org.jboss.deployers.vfs.deployer.kernel.BeanMetaDataDeployer;
 import org.jboss.deployers.vfs.deployer.kernel.KernelDeploymentDeployer;
@@ -36,6 +35,7 @@ import org.jboss.managed.api.ManagedProperty;
 import org.jboss.managed.api.factory.ManagedObjectFactory;
 import org.jboss.metatype.api.values.CollectionValue;
 import org.jboss.metatype.api.values.GenericValue;
+import org.jboss.test.deployers.vfs.deployer.AbstractDeployerUnitTest;
 
 /**
  * Tests of bean deployment ManagedObject/ManagedDeployment creation.
@@ -43,7 +43,7 @@ import org.jboss.metatype.api.values.GenericValue;
  * @author Scott.Stark@jboss.org
  * @version $Revision:$
  */
-public class BeanManagedDeploymentUnitTestCase extends AbstractDeployerUnitTestCase
+public class BeanManagedDeploymentUnitTestCase extends AbstractDeployerUnitTest
 {
    public static Test suite()
    {

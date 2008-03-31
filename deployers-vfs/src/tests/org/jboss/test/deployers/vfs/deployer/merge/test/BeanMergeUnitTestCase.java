@@ -27,6 +27,7 @@ import org.jboss.deployers.vfs.deployer.kernel.BeanMetaDataDeployer;
 import org.jboss.deployers.vfs.deployer.kernel.KernelDeploymentDeployer;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.kernel.Kernel;
+import org.jboss.test.deployers.vfs.deployer.AbstractDeployerUnitTest;
 import org.jboss.test.deployers.vfs.deployer.merge.support.TestBeanMergeDeployer;
 
 /**
@@ -34,7 +35,7 @@ import org.jboss.test.deployers.vfs.deployer.merge.support.TestBeanMergeDeployer
  *
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  */
-public class BeanMergeUnitTestCase extends AbstractDeployerUnitTestCase
+public class BeanMergeUnitTestCase extends AbstractDeployerUnitTest
 {
    public static Test suite()
    {

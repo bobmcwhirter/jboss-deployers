@@ -31,7 +31,7 @@ import org.jboss.deployers.spi.attachments.MutableAttachments;
 import org.jboss.deployers.vfs.plugins.structure.file.FileStructure;
 import org.jboss.deployers.vfs.plugins.structure.jar.JARStructure;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
-import org.jboss.test.deployers.vfs.deployer.jaxp.DeployerClientTestCase;
+import org.jboss.test.deployers.vfs.deployer.DeployerClientTest;
 import org.jboss.test.deployers.vfs.deployer.jaxp.support.SomeBean;
 import org.jboss.test.deployers.vfs.deployer.jaxp.support.TestXmlDeployer;
 import org.w3c.dom.DOMImplementation;
@@ -44,7 +44,7 @@ import org.w3c.dom.Element;
  * @author Scott.Stark@jboss.org
  * @version $Revision: 60707 $
  */
-public class JAXPDeployerUnitTestCase extends DeployerClientTestCase
+public class JAXPDeployerUnitTestCase extends DeployerClientTest
 {
    public static Test suite()
    {

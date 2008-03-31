@@ -31,13 +31,14 @@ import org.jboss.deployers.vfs.deployer.kernel.DeploymentAliasMetaDataDeployer;
 import org.jboss.deployers.vfs.deployer.kernel.KernelDeploymentDeployer;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.kernel.Kernel;
+import org.jboss.test.deployers.vfs.deployer.AbstractDeployerUnitTest;
 
 /**
  * AliasDeployerUnitTestCase.
  *
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  */
-public class AliasDeployerUnitTestCase extends AbstractDeployerUnitTestCase
+public class AliasDeployerUnitTestCase extends AbstractDeployerUnitTest
 {
    public static Test suite()
    {

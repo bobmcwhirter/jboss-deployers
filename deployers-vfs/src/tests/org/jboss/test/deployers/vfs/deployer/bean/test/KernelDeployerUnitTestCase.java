@@ -33,6 +33,7 @@ import org.jboss.deployers.vfs.deployer.kernel.BeanMetaDataDeployer;
 import org.jboss.deployers.vfs.deployer.kernel.KernelDeploymentDeployer;
 import org.jboss.kernel.Kernel;
 import org.jboss.kernel.plugins.deployment.AbstractKernelDeployment;
+import org.jboss.test.deployers.vfs.deployer.AbstractDeployerUnitTest;
 import org.jboss.test.deployers.vfs.deployer.bean.support.Simple;
 import org.jboss.test.deployers.vfs.deployer.bean.support.TestBeanDeployer;
 
@@ -42,7 +43,7 @@ import org.jboss.test.deployers.vfs.deployer.bean.support.TestBeanDeployer;
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
  * @version $Revision: 1.1 $
  */
-public class KernelDeployerUnitTestCase extends AbstractDeployerUnitTestCase
+public class KernelDeployerUnitTestCase extends AbstractDeployerUnitTest
 {
    public static Test suite()
    {

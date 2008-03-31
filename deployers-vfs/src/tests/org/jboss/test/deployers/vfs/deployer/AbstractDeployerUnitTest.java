@@ -19,25 +19,24 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.test.deployers.vfs.deployer.bean.test;
+package org.jboss.test.deployers.vfs.deployer;
 
 import org.jboss.deployers.vfs.plugins.structure.file.FileStructure;
 import org.jboss.deployers.vfs.plugins.structure.jar.JARStructure;
 import org.jboss.kernel.Kernel;
 import org.jboss.kernel.plugins.bootstrap.basic.BasicBootstrap;
 import org.jboss.kernel.spi.dependency.KernelController;
-import org.jboss.test.deployers.vfs.deployer.jaxp.DeployerClientTestCase;
 
 /**
  * AbstractDeployerUnitTestCase.
  *
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  */
-public abstract class AbstractDeployerUnitTestCase extends DeployerClientTestCase
+public abstract class AbstractDeployerUnitTest extends DeployerClientTest
 {
    protected KernelController controller;
 
-   public AbstractDeployerUnitTestCase(String name) throws Throwable
+   public AbstractDeployerUnitTest(String name) throws Throwable
    {
       super(name);
    }

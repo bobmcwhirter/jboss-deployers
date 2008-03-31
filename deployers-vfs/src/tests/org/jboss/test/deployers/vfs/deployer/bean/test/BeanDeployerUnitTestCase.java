@@ -28,6 +28,7 @@ import org.jboss.deployers.vfs.deployer.kernel.BeanMetaDataDeployer;
 import org.jboss.deployers.vfs.deployer.kernel.KernelDeploymentDeployer;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.kernel.Kernel;
+import org.jboss.test.deployers.vfs.deployer.AbstractDeployerUnitTest;
 
 /**
  * BeanDeployerUnitTestCase.
@@ -36,7 +37,7 @@ import org.jboss.kernel.Kernel;
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
-public class BeanDeployerUnitTestCase extends AbstractDeployerUnitTestCase
+public class BeanDeployerUnitTestCase extends AbstractDeployerUnitTest
 {
    public static Test suite()
    {
