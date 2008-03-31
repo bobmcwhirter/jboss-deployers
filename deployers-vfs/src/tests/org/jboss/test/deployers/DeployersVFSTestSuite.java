@@ -29,6 +29,7 @@ import org.jboss.test.deployers.vfs.classloader.ClassLoaderTestSuite;
 import org.jboss.test.deployers.vfs.deployer.bean.BeanDeployerTestSuite;
 import org.jboss.test.deployers.vfs.deployer.jaxp.VFSDeployerTestSuite;
 import org.jboss.test.deployers.vfs.deployer.nonmetadata.NonMetadataDeployersTestSuite;
+import org.jboss.test.deployers.vfs.deployer.merge.MergeDeployerTestSuite;
 import org.jboss.test.deployers.vfs.deploymentfactory.VFSDeploymentFactoryTestSuite;
 import org.jboss.test.deployers.vfs.metadata.VFSMetaDataTestSuite;
 import org.jboss.test.deployers.vfs.structure.VFSStructureTestSuite;
@@ -65,6 +66,7 @@ public class DeployersVFSTestSuite extends TestSuite
       suite.addTest(ClassLoaderTestSuite.suite());
       suite.addTest(VFSMatchersTestSuite.suite());
       suite.addTest(JBossXBDeployersTestSuite.suite());
+      suite.addTest(MergeDeployerTestSuite.suite());
 
       return suite;
    }

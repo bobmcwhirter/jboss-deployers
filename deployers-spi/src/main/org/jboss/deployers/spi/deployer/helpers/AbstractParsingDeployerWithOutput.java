@@ -22,7 +22,9 @@
 package org.jboss.deployers.spi.deployer.helpers;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.managed.ManagedObjectCreator;
@@ -37,14 +39,15 @@ import org.jboss.managed.plugins.factory.ManagedObjectFactoryBuilder;
  * 
  * @param <T> the type of output
  * @author <a href="adrian@jboss.org">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @author Scott.Stark@jboss.org
  * @version $Revision: 1.1 $
  */
 public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsingDeployer
    implements ManagedObjectCreator, JarExtensionProvider
 {
-   /** The metadata file name */
-   private String name;
+   /** The metadata file names */
+   private Set<String> names;
    
    /** The suffix */
    private String suffix;
@@ -85,7 +88,13 @@ public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsi
     */
    public String getName()
    {
-      return name;
+      if (names == null || names.isEmpty())
+         return null;
+
+      if (names.size() > 1)
+         throw new IllegalArgumentException("Use getNames since more than one name is set: " + names);
+
+      return names.iterator().next();
    }
 
    /**
@@ -95,7 +104,30 @@ public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsi
     */
    public void setName(String name)
    {
-      this.name = name;
+      if (names != null)
+         throw new IllegalArgumentException("Names already set.");
+
+      this.names = Collections.singleton(name);
+   }
+
+   /**
+    * Get the names.
+    *
+    * @return the names.
+    */
+   public Set<String> getNames()
+   {
+      return names;
+   }
+
+   /**
+    * Set the names.
+    *
+    * @param names the names.
+    */
+   public void setNames(Set<String> names)
+   {
+      this.names = names;
    }
 
    /**
@@ -183,7 +215,11 @@ public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsi
    {
       if (accepts(unit) == false)
          return;
-      createMetaData(unit, name, suffix);
+
+      if (hasSingleName())
+         createMetaData(unit, getName(), suffix);
+      else
+         createMetaData(unit, names, suffix);
    }
 
    /**
@@ -224,6 +260,19 @@ public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsi
    }
    
    /**
+    * Create some meta data. Calls createMetaData(unit, name, suffix, getDeploymentType().getName()).
+    *
+    * @param unit the deployment unit
+    * @param names the names
+    * @param suffix the suffix
+    * @throws DeploymentException for any error
+    */
+   protected void createMetaData(DeploymentUnit unit, Set<String> names, String suffix) throws DeploymentException
+   {
+      createMetaData(unit, names, suffix, getOutput().getName());
+   }
+
+   /**
     * Create some meta data. Invokes parse(unit, name, suffix) if there is not already a
     * metadata
     * 
@@ -235,6 +284,31 @@ public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsi
     */
    protected void createMetaData(DeploymentUnit unit, String name, String suffix, String key) throws DeploymentException
    {
+      createMetaData(unit, Collections.singleton(name), suffix, key);
+   }
+
+   /**
+    * Do we have a single name set.
+    *
+    * @return true is just one matching name is set
+    */
+   private boolean hasSingleName()
+   {
+      return names == null || names.size() == 1;
+   }
+
+   /**
+    * Create some meta data. Invokes parse(unit, name, suffix) if there is not already a
+    * metadata
+    *
+    * @param unit the deployment unit
+    * @param names the names
+    * @param suffix the suffix
+    * @param key the key into the managed objects
+    * @throws DeploymentException for any error
+    */
+   protected void createMetaData(DeploymentUnit unit, Set<String> names, String suffix, String key) throws DeploymentException
+   {
       // First see whether it already exists
       T result = getMetaData(unit, key);
       if (result != null && allowsReparse() == false)
@@ -244,9 +318,19 @@ public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsi
       try
       {
          if (suffix == null)
-            result = parse(unit, name, result);
+         {
+            if (hasSingleName())
+               result = parse(unit, getName(), result);
+            else
+               result = parse(unit, names, result);
+         }
          else
-            result = parse(unit, name, suffix, result);
+         {
+            if (hasSingleName())
+               result = parse(unit, getName(), suffix, result);
+            else
+               result = parse(unit, names, suffix, result);
+         }
       }
       catch (Exception e)
       {
@@ -273,6 +357,17 @@ public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsi
    protected abstract T parse(DeploymentUnit unit, String name, T root) throws Exception;
    
    /**
+    * Parse an multiple exact file names
+    *
+    * @param unit the unit
+    * @param names the exact names to match
+    * @param root - possibly null pre-existing root
+    * @return the metadata or null if it doesn't exist
+    * @throws Exception for any error
+    */
+   protected abstract T parse(DeploymentUnit unit, Set<String> names, T root) throws Exception;
+
+   /**
     * Parse an exact file name or look for a suffix
     * 
     * @param unit the unit
@@ -283,6 +378,18 @@ public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsi
     * @throws Exception for any error
     */
    protected abstract T parse(DeploymentUnit unit, String name, String suffix, T root) throws Exception;
+
+   /**
+    * Parse exact file names or look for a suffix
+    *
+    * @param unit the unit
+    * @param names the exact names to match
+    * @param suffix the suffix to match
+    * @param root - possibly null pre-existing root
+    * @return the metadata or null if it doesn't exist
+    * @throws Exception for any error
+    */
+   protected abstract T parse(DeploymentUnit unit, Set<String> names, String suffix, T root) throws Exception;
 
    /**
     * Build managed object.

@@ -22,6 +22,8 @@
 package org.jboss.deployers.vfs.spi.deployer;
 
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 import java.io.InputStream;
 import java.io.IOException;
 
@@ -60,7 +62,7 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
       String fileName = file.getName();
       String suffix = getSuffix();
       if (suffix == null)
-         return fileName.equals(getName());
+         return getNames() != null && getNames().contains(fileName);
       else
          return fileName.endsWith(suffix);
    }
@@ -124,6 +126,31 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
       return result;
    }
 
+   protected T parse(DeploymentUnit unit, Set<String> names, T root) throws Exception
+   {
+      if (names == null || names.isEmpty())
+         throw new IllegalArgumentException("Null or empty names.");
+
+      VFSDeploymentUnit  vfsDeploymentUnit = (VFSDeploymentUnit)unit;
+
+      Set<VirtualFile> files = new HashSet<VirtualFile>();
+      Set<String> missingFiles = new HashSet<String>();
+
+      for (String name : names)
+      {
+         VirtualFile file = vfsDeploymentUnit.getMetaDataFile(name);
+         if (file != null)
+            files.add(file);
+         else
+            missingFiles.add(name);
+      }
+
+      if (missingFiles.size() == names.size())
+         return null;
+
+      return mergeFiles(vfsDeploymentUnit, root, files, missingFiles);
+   }
+
    @Override
    protected T parse(DeploymentUnit unit, String name, String suffix, T root) throws Exception
    {
@@ -153,6 +180,47 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
             init(vfsDeploymentUnit, result, file);
          return result;
       }
+   }
+
+   protected T parse(DeploymentUnit unit, Set<String> names, String suffix, T root) throws Exception
+   {
+      if (names == null || names.isEmpty())
+         throw new IllegalArgumentException("Null or empty names.");
+
+      VFSDeploymentUnit  vfsDeploymentUnit = (VFSDeploymentUnit)unit;
+
+      Set<VirtualFile> files = new HashSet<VirtualFile>();
+      Set<String> missingFiles = new HashSet<String>();
+
+      for (String name : names)
+      {
+         List<VirtualFile> matched = vfsDeploymentUnit.getMetaDataFiles(name, suffix);
+         if (matched != null && matched.isEmpty() == false)
+            files.addAll(matched);
+         else
+            missingFiles.add(name);
+      }
+
+      if (missingFiles.size() == names.size())
+         return null;
+
+      return mergeFiles(vfsDeploymentUnit, root, files, missingFiles);
+   }
+
+
+   /**
+    * Merge files into one piece of metatdata
+    *
+    * @param unit the unit
+    * @param root possibly null pre-existing root
+    * @param files matching meta files
+    * @param missingFiles file names that are missing matching file
+    * @return merged metadata
+    * @throws Exception for any error
+    */
+   protected T mergeFiles(VFSDeploymentUnit unit, T root, Set<VirtualFile> files, Set<String> missingFiles) throws Exception
+   {
+      return null;
    }
 
    /**
