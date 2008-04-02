@@ -19,37 +19,35 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.test.deployers.main;
+package org.jboss.test.deployers.main.support;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
-import org.jboss.test.deployers.main.test.DeployerCheckCompleteTestCase;
-import org.jboss.test.deployers.main.test.DeployerSingleDeploymentTestCase;
-import org.jboss.test.deployers.main.test.DeployerIncompleteDeploymentsTestCase;
-import org.jboss.test.deployers.main.test.CycleCheckCompleteTestCase;
+import org.jboss.dependency.spi.Controller;
+import org.jboss.dependency.spi.ControllerContext;
+import org.jboss.dependency.spi.ControllerContextActions;
+import org.jboss.dependency.spi.DependencyItem;
 
 /**
- * Deployers Main Test Suite.
+ * Test attachments deployer.
  *
- * @author <a href="ales.justin@jboss.com">Ales Justin</a>
+ * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class DeployersMainTestSuite extends TestSuite
+public class OrderedTestAttachmentDeployer extends TestAttachmentDeployer
 {
-   public static void main(String[] args)
+   public OrderedTestAttachmentDeployer(Controller controller)
    {
-      TestRunner.run(suite());
+      super(controller);
    }
 
-   public static Test suite()
+   protected ControllerContext createControllerContext(Object name, ControllerContextActions actions)
    {
-      TestSuite suite = new TestSuite("Deployers Main Tests");
+      return new OrderedControllerContext(name, actions);
+   }
 
-      suite.addTest(DeployerSingleDeploymentTestCase.suite());
-      suite.addTest(DeployerCheckCompleteTestCase.suite());
-      suite.addTest(DeployerIncompleteDeploymentsTestCase.suite());
-      suite.addTest(CycleCheckCompleteTestCase.suite());
-
-      return suite;
+   protected DependencyItem createDependencyItem(Object name, Object dependency)
+   {
+      TestDemandDependencyItem item = new TestDemandDependencyItem(name);
+//      TestDemandDependencyItem item = new TestDemandDependencyItem(name, dependency);
+      item.setDemand(dependency);
+      return item;
    }
 }

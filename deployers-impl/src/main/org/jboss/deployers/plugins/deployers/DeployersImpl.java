@@ -59,6 +59,7 @@ import org.jboss.kernel.spi.dependency.KernelController;
 import org.jboss.logging.Logger;
 import org.jboss.managed.api.ManagedObject;
 import org.jboss.metadata.spi.repository.MutableMetaDataRepository;
+import org.jboss.util.id.GUID;
 
 /**
  * DeployersImpl.
@@ -680,7 +681,8 @@ public class DeployersImpl implements Deployers, ControllerContextActions
          contextsInError.put(context.getName().toString(), getRootCause(context.getError()));
       else
       {
-         String name = context.getName().toString();
+         Object contextName = context.getName();
+         String name = contextName.toString();
          Set<MissingDependency> dependencies = new HashSet<MissingDependency>();
          DependencyInfo dependsInfo = context.getDependencyInfo();
          for (DependencyItem item : dependsInfo.getIDependOn(null))
@@ -690,32 +692,53 @@ public class DeployersImpl implements Deployers, ControllerContextActions
                String dependency;
                ControllerState actualState = null;
                String actualStateString;
+
                Object iDependOn = item.getIDependOn();
-               if (iDependOn == null)
+               if (contextName.equals(iDependOn) == false)
                {
-                  dependency = "<UNKNOWN>";
-                  actualStateString = "** UNRESOLVED " + item.toHumanReadableString() + " **";
-               }
-               else
-               {
-                  dependency = iDependOn.toString();
-                  ControllerContext other = controller.getContext(iDependOn, null);
-                  if (other == null)
-                     actualStateString = "** NOT FOUND " + item.toHumanReadableString() + " **";
+                  boolean includeDependency = true;
+
+                  if (iDependOn == null)
+                  {
+                     dependency = "<UNKNOWN " + GUID.asString() + ">";
+                     actualStateString = "** UNRESOLVED " + item.toHumanReadableString() + " **";
+                  }
                   else
                   {
-                     actualState = other.getState();
-                     actualStateString = actualState.getStateString();
+                     dependency = iDependOn.toString();
+                     ControllerContext other = controller.getContext(iDependOn, null);
+                     if (other == null)
+                        actualStateString = "** NOT FOUND " + item.toHumanReadableString() + " **";
+                     else
+                     {
+                        actualState = other.getState();
+                        actualStateString = actualState.getStateString();
+                        if (actualState != null && actualState.equals(ControllerState.ERROR) == false)
+                        {
+                           ControllerState dependentState = item.getDependentState();
+                           if (dependentState == null)
+                              dependentState = ControllerState.INSTALLED;
+
+                           int dependentIndex = states.indexOf(dependentState);
+                           int actualIndex = states.indexOf(actualState);
+                           if (actualIndex >= dependentIndex)
+                              includeDependency = false;
+                        }
+                     }
                   }
-               }
-               ControllerState requiredState = item.getWhenRequired();
-               String requiredStateString = requiredState.getStateString();
-               int required = states.indexOf(requiredState);
-               int actual = actualState == null ? -1 : states.indexOf(actualState);
-               if (required > actual)
-               {
-                  MissingDependency missing = new MissingDependency(name, dependency, requiredStateString, actualStateString);
-                  dependencies.add(missing);
+
+                  if (includeDependency)
+                  {
+                     ControllerState requiredState = item.getWhenRequired();
+                     String requiredStateString = requiredState.getStateString();
+                     int required = states.indexOf(requiredState);
+                     int actual = actualState == null ? -1 : states.indexOf(actualState);
+                     if (required > actual)
+                     {
+                        MissingDependency missing = new MissingDependency(name, dependency, requiredStateString, actualStateString);
+                        dependencies.add(missing);
+                     }
+                  }
                }
             }
          }

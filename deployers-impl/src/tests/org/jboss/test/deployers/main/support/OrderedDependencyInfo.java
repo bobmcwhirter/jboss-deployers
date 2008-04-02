@@ -21,43 +21,52 @@
 */
 package org.jboss.test.deployers.main.support;
 
-import java.io.Serializable;
+import java.util.Set;
+import java.util.LinkedHashSet;
+
+import org.jboss.dependency.plugins.AbstractDependencyInfo;
+import org.jboss.dependency.spi.DependencyItem;
+import org.jboss.dependency.spi.Controller;
+import org.jboss.dependency.spi.ControllerState;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class TestAttachment implements Serializable
+public class OrderedDependencyInfo extends AbstractDependencyInfo
 {
-   private static final long serialVersionUID = -1034970512310610762L;
+   private Set<DependencyItem> items = new LinkedHashSet<DependencyItem>();
 
-   private Object name;
-   private Object dependency;
-   private boolean install;
-
-   public TestAttachment(Object name, Object dependency)
+   public void addIDependOn(DependencyItem dependency)
    {
-      this(name, dependency, true);
+      super.addIDependOn(dependency);
+      items.add(dependency);
    }
 
-   public TestAttachment(Object name, Object dependency, boolean install)
+   public void removeIDependOn(DependencyItem dependency)
    {
-      this.name = name;
-      this.dependency = dependency;
-      this.install = install;
+      super.removeIDependOn(dependency);
+      items.remove(dependency);
    }
 
-   public Object getName()
+   public Set<DependencyItem> getUnresolvedDependencies()
    {
-      return name;
+      return items;
    }
 
-   public Object getDependency()
+   public boolean resolveDependencies(Controller controller, ControllerState state)
    {
-      return dependency;
-   }
-
-   public boolean isInstall()
-   {
-      return install;
+      boolean resolved = true;
+      if (items.isEmpty() == false)
+      {
+         for (DependencyItem item : items)
+         {
+            if (state.equals(item.getWhenRequired()) && item.resolve(controller) == false)
+            {
+               resolved = false;
+               break;
+            }
+         }
+      }
+      return resolved;
    }
 }

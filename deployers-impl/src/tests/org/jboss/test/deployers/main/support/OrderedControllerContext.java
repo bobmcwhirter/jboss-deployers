@@ -21,43 +21,46 @@
 */
 package org.jboss.test.deployers.main.support;
 
-import java.io.Serializable;
+import java.util.Set;
+
+import org.jboss.dependency.plugins.AbstractControllerContext;
+import org.jboss.dependency.spi.ControllerContextActions;
+import org.jboss.dependency.spi.DependencyInfo;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class TestAttachment implements Serializable
+public class OrderedControllerContext extends AbstractControllerContext
 {
-   private static final long serialVersionUID = -1034970512310610762L;
+   private DependencyInfo orderedDependencyInfo = new OrderedDependencyInfo();
 
-   private Object name;
-   private Object dependency;
-   private boolean install;
-
-   public TestAttachment(Object name, Object dependency)
+   public OrderedControllerContext(Object name, ControllerContextActions actions)
    {
-      this(name, dependency, true);
+      super(name, actions);
    }
 
-   public TestAttachment(Object name, Object dependency, boolean install)
+   public OrderedControllerContext(Object name, ControllerContextActions actions, DependencyInfo dependencies)
    {
-      this.name = name;
-      this.dependency = dependency;
-      this.install = install;
+      super(name, actions, dependencies);
    }
 
-   public Object getName()
+   public OrderedControllerContext(Object name, ControllerContextActions actions, DependencyInfo dependencies, Object target)
    {
-      return name;
+      super(name, actions, dependencies, target);
    }
 
-   public Object getDependency()
+   public OrderedControllerContext(Object name, Set<Object> aliases, ControllerContextActions actions, DependencyInfo dependencies, Object target)
    {
-      return dependency;
+      super(name, aliases, actions, dependencies, target);
    }
 
-   public boolean isInstall()
+   public OrderedControllerContext(Object name, Object target)
    {
-      return install;
+      super(name, target);
+   }
+
+   public DependencyInfo getDependencyInfo()
+   {
+      return orderedDependencyInfo;
    }
 }

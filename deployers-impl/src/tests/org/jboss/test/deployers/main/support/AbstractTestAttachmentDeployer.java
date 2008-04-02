@@ -28,6 +28,7 @@ import org.jboss.dependency.spi.ControllerContext;
 import org.jboss.dependency.spi.ControllerContextActions;
 import org.jboss.dependency.spi.ControllerState;
 import org.jboss.dependency.spi.DependencyInfo;
+import org.jboss.dependency.spi.DependencyItem;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.helpers.AbstractRealDeployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
@@ -55,17 +56,21 @@ public abstract class AbstractTestAttachmentDeployer extends AbstractRealDeploye
       if (attachment != null)
       {
          Object name = attachment.getName();
-         AbstractControllerContext context = new AbstractControllerContext(name, actions);
+         ControllerContext context = controller.getContext(name, null);
+         if (context == null)
+            context = createControllerContext(name, actions);
+         
          DependencyInfo dependencyInfo = context.getDependencyInfo();
          Object dependency = attachment.getDependency();
          if (dependency != null)
          {
-            AbstractDependencyItem item = new AbstractDependencyItem(name, dependency, ControllerState.INSTALLED, null);
+            DependencyItem item = createDependencyItem(name, dependency);
             dependencyInfo.addIDependOn(item);
          }
          try
          {
-            controller.install(context);
+            if (attachment.isInstall())
+               controller.install(context);
          }
          catch (Throwable t)
          {
@@ -79,8 +84,19 @@ public abstract class AbstractTestAttachmentDeployer extends AbstractRealDeploye
       TestAttachment attachment = unit.getAttachment(TestAttachment.class);
       if (attachment != null)
       {
-         controller.uninstall(attachment.getName());
+         if (attachment.isInstall())
+            controller.uninstall(attachment.getName());
       }
+   }
+
+   protected ControllerContext createControllerContext(Object name, ControllerContextActions actions)
+   {
+      return new AbstractControllerContext(name, actions);
+   }
+
+   protected DependencyItem createDependencyItem(Object name, Object dependency)
+   {
+      return new AbstractDependencyItem(name, dependency, ControllerState.INSTALLED, null);
    }
 
    private class TestControllerContextActions implements ControllerContextActions
