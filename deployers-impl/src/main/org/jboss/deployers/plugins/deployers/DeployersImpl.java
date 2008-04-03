@@ -59,7 +59,6 @@ import org.jboss.kernel.spi.dependency.KernelController;
 import org.jboss.logging.Logger;
 import org.jboss.managed.api.ManagedObject;
 import org.jboss.metadata.spi.repository.MutableMetaDataRepository;
-import org.jboss.util.id.GUID;
 
 /**
  * DeployersImpl.
@@ -700,7 +699,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
 
                   if (iDependOn == null)
                   {
-                     dependency = "<UNKNOWN " + GUID.asString() + ">";
+                     dependency = "<UNKNOWN " + item.getName() + ">";
                      actualStateString = "** UNRESOLVED " + item.toHumanReadableString() + " **";
                   }
                   else

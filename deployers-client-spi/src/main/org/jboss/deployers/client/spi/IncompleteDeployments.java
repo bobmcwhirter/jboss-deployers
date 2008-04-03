@@ -24,11 +24,12 @@ package org.jboss.deployers.client.spi;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.HashMap;
 
 /**
  * IncompleteDeployments.
@@ -200,12 +201,35 @@ public class IncompleteDeployments implements Serializable
    }
 
    /**
+    * Merge root causes for the same key.
+    *
+    * @param rootCauses the root causes map
+    * @param key the possible root cause key
+    * @param value the possible root cause value
+    */
+   private static void mergeRootCauses(Map<String, Set<String>> rootCauses, String key, String value)
+   {
+      Set<String> values = rootCauses.get(key);
+      if (values == null)
+      {
+         values = Collections.singleton(value);
+         rootCauses.put(key, values);
+      }
+      else
+      {
+         values = new HashSet<String>(values);
+         values.add(value);
+         rootCauses.put(key, values);
+      }
+   }
+
+   /**
     * Calculate upfront context errors.
     */
    protected void calculateContextsError()
    {
       // Popluate the potential root causes
-      Map<String, String> rootCauses = new HashMap<String, String>();
+      Map<String, Set<String>> rootCauses = new HashMap<String, Set<String>>();
 
       // Missing dependencies are root causes
       Map<String, Set<MissingDependency>> contextsMissingDependencies = getContextsMissingDependencies();
@@ -214,7 +238,7 @@ public class IncompleteDeployments implements Serializable
          for (Map.Entry<String, Set<MissingDependency>> entry : contextsMissingDependencies.entrySet())
          {
             for (MissingDependency dependency : entry.getValue())
-               rootCauses.put(dependency.getDependency(), dependency.getActualState());
+               mergeRootCauses(rootCauses, dependency.getDependency(), dependency.getActualState());
          }
       }
 
@@ -226,9 +250,9 @@ public class IncompleteDeployments implements Serializable
          {
             Throwable t = entry.getValue();
             if (t == null)
-               rootCauses.put(entry.getKey(), "** UNKNOWN ERROR **");
+               mergeRootCauses(rootCauses, entry.getKey(), "** UNKNOWN ERROR **");
             else
-               rootCauses.put(entry.getKey(), t.toString());
+               mergeRootCauses(rootCauses, entry.getKey(), t.toString());
          }
       }
 
@@ -263,8 +287,22 @@ public class IncompleteDeployments implements Serializable
       if (rootCauses.isEmpty() == false)
       {
          buffer.append("\n*** CONTEXTS IN ERROR: Name -> Error\n\n");
-         for (Map.Entry<String, String> entry : rootCauses.entrySet())
-            buffer.append(entry.getKey()).append(" -> ").append(entry.getValue()).append("\n\n");
+         for (String key : rootCauses.keySet())
+         {
+            buffer.append(key).append(" -> ");
+            Set<String> values = rootCauses.get(key);
+            boolean first = true;
+            for (String value : values)
+            {
+               if (first == false)
+                  buffer.append(" | ");
+               else
+                  first = false;
+
+               buffer.append(value);
+            }
+            buffer.append("\n\n");
+         }
       }
       contextsInErrorInfo = buffer.toString();
    }
