@@ -3,5 +3,5 @@
   <classpathentry kind="src" path="src/tests" output="target/tests-classes"/>
   <classpathentry kind="output" path="target/classes"/>
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-common-core/2.2.3.GA/jboss-common-core-2.2.3.GA.jar" sourcepath="M2_REPO/org/jboss/jboss-common-core/2.2.3.GA/jboss-common-core-2.2.3.GA-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-common-core/2.2.4.GA/jboss-common-core-2.2.4.GA.jar" sourcepath="M2_REPO/org/jboss/jboss-common-core/2.2.4.GA/jboss-common-core-2.2.4.GA-sources.jar"/>
 </classpath>
