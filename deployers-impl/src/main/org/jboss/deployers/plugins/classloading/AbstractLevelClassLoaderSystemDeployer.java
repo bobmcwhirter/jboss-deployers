@@ -21,6 +21,7 @@
  */
 package org.jboss.deployers.plugins.classloading;
 
+import org.jboss.classloader.spi.ClassLoaderDomain;
 import org.jboss.classloader.spi.ClassLoaderSystem;
 import org.jboss.classloading.spi.dependency.ClassLoading;
 import org.jboss.classloading.spi.dependency.Module;
@@ -136,8 +137,22 @@ public class AbstractLevelClassLoaderSystemDeployer extends AbstractClassLoaderD
       ClassLoader classLoader = unit.getClassLoader();
       try
       {
-         // Remove the classloader
-         system.unregisterClassLoader(classLoader);
+         try
+         {
+            // Remove the classloader
+            system.unregisterClassLoader(classLoader);
+         }
+         finally
+         {
+            // Try to tidy up empty domains
+            String domainName = module.getDeterminedDomainName();
+            if (ClassLoaderSystem.DEFAULT_DOMAIN_NAME.equals(domainName) == false)
+            {
+               ClassLoaderDomain domain = system.getDomain(domainName);
+               if (domain.hasClassLoaders() == false)
+                  system.unregisterDomain(domain);
+            }
+         }
       }
       finally
       {

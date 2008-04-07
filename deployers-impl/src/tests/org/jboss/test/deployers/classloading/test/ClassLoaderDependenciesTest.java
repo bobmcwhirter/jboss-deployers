@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.jboss.classloader.plugins.system.DefaultClassLoaderSystem;
+import org.jboss.classloader.spi.ClassLoaderDomain;
 import org.jboss.classloader.spi.ClassLoaderSystem;
 import org.jboss.classloader.spi.ParentPolicy;
 import org.jboss.classloading.spi.dependency.ClassLoading;
@@ -56,6 +57,8 @@ import org.jboss.test.deployers.classloading.support.MockLevelClassLoaderSystemD
 public abstract class ClassLoaderDependenciesTest extends AbstractDeployerTest
 {
    private static ClassLoadingMetaDataFactory classLoadingMetaDataFactory = ClassLoadingMetaDataFactory.getInstance();
+   
+   private ClassLoaderSystem system;
    
    public static final String NameA = "A";
    public static final String NameB = "B";
@@ -201,11 +204,23 @@ public abstract class ClassLoaderDependenciesTest extends AbstractDeployerTest
       MutableAttachments mutable = (MutableAttachments) attachments.getPredeterminedManagedObjects();
       mutable.addAttachment(ClassLoadingMetaData.class, md);
    }
+   
+   protected ClassLoaderDomain assertDomain(String name) throws Exception
+   {
+      ClassLoaderDomain result = system.getDomain(name);
+      assertNotNull("Expected domain " + name, result);
+      return result;
+   }
+   
+   protected void assertNoDomain(String name) throws Exception
+   {
+      assertNull("Did not expect domain " + name, system.getDomain(name));
+   }
 
    protected DeployerClient getMainDeployer()
    {
       ClassLoading classLoading = new ClassLoading();
-      ClassLoaderSystem system = new DefaultClassLoaderSystem();
+      system = new DefaultClassLoaderSystem();
       system.getDefaultDomain().setParentPolicy(ParentPolicy.BEFORE_BUT_JAVA_ONLY);
 
       deployer1 = new MockClassLoaderDescribeDeployer();

@@ -64,6 +64,7 @@ public class SubDeploymentMockClassLoaderUnitTestCase extends ClassLoaderDepende
       addChild(deployment, "sub");
       
       DeploymentUnit unit = assertDeploy(deployer, deployment);
+      assertNoDomain("top/sub");
       
       ClassLoader cl = unit.getClassLoader();
       assertLoadClass(cl, A.class);
@@ -74,6 +75,7 @@ public class SubDeploymentMockClassLoaderUnitTestCase extends ClassLoaderDepende
       assertLoadClass(clSub, A.class, cl);
       
       assertUndeploy(deployer, deployment);
+      assertNoDomain("top/sub");
    }
 
    public void testSubDeploymentClassLoader() throws Exception
@@ -87,6 +89,7 @@ public class SubDeploymentMockClassLoaderUnitTestCase extends ClassLoaderDepende
       addClassLoadingMetaData(sub, "top/sub", null, A.class, B.class);
       
       DeploymentUnit unit = assertDeploy(deployer, deployment);
+      assertDomain("top/sub");
       
       assertEquals(Arrays.asList("top", "top/sub"), deployer2.deployed);
       assertEquals(NONE, deployer2.undeployed);
@@ -101,6 +104,7 @@ public class SubDeploymentMockClassLoaderUnitTestCase extends ClassLoaderDepende
       assertLoadClass(clSub, B.class);
       
       assertUndeploy(deployer, deployment);
+      assertNoDomain("top/sub");
 
       assertEquals(Arrays.asList("top", "top/sub"), deployer2.deployed);
       assertEquals(Arrays.asList("top/sub", "top"), deployer2.undeployed);
@@ -120,7 +124,9 @@ public class SubDeploymentMockClassLoaderUnitTestCase extends ClassLoaderDepende
       addClassLoadingMetaData(sub2, "top/sub2", null, B.class);
       
       DeploymentUnit unit = assertDeploy(deployer, deployment);
-      
+      assertDomain("top/sub1");
+      assertDomain("top/sub2");
+
       ClassLoader cl = unit.getClassLoader();
       assertLoadClass(cl, A.class);
       assertLoadClassFail(cl, B.class);
@@ -139,6 +145,8 @@ public class SubDeploymentMockClassLoaderUnitTestCase extends ClassLoaderDepende
       assertNotSame(bFrom1, bFrom2);
       
       assertUndeploy(deployer, deployment);
+      assertNoDomain("top/sub1");
+      assertNoDomain("top/sub2");
    }
 
    public void testSubDeploymentClassLoaderParentLast() throws Exception
@@ -153,7 +161,8 @@ public class SubDeploymentMockClassLoaderUnitTestCase extends ClassLoaderDepende
       clmd.setJ2seClassLoadingCompliance(false);
       
       DeploymentUnit unit = assertDeploy(deployer, deployment);
-      
+      assertDomain("top/sub");
+
       ClassLoader cl = unit.getClassLoader();
       assertLoadClass(cl, A.class);
       assertLoadClassFail(cl, B.class);
@@ -164,6 +173,7 @@ public class SubDeploymentMockClassLoaderUnitTestCase extends ClassLoaderDepende
       assertLoadClass(clSub, B.class);
       
       assertUndeploy(deployer, deployment);
+      assertNoDomain("top/sub");
 
       assertEquals(Arrays.asList("top", "top/sub"), deployer2.deployed);
       assertEquals(Arrays.asList("top/sub", "top"), deployer2.undeployed);
