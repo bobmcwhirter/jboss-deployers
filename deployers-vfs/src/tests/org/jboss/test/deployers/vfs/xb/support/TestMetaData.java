@@ -35,6 +35,8 @@ import org.jboss.xb.annotations.JBossXmlSchema;
 @XmlRootElement(name="jboss-test")
 public class TestMetaData implements Serializable
 {
+   /** The serialVersionUID */
+   private static final long serialVersionUID = 1L;
    private String name;
 
    public String getName()

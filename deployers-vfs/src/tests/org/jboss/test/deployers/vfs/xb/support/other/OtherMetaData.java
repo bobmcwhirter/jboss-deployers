@@ -31,6 +31,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="jboss-other")
 public class OtherMetaData implements Serializable
 {
+   /** The serialVersionUID */
+   private static final long serialVersionUID = 1L;
+   
    private String name;
 
    public String getName()
