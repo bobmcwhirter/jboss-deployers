@@ -21,13 +21,14 @@
 */
 package org.jboss.test.deployers.main.support;
 
-import java.util.Set;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.jboss.dependency.plugins.AbstractDependencyInfo;
-import org.jboss.dependency.spi.DependencyItem;
-import org.jboss.dependency.spi.Controller;
 import org.jboss.dependency.spi.ControllerState;
+import org.jboss.dependency.spi.DependencyItem;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
@@ -48,25 +49,20 @@ public class OrderedDependencyInfo extends AbstractDependencyInfo
       items.remove(dependency);
    }
 
-   public Set<DependencyItem> getUnresolvedDependencies()
+   public Set<DependencyItem> getUnresolvedDependencies(ControllerState state)
    {
-      return items;
-   }
-
-   public boolean resolveDependencies(Controller controller, ControllerState state)
-   {
-      boolean resolved = true;
+      if (items.isEmpty())
+         return Collections.emptySet();
+      
+      Set<DependencyItem> result = new HashSet<DependencyItem>();
       if (items.isEmpty() == false)
       {
          for (DependencyItem item : items)
          {
-            if (state.equals(item.getWhenRequired()) && item.resolve(controller) == false)
-            {
-               resolved = false;
-               break;
-            }
+            if (state == null || state.equals(item.getWhenRequired()))
+               result.add(item);
          }
       }
-      return resolved;
+      return result;
    }
 }

@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,6 +38,7 @@ import org.jboss.dependency.spi.Controller;
 import org.jboss.dependency.spi.ControllerContext;
 import org.jboss.dependency.spi.ControllerContextActions;
 import org.jboss.dependency.spi.ControllerState;
+import org.jboss.dependency.spi.ControllerStateModel;
 import org.jboss.dependency.spi.DependencyInfo;
 import org.jboss.dependency.spi.DependencyItem;
 import org.jboss.deployers.client.spi.Deployment;
@@ -69,28 +71,44 @@ import org.jboss.metadata.spi.repository.MutableMetaDataRepository;
  */
 public class DeployersImpl implements Deployers, ControllerContextActions
 {
-   /** The log */
+   /**
+    * The log
+    */
    private static final Logger log = Logger.getLogger(DeployersImpl.class);
-   
-   /** Whether we are shutdown */
+
+   /**
+    * Whether we are shutdown
+    */
    private AtomicBoolean shutdown = new AtomicBoolean(false);
-   
-   /** The dependency state machine */
+
+   /**
+    * The dependency state machine
+    */
    private Controller controller;
-   
-   /** The repository */
+
+   /**
+    * The repository
+    */
    private MutableMetaDataRepository repository;
-   
-   /** The deployment stages by name */
+
+   /**
+    * The deployment stages by name
+    */
    private Map<String, DeploymentStage> stages = new ConcurrentHashMap<String, DeploymentStage>();
-   
-   /** The deployers */
+
+   /**
+    * The deployers
+    */
    private Set<DeployerWrapper> deployers = new HashSet<DeployerWrapper>();
 
-   /** The deployers by stage and type */
+   /**
+    * The deployers by stage and type
+    */
    private Map<String, List<Deployer>> deployersByStage = new HashMap<String, List<Deployer>>();
-   
-   /** The scope builder */
+
+   /**
+    * The scope builder
+    */
    private ScopeBuilder scopeBuilder;
 
    /**
@@ -103,12 +121,12 @@ public class DeployersImpl implements Deployers, ControllerContextActions
    {
       this(controller, null);
    }
-   
+
    /**
     * Create a new DeployersImpl.
-    * 
+    *
     * @param controller the controller
-    * @param deployers the deployers
+    * @param deployers  the deployers
     * @throws IllegalArgumentException for a null controller
     */
    public DeployersImpl(Controller controller, Set<Deployer> deployers)
@@ -116,7 +134,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
       if (controller == null)
          throw new IllegalArgumentException("Null controller");
       this.controller = controller;
-      
+
       // Add the standard stages
       addDeploymentStage(DeploymentStages.NOT_INSTALLED);
       addDeploymentStage(DeploymentStages.PARSE);
@@ -128,12 +146,12 @@ public class DeployersImpl implements Deployers, ControllerContextActions
       addDeploymentStage(DeploymentStages.PRE_REAL);
       addDeploymentStage(DeploymentStages.REAL);
       addDeploymentStage(DeploymentStages.INSTALLED);
-      
+
       // Create the deployers
       if (deployers != null)
          setDeployers(deployers);
    }
-   
+
    public void shutdown()
    {
       shutdown.set(true);
@@ -147,20 +165,20 @@ public class DeployersImpl implements Deployers, ControllerContextActions
       if (shutdown.get())
          throw new IllegalStateException("Deployers are shutdown");
    }
-   
+
    /**
     * Get the deployers.
-    * 
+    *
     * @return the deployers.
     */
    public Set<DeployerWrapper> getDeployerWrappers()
    {
       return deployers;
    }
-   
+
    /**
     * Set the deployers.
-    * 
+    *
     * @param deployers the deployers.
     * @throws IllegalArgumentException for null deployers
     */
@@ -168,13 +186,13 @@ public class DeployersImpl implements Deployers, ControllerContextActions
    {
       if (deployers == null)
          throw new IllegalArgumentException("Null deployers");
-      
+
       // Remove all the old deployers that are not in the new set
       HashSet<Deployer> oldDeployers = new HashSet<Deployer>(this.deployers);
       oldDeployers.removeAll(deployers);
       for (Deployer deployer : oldDeployers)
          removeDeployer(deployer);
-      
+
       // Add all the new deployers that were not already present
       HashSet<Deployer> newDeployers = new HashSet<Deployer>(deployers);
       newDeployers.removeAll(this.deployers);
@@ -184,7 +202,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
 
    /**
     * Add a deployer
-    * 
+    *
     * @param deployer the deployer
     */
    public synchronized void addDeployer(Deployer deployer)
@@ -197,22 +215,22 @@ public class DeployersImpl implements Deployers, ControllerContextActions
          throw new IllegalArgumentException("Deployer has no stage: " + deployer);
 
       addDeploymentStage(stage);
-      
+
       DeployerWrapper wrapper = new DeployerWrapper(deployer);
-      
+
       // Ignore duplicates
       if (deployers.contains(wrapper))
          return;
-      
+
       String stageName = stage.getName();
       List<Deployer> deployers = deployersByStage.get(stageName);
       if (deployers == null)
          deployers = Collections.emptyList();
       deployers = insert(deployers, wrapper);
       deployersByStage.put(stageName, deployers);
-      
+
       this.deployers.add(wrapper);
-      
+
       StringBuilder builder = new StringBuilder();
       builder.append("Added deployer ").append(deployer).append(" for stage ").append(stageName).append('\n');
       for (Deployer temp : getDeployersList(stageName))
@@ -227,7 +245,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
 
    /**
     * Remove a deployer
-    * 
+    *
     * @param deployer the deployer
     */
    public synchronized void removeDeployer(Deployer deployer)
@@ -242,29 +260,29 @@ public class DeployersImpl implements Deployers, ControllerContextActions
          log.warn("Deployer has no stage: " + deployer);
          return;
       }
-      
+
       String stageName = stage.getName();
       List<Deployer> deployers = deployersByStage.get(stageName);
       if (deployers == null)
          return;
-      
+
       deployers.remove(deployer);
       if (deployers.isEmpty())
          deployersByStage.remove(stageName);
-      
+
       log.debug("Removed deployer " + deployer + " from stage " + stageName);
    }
 
    /**
     * Add a deployment stage
-    * 
+    *
     * @param stage the deployment stage
     */
    protected synchronized void addDeploymentStage(DeploymentStage stage)
    {
       if (stage == null)
          throw new IllegalArgumentException("Null stage");
-      
+
       // Already done?
       String stageName = stage.getName();
       if (stages.containsKey(stageName))
@@ -276,10 +294,9 @@ public class DeployersImpl implements Deployers, ControllerContextActions
       if (before != null || after != null)
       {
          // Determine where to put the stage
-         List<ControllerState> states = controller.getStates();
-         for (int i = 0; i < states.size(); ++i)
+         ControllerStateModel states = controller.getStates();
+         for (ControllerState state : states)
          {
-            ControllerState state = states.get(i);
             String stateName = state.getStateString();
             if (before != null && before.equals(stateName))
             {
@@ -288,9 +305,9 @@ public class DeployersImpl implements Deployers, ControllerContextActions
             }
             if (after != null && after.equals(stateName))
             {
-               if (i < states.size()-1)
+               if (states.getNextState(state) != null)
                {
-                  preceeds = states.get(i+1);
+                  preceeds = states.getNextState(state);
                   break;
                }
             }
@@ -304,7 +321,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
 
    /**
     * Get the scopeBuilder.
-    * 
+    *
     * @return the scopeBuilder.
     */
    public ScopeBuilder getScopeBuilder()
@@ -314,7 +331,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
 
    /**
     * Set the scopeBuilder.
-    * 
+    *
     * @param scopeBuilder the scopeBuilder.
     */
    public void setScopeBuilder(ScopeBuilder scopeBuilder)
@@ -324,7 +341,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
 
    /**
     * Get the repository.
-    * 
+    *
     * @return the repository.
     */
    public MutableMetaDataRepository getRepository()
@@ -334,7 +351,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
 
    /**
     * Set the repository.
-    * 
+    *
     * @param repository the repository.
     */
    public void setRepository(MutableMetaDataRepository repository)
@@ -347,28 +364,28 @@ public class DeployersImpl implements Deployers, ControllerContextActions
       // Bootstrap the repository
       if (repository == null && controller instanceof KernelController)
       {
-         KernelController kernelController = (KernelController) controller;
+         KernelController kernelController = (KernelController)controller;
          repository = kernelController.getKernel().getMetaDataRepository().getMetaDataRepository();
       }
    }
-   
+
    public Map<String, ManagedObject> getManagedObjects(DeploymentContext context) throws DeploymentException
    {
       if (context == null)
          throw new IllegalArgumentException("Null context");
-      
+
       checkShutdown();
-      
+
       Map<String, ManagedObject> managedObjects = new HashMap<String, ManagedObject>();
       for (DeployerWrapper deployer : deployers)
          deployer.build(context.getDeploymentUnit(), managedObjects);
-      
+
       return managedObjects;
    }
 
    /**
     * Get the ManagedObjectBuilder for a deployer.
-    * 
+    *
     * @param deployer - the deployer to set the ManagedObjectBuilder for.
     * @return managedObjectBuilder for deployer, may be null
     * @throws IllegalArgumentException for a null deployer
@@ -377,7 +394,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
    {
       if (deployer == null)
          throw new IllegalArgumentException("Null deployer");
-      
+
       ManagedObjectCreator result = null;
       for (DeployerWrapper wrapper : deployers)
       {
@@ -390,8 +407,8 @@ public class DeployersImpl implements Deployers, ControllerContextActions
    /**
     * Set the ManagedObjectBuilder for a deployer. This allows one to override the given deployer
     * ManagedObjectBuilder or assign one when the deployer does not provide a ManagedObjectBuilder.
-    * 
-    * @param deployer - the deployer to set the ManagedObjectBuilder for.
+    *
+    * @param deployer             - the deployer to set the ManagedObjectBuilder for.
     * @param managedObjectCreator the managed object builder to set to the deployer
     * @throws IllegalArgumentException for a null deployer
     */
@@ -424,17 +441,17 @@ public class DeployersImpl implements Deployers, ControllerContextActions
          throw new DeploymentException("Null context");
       if (stage == null)
          throw new DeploymentException("Null stage");
-      
+
       String stageName = stage.getName();
       if (stages.containsKey(stage.getName()) == false)
          throw new DeploymentException("Unknown deployment stage: " + stage);
-      
+
       DeploymentControllerContext deploymentControllerContext = context.getTransientAttachments().getAttachment(ControllerContext.class.getName(), DeploymentControllerContext.class);
       if (deploymentControllerContext == null)
          throw new DeploymentException("Deployment " + context.getName() + " has no deployment controller context");
 
       checkShutdown();
-      
+
       ControllerState state = new ControllerState(stageName);
       try
       {
@@ -449,17 +466,17 @@ public class DeployersImpl implements Deployers, ControllerContextActions
       if (problem != null)
          throw DeploymentException.rethrowAsDeploymentException("Error changing to stage " + stage + " for " + context.getName(), problem);
    }
-   
+
    public void process(List<DeploymentContext> deploy, List<DeploymentContext> undeploy)
    {
       boolean trace = log.isTraceEnabled();
-      
+
       // There is something to undeploy
       if (undeploy != null && undeploy.isEmpty() == false)
       {
          // Build a list in reverse order
          List<DeploymentControllerContext> toUndeploy = new ArrayList<DeploymentControllerContext>();
-         for (int i = undeploy.size()-1; i >= 0; --i)
+         for (int i = undeploy.size() - 1; i >= 0; --i)
          {
             DeploymentContext context = undeploy.get(i);
             if (DeploymentState.ERROR.equals(context.getState()) == false)
@@ -477,17 +494,18 @@ public class DeployersImpl implements Deployers, ControllerContextActions
          }
 
          // Go through the states in reverse order
-         List<ControllerState> states = controller.getStates();
-         for (int i = states.size()-1; i >= 0; --i)
+         ControllerStateModel states = controller.getStates();
+         ListIterator<ControllerState> iter = states.listIteraror();
+         while (iter.hasPrevious())
          {
-            ControllerState state = states.get(i);
+            ControllerState state = iter.previous();
             for (DeploymentControllerContext deploymentControllerContext : toUndeploy)
             {
                ControllerState current = deploymentControllerContext.getState();
-               int currentIdx = states.indexOf(current);
-               DeploymentContext context = deploymentControllerContext.getDeploymentContext();
-               if (currentIdx != -1 && currentIdx > i)
+               if (ControllerState.ERROR.equals(current) == false && states.isAfterState(current, state))
+               //if (currentIdx != -1 && currentIdx > i)
                {
+                  DeploymentContext context = deploymentControllerContext.getDeploymentContext();
                   try
                   {
                      controller.change(deploymentControllerContext, state);
@@ -530,7 +548,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
             }
          }
       }
-      
+
       // There is something to deploy
       if (deploy != null && deploy.isEmpty() == false)
       {
@@ -562,16 +580,14 @@ public class DeployersImpl implements Deployers, ControllerContextActions
          }
 
          // Go through the states in order
-         List<ControllerState> states = controller.getStates();
-         for (int i = 0; i < states.size(); ++i)
+         ControllerStateModel states = controller.getStates();
+         for (ControllerState state : states)
          {
-            ControllerState state = states.get(i);
             for (DeploymentContext context : deploy)
             {
                DeploymentControllerContext deploymentControllerContext = context.getTransientAttachments().getAttachment(ControllerContext.class.getName(), DeploymentControllerContext.class);
                ControllerState current = deploymentControllerContext.getState();
-               int currentIdx = states.indexOf(current);
-               if (currentIdx != -1 && currentIdx < i)
+               if (ControllerState.ERROR.equals(current) == false && states.isBeforeState(current, state))
                {
                   checkShutdown();
                   try
@@ -596,7 +612,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
 
    /**
     * Get the root cause of a throwable
-    * 
+    *
     * @param original the original
     * @return the root
     */
@@ -635,8 +651,6 @@ public class DeployersImpl implements Deployers, ControllerContextActions
             deploymentsMissingDeployer.add(context.getName());
       }
 
-      List<ControllerState> states = controller.getStates();
-
       Set<ControllerContext> notInstalled = controller.getNotInstalled();
       if (notInstalled.isEmpty() == false)
       {
@@ -648,6 +662,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
          }
          if (notInstalled.isEmpty() == false)
          {
+            ControllerStateModel states = controller.getStates();
             contextsInError = new HashMap<String, Throwable>();
             contextsMissingDependencies = new HashMap<String, Set<MissingDependency>>();
             for (ControllerContext context : notInstalled)
@@ -665,16 +680,16 @@ public class DeployersImpl implements Deployers, ControllerContextActions
    /**
     * Check controller context.
     *
-    * @param context the controller context
-    * @param contextsInError contexts in error map
+    * @param context                     the controller context
+    * @param contextsInError             contexts in error map
     * @param contextsMissingDependencies contexts missing dependecies map
-    * @param states controller states
+    * @param states                      controller states
     */
    protected final void checkControllerContext(
          ControllerContext context,
          Map<String, Throwable> contextsInError,
          Map<String, Set<MissingDependency>> contextsMissingDependencies,
-         List<ControllerState> states)
+         ControllerStateModel states)
    {
       if (context.getState().equals(ControllerState.ERROR))
          contextsInError.put(context.getName().toString(), getRootCause(context.getError()));
@@ -683,8 +698,12 @@ public class DeployersImpl implements Deployers, ControllerContextActions
          Object contextName = context.getName();
          String name = contextName.toString();
          Set<MissingDependency> dependencies = new HashSet<MissingDependency>();
+
          DependencyInfo dependsInfo = context.getDependencyInfo();
-         for (DependencyItem item : dependsInfo.getIDependOn(null))
+         ControllerState currentState = context.getState();
+         ControllerState nextState = states.getNextState(currentState);
+
+         for (DependencyItem item : dependsInfo.getUnresolvedDependencies(nextState))
          {
             if (item.isResolved() == false)
             {
@@ -693,9 +712,9 @@ public class DeployersImpl implements Deployers, ControllerContextActions
                String actualStateString;
 
                Object iDependOn = item.getIDependOn();
-               if (contextName.equals(iDependOn) == false)
+               if (contextName.equals(iDependOn) == false && item.resolve(controller) == false)
                {
-                  boolean includeDependency = true;
+                  iDependOn = item.getIDependOn();
 
                   if (iDependOn == null)
                   {
@@ -712,31 +731,15 @@ public class DeployersImpl implements Deployers, ControllerContextActions
                      {
                         actualState = other.getState();
                         actualStateString = actualState.getStateString();
-                        if (actualState != null && actualState.equals(ControllerState.ERROR) == false)
-                        {
-                           ControllerState dependentState = item.getDependentState();
-                           if (dependentState == null)
-                              dependentState = ControllerState.INSTALLED;
-
-                           int dependentIndex = states.indexOf(dependentState);
-                           int actualIndex = states.indexOf(actualState);
-                           if (actualIndex >= dependentIndex)
-                              includeDependency = false;
-                        }
                      }
                   }
 
-                  if (includeDependency)
+                  ControllerState requiredState = item.getWhenRequired();
+                  String requiredStateString = requiredState.getStateString();
+                  if (actualState == null || states.isAfterState(requiredState, actualState))
                   {
-                     ControllerState requiredState = item.getWhenRequired();
-                     String requiredStateString = requiredState.getStateString();
-                     int required = states.indexOf(requiredState);
-                     int actual = actualState == null ? -1 : states.indexOf(actualState);
-                     if (required > actual)
-                     {
-                        MissingDependency missing = new MissingDependency(name, dependency, requiredStateString, actualStateString);
-                        dependencies.add(missing);
-                     }
+                     MissingDependency missing = new MissingDependency(name, dependency, requiredStateString, actualStateString);
+                     dependencies.add(missing);
                   }
                }
             }
@@ -772,7 +775,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
       Map<String, Throwable> contextsInError = new HashMap<String, Throwable>();
       Map<String, Set<MissingDependency>> contextsMissingDependencies = new HashMap<String, Set<MissingDependency>>();
 
-      for(DeploymentContext context : contexts)
+      for (DeploymentContext context : contexts)
       {
          Throwable problem = context.getProblem();
          if (problem != null)
@@ -784,7 +787,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
          if (checkContexts)
          {
             Set<ControllerContext> notInstalled = controller.getNotInstalled();
-            List<ControllerState> states = controller.getStates();
+            ControllerStateModel states = controller.getStates();
             checkComplete(context, contextsInError, contextsMissingDependencies, notInstalled, states);
          }
       }
@@ -818,18 +821,18 @@ public class DeployersImpl implements Deployers, ControllerContextActions
    /**
     * Check complete on deployment context.
     *
-    * @param context the deployment context
-    * @param contextsInError contexts in error map
+    * @param context                     the deployment context
+    * @param contextsInError             contexts in error map
     * @param contextsMissingDependencies contexts missing dependecies map
-    * @param notInstalled the not installed contexts
-    * @param states controller states
+    * @param notInstalled                the not installed contexts
+    * @param states                      controller states
     */
    protected final void checkComplete(
          DeploymentContext context,
          Map<String, Throwable> contextsInError,
          Map<String, Set<MissingDependency>> contextsMissingDependencies,
          Set<ControllerContext> notInstalled,
-         List<ControllerState> states)
+         ControllerStateModel states)
    {
       DeploymentControllerContext dcc = context.getTransientAttachments().getAttachment(ControllerContext.class.getName(), DeploymentControllerContext.class);
       checkControllerContext(dcc, contextsInError, contextsMissingDependencies, notInstalled, states);
@@ -837,7 +840,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
       Set<Object> names = context.getControllerContextNames();
       if (names != null && names.isEmpty() == false)
       {
-         for(Object name : names)
+         for (Object name : names)
          {
             ControllerContext cc = controller.getContext(name, null);
             checkControllerContext(cc, contextsInError, contextsMissingDependencies, notInstalled, states);
@@ -847,14 +850,14 @@ public class DeployersImpl implements Deployers, ControllerContextActions
       List<DeploymentContext> children = context.getChildren();
       if (children != null && children.isEmpty() == false)
       {
-         for(DeploymentContext child : children)
+         for (DeploymentContext child : children)
             checkComplete(child, contextsInError, contextsMissingDependencies, notInstalled, states);
       }
 
       List<DeploymentContext> components = context.getComponents();
       if (components != null && components.isEmpty() == false)
       {
-         for(DeploymentContext component : components)
+         for (DeploymentContext component : components)
             checkComplete(component, contextsInError, contextsMissingDependencies, notInstalled, states);
       }
    }
@@ -862,18 +865,18 @@ public class DeployersImpl implements Deployers, ControllerContextActions
    /**
     * Check complete on deployment context.
     *
-    * @param context the deployment context
-    * @param contextsInError contexts in error map
+    * @param context                     the deployment context
+    * @param contextsInError             contexts in error map
     * @param contextsMissingDependencies contexts missing dependecies map
-    * @param notInstalled the not installed contexts
-    * @param states controller states
+    * @param notInstalled                the not installed contexts
+    * @param states                      controller states
     */
    protected void checkControllerContext(
          ControllerContext context,
          Map<String, Throwable> contextsInError,
          Map<String, Set<MissingDependency>> contextsMissingDependencies,
          Set<ControllerContext> notInstalled,
-         List<ControllerState> states)
+         ControllerStateModel states)
    {
       if (context != null)
       {
@@ -886,17 +889,17 @@ public class DeployersImpl implements Deployers, ControllerContextActions
 
    public void install(ControllerContext context, ControllerState fromState, ControllerState toState) throws Throwable
    {
-      DeploymentControllerContext deploymentControllerContext = (DeploymentControllerContext) context;
+      DeploymentControllerContext deploymentControllerContext = (DeploymentControllerContext)context;
       String stageName = toState.getStateString();
-      
+
       DeploymentContext deploymentContext = deploymentControllerContext.getDeploymentContext();
       try
       {
          List<Deployer> theDeployers = getDeployersList(stageName);
-         
+
          if (log.isTraceEnabled())
             log.trace("Deployers for " + stageName + " " + theDeployers);
-         
+
          if (theDeployers.isEmpty() == false)
          {
             int i = 0;
@@ -916,9 +919,9 @@ public class DeployersImpl implements Deployers, ControllerContextActions
             {
                deploymentContext.setState(DeploymentState.ERROR);
                deploymentContext.setProblem(t);
-               
+
                // Unwind the previous deployments
-               for (int j = i-1; j >= 0; --j)
+               for (int j = i - 1; j >= 0; --j)
                {
                   Deployer deployer = theDeployers.get(j);
                   if (deployer.isParentFirst())
@@ -926,7 +929,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
                   else
                      doUninstallParentFirst(deployer, deploymentContext, true, true);
                }
-               
+
                // It can happen that subdeployments are not processed if the parent fails immediately
                // so there is no callback to undeploy when nothing was done
                setState(deploymentContext, DeploymentState.UNDEPLOYED, DeploymentState.DEPLOYING);
@@ -943,12 +946,12 @@ public class DeployersImpl implements Deployers, ControllerContextActions
          }
       }
    }
-   
+
    /**
     * Do the install parent first
-    * 
+    *
     * @param deployer the deployer
-    * @param context the context
+    * @param context  the context
     * @throws Throwable for any problem
     */
    protected void doInstallParentFirst(Deployer deployer, DeploymentContext context) throws Throwable
@@ -976,7 +979,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
       }
       else if (log.isTraceEnabled())
          log.trace("Deployer " + deployer + " not relevant for " + context.getName());
-      
+
       if (components != null)
       {
          try
@@ -1038,14 +1041,14 @@ public class DeployersImpl implements Deployers, ControllerContextActions
             doUninstallParentLast(deployer, context, false, true);
             throw e;
          }
-      }         
+      }
    }
-   
+
    /**
     * Do the install parent last
-    * 
+    *
     * @param deployer the deployer
-    * @param context the context
+    * @param context  the context
     * @throws Throwable for any problem
     */
    protected void doInstallParentLast(Deployer deployer, DeploymentContext context) throws Throwable
@@ -1069,7 +1072,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
             throw e;
          }
       }
-      
+
       List<DeploymentContext> components = context.getComponents();
       if (components != null)
       {
@@ -1121,21 +1124,21 @@ public class DeployersImpl implements Deployers, ControllerContextActions
       else if (log.isTraceEnabled())
          log.trace("Deployer " + deployer + " not relevant for " + context.getName());
    }
-   
+
    public void uninstall(ControllerContext context, ControllerState fromState, ControllerState toState)
    {
-      DeploymentControllerContext deploymentControllerContext = (DeploymentControllerContext) context;
+      DeploymentControllerContext deploymentControllerContext = (DeploymentControllerContext)context;
       String stageName = fromState.getStateString();
-      
+
       DeploymentContext deploymentContext = deploymentControllerContext.getDeploymentContext();
       List<Deployer> theDeployers = getDeployersList(stageName);
-      
+
       if (log.isTraceEnabled())
          log.trace("Deployers for " + stageName + " " + theDeployers);
 
-      if  (theDeployers.isEmpty() == false)
+      if (theDeployers.isEmpty() == false)
       {
-         for (int i = theDeployers.size()-1; i >= 0; --i)
+         for (int i = theDeployers.size() - 1; i >= 0; --i)
          {
             Deployer deployer = theDeployers.get(i);
             if (deployer.isParentFirst())
@@ -1149,9 +1152,9 @@ public class DeployersImpl implements Deployers, ControllerContextActions
    /**
     * Do the uninstall parent last
     *
-    * @param deployer the deployer
-    * @param context the context
-    * @param doChildren whether to do children
+    * @param deployer     the deployer
+    * @param context      the context
+    * @param doChildren   whether to do children
     * @param doComponents whether to do components
     */
    protected void doUninstallParentLast(Deployer deployer, DeploymentContext context, boolean doChildren, boolean doComponents)
@@ -1161,7 +1164,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
          List<DeploymentContext> children = context.getChildren();
          if (children != null && children.isEmpty() == false)
          {
-            for (int i = children.size()-1; i >=  0; --i)
+            for (int i = children.size() - 1; i >= 0; --i)
             {
                DeploymentContext child = children.get(i);
                doUninstallParentLast(deployer, child, true, true);
@@ -1174,7 +1177,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
          List<DeploymentContext> components = context.getComponents();
          if (components != null && components.isEmpty() == false)
          {
-            for (int i = components.size()-1; i >=  0; --i)
+            for (int i = components.size() - 1; i >= 0; --i)
             {
                DeploymentContext component = components.get(i);
                doUninstallParentLast(deployer, component, false, true);
@@ -1192,9 +1195,9 @@ public class DeployersImpl implements Deployers, ControllerContextActions
    /**
     * Do the uninstall parent first
     *
-    * @param deployer the deployer
-    * @param context the context
-    * @param doContext whether to do context
+    * @param deployer     the deployer
+    * @param context      the context
+    * @param doContext    whether to do context
     * @param doComponents whether to do components
     */
    protected void doUninstallParentFirst(Deployer deployer, DeploymentContext context, boolean doContext, boolean doComponents)
@@ -1213,7 +1216,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
          List<DeploymentContext> components = context.getComponents();
          if (components != null && components.isEmpty() == false)
          {
-            for (int i = components.size()-1; i >=  0; --i)
+            for (int i = components.size() - 1; i >= 0; --i)
             {
                DeploymentContext component = components.get(i);
                doUninstallParentFirst(deployer, component, true, true);
@@ -1224,17 +1227,17 @@ public class DeployersImpl implements Deployers, ControllerContextActions
       List<DeploymentContext> children = context.getChildren();
       if (children != null && children.isEmpty() == false)
       {
-         for (int i = children.size()-1; i >=  0; --i)
+         for (int i = children.size() - 1; i >= 0; --i)
          {
             DeploymentContext child = children.get(i);
             doUninstallParentFirst(deployer, child, true, true);
          }
       }
    }
-   
+
    /**
     * Build a list of  deployers for this stage
-    * 
+    *
     * @param stageName the stage name
     * @return the deployers
     */
@@ -1243,16 +1246,16 @@ public class DeployersImpl implements Deployers, ControllerContextActions
       List<Deployer> deployers = deployersByStage.get(stageName);
       if (deployers == null || deployers.isEmpty())
          return Collections.emptyList();
-      
+
       return deployers;
    }
-   
+
    /**
     * Test whether a deployer is relevant
-    * 
-    * @param deployer deployer
-    * @param unit the deployment unit
-    * @param isTopLevel whether this is a top level deployment
+    *
+    * @param deployer    deployer
+    * @param unit        the deployment unit
+    * @param isTopLevel  whether this is a top level deployment
     * @param isComponent whether this is a component
     * @return the deployers
     */
@@ -1269,7 +1272,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
       // Deployer doesn't wants components
       if (deployer.isWantComponents() == false && isComponent)
          return false;
-      
+
       if (deployer.isAllInputs() == false)
       {
          // No attachment for the input type
@@ -1279,11 +1282,11 @@ public class DeployersImpl implements Deployers, ControllerContextActions
       }
       return true;
    }
-   
+
    /**
     * Insert the new Deployer.
     *
-    * @param original the original deployers
+    * @param original    the original deployers
     * @param newDeployer the new deployer
     * @return the sorted deployers
     */
@@ -1295,9 +1298,9 @@ public class DeployersImpl implements Deployers, ControllerContextActions
 
    /**
     * Set the deployment state for a context and its children
-    * 
+    *
     * @param context the context
-    * @param state the state
+    * @param state   the state
     * @param ifState the ifState
     */
    private static void setState(DeploymentContext context, DeploymentState state, DeploymentState ifState)
@@ -1314,7 +1317,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
 
    /**
     * Remove a classloader for a context and its children
-    * 
+    *
     * @param context the context
     */
    private static void removeClassLoader(DeploymentContext context)
@@ -1330,7 +1333,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
 
    /**
     * Cleanup the deployment context
-    * 
+    *
     * @param context the context
     */
    private static void cleanup(DeploymentContext context)

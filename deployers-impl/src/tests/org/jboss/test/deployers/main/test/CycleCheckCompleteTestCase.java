@@ -95,7 +95,12 @@ public class CycleCheckCompleteTestCase extends AbstractMainDeployerTest
          Map<String,Set<MissingDependency>> map = id.getContextsMissingDependencies();
          assertNotNull(map);
          assertEquals(new HashSet<String>(Arrays.asList("xA", "xB")), map.keySet());
-         //assertEquals("Should be empty string, no errors.", "", id.getContextsInErrorInfo());
+         String inErrorInfo = id.getContextsInErrorInfo();
+         assertNotNull(inErrorInfo);
+         assertTrue(inErrorInfo.contains("xA"));
+         assertTrue(inErrorInfo.contains("xB"));
+         assertFalse(inErrorInfo.contains("xC"));
+         assertFalse(inErrorInfo.contains("xD"));
       }
    }
 
