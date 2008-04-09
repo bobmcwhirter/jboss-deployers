@@ -503,7 +503,6 @@ public class DeployersImpl implements Deployers, ControllerContextActions
             {
                ControllerState current = deploymentControllerContext.getState();
                if (ControllerState.ERROR.equals(current) == false && states.isAfterState(current, state))
-               //if (currentIdx != -1 && currentIdx > i)
                {
                   DeploymentContext context = deploymentControllerContext.getDeploymentContext();
                   try
