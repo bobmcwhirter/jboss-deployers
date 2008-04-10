@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.jboss</groupId>
     <artifactId>jboss-parent</artifactId>
-    <version>4-beta-1</version>
+    <version>4-beta-2</version>
   </parent>
   <groupId>org.jboss.deployers</groupId>
   <artifactId>jboss-deployers-aggregator</artifactId>
@@ -38,6 +38,7 @@
         <artifactId>maven-release-plugin</artifactId>
         <version>2.0-beta-7</version>
         <configuration>
+          <generateReleasePoms>true</generateReleasePoms>
           <tagBase>https://svn.jboss.org/repos/jbossas/projects/jboss-deployers/tags</tagBase>
           <autoVersionSubmodules>true</autoVersionSubmodules>
         </configuration>
