@@ -29,11 +29,9 @@ import org.jboss.deployers.spi.deployer.helpers.AbstractComponentDeployer;
 import org.jboss.deployers.spi.deployer.helpers.DeploymentVisitor;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.kernel.spi.deployment.KernelDeployment;
-import org.jboss.logging.Logger;
 
 public class KernelDeploymentDeployer extends AbstractComponentDeployer<KernelDeployment, BeanMetaData>
 {
-   private static Logger log = Logger.getLogger(KernelDeploymentDeployer.class);
    /**
     * Create a new KernelDeploymentDeployer.
     */
@@ -47,7 +45,6 @@ public class KernelDeploymentDeployer extends AbstractComponentDeployer<KernelDe
    {
       DeploymentUnit component = unit.addComponent(bean.getName());
       component.addAttachment(BeanMetaData.class.getName(), bean);
-      log.debug("addBeanComponent, unit="+unit.getSimpleName()+", bean="+bean.getName());
    }
 
    protected static void removeBeanComponent(DeploymentUnit unit, BeanMetaData bean)
