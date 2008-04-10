@@ -2,9 +2,9 @@
   <name>jboss-deployers-spi</name>
   <comment>JBoss Deployers SPI</comment>
   <projects>
+    <project>jboss-deployers-structure-spi</project>
     <project>jboss-deployers-client-spi</project>
     <project>jboss-deployers-core-spi</project>
-    <project>jboss-deployers-structure-spi</project>
   </projects>
   <buildSpec>
     <buildCommand>

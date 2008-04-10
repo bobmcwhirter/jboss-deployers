@@ -3,11 +3,11 @@
   <comment>JBoss Deployers Impl</comment>
   <projects>
     <project>jboss-deployers-client</project>
-    <project>jboss-deployers-client-spi</project>
     <project>jboss-deployers-core</project>
-    <project>jboss-deployers-core-spi</project>
     <project>jboss-deployers-spi</project>
     <project>jboss-deployers-structure-spi</project>
+    <project>jboss-deployers-client-spi</project>
+    <project>jboss-deployers-core-spi</project>
   </projects>
   <buildSpec>
     <buildCommand>
