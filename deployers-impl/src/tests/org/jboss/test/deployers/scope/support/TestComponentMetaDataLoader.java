@@ -83,16 +83,4 @@ public class TestComponentMetaDataLoader extends AbstractMetaDataLoader
          items[i] = new SimpleAnnotationItem(annotations[i]);
       return new SimpleAnnotationsItem(items);
    }
-
-   // FIXME JBDEPLOY-19 Remove workaround this as it is now done in the Abstract super class
-   @SuppressWarnings("unchecked")
-   public MetaDataItem retrieveMetaData(String name)
-   {
-      for (Annotation annotation : componentMetaData.classAnnotations)
-      {
-         if (annotation.annotationType().getName().equals(name))
-            return new SimpleMetaDataItem(name, annotation);
-      }
-      return null;
-   }
 }
