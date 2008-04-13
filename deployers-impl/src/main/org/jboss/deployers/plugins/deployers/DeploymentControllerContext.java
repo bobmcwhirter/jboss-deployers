@@ -54,7 +54,7 @@ public class DeploymentControllerContext extends AbstractControllerContext
     * 
     * @return the deploymentContext.
     */
-   public DeploymentContext getDeploymentContext()
+   DeploymentContext getDeploymentContext()
    {
       return deploymentContext;
    }
