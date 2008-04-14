@@ -21,6 +21,7 @@
 */
 package org.jboss.test.deployers.vfs.xb.test;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
 
@@ -57,6 +58,25 @@ public abstract class AbstractSchemaResolverXBTest<T> extends XBDeployersTest
 
    protected abstract String getName(T metadata);
 
+   protected void prepareDeploymentUnit(AbstractVFSDeploymentUnit unit)
+   {
+   }
+   
+   protected void setAltDD(AbstractVFSDeploymentUnit unit, String altDDName)
+   {
+      VirtualFile altDDFile = null;
+      try
+      {
+         altDDFile = unit.getRoot().getChild(altDDName);
+      }
+      catch (IOException e)
+      {
+         fail("Failed to locate altDD '" + altDDName + "' under " + unit.getRoot().getPathName());
+      }
+      assertNotNull("altDD exists under " + unit.getRoot().getPathName() + ": " + altDDName, altDDFile);
+      unit.addAttachment(getOutput().getName() + ".altDD", altDDFile);
+   }
+   
    public void testJBossXBParser() throws Throwable
    {
       SchemaResolverDeployer<?> deployer = assertBean("deployer", SchemaResolverDeployer.class);
@@ -73,6 +93,7 @@ public abstract class AbstractSchemaResolverXBTest<T> extends XBDeployersTest
       VFSDeploymentContext context = new AbstractVFSDeploymentContext(file, "");
       context.setMetaDataLocations(Collections.singletonList(file));
       AbstractVFSDeploymentUnit unit = new AbstractVFSDeploymentUnit(context);
+      prepareDeploymentUnit(unit);
 
       deployer.deploy(unit);
       try

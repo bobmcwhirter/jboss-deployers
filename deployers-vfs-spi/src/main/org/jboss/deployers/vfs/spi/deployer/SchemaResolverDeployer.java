@@ -196,6 +196,10 @@ public class SchemaResolverDeployer<T> extends AbstractVFSParsingDeployer<T>
       if (file == null)
          throw new IllegalArgumentException("Null file");
 
+      VirtualFile altDD = (VirtualFile) unit.getAttachment(getOutput().getName() + ".altDD");
+      if(altDD != null)
+         file = altDD;
+
       log.debug("Parsing file: "+file+" for deploymentType: " + getOutput());
       Unmarshaller unmarshaller = factory.newUnmarshaller();
       unmarshaller.setSchemaValidation(isUseSchemaValidation());
