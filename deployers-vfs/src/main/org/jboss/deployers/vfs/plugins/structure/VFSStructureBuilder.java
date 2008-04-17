@@ -29,6 +29,8 @@ import org.jboss.deployers.client.spi.Deployment;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.structure.ClassPathEntry;
 import org.jboss.deployers.spi.structure.ContextInfo;
+import org.jboss.deployers.spi.structure.ModificationType;
+import org.jboss.deployers.spi.structure.StructureMetaData;
 import org.jboss.deployers.structure.spi.DeploymentContext;
 import org.jboss.deployers.structure.spi.helpers.AbstractStructureBuilder;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
@@ -43,6 +45,7 @@ import org.jboss.virtual.plugins.vfs.helpers.SuffixMatchFilter;
  * VFSStructureBuilder.
  * 
  * @author <a href="adrian@jboss.org">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public class VFSStructureBuilder extends AbstractStructureBuilder
@@ -50,23 +53,24 @@ public class VFSStructureBuilder extends AbstractStructureBuilder
    /** The log */
    private static final Logger log = Logger.getLogger(VFSStructureBuilder.class);
    
-   protected DeploymentContext createRootDeploymentContext(Deployment deployment) throws Exception
+   protected DeploymentContext createRootDeploymentContext(Deployment deployment, StructureMetaData metaData) throws Exception
    {
       if (deployment instanceof VFSDeployment)
       {
          VFSDeployment vfsDeployment = (VFSDeployment) deployment;
          String name = deployment.getName();
          String simpleName = deployment.getSimpleName();
+         VirtualFile root = applyModification(vfsDeployment.getRoot(), metaData.getContext(""));
          if (name == null)
          {
-            return new AbstractVFSDeploymentContext(vfsDeployment.getRoot(), "");
+            return new AbstractVFSDeploymentContext(root, "");
          }
          else
          {
             if (simpleName == null)
-               return new AbstractVFSDeploymentContext(name, name, vfsDeployment.getRoot(), "");
+               return new AbstractVFSDeploymentContext(name, name, root, "");
             else
-               return new AbstractVFSDeploymentContext(name, simpleName, vfsDeployment.getRoot(), "");
+               return new AbstractVFSDeploymentContext(name, simpleName, root, "");
          }
       }
       return super.createRootDeploymentContext(deployment);
@@ -82,7 +86,7 @@ public class VFSStructureBuilder extends AbstractStructureBuilder
          {
             VirtualFile parentFile = vfsParent.getRoot();
             VirtualFile file = parentFile.findChild(path); // leaving the findChild usage
-            return new AbstractVFSDeploymentContext(file, path);
+            return new AbstractVFSDeploymentContext(applyModification(file, child), path);
          }
          catch (Throwable t)
          {
@@ -92,6 +96,40 @@ public class VFSStructureBuilder extends AbstractStructureBuilder
       return super.createChildDeploymentContext(parent, child);
    }
 
+   /**
+    * Apply modification if it exists.
+    *
+    * @param file the file
+    * @param contextInfo the context info
+    * @return the modified file
+    * @throws Exception for any error
+    */
+   protected VirtualFile applyModification(VirtualFile file, ContextInfo contextInfo) throws Exception
+   {
+      if (contextInfo == null)
+         return file;
+
+      ModificationType modificationType = contextInfo.getModificationType();
+      if (modificationType != null)
+      {
+         boolean isSupported = (modificationType != ModificationType.UNPACK_RECURSIVE);
+
+         if (log.isTraceEnabled() && isSupported)
+            log.trace("Modifying file: " + file + ", modification type: " + modificationType);
+
+         if (ModificationType.UNPACK == modificationType)
+            file = VFSUtils.unpack(file);
+         else if (ModificationType.MOVE == modificationType)
+            file = VFSUtils.move(file);
+         else
+            log.warn("Unsupported modification type: " + modificationType);
+
+         if (log.isTraceEnabled() && isSupported)
+            log.trace("Modified file: " + file);
+      }
+      return file;
+   }
+
    protected void applyContextInfo(DeploymentContext context, ContextInfo contextInfo) throws Exception
    {
       super.applyContextInfo(context, contextInfo);
@@ -99,7 +137,8 @@ public class VFSStructureBuilder extends AbstractStructureBuilder
       if (context instanceof VFSDeploymentContext)
       {
          boolean trace = log.isTraceEnabled();
-         log.trace("Apply context: " + context.getName() + " " + contextInfo);
+         if (trace)
+            log.trace("Apply context: " + context.getName() + " " + contextInfo);
          
          VFSDeploymentContext vfsContext = (VFSDeploymentContext) context;
          List<String> metaDataPath = contextInfo.getMetaDataPath();

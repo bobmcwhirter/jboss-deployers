@@ -205,6 +205,11 @@ public class FileMatcherTestCase extends BaseTestCase
             {
                
             }
+
+            public void replaceChild(VirtualFileHandler original, VirtualFileHandler replacement)
+            {
+               
+            }
          };
       }
 

@@ -40,11 +40,13 @@ import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.test.BaseTestCase;
 import org.jboss.virtual.VFS;
 import org.jboss.virtual.VirtualFile;
+import org.jboss.virtual.VFSUtils;
 
 /**
  * AbstractStructureUnitTestCase.
  * 
  * @author <a href="adrian@jboss.org">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public abstract class AbstractStructureTest extends BaseTestCase
@@ -52,6 +54,11 @@ public abstract class AbstractStructureTest extends BaseTestCase
    public AbstractStructureTest(String name)
    {
       super(name);
+   }
+
+   protected void assertUnpacked(VirtualFile file) throws Exception
+   {
+      assertSame(file, VFSUtils.unpack(file));
    }
 
    protected void assertNoChildContexts(VFSDeploymentContext context)

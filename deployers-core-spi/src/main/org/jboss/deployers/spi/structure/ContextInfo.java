@@ -111,4 +111,18 @@ public interface ContextInfo extends PredeterminedManagedObjectAttachments, Seri
     * @param className the comparator class name
     */
    void setComparatorClassName(String className);
+
+   /**
+    * Get the modification type.
+    *
+    * @return the modification type
+    */
+   ModificationType getModificationType();
+
+   /**
+    * Set the modification type.
+    *
+    * @param modificationType the modification type
+    */
+   void setModificationType(ModificationType modificationType);
 }

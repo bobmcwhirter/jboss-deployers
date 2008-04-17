@@ -27,7 +27,9 @@ import junit.textui.TestRunner;
 
 import org.jboss.test.deployers.vfs.structure.ear.test.EARStructureUnitTestCase;
 import org.jboss.test.deployers.vfs.structure.ear.test.EARStructureRecognizeTestCase;
+import org.jboss.test.deployers.vfs.structure.ear.test.InnerModificationUnitTestCase;
 import org.jboss.test.deployers.vfs.structure.explicit.test.DeclaredStructureUnitTestCase;
+import org.jboss.test.deployers.vfs.structure.explicit.test.ModificationTypeUnitTestCase;
 import org.jboss.test.deployers.vfs.structure.file.test.CombinedFileStructureUnitTestCase;
 import org.jboss.test.deployers.vfs.structure.file.test.ConfiguredSuffixFileStructureUnitTestCase;
 import org.jboss.test.deployers.vfs.structure.file.test.FileStructureUnitTestCase;
@@ -39,11 +41,13 @@ import org.jboss.test.deployers.vfs.structure.test.StructureDeployerContextClass
 import org.jboss.test.deployers.vfs.structure.test.TerminateStructureTestCase;
 import org.jboss.test.deployers.vfs.structure.war.test.CombinedWARStructureUnitTestCase;
 import org.jboss.test.deployers.vfs.structure.war.test.WARStructureUnitTestCase;
+import org.jboss.test.deployers.vfs.structure.war.test.WARUnpackUnitTestCase;
 
 /**
  * VFSStructureTestSuite.
  * 
  * @author <a href="adrian@jboss.org">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public class VFSStructureTestSuite extends TestSuite
@@ -71,6 +75,9 @@ public class VFSStructureTestSuite extends TestSuite
       suite.addTest(CombinedFileStructureUnitTestCase.suite());
       suite.addTest(TerminateStructureTestCase.suite());
       suite.addTest(StructureDeployerContextClassLoaderTestCase.suite());
+      suite.addTest(WARUnpackUnitTestCase.suite());
+      suite.addTest(ModificationTypeUnitTestCase.suite());
+      suite.addTest(InnerModificationUnitTestCase.suite());
 
       return suite;
    }

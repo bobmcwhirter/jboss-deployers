@@ -277,7 +277,7 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
       else
          result = StructureMetaDataFactory.createContextInfo("", null);
 
-      applyContextInfoOrder(root, result);
+      applyContextInfo(root, result);
 
       structureMetaData.addContext(result);
       if (trace)
@@ -286,13 +286,13 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
    }
 
    /**
-    * Apply context info order.
+    * Apply context info.
     * Can be overridden for specific root.
     *
     * @param root the root file
     * @param result the new context info
     */
-   protected void applyContextInfoOrder(VirtualFile root, ContextInfo result)
+   protected void applyContextInfo(VirtualFile root, ContextInfo result)
    {
       if (result != null && contextInfoOrder != null)
          result.setRelativeOrder(contextInfoOrder);

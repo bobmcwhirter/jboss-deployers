@@ -156,6 +156,11 @@ public class MyVirtualFile extends VirtualFile
          {
 
          }
+
+         public void replaceChild(VirtualFileHandler original, VirtualFileHandler replacement)
+         {
+
+         }
       };
    }
 }

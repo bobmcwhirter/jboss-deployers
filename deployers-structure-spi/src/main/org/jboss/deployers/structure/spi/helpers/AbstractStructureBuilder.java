@@ -61,7 +61,7 @@ public class AbstractStructureBuilder implements StructureBuilder
       DeploymentContext result;
       try
       {
-         result = createRootDeploymentContext(deployment);
+         result = createRootDeploymentContext(deployment, metaData);
          if (result == null)
             throw new IllegalStateException("Root deployment context is null");
          result.setDeployment(deployment);
@@ -202,6 +202,19 @@ public class AbstractStructureBuilder implements StructureBuilder
    /**
     * Create the root deployment context
     * 
+    * @param deployment the deployment
+    * @param metaData the structure meta data
+    * @return the deployment context
+    * @throws Exception for any error
+    */
+   protected DeploymentContext createRootDeploymentContext(Deployment deployment, StructureMetaData metaData) throws Exception
+   {
+      return createRootDeploymentContext(deployment);
+   }
+
+   /**
+    * Create the root deployment context
+    *
     * @param deployment the deployment
     * @return the deployment context
     * @throws Exception for any error

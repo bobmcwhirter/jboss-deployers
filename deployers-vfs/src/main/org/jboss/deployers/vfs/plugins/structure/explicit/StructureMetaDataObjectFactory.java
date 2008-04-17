@@ -28,6 +28,7 @@ import org.jboss.deployers.plugins.structure.ClassPathEntryImpl;
 import org.jboss.deployers.plugins.structure.ContextInfoImpl;
 import org.jboss.deployers.plugins.structure.StructureMetaDataImpl;
 import org.jboss.deployers.spi.structure.ClassPathEntry;
+import org.jboss.deployers.spi.structure.ModificationType;
 import org.jboss.xb.binding.ObjectModelFactory;
 import org.jboss.xb.binding.UnmarshallingContext;
 import org.xml.sax.Attributes;
@@ -36,6 +37,7 @@ import org.xml.sax.Attributes;
  * An ObjectModelFactory for the jboss-structure.xml descriptor.
  * 
  * @author Scott.Stark@jboss.org
+ * @author Ales.Justin@jboss.org
  * @version $Revision:$
  */
 public class StructureMetaDataObjectFactory implements ObjectModelFactory
@@ -58,10 +60,15 @@ public class StructureMetaDataObjectFactory implements ObjectModelFactory
 
    public Object newChild(StructureMetaDataImpl parent, UnmarshallingContext navigator, String namespaceURI, String localName, Attributes attrs)
    {
-      Object child = null;
       if (localName.equals("context"))
-         child = new ContextInfoImpl("", null);
-      return child;
+      {
+         ContextInfoImpl child = new ContextInfoImpl("", null);
+         String modificationType = attrs.getValue("modification");
+         if (modificationType != null)
+            child.setModificationType(ModificationType.getModificationType(modificationType));
+         return child;
+      }
+      return null;
    }
    
    public Object newChild(ContextInfoImpl parent, UnmarshallingContext navigator, String namespaceURI, String localName, Attributes attrs)

@@ -183,6 +183,11 @@ public class DeployersAltDDTestCase extends BaseTestCase
          {
             return null;
          }
+
+         public void replaceChild(VirtualFileHandler original, VirtualFileHandler replacement)
+         {
+
+         }
       });
       return altDD;
    }

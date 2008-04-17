@@ -32,6 +32,7 @@ import java.util.List;
 import org.jboss.deployers.spi.attachments.helpers.PredeterminedManagedObjectAttachmentsImpl;
 import org.jboss.deployers.spi.structure.ClassPathEntry;
 import org.jboss.deployers.spi.structure.ContextInfo;
+import org.jboss.deployers.spi.structure.ModificationType;
 
 /**
  * ContextInfoImpl.
@@ -60,6 +61,9 @@ public class ContextInfoImpl extends PredeterminedManagedObjectAttachmentsImpl
    
    /** The comparator class name */
    private String comparatorClassName;
+
+   /** The modification type */
+   private ModificationType modificationType;
 
    /**
     * Create a new ContextInfoImpl.
@@ -226,6 +230,16 @@ public class ContextInfoImpl extends PredeterminedManagedObjectAttachmentsImpl
    public void setRelativeOrder(int relativeOrder)
    {
       this.relativeOrder = relativeOrder;
+   }
+
+   public ModificationType getModificationType()
+   {
+      return modificationType;
+   }
+
+   public void setModificationType(ModificationType modificationType)
+   {
+      this.modificationType = modificationType;
    }
 
    @Override

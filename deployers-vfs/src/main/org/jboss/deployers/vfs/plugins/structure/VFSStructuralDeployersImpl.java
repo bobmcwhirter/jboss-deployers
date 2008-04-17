@@ -154,7 +154,9 @@ public class VFSStructuralDeployersImpl extends AbstractStructuralDeployers impl
             parentContext = StructureMetaDataFactory.createContextInfo(relativePath, recognised.getClassPath());
          else
             parentContext = StructureMetaDataFactory.createContextInfo(relativePath, metaDataPath, recognised.getClassPath());
-         
+
+         // copy the modification type information
+         parentContext.setModificationType(recognised.getModificationType());
          structureMetaData.addContext(parentContext);
          MutableAttachments attachments = (MutableAttachments) parentContext.getPredeterminedManagedObjects();
          attachments.addAttachment(StructureMetaData.class, structure);
