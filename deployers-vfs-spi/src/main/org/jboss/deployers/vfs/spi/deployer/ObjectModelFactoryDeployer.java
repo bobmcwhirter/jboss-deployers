@@ -109,6 +109,8 @@ public abstract class ObjectModelFactoryDeployer<T> extends AbstractVFSParsingDe
       if (file == null)
          throw new IllegalArgumentException("Null file");
 
+      log.debug("Parsing file: "+file+" for deploymentType: " + getOutput());
+
       Unmarshaller unmarshaller = factory.newUnmarshaller();
       unmarshaller.setSchemaValidation(isUseSchemaValidation());
       unmarshaller.setValidation(isUseValidation());

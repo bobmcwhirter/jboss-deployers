@@ -116,9 +116,13 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
       // Try to find the metadata
       VFSDeploymentUnit vfsDeploymentUnit = (VFSDeploymentUnit) unit;
 
-      VirtualFile file = vfsDeploymentUnit.getMetaDataFile(name);
-      if (file == null)
-         return null;
+      VirtualFile file = (VirtualFile) unit.getAttachment(getOutput().getName() + ".altDD");
+      if(file == null)
+      {
+         file = vfsDeploymentUnit.getMetaDataFile(name);
+         if (file == null)
+            return null;
+      }
       
       T result = parse(vfsDeploymentUnit, file, root);
       if (result != null)
@@ -173,7 +177,9 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
       }
       else
       {
-         VirtualFile file = files.get(0);
+         VirtualFile file = (VirtualFile) unit.getAttachment(getOutput().getName() + ".altDD");
+         if(file == null)
+            file = files.get(0);
 
          T result = parse(vfsDeploymentUnit, file, root);
          if (result != null)
