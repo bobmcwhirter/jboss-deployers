@@ -24,7 +24,6 @@ package org.jboss.test.deployers.vfs.classloader.test;
 import java.net.URL;
 
 import junit.framework.Test;
-
 import org.jboss.classloader.plugins.jdk.AbstractJDKChecker;
 import org.jboss.classloader.plugins.system.DefaultClassLoaderSystem;
 import org.jboss.classloader.spi.ClassLoaderSystem;
@@ -41,8 +40,8 @@ import org.jboss.deployers.vfs.plugins.classloader.VFSClassLoaderDescribeDeploye
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.test.deployers.vfs.classloader.support.TestLevelClassLoaderSystemDeployer;
 import org.jboss.test.deployers.vfs.classloader.support.a.A;
+import org.jboss.virtual.MemoryFileFactory;
 import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.plugins.context.memory.MemoryContextFactory;
 
 /**
  * InMemoryClasesUnitTestCase.
@@ -90,9 +89,8 @@ public class InMemoryClasesUnitTestCase extends VFSClassLoaderDependenciesTest
       ClassLoader cl = unit.getClassLoader();
       assertNull(cl.getResource(resourceName));
       
-      MemoryContextFactory factory = MemoryContextFactory.getInstance();
       byte[] bytes = new byte[0];
-      factory.putFile(testResource, bytes);
+      MemoryFileFactory.putFile(testResource, bytes);
       assertEquals(testResource, cl.getResource(resourceName));
       
       mainDeployer.undeploy(ad);

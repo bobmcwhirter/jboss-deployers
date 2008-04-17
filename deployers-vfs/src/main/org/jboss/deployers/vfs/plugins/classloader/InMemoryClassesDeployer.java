@@ -30,8 +30,8 @@ import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.vfs.spi.deployer.AbstractVFSRealDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.util.id.GUID;
+import org.jboss.virtual.MemoryFileFactory;
 import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.plugins.context.memory.MemoryContextFactory;
 
 /**
  * TempURLDeployer.
@@ -47,9 +47,6 @@ public class InMemoryClassesDeployer extends AbstractVFSRealDeployer
    /** The name of the dynamic class root */
    public static final String DYNAMIC_CLASS_KEY = "DYNAMIC_CLASS_KEY";
 
-   /** The memory context factory */
-   private MemoryContextFactory factory = MemoryContextFactory.getInstance();
-   
    /**
     * Create a new TempURLDeployer.
     */
@@ -67,9 +64,9 @@ public class InMemoryClassesDeployer extends AbstractVFSRealDeployer
       try
       {
          URL dynamicClassRoot = new URL("vfsmemory", new GUID().toString(), "");
-         factory.createRoot(dynamicClassRoot);
+         MemoryFileFactory.createRoot(dynamicClassRoot);
          URL classesURL = new URL(dynamicClassRoot, "classes");
-         VirtualFile classes = factory.createDirectory(classesURL).getVirtualFile();
+         VirtualFile classes = MemoryFileFactory.createDirectory(classesURL);
          unit.addAttachment(DYNAMIC_CLASS_URL_KEY, dynamicClassRoot);
          unit.addAttachment(DYNAMIC_CLASS_KEY, classes);
          unit.prependClassPath(classes);
@@ -104,7 +101,7 @@ public class InMemoryClassesDeployer extends AbstractVFSRealDeployer
          {
             URL root = unit.removeAttachment(DYNAMIC_CLASS_URL_KEY, URL.class);
             if (root != null)
-               factory.deleteRoot(root);
+               MemoryFileFactory.deleteRoot(root);
          }
          catch (Exception e)
          {
