@@ -112,7 +112,7 @@ public class VFSStructureBuilder extends AbstractStructureBuilder
       ModificationType modificationType = contextInfo.getModificationType();
       if (modificationType != null)
       {
-         boolean isSupported = (modificationType != ModificationType.UNPACK_RECURSIVE);
+         boolean isSupported = (modificationType != ModificationType.UNPACK_RECURSIVELY);
 
          if (log.isTraceEnabled() && isSupported)
             log.trace("Modifying file: " + file + ", modification type: " + modificationType);

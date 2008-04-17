@@ -30,7 +30,7 @@ package org.jboss.deployers.spi.structure;
 public enum ModificationType
 {
    UNPACK,
-   UNPACK_RECURSIVE,
+   UNPACK_RECURSIVELY,
    MOVE;
 
    /**
