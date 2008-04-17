@@ -26,11 +26,9 @@ import java.lang.annotation.Annotation;
 import org.jboss.metadata.plugins.loader.AbstractMetaDataLoader;
 import org.jboss.metadata.spi.retrieval.AnnotationItem;
 import org.jboss.metadata.spi.retrieval.AnnotationsItem;
-import org.jboss.metadata.spi.retrieval.MetaDataItem;
 import org.jboss.metadata.spi.retrieval.MetaDataRetrieval;
 import org.jboss.metadata.spi.retrieval.simple.SimpleAnnotationItem;
 import org.jboss.metadata.spi.retrieval.simple.SimpleAnnotationsItem;
-import org.jboss.metadata.spi.retrieval.simple.SimpleMetaDataItem;
 import org.jboss.metadata.spi.scope.ScopeKey;
 import org.jboss.metadata.spi.signature.Signature;
 

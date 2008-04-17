@@ -68,7 +68,7 @@ public class DeployersAltDDTestCase extends BaseTestCase
       unit.addAttachment(Object.class.getName() + ".altDD", altDD);
 
       final boolean pickedUpAltDD[] = new boolean[1];
-      AbstractVFSParsingDeployer deployer = new AbstractVFSParsingDeployer<Object>(Object.class)
+      AbstractVFSParsingDeployer<Object> deployer = new AbstractVFSParsingDeployer<Object>(Object.class)
       {
          @Override
          protected Object parse(VFSDeploymentUnit unit, VirtualFile file, Object root) throws Exception

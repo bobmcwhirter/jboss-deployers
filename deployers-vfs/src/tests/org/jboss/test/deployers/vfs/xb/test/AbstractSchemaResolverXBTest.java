@@ -21,11 +21,11 @@
 */
 package org.jboss.test.deployers.vfs.xb.test;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
 
 import junit.framework.Test;
+
 import org.jboss.deployers.vfs.plugins.structure.AbstractVFSDeploymentContext;
 import org.jboss.deployers.vfs.plugins.structure.AbstractVFSDeploymentUnit;
 import org.jboss.deployers.vfs.spi.deployer.SchemaResolverDeployer;
