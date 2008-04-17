@@ -21,6 +21,8 @@
 */
 package org.jboss.deployers.spi.structure;
 
+import java.util.Arrays;
+
 /**
  * The modification type.
  * Unpack, UnpackRecursive, Move
@@ -46,6 +48,6 @@ public enum ModificationType
          if (mt.toString().equalsIgnoreCase(type))
             return mt;
       }
-      throw new IllegalArgumentException("No such modification type: " + type);
+      throw new IllegalArgumentException("No such modification type: " + type + ", available: " + Arrays.asList(values()));
    }
 }
