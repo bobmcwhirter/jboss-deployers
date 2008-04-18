@@ -113,15 +113,13 @@ public class VFSStructureBuilder extends AbstractStructureBuilder
       if (modificationType != null)
       {
          boolean trace = log.isTraceEnabled();
-         boolean isSupported = (modificationType != ModificationType.UNPACK_RECURSIVELY);
+         boolean isSupported = (modificationType == ModificationType.UNPACK);
 
          if (trace && isSupported)
             log.trace("Modifying file: " + file + ", modification type: " + modificationType);
 
          if (ModificationType.UNPACK == modificationType)
             file = VFSUtils.unpack(file);
-         else if (ModificationType.MOVE == modificationType)
-            file = VFSUtils.move(file);
          else
             log.warn("Unsupported modification type: " + modificationType);
 

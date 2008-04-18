@@ -25,15 +25,13 @@ import java.util.Arrays;
 
 /**
  * The modification type.
- * Unpack, UnpackRecursive, Move
+ * Unpack, ...
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
 public enum ModificationType
 {
-   UNPACK,
-   UNPACK_RECURSIVELY,
-   MOVE;
+   UNPACK;
 
    /**
     * Get the modification type.
