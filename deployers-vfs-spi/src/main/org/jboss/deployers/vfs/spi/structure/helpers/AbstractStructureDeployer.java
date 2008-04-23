@@ -36,6 +36,7 @@ import org.jboss.virtual.VFSUtils;
 import org.jboss.virtual.VirtualFile;
 import org.jboss.virtual.VirtualFileVisitor;
 import org.jboss.virtual.VisitorAttributes;
+import org.jboss.util.collection.CollectionsFactory;
 
 /**
  * AbstractStructureDeployer.<p>
@@ -43,6 +44,7 @@ import org.jboss.virtual.VisitorAttributes;
  * We don't care about the order by default.
  * 
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public abstract class AbstractStructureDeployer implements StructureDeployer
@@ -240,6 +242,19 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
     * Create a context
     * 
     * @param root the root context
+    * @param structureMetaData the structure metadata
+    * @return the structure metadata
+    * @throws IllegalArgumentException for a null root or structure metaData
+    */
+   protected ContextInfo createContext(VirtualFile root, StructureMetaData structureMetaData)
+   {
+      return createContext(root, (String)null, structureMetaData);
+   }
+
+   /**
+    * Create a context
+    *
+    * @param root the root context
     * @param metaDataPath the metadata path
     * @param structureMetaData the structure metadata
     * @return the structure metadata
@@ -276,6 +291,58 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
          result = StructureMetaDataFactory.createContextInfo("", metaDataPath, null);
       else
          result = StructureMetaDataFactory.createContextInfo("", null);
+
+      applyContextInfo(root, result);
+
+      structureMetaData.addContext(result);
+      if (trace)
+         log.trace("Added context " + result + " from " + root.getName());
+      return result;
+   }
+
+   /**
+    * Create a context
+    *
+    * @param root the root context
+    * @param metaDataPaths the metadata paths
+    * @param structureMetaData the structure metadata
+    * @return the structure metadata
+    * @throws IllegalArgumentException for a null root or structure metaData
+    */
+   protected ContextInfo createContext(VirtualFile root, String[] metaDataPaths, StructureMetaData structureMetaData)
+   {
+      boolean trace = log.isTraceEnabled();
+
+      if (root == null)
+         throw new IllegalArgumentException("Null root");
+      if (structureMetaData == null)
+         throw new IllegalArgumentException("Null structure metadata");
+
+      List<String> metaDataPath = CollectionsFactory.createLazyList();
+      // Determine whether the metadata paths exists
+      if (metaDataPaths != null && metaDataPaths.length > 0)
+      {
+         for(String path : metaDataPaths)
+         {
+            try
+            {
+               VirtualFile child = root.getChild(path);
+               if (child != null)
+                  metaDataPath.add(path);
+            }
+            catch (IOException e)
+            {
+               log.warn("Not using metadata path " + path + " for " + root.getName() + " reason: " + e.getMessage());
+            }
+         }
+      }
+
+      // Create and link the context
+      ContextInfo result;
+      if (metaDataPath.isEmpty())
+         result = StructureMetaDataFactory.createContextInfo("", null);
+      else
+         result = StructureMetaDataFactory.createContextInfo("", metaDataPath, null);
 
       applyContextInfo(root, result);
 

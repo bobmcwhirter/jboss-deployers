@@ -199,7 +199,7 @@ public class FileStructure extends AbstractStructureDeployer
             }
 
             // Create a context info for this file
-            context = createContext(file, null, metaData);
+            context = createContext(file, metaData);
             // There are no subdeployments for files
             if (trace)
                log.trace(file + " isFile: " + isFile);

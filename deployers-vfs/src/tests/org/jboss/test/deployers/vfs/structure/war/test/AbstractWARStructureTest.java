@@ -59,7 +59,14 @@ public abstract class AbstractWARStructureTest extends AbstractStructureTest
    {
       assertNotValid("/structure/war", "directorynotawar");
    }
-   
+
+   public void testMetainfMetadata() throws Throwable
+   {
+      VFSDeploymentContext war = assertDeploy("/structure/war", "metainf.war");
+      VirtualFile persistence = war.getMetaDataFile("persistence.xml");
+      assertNotNull(persistence);
+   }
+
    public void testDirectoryWithWebInf() throws Throwable
    {
       VFSDeploymentContext war = assertDeployNoChildren("/structure/war", "directorywithwebinf");

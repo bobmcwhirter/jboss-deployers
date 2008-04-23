@@ -118,8 +118,9 @@ public class WARStructure extends AbstractStructureDeployer
                log.trace("... ok - name ends in .war.");
             }
 
-            // Create a context for this war file with WEB-INF as the location for metadata  
-            context = createContext(file, "WEB-INF", metaData);
+            // Create a context for this war file with WEB-INF as the location for metadata
+            // Some wars also might have metadata in WEB-INF/classes/META-INF, e.g. persistence.xml
+            context = createContext(file, new String[]{"WEB-INF", "WEB-INF/classes/META-INF"}, metaData);
 
             // Add the war manifest classpath entries
             addClassPath(root, file, false, true, context);
