@@ -243,7 +243,7 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
     * 
     * @param root the root context
     * @param structureMetaData the structure metadata
-    * @return the structure metadata
+    * @return the context info
     * @throws IllegalArgumentException for a null root or structure metaData
     */
    protected ContextInfo createContext(VirtualFile root, StructureMetaData structureMetaData)
@@ -257,17 +257,27 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
     * @param root the root context
     * @param metaDataPath the metadata path
     * @param structureMetaData the structure metadata
-    * @return the structure metadata
+    * @return the context info
     * @throws IllegalArgumentException for a null root or structure metaData
     */
    protected ContextInfo createContext(VirtualFile root, String metaDataPath, StructureMetaData structureMetaData)
    {
-      boolean trace = log.isTraceEnabled();
-      
+      ContextInfo result = applyMetadataPath(root, metaDataPath);
+      applyStructure(root, structureMetaData, result);
+      return result;
+   }
+
+   /**
+    * Apply metadata on root to create context.
+    *
+    * @param root the root context
+    * @param metaDataPath the metadata path
+    * @return the context info
+    */
+   protected ContextInfo applyMetadataPath(VirtualFile root, String metaDataPath)
+   {
       if (root == null)
          throw new IllegalArgumentException("Null root");
-      if (structureMetaData == null)
-         throw new IllegalArgumentException("Null structure metadata");
 
       // Determine whether the metadata path exists
       if (metaDataPath != null)
@@ -284,20 +294,12 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
             metaDataPath = null;
          }
       }
-      
-      // Create and link the context 
-      ContextInfo result;
+
+      // Create and link the context
       if (metaDataPath != null)
-         result = StructureMetaDataFactory.createContextInfo("", metaDataPath, null);
+         return StructureMetaDataFactory.createContextInfo("", metaDataPath, null);
       else
-         result = StructureMetaDataFactory.createContextInfo("", null);
-
-      applyContextInfo(root, result);
-
-      structureMetaData.addContext(result);
-      if (trace)
-         log.trace("Added context " + result + " from " + root.getName());
-      return result;
+         return StructureMetaDataFactory.createContextInfo("", null);
    }
 
    /**
@@ -306,17 +308,27 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
     * @param root the root context
     * @param metaDataPaths the metadata paths
     * @param structureMetaData the structure metadata
-    * @return the structure metadata
+    * @return the context info
     * @throws IllegalArgumentException for a null root or structure metaData
     */
    protected ContextInfo createContext(VirtualFile root, String[] metaDataPaths, StructureMetaData structureMetaData)
    {
-      boolean trace = log.isTraceEnabled();
+      ContextInfo result = applyMetadataPaths(root, metaDataPaths);
+      applyStructure(root, structureMetaData, result);
+      return result;
+   }
 
+   /**
+    * Apply metadata on root to create context.
+    *
+    * @param root the root context
+    * @param metaDataPaths the metadata paths
+    * @return the context info
+    */
+   protected ContextInfo applyMetadataPaths(VirtualFile root, String[] metaDataPaths)
+   {
       if (root == null)
          throw new IllegalArgumentException("Null root");
-      if (structureMetaData == null)
-         throw new IllegalArgumentException("Null structure metadata");
 
       List<String> metaDataPath = CollectionsFactory.createLazyList();
       // Determine whether the metadata paths exists
@@ -338,18 +350,33 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
       }
 
       // Create and link the context
-      ContextInfo result;
       if (metaDataPath.isEmpty())
-         result = StructureMetaDataFactory.createContextInfo("", null);
+         return StructureMetaDataFactory.createContextInfo("", null);
       else
-         result = StructureMetaDataFactory.createContextInfo("", metaDataPath, null);
+         return StructureMetaDataFactory.createContextInfo("", metaDataPath, null);
+   }
 
-      applyContextInfo(root, result);
+   /**
+    * Apply structure metadata on context.
+    *
+    * @param root the root context
+    * @param structureMetaData the structure metadata
+    * @param context the new created context
+    */
+   protected void applyStructure(VirtualFile root, StructureMetaData structureMetaData, ContextInfo context)
+   {
+      boolean trace = log.isTraceEnabled();
 
-      structureMetaData.addContext(result);
+      if (root == null)
+         throw new IllegalArgumentException("Null root");
+      if (structureMetaData == null)
+         throw new IllegalArgumentException("Null structure metadata");
+
+      applyContextInfo(root, context);
+
+      structureMetaData.addContext(context);
       if (trace)
-         log.trace("Added context " + result + " from " + root.getName());
-      return result;
+         log.trace("Added context " + context + " from " + root.getName());
    }
 
    /**
