@@ -23,6 +23,7 @@ package org.jboss.deployers.plugins.annotations;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
+import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashMap;
@@ -39,14 +40,15 @@ import org.jboss.util.collection.CollectionsFactory;
  */
 public class DefaultAnnotationEnvironment implements AnnotationEnvironment
 {
-   private ClassLoader classLoader;
+   private WeakReference<ClassLoader> clRef;
    private Map<Class<? extends Annotation>, Map<ElementType, Set<String>>> env;
 
    public DefaultAnnotationEnvironment(ClassLoader classLoader)
    {
       if (classLoader == null)
          throw new IllegalArgumentException("Null classloader");
-      this.classLoader = classLoader;
+
+      this.clRef = new WeakReference<ClassLoader>(classLoader);
       this.env = new HashMap<Class<? extends Annotation>, Map<ElementType, Set<String>>>();
    }
 
@@ -100,6 +102,10 @@ public class DefaultAnnotationEnvironment implements AnnotationEnvironment
     */
    protected Set<Class<?>> transform(Set<String> classNames)
    {
+      ClassLoader classLoader = clRef.get();
+      if (classLoader == null)
+         throw new IllegalArgumentException("ClassLoader was already garbage collected.");
+
       try
       {
          Set<Class<?>> classes = new HashSet<Class<?>>(classNames.size());
