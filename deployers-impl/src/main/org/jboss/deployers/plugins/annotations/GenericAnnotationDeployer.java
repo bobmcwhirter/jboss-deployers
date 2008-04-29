@@ -21,18 +21,28 @@
 */
 package org.jboss.deployers.plugins.annotations;
 
-import org.jboss.deployers.plugins.classloading.AbstractResourceVisitorDeployer;
+import javassist.ClassPath;
+import javassist.ClassPool;
+import javassist.LoaderClassPath;
+import org.jboss.classloading.spi.dependency.Module;
+import org.jboss.deployers.spi.DeploymentException;
+import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
+import org.jboss.deployers.spi.deployer.helpers.AbstractSimpleRealDeployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
-import org.jboss.classloading.spi.visitor.ResourceVisitor;
 
 /**
  * Generic annotation scanner deployer.
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class GenericAnnotationDeployer extends AbstractResourceVisitorDeployer
+public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module>
 {
    private boolean forceAnnotations;
+
+   public GenericAnnotationDeployer()
+   {
+      super(Module.class);
+   }
 
    /**
     * Should we force all annotations to be available.
@@ -44,10 +54,24 @@ public class GenericAnnotationDeployer extends AbstractResourceVisitorDeployer
       this.forceAnnotations = forceAnnotations;
    }
 
-   protected ResourceVisitor createVisitor(DeploymentUnit unit)
+   public void deploy(DeploymentUnit unit, Module module) throws DeploymentException
    {
-      GenericAnnotationResourceVisitor visitor = new GenericAnnotationResourceVisitor(unit);
-      visitor.setForceAnnotations(forceAnnotations);
-      return visitor;
+      ClassPool pool = ClassPool.getDefault();
+      ClassLoader classLoader = unit.getClassLoader();
+      ClassPath classPath = new LoaderClassPath(classLoader);
+      pool.insertClassPath(classPath);
+      try
+      {
+         GenericAnnotationResourceVisitor visitor = new GenericAnnotationResourceVisitor(pool, classLoader);
+         visitor.setForceAnnotations(forceAnnotations);
+
+         module.visit(visitor);
+
+         unit.addAttachment(AnnotationEnvironment.class, visitor.getEnv());
+      }
+      finally
+      {
+         pool.removeClassPath(classPath);
+      }
    }
 }

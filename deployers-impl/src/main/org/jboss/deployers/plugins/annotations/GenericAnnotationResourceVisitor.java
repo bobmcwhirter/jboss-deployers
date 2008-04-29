@@ -21,17 +21,19 @@
 */
 package org.jboss.deployers.plugins.annotations;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMember;
 import javassist.NotFoundException;
+import javassist.CtBehavior;
 import org.jboss.classloading.spi.visitor.ClassFilter;
 import org.jboss.classloading.spi.visitor.ResourceContext;
 import org.jboss.classloading.spi.visitor.ResourceFilter;
 import org.jboss.classloading.spi.visitor.ResourceVisitor;
-import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
 import org.jboss.logging.Logger;
 
 /**
@@ -42,16 +44,20 @@ import org.jboss.logging.Logger;
 public class GenericAnnotationResourceVisitor implements ResourceVisitor
 {
    private static final Logger log = Logger.getLogger(GenericAnnotationResourceVisitor.class);
-   private static final ClassPool pool = ClassPool.getDefault();
 
-   private DeploymentUnit unit;
+   private ClassPool pool;
    private boolean forceAnnotations;
+   private DefaultAnnotationEnvironment env;
 
-   public GenericAnnotationResourceVisitor(DeploymentUnit unit)
+   public GenericAnnotationResourceVisitor(ClassPool pool, ClassLoader classLoader)
    {
-      if (unit == null)
-         throw new IllegalArgumentException("Null deployment unit");
-      this.unit = unit;
+      if (pool == null)
+         throw new IllegalArgumentException("Null pool");
+      if (classLoader == null)
+         throw new IllegalArgumentException("Null classloader");
+
+      this.pool = pool;
+      this.env = new DefaultAnnotationEnvironment(classLoader);
    }
 
    public ResourceFilter getFilter()
@@ -144,6 +150,13 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
          {
             Object[] annotations = forceAnnotations ? member.getAnnotations() : member.getAvailableAnnotations();
             handleAnnotations(type, annotations, resource);
+            if (member instanceof CtBehavior)
+            {
+               CtBehavior behavior = (CtBehavior)member;
+               Object[][] paramAnnotations = forceAnnotations ? behavior.getParameterAnnotations() : behavior.getAvailableParameterAnnotations();
+               for (Object[] paramAnn : paramAnnotations)
+                  handleAnnotations(ElementType.PARAMETER, paramAnn, resource);
+            }
          }
       }
    }
@@ -157,7 +170,14 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
     */
    protected void handleAnnotations(ElementType type, Object[] annotations, ResourceContext resource)
    {
-      // todo
+      if (annotations != null && annotations.length > 0)
+      {
+         for (Object annObject : annotations)
+         {
+            Annotation annotation = Annotation.class.cast(annObject);
+            env.putAnnotation(annotation.annotationType(), type, resource.getClassName());
+         }
+      }
    }
 
    /**
@@ -168,5 +188,10 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
    public void setForceAnnotations(boolean forceAnnotations)
    {
       this.forceAnnotations = forceAnnotations;
+   }
+
+   AnnotationEnvironment getEnv()
+   {
+      return env;
    }
 }
