@@ -43,6 +43,7 @@ import org.jboss.deployers.client.spi.DeployerClient;
 import org.jboss.deployers.plugins.classloading.AbstractClassLoaderDescribeDeployer;
 import org.jboss.deployers.spi.attachments.MutableAttachments;
 import org.jboss.deployers.spi.attachments.PredeterminedManagedObjectAttachments;
+import org.jboss.deployers.spi.deployer.Deployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.test.deployers.AbstractDeployerTest;
 import org.jboss.test.deployers.classloading.support.MockClassLoaderDescribeDeployer;
@@ -217,7 +218,7 @@ public abstract class ClassLoaderDependenciesTest extends AbstractDeployerTest
       assertNull("Did not expect domain " + name, system.getDomain(name));
    }
 
-   protected DeployerClient getMainDeployer()
+   protected DeployerClient getMainDeployer(Deployer... deployers)
    {
       ClassLoading classLoading = new ClassLoading();
       system = new DefaultClassLoaderSystem();
@@ -230,6 +231,15 @@ public abstract class ClassLoaderDependenciesTest extends AbstractDeployerTest
       deployer2.setClassLoading(classLoading);
       deployer2.setSystem(system);
 
+      if (deployers != null && deployers.length > 0)
+      {
+         Deployer[] allDeployers = new Deployer[deployers.length + 2];
+         allDeployers[0] = deployer1;
+         allDeployers[1] = deployer2;
+         System.arraycopy(deployers, 0, allDeployers, 2, deployers.length);
+         return createMainDeployer(allDeployers);
+      }
+      
       return createMainDeployer(deployer1, deployer2);
    }
 }

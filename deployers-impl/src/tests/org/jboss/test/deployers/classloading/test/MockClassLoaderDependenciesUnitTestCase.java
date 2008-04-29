@@ -32,7 +32,7 @@ import org.jboss.test.deployers.classloading.support.a.A;
 import org.jboss.test.deployers.classloading.support.b.B;
 
 /**
- * HeuristicAllOrNothingUnitTestCase.
+ * MockClassLoaderDependenciesUnitTestCase.
  * 
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
  * @version $Revision: 1.1 $

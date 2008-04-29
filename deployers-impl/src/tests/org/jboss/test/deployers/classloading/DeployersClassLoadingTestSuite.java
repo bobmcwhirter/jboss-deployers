@@ -28,6 +28,7 @@ import junit.textui.TestRunner;
 import org.jboss.test.deployers.classloading.test.MockClassLoaderDependenciesUnitTestCase;
 import org.jboss.test.deployers.classloading.test.SubDeploymentMockClassLoaderUnitTestCase;
 import org.jboss.test.deployers.classloading.test.UndeployOrderClassLoaderUnitTestCase;
+import org.jboss.test.deployers.classloading.test.MockResourceVisitorDeployerUnitTestCase;
 
 /**
  * Deployers Deployer Test Suite.
@@ -49,6 +50,7 @@ public class DeployersClassLoadingTestSuite extends TestSuite
       suite.addTest(MockClassLoaderDependenciesUnitTestCase.suite());
       suite.addTest(UndeployOrderClassLoaderUnitTestCase.suite());
       suite.addTest(SubDeploymentMockClassLoaderUnitTestCase.suite());
+      suite.addTest(MockResourceVisitorDeployerUnitTestCase.suite());
 
       return suite;
    }

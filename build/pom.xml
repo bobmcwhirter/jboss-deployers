@@ -32,6 +32,7 @@
     <version.jboss.vfs>2.0.0-SNAPSHOT</version.jboss.vfs>
     <version.org.jboss.test>1.0.5.GA</version.org.jboss.test>
     <version.junit>4.4</version.junit>
+    <version.javassist>3.7.1.GA</version.javassist>
   </properties>
 
   <build>
@@ -299,6 +300,11 @@
         <groupId>org.jboss.aop</groupId>
         <artifactId>jboss-aop</artifactId>
         <version>${version.jboss.aop}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss</groupId>
+        <artifactId>javassist</artifactId>
+        <version>${version.javassist}</version>
       </dependency>
       <!-- test dependencies -->
       <dependency>

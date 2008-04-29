@@ -77,14 +77,25 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
       {
          if (forceAnnotations)
             throw new RuntimeException(e);
-         else if (log.isTraceEnabled())
-            log.trace("Exception reading resource: " + resource.getResourceName(), e);
+
+         logThrowable(resource, e);
       }
       catch (Throwable t)
       {
-         if (log.isTraceEnabled())
-            log.trace("Exception reading resource: " + resource.getResourceName(), t);
+         logThrowable(resource, t);
       }
+   }
+
+   /**
+    * Log throwable.
+    *
+    * @param resource the resource we're visiting
+    * @param t the throwable
+    */
+   protected void logThrowable(ResourceContext resource, Throwable t)
+   {
+      if (log.isTraceEnabled())
+         log.trace("Exception reading resource: " + resource.getResourceName(), t);
    }
 
    /**
