@@ -23,14 +23,19 @@ package org.jboss.deployers.plugins.annotations;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
-import java.lang.ref.WeakReference;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashMap;
-import java.util.Collections;
-import java.util.HashSet;
 
 import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
+import org.jboss.deployers.spi.annotations.Element;
+import org.jboss.metadata.spi.signature.Signature;
 import org.jboss.util.collection.CollectionsFactory;
 
 /**
@@ -38,18 +43,14 @@ import org.jboss.util.collection.CollectionsFactory;
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class DefaultAnnotationEnvironment implements AnnotationEnvironment
+public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implements AnnotationEnvironment
 {
-   private WeakReference<ClassLoader> clRef;
-   private Map<Class<? extends Annotation>, Map<ElementType, Set<String>>> env;
+   private Map<Class<? extends Annotation>, Map<ElementType, Set<ClassSignaturePair>>> env;
 
    public DefaultAnnotationEnvironment(ClassLoader classLoader)
    {
-      if (classLoader == null)
-         throw new IllegalArgumentException("Null classloader");
-
-      this.clRef = new WeakReference<ClassLoader>(classLoader);
-      this.env = new HashMap<Class<? extends Annotation>, Map<ElementType, Set<String>>>();
+      super(classLoader);
+      this.env = new HashMap<Class<? extends Annotation>, Map<ElementType, Set<ClassSignaturePair>>>();
    }
 
    /**
@@ -58,89 +59,120 @@ public class DefaultAnnotationEnvironment implements AnnotationEnvironment
     * @param annClass the annotation class
     * @param type the annotation type
     * @param className the class name
+    * @param signature the signature
     */
-   void putAnnotation(Class<? extends Annotation> annClass, ElementType type, String className)
+   void putAnnotation(Class<? extends Annotation> annClass, ElementType type, String className, Signature signature)
    {
-      Map<ElementType, Set<String>> elements = env.get(annClass);
+      Map<ElementType, Set<ClassSignaturePair>> elements = env.get(annClass);
       if (elements == null)
       {
-         elements = new HashMap<ElementType, Set<String>>();
+         elements = new HashMap<ElementType, Set<ClassSignaturePair>>();
          env.put(annClass, elements);
       }
-      Set<String> classes = elements.get(type);
+      Set<ClassSignaturePair> classes = elements.get(type);
       if (classes == null)
       {
          classes = CollectionsFactory.createLazySet();
          elements.put(type, classes);
       }
-      classes.add(className);
+      classes.add(new ClassSignaturePair(className, signature));
    }
 
    /**
-    * Get matching class names.
+    * Get matching cs pairs.
     *
     * @param annClass the annotation class
     * @param type the annotation type
     * @return class names
     */
-   protected Set<String> getClassNames(Class<? extends Annotation> annClass, ElementType type)
+   protected Set<ClassSignaturePair> getCSPairs(Class<? extends Annotation> annClass, ElementType type)
    {
-      Set<String> classNames = null;
+      Set<ClassSignaturePair> pairs = null;
 
-      Map<ElementType, Set<String>> elements = env.get(annClass);
+      Map<ElementType, Set<ClassSignaturePair>> elements = env.get(annClass);
       if (elements != null)
-         classNames = elements.get(type);
+         pairs = elements.get(type);
 
-      return (classNames != null) ? classNames : Collections.<String>emptySet();
+      return (pairs != null) ? pairs : Collections.<ClassSignaturePair>emptySet();
    }
 
    /**
     * Transform class names into classes.
     *
-    * @param classNames the class names
+    * @param pairs the cs pairs
     * @return classes
     */
-   protected Set<Class<?>> transform(Set<String> classNames)
+   protected Set<Class<?>> transformToClasses(Set<ClassSignaturePair> pairs)
    {
-      ClassLoader classLoader = clRef.get();
-      if (classLoader == null)
-         throw new IllegalArgumentException("ClassLoader was already garbage collected.");
-
-      try
-      {
-         Set<Class<?>> classes = new HashSet<Class<?>>(classNames.size());
-         for (String className : classNames)
-            classes.add(classLoader.loadClass(className));
-         return classes;
-      }
-      catch (ClassNotFoundException e)
-      {
-         throw new RuntimeException(e);
-      }
+      Set<Class<?>> classes = new HashSet<Class<?>>(pairs.size());
+      for (ClassSignaturePair pair : pairs)
+         classes.add(loadClass(pair.getClassName()));
+      return classes;
    }
+
+   /**
+    * Transform class names into classes.
+    *
+    * @param type the annotation type
+    * @param annClass the annotation class
+    * @param expectedAccessibleObjectClass the ao class
+    * @return classes
+    */
+   protected <A extends Annotation, M extends AccessibleObject> Set<Element<A, M>> transformToElements(
+         ElementType type,
+         Class<A> annClass,
+         Class<M> expectedAccessibleObjectClass
+   )
+   {
+      ClassLoader classLoader = getClassLoader();
+      Set<ClassSignaturePair> pairs = getCSPairs(annClass, type);
+      Set<Element<A, M>> elements = new HashSet<Element<A, M>>();
+      for (ClassSignaturePair pair : pairs)
+         elements.add(toElement(classLoader, pair, annClass, expectedAccessibleObjectClass));
+      return elements;
+   }
+
+   /**
+    * Transform cs pair to element.
+    *
+    * @param classLoader the class loader
+    * @param pair the cs pair
+    * @param annClass the annotation class
+    * @param aoClass the ao class
+    * @return element
+    */
+   protected <A extends Annotation, M extends AccessibleObject> Element<A, M> toElement(
+         ClassLoader classLoader,
+         ClassSignaturePair pair,
+         Class<A> annClass,
+         Class<M> aoClass)
+   {
+      return null;
+   }
+
 
    public Set<Class<?>> classIsAnnotatedWith(Class<? extends Annotation> annotation)
    {
-      return transform(getClassNames(annotation, ElementType.TYPE));
+      return transformToClasses(getCSPairs(annotation, ElementType.TYPE));
    }
 
-   public Set<Class<?>> classHasConstructorAnnotatedWith(Class<? extends Annotation> annotation)
+   public <A extends Annotation> Set<Element<A, Constructor>> classHasConstructorAnnotatedWith(Class<A> annotation)
    {
-      return transform(getClassNames(annotation, ElementType.CONSTRUCTOR));
+      return transformToElements(ElementType.CONSTRUCTOR, annotation, Constructor.class);
    }
 
-   public Set<Class<?>> classHasFieldAnnotatedWith(Class<? extends Annotation> annotation)
+   public <A extends Annotation> Set<Element<A, Field>> classHasFieldAnnotatedWith(Class<A> annotation)
    {
-      return transform(getClassNames(annotation, ElementType.FIELD));
+      return transformToElements(ElementType.FIELD, annotation, Field.class);
    }
 
-   public Set<Class<?>> classHasMethodAnnotatedWith(Class<? extends Annotation> annotation)
+   public <A extends Annotation> Set<Element<A, Method>> classHasMethodAnnotatedWith(Class<A> annotation)
    {
-      return transform(getClassNames(annotation, ElementType.METHOD));
+      return transformToElements(ElementType.METHOD, annotation, Method.class);
    }
 
-   public Set<Class<?>> classHasParameterAnnotatedWith(Class<? extends Annotation> annotation)
+   public <A extends Annotation> Set<Element<A, AccessibleObject>> classHasParameterAnnotatedWith(Class<A> annotation)
    {
-      return transform(getClassNames(annotation, ElementType.PARAMETER)); 
+      return transformToElements(ElementType.CONSTRUCTOR, annotation, AccessibleObject.class);
    }
 }

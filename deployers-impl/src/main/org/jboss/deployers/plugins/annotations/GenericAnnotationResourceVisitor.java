@@ -25,16 +25,17 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 
 import javassist.ClassPool;
+import javassist.CtBehavior;
 import javassist.CtClass;
 import javassist.CtMember;
 import javassist.NotFoundException;
-import javassist.CtBehavior;
 import org.jboss.classloading.spi.visitor.ClassFilter;
 import org.jboss.classloading.spi.visitor.ResourceContext;
 import org.jboss.classloading.spi.visitor.ResourceFilter;
 import org.jboss.classloading.spi.visitor.ResourceVisitor;
 import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
 import org.jboss.logging.Logger;
+import org.jboss.metadata.spi.signature.Signature;
 
 /**
  * Generic annotation scanner deployer.
@@ -115,7 +116,7 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
    protected void handleCtClass(CtClass ctClass, ResourceContext resource) throws ClassNotFoundException, NotFoundException
    {
       Object[] annotations = forceAnnotations ? ctClass.getAnnotations() : ctClass.getAvailableAnnotations();
-      handleAnnotations(ElementType.TYPE, annotations, resource);
+      handleAnnotations(ElementType.TYPE, null, annotations, resource);
       handleCtMembers(ElementType.CONSTRUCTOR, ctClass.getDeclaredConstructors(), resource);
       handleCtMembers(ElementType.METHOD, ctClass.getDeclaredMethods(), resource);
       handleCtMembers(ElementType.FIELD, ctClass.getDeclaredFields(), resource);
@@ -149,13 +150,13 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
          for (CtMember member : members)
          {
             Object[] annotations = forceAnnotations ? member.getAnnotations() : member.getAvailableAnnotations();
-            handleAnnotations(type, annotations, resource);
+            handleAnnotations(type, member, annotations, resource);
             if (member instanceof CtBehavior)
             {
                CtBehavior behavior = (CtBehavior)member;
                Object[][] paramAnnotations = forceAnnotations ? behavior.getParameterAnnotations() : behavior.getAvailableParameterAnnotations();
                for (Object[] paramAnn : paramAnnotations)
-                  handleAnnotations(ElementType.PARAMETER, paramAnn, resource);
+                  handleAnnotations(ElementType.PARAMETER, member, paramAnn, resource);
             }
          }
       }
@@ -165,17 +166,23 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
     * Handle annotations.
     *
     * @param type where we found the annotations
+    * @param member the ct member
     * @param annotations the actual annotations
     * @param resource the resource we're visiting
     */
-   protected void handleAnnotations(ElementType type, Object[] annotations, ResourceContext resource)
+   protected void handleAnnotations(ElementType type, CtMember member, Object[] annotations, ResourceContext resource)
    {
       if (annotations != null && annotations.length > 0)
       {
          for (Object annObject : annotations)
          {
             Annotation annotation = Annotation.class.cast(annObject);
-            env.putAnnotation(annotation.annotationType(), type, resource.getClassName());
+            Signature signature = null;
+/*
+            if (member != null)
+               signature = JavassistSignatureFactory.getSignature(member);
+*/
+            env.putAnnotation(annotation.annotationType(), type, resource.getClassName(), signature);
          }
       }
    }
