@@ -147,7 +147,7 @@ public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implemen
          Class<A> annClass,
          Class<M> aoClass)
    {
-      return null;
+      return new DefaultElement<A,M>(classLoader, pair.getClassName(), pair.getSignature(), annClass, aoClass);
    }
 
 

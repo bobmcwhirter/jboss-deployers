@@ -198,7 +198,7 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
    }
 
    /**
-    * Get the buit environment.
+    * Get the built environment.
     *
     * @return the annoattion environment
     */
