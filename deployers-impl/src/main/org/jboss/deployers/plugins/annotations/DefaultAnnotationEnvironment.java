@@ -173,6 +173,6 @@ public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implemen
 
    public <A extends Annotation> Set<Element<A, AccessibleObject>> classHasParameterAnnotatedWith(Class<A> annotation)
    {
-      return transformToElements(ElementType.CONSTRUCTOR, annotation, AccessibleObject.class);
+      return transformToElements(ElementType.PARAMETER, annotation, AccessibleObject.class);
    }
 }
