@@ -104,6 +104,9 @@ public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implemen
     */
    protected Set<Class<?>> transformToClasses(Set<ClassSignaturePair> pairs)
    {
+      if (pairs.isEmpty())
+         return Collections.emptySet();
+
       Set<Class<?>> classes = new HashSet<Class<?>>(pairs.size());
       for (ClassSignaturePair pair : pairs)
          classes.add(loadClass(pair.getClassName()));
@@ -124,8 +127,11 @@ public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implemen
          Class<M> expectedAccessibleObjectClass
    )
    {
-      ClassLoader classLoader = getClassLoader();
       Set<ClassSignaturePair> pairs = getCSPairs(annClass, type);
+      if (pairs.isEmpty())
+         return Collections.emptySet();
+
+      ClassLoader classLoader = getClassLoader();
       Set<Element<A, M>> elements = new HashSet<Element<A, M>>();
       for (ClassSignaturePair pair : pairs)
          elements.add(toElement(classLoader, pair, annClass, expectedAccessibleObjectClass));
