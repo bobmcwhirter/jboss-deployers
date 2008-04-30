@@ -197,6 +197,11 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
       this.forceAnnotations = forceAnnotations;
    }
 
+   /**
+    * Get the buit environment.
+    *
+    * @return the annoattion environment
+    */
    AnnotationEnvironment getEnv()
    {
       return env;
