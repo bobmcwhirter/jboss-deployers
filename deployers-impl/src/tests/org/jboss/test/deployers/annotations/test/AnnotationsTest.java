@@ -149,7 +149,7 @@ public abstract class AnnotationsTest extends AbstractDeployerTest
    {
       ClassLoader cl = unit.getClassLoader();
       if (cl instanceof InterceptionClassLoader == false)
-         throw new IllegalArgumentException("Expecting intercepted classlaoder: " + cl);
+         throw new IllegalArgumentException("Expecting InterceptionClassLoader instance: " + cl);
 
       InterceptionClassLoader icl = (InterceptionClassLoader)cl;
       Set<String> loaded = icl.getLoaded();
