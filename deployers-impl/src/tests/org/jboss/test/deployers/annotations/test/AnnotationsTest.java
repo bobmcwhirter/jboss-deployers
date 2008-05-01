@@ -45,8 +45,9 @@ import org.jboss.deployers.spi.attachments.MutableAttachments;
 import org.jboss.deployers.spi.attachments.PredeterminedManagedObjectAttachments;
 import org.jboss.deployers.spi.deployer.Deployer;
 import org.jboss.test.deployers.AbstractDeployerTest;
+import org.jboss.test.deployers.annotations.support.InterceptionClassLoaderSystemDeployer;
+import org.jboss.test.deployers.annotations.support.InterceptionClassLoader;
 import org.jboss.test.deployers.classloading.support.MockClassLoaderDescribeDeployer;
-import org.jboss.test.deployers.classloading.support.MockLevelClassLoaderSystemDeployer;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
@@ -56,7 +57,7 @@ public abstract class AnnotationsTest extends AbstractDeployerTest
    private static ClassLoadingMetaDataFactory classLoadingMetaDataFactory = ClassLoadingMetaDataFactory.getInstance();
 
    protected AbstractClassLoaderDescribeDeployer deployer1;
-   protected MockLevelClassLoaderSystemDeployer deployer2;
+   protected InterceptionClassLoaderSystemDeployer deployer2;
 
    protected AnnotationsTest(String name)
    {
@@ -133,6 +134,24 @@ public abstract class AnnotationsTest extends AbstractDeployerTest
       return clazz.getMethod("value").invoke(annotation);
    }
 
+   protected void assertNotLoaded(String className)
+   {
+      assertCheckLoaded(className, false);
+   }
+
+   protected void assertLoaded(String className)
+   {
+      assertCheckLoaded(className, true);      
+   }
+
+   private void assertCheckLoaded(String className, boolean checkFlag)
+   {
+      InterceptionClassLoader icl = deployer2.getClassLoader();
+      Set<String> loaded = icl.getLoaded();
+      assertNotNull(loaded);
+      assertEquals(loaded.contains(className), checkFlag);
+   }
+
    protected DeployerClient getMainDeployer(Deployer... deployers)
    {
       ClassLoading classLoading = new ClassLoading();
@@ -142,7 +161,7 @@ public abstract class AnnotationsTest extends AbstractDeployerTest
       deployer1 = new MockClassLoaderDescribeDeployer();
       deployer1.setClassLoading(classLoading);
 
-      deployer2 = new MockLevelClassLoaderSystemDeployer();
+      deployer2 = new InterceptionClassLoaderSystemDeployer();
       deployer2.setClassLoading(classLoading);
       deployer2.setSystem(system);
 

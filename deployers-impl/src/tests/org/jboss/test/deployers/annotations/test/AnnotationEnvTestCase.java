@@ -75,11 +75,17 @@ public class AnnotationEnvTestCase extends AnnotationsTest
          ClassLoader cl = unit.getClassLoader();
          Class<TestAnnotation> taClass = (Class<TestAnnotation>)cl.loadClass("org.jboss.test.deployers.annotations.support.TestAnnotation");
 
+         assertNotLoaded("org.jboss.test.deployers.annotations.support.AnnotationsHolder");
+         // annotations are loaded, OK?
+         assertLoaded("org.jboss.test.deployers.annotations.support.TestAnnotation");
+
          AnnotationEnvironment env = getAnnotationEnvironment(unit);
          Set<Class<?>> classes = env.classIsAnnotatedWith(taClass);
          assertNotNull(classes);
          assertEquals(1, classes.size());
          assertEquals(AnnotationsHolder.class.getName(), classes.iterator().next().getName());
+
+         assertLoaded("org.jboss.test.deployers.annotations.support.AnnotationsHolder");
 
          Element<TestAnnotation, Constructor> ec = getSingleton(env.classHasConstructorAnnotatedWith(taClass));
          Annotation ta = ec.getAnnotation();
@@ -120,10 +126,5 @@ public class AnnotationEnvTestCase extends AnnotationsTest
       {
          assertUndeploy(deployer, deployment);
       }
-   }
-
-   public void testClassNotLoaded() throws Exception
-   {
-      // TODO
    }
 }
