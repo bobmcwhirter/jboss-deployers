@@ -64,7 +64,7 @@ abstract class WeakClassLoaderHolder
    {
       try
       {
-         return getClassLoader().loadClass(className);
+         return Class.forName(className, false, getClassLoader());
       }
       catch (ClassNotFoundException e)
       {

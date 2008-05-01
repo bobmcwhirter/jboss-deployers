@@ -118,13 +118,13 @@ public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implemen
     *
     * @param type the annotation type
     * @param annClass the annotation class
-    * @param expectedAccessibleObjectClass the ao class
+    * @param aoClass the ao class
     * @return classes
     */
    protected <A extends Annotation, M extends AccessibleObject> Set<Element<A, M>> transformToElements(
          ElementType type,
          Class<A> annClass,
-         Class<M> expectedAccessibleObjectClass
+         Class<M> aoClass
    )
    {
       Set<ClassSignaturePair> pairs = getCSPairs(annClass, type);
@@ -134,28 +134,16 @@ public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implemen
       ClassLoader classLoader = getClassLoader();
       Set<Element<A, M>> elements = new HashSet<Element<A, M>>();
       for (ClassSignaturePair pair : pairs)
-         elements.add(toElement(classLoader, pair, annClass, expectedAccessibleObjectClass));
+      {
+         Element<A, M> element;
+         if (type == ElementType.PARAMETER)
+            element = new ParametersElement<A,M>(classLoader, pair.getClassName(), pair.getSignature(), annClass, aoClass);
+         else
+            element = new DefaultElement<A,M>(classLoader, pair.getClassName(), pair.getSignature(), annClass, aoClass);
+         elements.add(element);
+      }
       return elements;
    }
-
-   /**
-    * Transform cs pair to element.
-    *
-    * @param classLoader the class loader
-    * @param pair the cs pair
-    * @param annClass the annotation class
-    * @param aoClass the ao class
-    * @return element
-    */
-   protected <A extends Annotation, M extends AccessibleObject> Element<A, M> toElement(
-         ClassLoader classLoader,
-         ClassSignaturePair pair,
-         Class<A> annClass,
-         Class<M> aoClass)
-   {
-      return new DefaultElement<A,M>(classLoader, pair.getClassName(), pair.getSignature(), annClass, aoClass);
-   }
-
 
    public Set<Class<?>> classIsAnnotatedWith(Class<? extends Annotation> annotation)
    {

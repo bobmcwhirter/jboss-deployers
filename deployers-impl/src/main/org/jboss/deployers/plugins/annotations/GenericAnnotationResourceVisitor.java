@@ -29,6 +29,8 @@ import javassist.CtBehavior;
 import javassist.CtClass;
 import javassist.CtMember;
 import javassist.NotFoundException;
+import javassist.CtConstructor;
+import javassist.CtMethod;
 import org.jboss.classloading.spi.visitor.ClassFilter;
 import org.jboss.classloading.spi.visitor.ResourceContext;
 import org.jboss.classloading.spi.visitor.ResourceFilter;
@@ -36,6 +38,9 @@ import org.jboss.classloading.spi.visitor.ResourceVisitor;
 import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
 import org.jboss.logging.Logger;
 import org.jboss.metadata.spi.signature.Signature;
+import org.jboss.metadata.spi.signature.javassist.JavassistSignatureFactory;
+import org.jboss.metadata.spi.signature.javassist.JavassistConstructorParametersSignature;
+import org.jboss.metadata.spi.signature.javassist.JavassistMethodParametersSignature;
 
 /**
  * Generic annotation scanner deployer.
@@ -116,7 +121,7 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
    protected void handleCtClass(CtClass ctClass, ResourceContext resource) throws ClassNotFoundException, NotFoundException
    {
       Object[] annotations = forceAnnotations ? ctClass.getAnnotations() : ctClass.getAvailableAnnotations();
-      handleAnnotations(ElementType.TYPE, null, annotations, resource);
+      handleAnnotations(ElementType.TYPE, (Signature)null, annotations, resource);
       handleCtMembers(ElementType.CONSTRUCTOR, ctClass.getDeclaredConstructors(), resource);
       handleCtMembers(ElementType.METHOD, ctClass.getDeclaredMethods(), resource);
       handleCtMembers(ElementType.FIELD, ctClass.getDeclaredFields(), resource);
@@ -155,10 +160,37 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
             {
                CtBehavior behavior = (CtBehavior)member;
                Object[][] paramAnnotations = forceAnnotations ? behavior.getParameterAnnotations() : behavior.getAvailableParameterAnnotations();
-               for (Object[] paramAnn : paramAnnotations)
-                  handleAnnotations(ElementType.PARAMETER, member, paramAnn, resource);
+               for (int index = 0; index < paramAnnotations.length; index++)
+               {
+                  handleAnnotations(ElementType.PARAMETER, getBehaviorSignature(behavior, index), paramAnnotations[index], resource);                  
+               }
             }
          }
+      }
+   }
+
+   /**
+    * Get parameters signature.
+    *
+    * @param behavior the ct behavior
+    * @param index the index
+    * @return parameters signature
+    * @throws ClassNotFoundException for any error
+    */
+   protected Signature getBehaviorSignature(CtBehavior behavior, int index) throws ClassNotFoundException
+   {
+      try
+      {
+         if (behavior instanceof CtConstructor)
+            return new JavassistConstructorParametersSignature((CtConstructor)behavior, index);
+         else if (behavior instanceof CtMethod)
+            return new JavassistMethodParametersSignature((CtMethod)behavior, index);
+         else
+            throw new IllegalArgumentException("Unknown ct behavior: " + behavior);
+      }
+      catch (NotFoundException e)
+      {
+         throw new ClassNotFoundException("Exception creating signature: " + behavior, e);
       }
    }
 
@@ -172,16 +204,27 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
     */
    protected void handleAnnotations(ElementType type, CtMember member, Object[] annotations, ResourceContext resource)
    {
+      Signature signature = null;
+      if (member != null)
+         signature = JavassistSignatureFactory.getSignature(member);
+      handleAnnotations(type, signature, annotations, resource);
+   }
+
+   /**
+    * Handle annotations.
+    *
+    * @param type where we found the annotations
+    * @param signature the signature
+    * @param annotations the actual annotations
+    * @param resource the resource we're visiting
+    */
+   protected void handleAnnotations(ElementType type, Signature signature, Object[] annotations, ResourceContext resource)
+   {
       if (annotations != null && annotations.length > 0)
       {
          for (Object annObject : annotations)
          {
             Annotation annotation = Annotation.class.cast(annObject);
-            Signature signature = null;
-/*
-            if (member != null)
-               signature = JavassistSignatureFactory.getSignature(member);
-*/
             env.putAnnotation(annotation.annotationType(), type, resource.getClassName(), signature);
          }
       }

@@ -26,10 +26,6 @@ import java.lang.ref.SoftReference;
 import java.lang.reflect.AccessibleObject;
 
 import org.jboss.deployers.spi.annotations.Element;
-import org.jboss.metadata.plugins.loader.reflection.AnnotatedElementMetaDataLoader;
-import org.jboss.metadata.spi.loader.MetaDataLoader;
-import org.jboss.metadata.spi.retrieval.AnnotationItem;
-import org.jboss.metadata.spi.retrieval.MetaDataRetrieval;
 import org.jboss.metadata.spi.signature.ConstructorSignature;
 import org.jboss.metadata.spi.signature.FieldSignature;
 import org.jboss.metadata.spi.signature.MethodSignature;
@@ -37,16 +33,16 @@ import org.jboss.metadata.spi.signature.Signature;
 import org.jboss.reflect.plugins.introspection.ReflectionUtils;
 
 /**
- * Default annoattions element.
+ * Default annotations element.
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
 public class DefaultElement<A extends Annotation, M extends AccessibleObject> extends WeakClassLoaderHolder implements Element<A, M>
 {
-   private String className;
-   private Signature signature;
-   private Class<A> annClass;
-   private Class<M> aoClass;
+   protected String className;
+   protected Signature signature;
+   protected Class<A> annClass;
+   protected Class<M> aoClass;
 
    private SoftReference<Class<?>> classRef;
 
@@ -83,28 +79,10 @@ public class DefaultElement<A extends Annotation, M extends AccessibleObject> ex
       return clazz;
    }
 
-   /**
-    * Get meta data retireval for signature on owner.
-    *
-    * @return meta data retrieval
-    */
-   protected MetaDataRetrieval getMetaDataRetrieval()
-   {
-      MetaDataLoader loader = new AnnotatedElementMetaDataLoader(getOwner());
-      MetaDataRetrieval retrieval = loader.getComponentMetaDataRetrieval(signature);
-      if (retrieval == null)
-         throw new IllegalArgumentException("No such signature " + signature + " on loader: " + loader);
-
-      return retrieval;
-   }
-
    public A getAnnotation()
    {
-      AnnotationItem<A> item = getMetaDataRetrieval().retrieveAnnotation(annClass);
-      if (item == null)
-         throw new IllegalArgumentException("Expecting annotation: " + annClass);
-
-      return item.getAnnotation();
+      AccessibleObject accessibleObject = getAccessibleObject();
+      return accessibleObject.getAnnotation(annClass);
    }
 
    public M getAccessibleObject()

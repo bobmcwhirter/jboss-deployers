@@ -22,7 +22,7 @@
 
   <properties>
     <version.jboss.man>2.0.0.Beta12</version.jboss.man>
-    <version.jboss.microcontainer>2.0.0.Beta13</version.jboss.microcontainer>
+    <version.jboss.microcontainer>2.0.0-SNAPSHOT</version.jboss.microcontainer>
     <version.jboss.classloader>2.0.0-SNAPSHOT</version.jboss.classloader>
     <version.jboss.common.core>2.2.4.GA</version.jboss.common.core>
     <version.jboss.common.logging.spi>2.0.4.GA</version.jboss.common.logging.spi>

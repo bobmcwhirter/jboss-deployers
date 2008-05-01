@@ -21,9 +21,7 @@
 */
 package org.jboss.deployers.plugins.annotations;
 
-import javassist.ClassPath;
 import javassist.ClassPool;
-import javassist.LoaderClassPath;
 import org.jboss.classloading.spi.dependency.Module;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
@@ -58,20 +56,22 @@ public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module
    {
       ClassPool pool = ClassPool.getDefault();
       ClassLoader classLoader = unit.getClassLoader();
-      ClassPath classPath = new LoaderClassPath(classLoader);
-      pool.insertClassPath(classPath);
+
+      GenericAnnotationResourceVisitor visitor = new GenericAnnotationResourceVisitor(pool, classLoader);
+      visitor.setForceAnnotations(forceAnnotations);
+
+      ClassLoader tcl = Thread.currentThread().getContextClassLoader();
+      // TODO - any other way?
+      Thread.currentThread().setContextClassLoader(classLoader);
       try
       {
-         GenericAnnotationResourceVisitor visitor = new GenericAnnotationResourceVisitor(pool, classLoader);
-         visitor.setForceAnnotations(forceAnnotations);
-
          module.visit(visitor);
-
-         unit.addAttachment(AnnotationEnvironment.class, visitor.getEnv());
       }
       finally
       {
-         pool.removeClassPath(classPath);
+         Thread.currentThread().setContextClassLoader(tcl);
       }
+
+      unit.addAttachment(AnnotationEnvironment.class, visitor.getEnv());
    }
 }
