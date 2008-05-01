@@ -34,13 +34,10 @@ import org.jboss.classloader.spi.ClassLoaderDomain;
  */
 public class InterceptionClassLoaderSystemDeployer extends AbstractLevelClassLoaderSystemDeployer
 {
-   private InterceptionClassLoader classLoader;
-
    public ClassLoader createClassLoader(DeploymentUnit unit) throws Exception
    {
       ClassLoader loader = super.createClassLoader(unit);
-      classLoader = new InterceptionClassLoader(loader);
-      return classLoader;
+      return new InterceptionClassLoader(loader);
    }
 
    @Override
@@ -81,10 +78,5 @@ public class InterceptionClassLoaderSystemDeployer extends AbstractLevelClassLoa
          cleanup(unit, module);
          module.reset();
       }
-   }
-
-   public InterceptionClassLoader getClassLoader()
-   {
-      return classLoader;
    }
 }

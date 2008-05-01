@@ -44,9 +44,10 @@ import org.jboss.deployers.spi.attachments.Attachments;
 import org.jboss.deployers.spi.attachments.MutableAttachments;
 import org.jboss.deployers.spi.attachments.PredeterminedManagedObjectAttachments;
 import org.jboss.deployers.spi.deployer.Deployer;
+import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.test.deployers.AbstractDeployerTest;
-import org.jboss.test.deployers.annotations.support.InterceptionClassLoaderSystemDeployer;
 import org.jboss.test.deployers.annotations.support.InterceptionClassLoader;
+import org.jboss.test.deployers.annotations.support.InterceptionClassLoaderSystemDeployer;
 import org.jboss.test.deployers.classloading.support.MockClassLoaderDescribeDeployer;
 
 /**
@@ -134,19 +135,23 @@ public abstract class AnnotationsTest extends AbstractDeployerTest
       return clazz.getMethod("value").invoke(annotation);
    }
 
-   protected void assertNotLoaded(String className)
+   protected void assertNotLoaded(DeploymentUnit unit, String className)
    {
-      assertCheckLoaded(className, false);
+      assertCheckLoaded(unit, className, false);
    }
 
-   protected void assertLoaded(String className)
+   protected void assertLoaded(DeploymentUnit unit, String className)
    {
-      assertCheckLoaded(className, true);      
+      assertCheckLoaded(unit, className, true);      
    }
 
-   private void assertCheckLoaded(String className, boolean checkFlag)
+   private void assertCheckLoaded(DeploymentUnit unit, String className, boolean checkFlag)
    {
-      InterceptionClassLoader icl = deployer2.getClassLoader();
+      ClassLoader cl = unit.getClassLoader();
+      if (cl instanceof InterceptionClassLoader == false)
+         throw new IllegalArgumentException("Expecting intercepted classlaoder: " + cl);
+
+      InterceptionClassLoader icl = (InterceptionClassLoader)cl;
       Set<String> loaded = icl.getLoaded();
       assertNotNull(loaded);
       assertEquals(loaded.contains(className), checkFlag);
