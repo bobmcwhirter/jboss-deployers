@@ -78,27 +78,43 @@ public class AnnotationEnvTestCase extends AnnotationsTest
          AnnotationEnvironment env = getAnnotationEnvironment(unit);
          Set<Class<?>> classes = env.classIsAnnotatedWith(taClass);
          assertNotNull(classes);
+         assertEquals(1, classes.size());
          assertEquals(AnnotationsHolder.class.getName(), classes.iterator().next().getName());
 
          Element<TestAnnotation, Constructor> ec = getSingleton(env.classHasConstructorAnnotatedWith(taClass));
          Annotation ta = ec.getAnnotation();
          assertNotNull(ta);
          assertEquals("constructor", getValue(ta));
+         assertInstanceOf(ec.getAccessibleObject(), Constructor.class, false);
 
          Element<TestAnnotation, Field> ef = getSingleton(env.classHasFieldAnnotatedWith(taClass));
          ta = ef.getAnnotation();
          assertNotNull(ta);
          assertEquals("field", getValue(ta));
+         assertInstanceOf(ef.getAccessibleObject(), Field.class, false);
 
          Element<TestAnnotation, Method> em = getSingleton(env.classHasMethodAnnotatedWith(taClass));
          ta = em.getAnnotation();
          assertNotNull(ta);
          assertEquals("method", getValue(ta));
+         assertInstanceOf(em.getAccessibleObject(), Method.class, false);
 
-         Element<TestAnnotation, AccessibleObject> ep = getSingleton(env.classHasParameterAnnotatedWith(taClass));
-         ta = ep.getAnnotation();
-         assertNotNull(ta);
-         assertEquals("parameter", getValue(ta));
+         Set<Element<TestAnnotation, AccessibleObject>> eps = env.classHasParameterAnnotatedWith(taClass);
+         assertNotNull(eps);
+         assertEquals(2, eps.size());
+         for (Element<TestAnnotation, AccessibleObject> ep : eps)
+         {
+            ta = ep.getAnnotation();
+            assertNotNull(ta);
+            Object value = getValue(ta);
+            AccessibleObject ao = ep.getAccessibleObject();
+            if ("cparameter".equals(value))
+               assertInstanceOf(ao, Constructor.class, false);
+            else if ("mparameter".equals(value))
+               assertInstanceOf(ao, Method.class, false);
+            else
+               fail("Illegal annotation value: " + value);
+         }
       }
       finally
       {

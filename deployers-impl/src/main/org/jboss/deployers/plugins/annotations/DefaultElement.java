@@ -26,10 +26,12 @@ import java.lang.ref.SoftReference;
 import java.lang.reflect.AccessibleObject;
 
 import org.jboss.deployers.spi.annotations.Element;
+import org.jboss.metadata.spi.signature.ConstructorParametersSignature;
 import org.jboss.metadata.spi.signature.ConstructorSignature;
 import org.jboss.metadata.spi.signature.FieldSignature;
 import org.jboss.metadata.spi.signature.MethodSignature;
 import org.jboss.metadata.spi.signature.Signature;
+import org.jboss.metadata.spi.signature.MethodParametersSignature;
 import org.jboss.reflect.plugins.introspection.ReflectionUtils;
 
 /**
@@ -90,7 +92,7 @@ public class DefaultElement<A extends Annotation, M extends AccessibleObject> ex
       AccessibleObject result = null;
 
       Class<?> clazz = getOwner();
-      if (signature instanceof ConstructorSignature)
+      if (signature instanceof ConstructorSignature || signature instanceof ConstructorParametersSignature)
       {
          try
          {
@@ -100,7 +102,7 @@ public class DefaultElement<A extends Annotation, M extends AccessibleObject> ex
          {
          }
       }
-      else if (signature instanceof MethodSignature)
+      else if (signature instanceof MethodSignature || signature instanceof MethodParametersSignature)
       {
          try
          {

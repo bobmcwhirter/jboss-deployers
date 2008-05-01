@@ -83,9 +83,4 @@ public class ParametersElement<A extends Annotation, M extends AccessibleObject>
 
       throw new IllegalArgumentException("No matching annotation: " + Arrays.asList(annotations));
    }
-
-   public M getAccessibleObject()
-   {
-      throw new UnsupportedOperationException("No such accessible object for parameters.");
-   }
 }

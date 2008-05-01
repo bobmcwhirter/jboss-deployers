@@ -31,12 +31,12 @@ public class AnnotationsHolder
    private Object object;
 
    @TestAnnotation("constructor")
-   public AnnotationsHolder()
+   public AnnotationsHolder(@TestAnnotation("cparameter") Object object)
    {
    }
 
    @TestAnnotation("method")
-   public void something(@TestAnnotation("parameter") Object object)
+   public void something(@TestAnnotation("mparameter") Object object)
    {
       System.out.println("object = " + object);
    }
