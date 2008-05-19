@@ -28,10 +28,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.jboss.classloader.spi.filter.ClassFilter;
 import org.jboss.classloading.plugins.vfs.PackageVisitor;
+import org.jboss.classloading.plugins.vfs.VFSResourceVisitor;
 import org.jboss.classloading.spi.metadata.Capability;
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaDataFactory;
 import org.jboss.classloading.spi.metadata.ExportAll;
 import org.jboss.classloading.spi.vfs.policy.VFSClassLoaderPolicy;
+import org.jboss.classloading.spi.visitor.ResourceVisitor;
+import org.jboss.classloading.spi.visitor.ResourceFilter;
 import org.jboss.deployers.plugins.classloading.AbstractDeploymentClassLoaderPolicyModule;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
@@ -160,5 +163,21 @@ public class VFSDeploymentClassLoaderPolicyModule extends AbstractDeploymentClas
    {
       super.reset();
       vfsRoots = null;
+   }
+
+   @Override
+   public void visit(ResourceVisitor visitor, ResourceFilter filter)
+   {
+      ClassLoader classLoader = getClassLoader();
+      if (classLoader == null)
+         throw new IllegalStateException("ClassLoader has not been constructed for " + getContextName());
+
+      VirtualFile[] roots = determineVFSRoots();
+      if (roots != null)
+      {
+         ClassFilter included = getIncluded();
+         ClassFilter excluded = getExcluded();
+         VFSResourceVisitor.visit(roots, included, excluded, classLoader, visitor, filter);
+      }
    }
 }

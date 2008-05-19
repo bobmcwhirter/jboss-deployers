@@ -24,7 +24,6 @@ package org.jboss.test.deployers.vfs.deployer.bean.test;
 import java.util.Map;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
 import org.jboss.deployers.vfs.deployer.kernel.BeanDeployer;
 import org.jboss.deployers.vfs.deployer.kernel.BeanMetaDataDeployer;
 import org.jboss.deployers.vfs.deployer.kernel.KernelDeploymentDeployer;
@@ -47,7 +46,7 @@ public class BeanManagedDeploymentUnitTestCase extends AbstractDeployerUnitTest
 {
    public static Test suite()
    {
-      return new TestSuite(BeanManagedDeploymentUnitTestCase.class);
+      return suite(BeanManagedDeploymentUnitTestCase.class);
    }
 
    public BeanManagedDeploymentUnitTestCase(String name) throws Throwable
@@ -59,7 +58,7 @@ public class BeanManagedDeploymentUnitTestCase extends AbstractDeployerUnitTest
     * Basic test of getting ManagedObject/ManagedProperty from a bean deployment.
     * TODO: the root ManagedObject for a KernelDeployment should be coming from a
     * custom {@linkplain org.jboss.managed.spi.factory.InstanceClassFactory}
-    * @throws Exception
+    * @throws Exception for any error
     */
    public void testBeanManagedObject()
       throws Exception
@@ -110,5 +109,4 @@ public class BeanManagedDeploymentUnitTestCase extends AbstractDeployerUnitTest
       addDeployer(main, kernelDeploymentDeployer);
       addDeployer(main, beanMetaDataDeployer);
    }
-
 }

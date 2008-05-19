@@ -25,6 +25,8 @@ import org.jboss.test.deployers.vfs.deployer.bean.test.BeanDeployerClassLoaderUn
 import org.jboss.test.deployers.vfs.deployer.bean.test.BeanDeployerUnitTestCase;
 import org.jboss.test.deployers.vfs.deployer.bean.test.KernelDeployerUnitTestCase;
 import org.jboss.test.deployers.vfs.deployer.bean.test.AliasDeployerUnitTestCase;
+import org.jboss.test.deployers.vfs.deployer.bean.test.BeanScanningUnitTestCase;
+import org.jboss.test.deployers.vfs.deployer.bean.test.BeanManagedDeploymentUnitTestCase;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -51,6 +53,8 @@ public class BeanDeployerTestSuite extends TestSuite
       suite.addTest(KernelDeployerUnitTestCase.suite());
       suite.addTest(AliasDeployerUnitTestCase.suite());
       suite.addTest(BeanDeployerClassLoaderUnitTestCase.suite());
+      suite.addTest(BeanManagedDeploymentUnitTestCase.suite());
+      suite.addTest(BeanScanningUnitTestCase.suite());
 
       return suite;
    }

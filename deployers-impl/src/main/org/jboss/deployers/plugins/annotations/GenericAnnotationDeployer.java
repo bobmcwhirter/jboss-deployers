@@ -25,6 +25,7 @@ import javassist.ClassPool;
 import org.jboss.classloading.spi.dependency.Module;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
+import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.spi.deployer.helpers.AbstractSimpleRealDeployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 
@@ -40,6 +41,7 @@ public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module
    public GenericAnnotationDeployer()
    {
       super(Module.class);
+      setStage(DeploymentStages.PRE_REAL);
    }
 
    /**

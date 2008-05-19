@@ -29,6 +29,7 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
  * 
  * @author Scott.Stark@jboss.org
  * @author adrian@jboss.org
+ * @author ales.justin@jboss.org
  * @version $Revision:$
  */
 public class AttachmentLocator
@@ -41,7 +42,7 @@ public class AttachmentLocator
     * @return the attachment or null if not present
     * @throws IllegalArgumentException for a null name
     */
-   static public Object search(DeploymentUnit unit, String name)
+   public static Object search(DeploymentUnit unit, String name)
    {
       Object attachment = null;
       while (attachment == null && unit != null)
@@ -62,11 +63,15 @@ public class AttachmentLocator
     * @return the attachment or null if not present
     * @throws IllegalArgumentException for a null name or expectedType
     */
-   static public <T> T search(DeploymentUnit unit, String name, Class<T> expectedType)
+   public static <T> T search(DeploymentUnit unit, String name, Class<T> expectedType)
    {
       Object result = search(unit, name);
       if (result == null)
          return null;
+
+      if (expectedType == null)
+         throw new IllegalArgumentException("Null expected type.");
+
       return expectedType.cast(result);
    }
 
@@ -79,7 +84,7 @@ public class AttachmentLocator
     * @return the attachment or null if not present
     * @throws IllegalArgumentException for a null name or type
     */
-   static public <T> T search(DeploymentUnit unit, Class<T> type)
+   public static <T> T search(DeploymentUnit unit, Class<T> type)
    {
       return search(unit, type.getName(), type);
    }
