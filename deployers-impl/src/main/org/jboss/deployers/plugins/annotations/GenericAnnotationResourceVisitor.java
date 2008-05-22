@@ -55,6 +55,11 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
    private boolean forceAnnotations;
    private DefaultAnnotationEnvironment env;
 
+   public GenericAnnotationResourceVisitor(ClassLoader classLoader)
+   {
+      this(ClassPool.getDefault(), classLoader);
+   }
+
    public GenericAnnotationResourceVisitor(ClassPool pool, ClassLoader classLoader)
    {
       if (pool == null)
@@ -245,7 +250,7 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
     *
     * @return the annoattion environment
     */
-   AnnotationEnvironment getEnv()
+   public AnnotationEnvironment getEnv()
    {
       return env;
    }
