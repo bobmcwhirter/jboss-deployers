@@ -75,11 +75,13 @@ public class BeanScanningDeployer extends AbstractSimpleRealDeployer<AnnotationE
    public void deploy(DeploymentUnit unit, AnnotationEnvironment env) throws DeploymentException
    {
       Map<String, DeploymentUnit> components = null;
+      Set<String> beanNames = null;
 
       Set<Class<?>> beans = env.classIsAnnotatedWith(Bean.class);
       if (beans != null && beans.isEmpty() == false)
       {
          components = new HashMap<String, DeploymentUnit>();
+         beanNames = new HashSet<String>();
          mapComponents(unit, components);
 
          for (Class<?> beanClass : beans)
@@ -107,6 +109,7 @@ public class BeanScanningDeployer extends AbstractSimpleRealDeployer<AnnotationE
                       .setAutowireCandidate(bean.autowireCandidate());
 
                KernelDeploymentDeployer.addBeanComponent(unit, builder.getBeanMetaData());
+               beanNames.add(name);
             }
             else
             {
@@ -123,6 +126,7 @@ public class BeanScanningDeployer extends AbstractSimpleRealDeployer<AnnotationE
          {
             components = new HashMap<String, DeploymentUnit>();
             mapComponents(unit, components);
+            beanNames = new HashSet<String>();
          }
 
          for (Class<?> beanFactoryClass : beanFactories)
@@ -157,7 +161,10 @@ public class BeanScanningDeployer extends AbstractSimpleRealDeployer<AnnotationE
 
                List<BeanMetaData> bfBeans = gbfmd.getBeans();
                for (BeanMetaData bfb : bfBeans)
+               {
                   KernelDeploymentDeployer.addBeanComponent(unit, bfb);
+                  beanNames.add(name);
+               }
             }
             else
             {
@@ -165,10 +172,22 @@ public class BeanScanningDeployer extends AbstractSimpleRealDeployer<AnnotationE
                log.info("BeanMetaData with such name already exists: " + bmd + ", scanned: " + beanFactoryClass);
             }
          }
+
+         if (beanNames != null && beanNames.isEmpty() == false)
+            unit.addAttachment(getClass() + ".Beans", beanNames);
       }
    }
 
-   // TODO - undeploy!!
+   public void undeploy(DeploymentUnit unit, AnnotationEnvironment deployment)
+   {
+      @SuppressWarnings("unchecked")
+      Set<String> beanNames = unit.getAttachment(getClass() + ".Beans", Set.class);
+      if (beanNames != null)
+      {
+         for(String name : beanNames)
+            unit.removeComponent(name);
+      }
+   }
 
    /**
     * Map components.
