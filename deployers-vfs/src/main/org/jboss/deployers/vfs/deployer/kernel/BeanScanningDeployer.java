@@ -72,18 +72,6 @@ public class BeanScanningDeployer extends AbstractSimpleRealDeployer<AnnotationE
          setRelativeOrder(getRelativeOrder() + 10);
    }
 
-   /**
-    * Add beam metadata as component.
-    *
-    * @param unit the deployment unit
-    * @param bean the bean metadata
-    */
-   protected static void addBeanComponent(DeploymentUnit unit, BeanMetaData bean)
-   {
-      DeploymentUnit component = unit.addComponent(bean.getName());
-      component.addAttachment(BeanMetaData.class.getName(), bean);
-   }
-
    public void deploy(DeploymentUnit unit, AnnotationEnvironment env) throws DeploymentException
    {
       Map<String, DeploymentUnit> components = null;
@@ -118,7 +106,7 @@ public class BeanScanningDeployer extends AbstractSimpleRealDeployer<AnnotationE
                       .setErrorHandlingMode(bean.errorHandlingMode())
                       .setAutowireCandidate(bean.autowireCandidate());
 
-               addBeanComponent(unit, builder.getBeanMetaData());
+               KernelDeploymentDeployer.addBeanComponent(unit, builder.getBeanMetaData());
             }
             else
             {
@@ -169,7 +157,7 @@ public class BeanScanningDeployer extends AbstractSimpleRealDeployer<AnnotationE
 
                List<BeanMetaData> bfBeans = gbfmd.getBeans();
                for (BeanMetaData bfb : bfBeans)
-                  addBeanComponent(unit, bfb);
+                  KernelDeploymentDeployer.addBeanComponent(unit, bfb);
             }
             else
             {
@@ -179,6 +167,8 @@ public class BeanScanningDeployer extends AbstractSimpleRealDeployer<AnnotationE
          }
       }
    }
+
+   // TODO - undeploy!!
 
    /**
     * Map components.
