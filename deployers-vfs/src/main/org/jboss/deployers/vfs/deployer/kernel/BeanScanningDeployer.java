@@ -81,8 +81,8 @@ public class BeanScanningDeployer extends AbstractSimpleRealDeployer<AnnotationE
       if (beans != null && beans.isEmpty() == false)
       {
          components = new HashMap<String, DeploymentUnit>();
-         beanNames = new HashSet<String>();
          mapComponents(unit, components);
+         beanNames = new HashSet<String>();
 
          for (Class<?> beanClass : beans)
          {
