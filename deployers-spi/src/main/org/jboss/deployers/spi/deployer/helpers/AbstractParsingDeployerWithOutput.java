@@ -127,6 +127,12 @@ public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsi
     */
    public void setNames(Set<String> names)
    {
+      if (names != null && names.isEmpty() == false)
+      {
+         for (String name : names)
+            if (name == null)
+               throw new IllegalArgumentException("Null name: " + names);
+      }
       this.names = names;
    }
 
