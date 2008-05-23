@@ -62,17 +62,6 @@ public abstract class MultipleSchemaResolverDeployer<T> extends JBossXBDeployer<
    }
 
    /**
-    * Create a new SchemaResolverDeployer.
-    *
-    * @param output the output
-    * @throws IllegalArgumentException for a null output
-    */
-   public MultipleSchemaResolverDeployer(Class<T> output)
-   {
-      super(output);
-   }
-
-   /**
     * Check if we need to register schema to jbossxb.
     */
    public void create()
