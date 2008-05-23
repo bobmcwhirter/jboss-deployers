@@ -23,13 +23,20 @@ package org.jboss.test.deployers.vfs.structure.ear.support;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import org.jboss.classloader.spi.filter.ClassFilter;
+import org.jboss.classloading.plugins.vfs.VFSResourceVisitor;
+import org.jboss.classloading.spi.visitor.ResourceFilter;
+import org.jboss.deployers.plugins.annotations.GenericAnnotationResourceVisitor;
 import org.jboss.deployers.spi.DeploymentException;
+import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
 import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.deployers.spi.structure.StructureMetaData;
 import org.jboss.deployers.vfs.spi.structure.VFSStructuralDeployers;
@@ -44,6 +51,7 @@ import org.jboss.virtual.plugins.vfs.helpers.SuffixMatchFilter;
  * type of deployer.
  *
  * @author Scott.Stark@jboss.org
+ * @author Ales.Justin@jboss.org
  * @version $Revision:$
  */
 public class MockEarStructureDeployer extends AbstractStructureDeployer
@@ -209,32 +217,35 @@ public class MockEarStructureDeployer extends AbstractStructureDeployer
             String filename = earRelativePath(earPath, vfArchive.getPathName());
             // Check if the module already exists, i.e. it is declared in jboss-app.xml
             EarModule moduleMetaData = getModule(modules, filename);
-            int type = typeFromSuffix(filename, vfArchive);
-            if (type >= 0 && moduleMetaData == null)
+            if (moduleMetaData == null)
             {
-               String typeString = null;
-               switch(type)
+               int type = typeFromSuffix(filename, vfArchive);
+               if (type >= 0)
                {
-                  case J2eeModuleMetaData.EJB:
-                     typeString = "Ejb";
-                     break;
-                  case J2eeModuleMetaData.CLIENT:
-                     typeString = "Java";
-                     break;
-                  case J2eeModuleMetaData.CONNECTOR:
-                     typeString = "Connector";
-                     break;
-                  case J2eeModuleMetaData.SERVICE:
-                  case J2eeModuleMetaData.HAR:
-                     typeString = "Service";
-                     break;
-                  case J2eeModuleMetaData.WEB:
-                     typeString = "Web";
-                     break;
+                  String typeString = null;
+                  switch(type)
+                  {
+                     case J2eeModuleMetaData.EJB:
+                        typeString = "Ejb";
+                        break;
+                     case J2eeModuleMetaData.CLIENT:
+                        typeString = "Java";
+                        break;
+                     case J2eeModuleMetaData.CONNECTOR:
+                        typeString = "Connector";
+                        break;
+                     case J2eeModuleMetaData.SERVICE:
+                     case J2eeModuleMetaData.HAR:
+                        typeString = "Service";
+                        break;
+                     case J2eeModuleMetaData.WEB:
+                        typeString = "Web";
+                        break;
+                  }
+                  moduleMetaData = new EarModule(typeString + "Module" + counter, filename);
+                  modules.add(moduleMetaData);
+                  counter++;
                }
-               moduleMetaData = new EarModule(typeString + "Module" + counter, filename);
-               modules.add(moduleMetaData);
-               counter++;
             }
          }
       }
@@ -282,7 +293,9 @@ public class MockEarStructureDeployer extends AbstractStructureDeployer
             }
             else
             {
-               type = J2eeModuleMetaData.EJB;
+               Integer dt = determineType(archive);
+               if (dt != null)
+                  type = dt;
             }
          }
          else if (ejbXml != null || jbossXml != null)
@@ -291,11 +304,57 @@ public class MockEarStructureDeployer extends AbstractStructureDeployer
          }
          else
          {
-            type = J2eeModuleMetaData.EJB;
+            Integer dt = determineType(archive);
+            if (dt != null)
+               type = dt;
          }
       }
 
       return type;
+   }
+
+   private Integer determineType(VirtualFile archive)
+   {
+      ClassLoader classLoader = getClass().getClassLoader();
+      GenericAnnotationResourceVisitor visitor = new GenericAnnotationResourceVisitor(classLoader);
+      ClassFilter included = null;
+      ClassFilter excluded = null;
+      ResourceFilter filter = org.jboss.classloading.spi.visitor.ClassFilter.INSTANCE;
+      VFSResourceVisitor.visit(new VirtualFile[]{archive}, included, excluded, classLoader, visitor, filter);
+      AnnotationEnvironment env = visitor.getEnv();
+
+      Integer ejbs = getType(env, Stateless.class, J2eeModuleMetaData.EJB);
+      if (ejbs != null)
+      {
+         // check some conflicts - e.g. no @Servlet, ...?
+         return ejbs;
+      }
+
+      Integer services = getType(env, Service.class, J2eeModuleMetaData.SERVICE);
+      if (services != null)
+      {
+         // check some conflicts - e.g. no @Servlet, ...?
+         return services;
+      }
+
+      Integer appc = getType(env, AppClient.class, J2eeModuleMetaData.CLIENT);
+      if (appc != null)
+      {
+         // check some conflicts - e.g. no @Servlet, ...?
+         return appc;
+      }
+
+      Integer wars = getType(env, Servlet.class, J2eeModuleMetaData.WEB);
+      if (wars != null)
+         return wars;
+
+      return null;
+   }
+
+   private Integer getType(AnnotationEnvironment env, Class<? extends Annotation> annotation, int type)
+   {
+      Set<Class<?>> classes = env.classIsAnnotatedWith(annotation);
+      return (classes != null && classes.isEmpty() == false) ? type : null;
    }
 
    private String earRelativePath(String earPath, String pathName)

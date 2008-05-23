@@ -63,7 +63,7 @@ public class EARStructureUnitTestCase extends AbstractEARStructureTest
    public void testScanEAR() throws Throwable
    {
       VFSDeploymentContext ear = assertDeploy("/structure/ear", "noappxml.ear");
-      assertChildContexts(ear, "client.jar", "foobar.sar", "known.jar", "mf.jar", "ts.rar", "webapp.war");
+      assertChildContexts(ear, "client.jar", "foobar.sar", "known.jar", "ts.rar", "webapp.war");
    }
 
    /**
@@ -73,7 +73,7 @@ public class EARStructureUnitTestCase extends AbstractEARStructureTest
    public void testMixedEAR() throws Throwable
    {
       VFSDeploymentContext ear = assertDeploy("/structure/ear", "someappxml.ear");
-      assertChildContexts(ear, "client.jar", "foobar.sar", "known.jar", "mf.jar", "ts.rar", "webapp.war");
+      assertChildContexts(ear, "client.jar", "foobar.sar", "known.jar", "ts.rar", "webapp.war");
    }
 
    /**
@@ -130,5 +130,16 @@ public class EARStructureUnitTestCase extends AbstractEARStructureTest
       // lib/lib0.jar
       assertNoMetaDataFile(ear, "lib/lib0.jar");
       assertFile(ear, "lib/lib0.jar");
+   }
+
+   /**
+    * Validate annotation scanning.
+    *  
+    * @throws Throwable for any problem
+    */
+   public void testEARAnnotationScanning() throws Throwable
+   {
+      VFSDeploymentContext ear = assertDeploy("/structure/ear", "scanning.ear");
+      assertChildContexts(ear, "appc.jar", "ejbs.jar", "web.jar", "services.jar");
    }
 }
