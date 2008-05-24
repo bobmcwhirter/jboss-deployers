@@ -22,6 +22,7 @@
 package org.jboss.deployers.vfs.spi.deployer;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,7 +38,9 @@ import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
  */
 public abstract class JBossExtensionDeployer<U, V, T> extends MultipleSchemaResolverDeployer<T>
 {
+   private String specName;
    private Class<U> specClass;
+   private String jbossName;
    private Class<V> jbossClass;
 
    public JBossExtensionDeployer(Class<T> output, String specName, Class<U> specClass, String jbossName, Class<V> jbossClass)
@@ -52,7 +55,9 @@ public abstract class JBossExtensionDeployer<U, V, T> extends MultipleSchemaReso
          throw new IllegalArgumentException("Null spec class");
       if (jbossClass == null)
          throw new IllegalArgumentException("Null jboss class");
+      this.specName = specName;
       this.specClass = specClass;
+      this.jbossName = jbossName;
       this.jbossClass = jbossClass;
    }
 
@@ -64,11 +69,51 @@ public abstract class JBossExtensionDeployer<U, V, T> extends MultipleSchemaReso
       return map;
    }
 
-   protected T mergeMetaData(VFSDeploymentUnit unit, Map<Class<?>, Object> metadata) throws Exception
+   protected T mergeMetaData(VFSDeploymentUnit unit, T root, Map<Class<?>, List<Object>> metadata, Set<String> missingFiles) throws Exception
    {
-      U spec = specClass.cast(metadata.get(specClass));
-      V jboss = jbossClass.cast(metadata.get(jbossClass));
-      return mergeMetaData(unit, spec, jboss);
+      if (specClass.equals(jbossClass))
+      {
+         List<Object> instances = metadata.get(specClass);
+         if (instances == null || instances.isEmpty())
+            return mergeMetaData(unit, null, null);
+         else if (instances.size() == 1)
+         {
+            if (missingFiles.contains(jbossName))
+               return mergeMetaData(unit, specClass.cast(instances.iterator().next()), null);
+            else if (missingFiles.contains(specName))
+               return mergeMetaData(unit, null, jbossClass.cast(instances.iterator().next()));
+            else
+               throw new IllegalArgumentException("Should be either missing spec or jboss: " + missingFiles);
+         }
+         else
+            return mergeMetaData(unit, specClass.cast(instances.get(0)), jbossClass.cast(instances.get(1)));
+
+      }
+      else
+         return super.mergeMetaData(unit, root, metadata, missingFiles);
+   }
+
+   protected T mergeMetaData(VFSDeploymentUnit unit, Map<Class<?>, List<Object>> metadata) throws Exception
+   {
+      return mergeMetaData(unit, getInstance(metadata, specClass), getInstance(metadata, jbossClass));
+   }
+
+   /**
+    * Get metadata instance from metadata.
+    *
+    * @param metadata the metadatas map
+    * @param clazz metadata class
+    * @return matching metadata instance
+    */
+   protected <S> S getInstance(Map<Class<?>, List<Object>> metadata, Class<S> clazz)
+   {
+      List<Object> instances = metadata.get(clazz);
+      if (instances == null)
+         return null;
+      else if (instances.size() > 1)
+         throw new IllegalArgumentException("Expecting single instance: " + metadata);
+
+      return clazz.cast(instances.iterator().next());
    }
 
    /**

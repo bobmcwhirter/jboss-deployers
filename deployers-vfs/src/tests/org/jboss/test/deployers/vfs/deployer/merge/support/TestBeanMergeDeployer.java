@@ -45,7 +45,7 @@ public class TestBeanMergeDeployer extends SchemaResolverDeployer<KernelDeployme
       setNames(new HashSet<String>(Arrays.asList("first-beans.xml", "snd-beans.xml")));
    }
 
-   protected KernelDeployment mergeFiles(VFSDeploymentUnit unit, KernelDeployment root, Set<VirtualFile> files, Set<String> missingFiles) throws Exception
+   protected KernelDeployment mergeFiles(VFSDeploymentUnit unit, KernelDeployment root, List<VirtualFile> files, Set<String> missingFiles) throws Exception
    {
       AbstractKernelDeployment deployment = new AbstractKernelDeployment();
       for (VirtualFile file : files)

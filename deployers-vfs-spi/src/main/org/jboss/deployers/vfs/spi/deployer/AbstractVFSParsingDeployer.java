@@ -24,6 +24,7 @@ package org.jboss.deployers.vfs.spi.deployer;
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.ArrayList;
 import java.io.InputStream;
 import java.io.IOException;
 
@@ -137,7 +138,7 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
 
       VFSDeploymentUnit  vfsDeploymentUnit = (VFSDeploymentUnit)unit;
 
-      Set<VirtualFile> files = new HashSet<VirtualFile>();
+      List<VirtualFile> files = new ArrayList<VirtualFile>();
       Set<String> missingFiles = new HashSet<String>();
 
       for (String name : names)
@@ -195,7 +196,7 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
 
       VFSDeploymentUnit  vfsDeploymentUnit = (VFSDeploymentUnit)unit;
 
-      Set<VirtualFile> files = new HashSet<VirtualFile>();
+      List<VirtualFile> files = new ArrayList<VirtualFile>();
       Set<String> missingFiles = new HashSet<String>();
 
       for (String name : names)
@@ -224,7 +225,7 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
     * @return merged metadata
     * @throws Exception for any error
     */
-   protected T mergeFiles(VFSDeploymentUnit unit, T root, Set<VirtualFile> files, Set<String> missingFiles) throws Exception
+   protected T mergeFiles(VFSDeploymentUnit unit, T root, List<VirtualFile> files, Set<String> missingFiles) throws Exception
    {
       return null;
    }
