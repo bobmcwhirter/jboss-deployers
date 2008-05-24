@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rar xmlns="urn:spec:rar:1.0" attrib="Test">
+  <elt>java.lang.String</elt>
+</rar>

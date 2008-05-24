@@ -29,6 +29,9 @@ import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
  */
 public class MockRarDeployer extends JBossExtensionDeployer<RarMetaData, JBossRarMetaData, RarDeploymentMetaData>
 {
+   private RarMetaData spec;
+   private JBossRarMetaData jboss;
+
    public MockRarDeployer()
    {
       super(RarDeploymentMetaData.class, "rar.xml", RarMetaData.class, "jboss-rar.xml", JBossRarMetaData.class);
@@ -36,6 +39,9 @@ public class MockRarDeployer extends JBossExtensionDeployer<RarMetaData, JBossRa
 
    protected RarDeploymentMetaData mergeMetaData(VFSDeploymentUnit unit, RarMetaData spec, JBossRarMetaData jboss) throws Exception
    {
+      this.spec = spec;
+      this.jboss = jboss;
+
       RarDeploymentMetaData deployment = new RarDeploymentMetaData();
       if (spec != null)
       {
@@ -50,5 +56,15 @@ public class MockRarDeployer extends JBossExtensionDeployer<RarMetaData, JBossRa
             deployment.setElement(jboss.getElement());
       }
       return deployment;
+   }
+
+   public RarMetaData getSpec()
+   {
+      return spec;
+   }
+
+   public JBossRarMetaData getJboss()
+   {
+      return jboss;
    }
 }

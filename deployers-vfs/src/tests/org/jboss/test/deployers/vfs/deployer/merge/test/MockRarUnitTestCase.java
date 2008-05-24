@@ -37,6 +37,8 @@ import org.jboss.dependency.spi.ControllerContext;
  */
 public class MockRarUnitTestCase extends AbstractDeployerUnitTest
 {
+   private MockRarDeployer deployer = new MockRarDeployer();
+
    public MockRarUnitTestCase(String name) throws Throwable
    {
       super(name);
@@ -49,32 +51,50 @@ public class MockRarUnitTestCase extends AbstractDeployerUnitTest
 
    protected void addDeployers(Kernel kernel)
    {
-      MockRarDeployer rard = new MockRarDeployer();
       try
       {
-         controller.install(new AbstractBeanMetaData("rard", MockRarDeployer.class.getName()), rard);
+         controller.install(new AbstractBeanMetaData("rard", MockRarDeployer.class.getName()), deployer);
       }
       catch (Throwable t)
       {
          throw new RuntimeException(t);
       }
-      addDeployer(main, rard);
+      addDeployer(main, deployer);
       addDeployer(main, new RarDeploymentDeployer());
       addDeployer(main, new KernelDeploymentDeployer());
       addDeployer(main, new BeanMetaDataDeployer(kernel));
    }
 
-   public void testRarMerge() throws Exception
+   protected void testRarMerge(String name, boolean spec, boolean jboss, Class<?> clazz) throws Exception
    {
-      VFSDeployment deployment = createDeployment("/bean", "multiple/allrar.jar");
+      VFSDeployment deployment = createDeployment("/bean", "multiple/" + name + ".jar");
       assertDeploy(deployment);
+
+      assertEquals(spec, deployer.getSpec() != null);
+      assertEquals(jboss, deployer.getJboss() != null);
+
       ControllerContext context = controller.getInstalledContext("Test");
       assertNotNull(context);
       Object target = context.getTarget();
       assertNotNull(target);
-      assertEquals(Object.class, target.getClass());
+      assertEquals(clazz, target.getClass());
 
       assertUndeploy(deployment);
       assertNull(controller.getContext("Test", null));
+   }
+
+   public void testAllRar() throws Exception
+   {
+      testRarMerge("allrar", true, true, Object.class);
+   }
+
+   public void testSpecRar() throws Exception
+   {
+      testRarMerge("specrar", true, false, String.class);
+   }
+
+   public void testJarRar() throws Exception
+   {
+      testRarMerge("jbossrar", false, true, StringBuilder.class);
    }
 }
