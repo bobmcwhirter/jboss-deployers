@@ -19,33 +19,47 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.test.deployers.vfs.deployer.merge;
+package org.jboss.test.deployers.vfs.deployer.merge.support;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
-import org.jboss.test.deployers.vfs.deployer.merge.test.BeanMergeUnitTestCase;
-import org.jboss.test.deployers.vfs.deployer.merge.test.MockRarUnitTestCase;
+import java.io.Serializable;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.jboss.xb.annotations.JBossXmlSchema;
 
 /**
- * Merge deployers tests.
- * 
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class MergeDeployerTestSuite extends TestSuite
+@JBossXmlSchema(namespace="urn:jboss:rar:1.0", elementFormDefault=XmlNsForm.QUALIFIED)
+@XmlRootElement(name="jboss-rar")
+public class JBossRarMetaData implements Serializable
 {
-   public static void main(String[] args)
+   public static final long serialUIDVersion = 1l;
+
+   private String attribute;
+   private String element;
+
+   public String getAttribute()
    {
-      TestRunner.run(suite());
+      return attribute;
    }
 
-   public static Test suite()
+   @XmlAttribute(name = "attrib")
+   public void setAttribute(String attribute)
    {
-      TestSuite suite = new TestSuite("VFS Merge Deployer Tests");
+      this.attribute = attribute;
+   }
 
-      suite.addTest(BeanMergeUnitTestCase.suite());
-      suite.addTest(MockRarUnitTestCase.suite());
+   public String getElement()
+   {
+      return element;
+   }
 
-      return suite;
+   @XmlElement(name = "elt")
+   public void setElement(String element)
+   {
+      this.element = element;
    }
 }

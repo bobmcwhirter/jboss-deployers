@@ -19,33 +19,27 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.test.deployers.vfs.deployer.merge;
+package org.jboss.test.deployers.vfs.deployer.merge.support;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
-import org.jboss.test.deployers.vfs.deployer.merge.test.BeanMergeUnitTestCase;
-import org.jboss.test.deployers.vfs.deployer.merge.test.MockRarUnitTestCase;
+import org.jboss.deployers.spi.DeploymentException;
+import org.jboss.deployers.spi.deployer.helpers.AbstractSimpleRealDeployer;
+import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.beans.metadata.spi.BeanMetaData;
+import org.jboss.beans.metadata.plugins.AbstractBeanMetaData;
 
 /**
- * Merge deployers tests.
- * 
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class MergeDeployerTestSuite extends TestSuite
+public class RarDeploymentDeployer extends AbstractSimpleRealDeployer<RarDeploymentMetaData>
 {
-   public static void main(String[] args)
+   public RarDeploymentDeployer()
    {
-      TestRunner.run(suite());
+      super(RarDeploymentMetaData.class);
+      setOutput(BeanMetaData.class);
    }
 
-   public static Test suite()
+   public void deploy(DeploymentUnit unit, RarDeploymentMetaData deployment) throws DeploymentException
    {
-      TestSuite suite = new TestSuite("VFS Merge Deployer Tests");
-
-      suite.addTest(BeanMergeUnitTestCase.suite());
-      suite.addTest(MockRarUnitTestCase.suite());
-
-      return suite;
+      unit.addAttachment(BeanMetaData.class, new AbstractBeanMetaData(deployment.getAttribute(), deployment.getElement()));
    }
 }
