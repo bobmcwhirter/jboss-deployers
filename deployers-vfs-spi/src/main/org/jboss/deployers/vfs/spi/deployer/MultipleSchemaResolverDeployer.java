@@ -137,7 +137,7 @@ public abstract class MultipleSchemaResolverDeployer<T> extends JBossXBDeployer<
       if (result == null)
          throw new IllegalArgumentException(
                "Should not be here, file '" + file +
-               "' must macth some mapping " + mappings + " or suffix class " + suffixClass
+               "' must macth some mapping " + mappings + " or suffix " + getSuffix()
          );
 
       return result;
