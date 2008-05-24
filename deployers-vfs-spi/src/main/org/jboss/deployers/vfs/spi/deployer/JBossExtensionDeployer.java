@@ -99,24 +99,6 @@ public abstract class JBossExtensionDeployer<U, V, T> extends MultipleSchemaReso
    }
 
    /**
-    * Get metadata instance from metadata.
-    *
-    * @param metadata the metadatas map
-    * @param clazz metadata class
-    * @return matching metadata instance
-    */
-   protected <S> S getInstance(Map<Class<?>, List<Object>> metadata, Class<S> clazz)
-   {
-      List<Object> instances = metadata.get(clazz);
-      if (instances == null)
-         return null;
-      else if (instances.size() > 1)
-         throw new IllegalArgumentException("Expecting single instance: " + metadata);
-
-      return clazz.cast(instances.iterator().next());
-   }
-
-   /**
     * Merge spec and extension.
     *
     * @param unit deployment unit

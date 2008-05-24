@@ -195,4 +195,23 @@ public abstract class MultipleSchemaResolverDeployer<T> extends JBossXBDeployer<
     * @throws Exception for any error
     */
    protected abstract T mergeMetaData(VFSDeploymentUnit unit, Map<Class<?>, List<Object>> metadata) throws Exception;
+
+
+   /**
+    * Get single metadata instance from metadata.
+    *
+    * @param metadata the metadatas map
+    * @param clazz metadata class
+    * @return matching metadata instance
+    */
+   protected <S> S getInstance(Map<Class<?>, List<Object>> metadata, Class<S> clazz)
+   {
+      List<Object> instances = metadata.get(clazz);
+      if (instances == null || instances.isEmpty())
+         return null;
+      else if (instances.size() > 1)
+         throw new IllegalArgumentException("Expecting single instance: " + metadata);
+
+      return clazz.cast(instances.iterator().next());
+   }
 }
