@@ -21,9 +21,6 @@
 */
 package org.jboss.test.deployers.vfs.deployer.merge.support;
 
-import java.io.Serializable;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -32,34 +29,9 @@ import org.jboss.xb.annotations.JBossXmlSchema;
 /**
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-@JBossXmlSchema(namespace="urn:jboss:rar:1.0", elementFormDefault=XmlNsForm.QUALIFIED)
-@XmlRootElement(name="jboss-rar")
-public class JBossRarMetaData implements Serializable
+@JBossXmlSchema(namespace="http://jboss.org/xml/ns/j2ee", elementFormDefault=XmlNsForm.QUALIFIED)
+@XmlRootElement(name="jboss-connector")
+public class JBossRarMetaData extends ConnectorMetaData
 {
    public static final long serialUIDVersion = 1l;
-
-   private String attribute;
-   private String element;
-
-   public String getAttribute()
-   {
-      return attribute;
-   }
-
-   @XmlAttribute(name = "attrib")
-   public void setAttribute(String attribute)
-   {
-      this.attribute = attribute;
-   }
-
-   public String getElement()
-   {
-      return element;
-   }
-
-   @XmlElement(name = "elt")
-   public void setElement(String element)
-   {
-      this.element = element;
-   }
 }

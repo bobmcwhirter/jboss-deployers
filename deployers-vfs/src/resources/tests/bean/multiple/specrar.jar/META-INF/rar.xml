@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rar xmlns="urn:spec:rar:1.0" attrib="Test">
-  <elt>java.lang.String</elt>
-</rar>
+
+<!-- $Id: ra.xml 71789 2008-04-08 13:46:40Z adrian@jboss.org $ -->
+
+<connector xmlns="http://java.sun.com/xml/ns/j2ee"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/connector_1_5.xsd"
+           version="1.5"
+           attrib="Test"
+>
+
+   <description>JBoss LocalTransaction JDBC Wrapper Resource Adapter</description>
+
+   <elt>java.lang.String</elt>
+
+</connector>

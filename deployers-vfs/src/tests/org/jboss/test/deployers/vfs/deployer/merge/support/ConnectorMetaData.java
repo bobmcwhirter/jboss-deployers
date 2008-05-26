@@ -21,17 +21,63 @@
 */
 package org.jboss.test.deployers.vfs.deployer.merge.support;
 
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.jboss.xb.annotations.JBossXmlSchema;
+import java.io.Serializable;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-@JBossXmlSchema(namespace="http://java.sun.com/xml/ns/j2ee", elementFormDefault=XmlNsForm.QUALIFIED)
-@XmlRootElement(name="connector")
-public class RarMetaData extends ConnectorMetaData
+public class ConnectorMetaData implements Serializable
 {
    public static final long serialUIDVersion = 1l;
+
+   private double version;
+   private String attribute;
+   private String description;
+   private String element;
+
+   public double getVersion()
+   {
+      return version;
+   }
+
+   @XmlAttribute
+   public void setVersion(double version)
+   {
+      this.version = version;
+   }
+
+   public String getAttribute()
+   {
+      return attribute;
+   }
+
+   @XmlAttribute(name = "attrib")
+   public void setAttribute(String attribute)
+   {
+      this.attribute = attribute;
+   }
+
+   public String getDescription()
+   {
+      return description;
+   }
+
+   @XmlElement
+   public void setDescription(String description)
+   {
+      this.description = description;
+   }
+
+   public String getElement()
+   {
+      return element;
+   }
+
+   @XmlElement(name = "elt")
+   public void setElement(String element)
+   {
+      this.element = element;
+   }
 }

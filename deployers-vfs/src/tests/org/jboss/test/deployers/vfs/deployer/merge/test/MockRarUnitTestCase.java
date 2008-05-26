@@ -51,6 +51,7 @@ public class MockRarUnitTestCase extends AbstractDeployerUnitTest
 
    protected void addDeployers(Kernel kernel)
    {
+      deployer.setUseSchemaValidation(false);
       try
       {
          controller.install(new AbstractBeanMetaData("rard", MockRarDeployer.class.getName()), deployer);
