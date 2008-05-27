@@ -53,7 +53,7 @@ public abstract class ObjectModelFactoryDeployer<T> extends JBossXBDeployer<T>
    @Override
    protected T parse(VFSDeploymentUnit unit, VirtualFile file, T root) throws Exception
    {
-      return getHelper().parseWithObjectModelFactory(getOutput(), file, root, getObjectModelFactory(root));
+      return getHelper().parse(getOutput(), file, root, getObjectModelFactory(root));
    }
 
    /**

@@ -36,7 +36,7 @@ import org.jboss.xb.binding.sunday.unmarshalling.DefaultSchemaResolver;
 import org.jboss.xb.binding.sunday.unmarshalling.SingletonSchemaResolverFactory;
 
 /**
- * JBossXB deployer.
+ * JBossXB deployer helper.
  *
  * @param <T> the expected type
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
@@ -217,7 +217,7 @@ public class JBossXBDeployerHelper<T>
     * @return new metadata instance
     * @throws Exception for any error
     */
-   public <U> U parseWithObjectModelFactory(Class<U> expectedType, VirtualFile file, U root, ObjectModelFactory omf) throws Exception
+   public <U> U parse(Class<U> expectedType, VirtualFile file, U root, ObjectModelFactory omf) throws Exception
    {
       if (file == null)
          throw new IllegalArgumentException("Null file");
