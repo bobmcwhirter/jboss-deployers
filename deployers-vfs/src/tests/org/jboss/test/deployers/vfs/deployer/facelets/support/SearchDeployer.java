@@ -53,6 +53,11 @@ public class SearchDeployer extends AbstractDeployer
       }
    }
 
+   public void undeploy(DeploymentUnit unit)
+   {
+      urls = null;
+   }
+
    public URL[] getUrls()
    {
       return urls;
