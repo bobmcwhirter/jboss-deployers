@@ -26,6 +26,7 @@ import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 import org.jboss.test.deployers.vfs.deployer.merge.test.BeanMergeUnitTestCase;
 import org.jboss.test.deployers.vfs.deployer.merge.test.MockRarUnitTestCase;
+import org.jboss.test.deployers.vfs.deployer.merge.test.MultiFilesUnitTestCase;
 
 /**
  * Merge deployers tests.
@@ -45,6 +46,7 @@ public class MergeDeployerTestSuite extends TestSuite
 
       suite.addTest(BeanMergeUnitTestCase.suite());
       suite.addTest(MockRarUnitTestCase.suite());
+      suite.addTest(MultiFilesUnitTestCase.suite());
 
       return suite;
    }

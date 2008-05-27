@@ -22,46 +22,31 @@
 package org.jboss.test.deployers.vfs.deployer.merge.support;
 
 import java.io.Serializable;
-import java.util.Set;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.jboss.xb.annotations.JBossXmlSchema;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class RarDeploymentMetaData implements Serializable
+@JBossXmlSchema(namespace="urn:jboss:alias:1.0", elementFormDefault=XmlNsForm.QUALIFIED)
+@XmlRootElement(name="aliases")
+public class AliasMetaData implements Serializable
 {
    public static final long serialUIDVersion = 1l;
 
-   private Set<Object> aliases;
-   private String attribute;
-   private String element;
+   private String alias;
 
-   public String getAttribute()
+   public String getAlias()
    {
-      return attribute;
+      return alias;
    }
 
-   public void setAttribute(String attribute)
+   @XmlElement
+   public void setAlias(String alias)
    {
-      this.attribute = attribute;
-   }
-
-   public String getElement()
-   {
-      return element;
-   }
-
-   public void setElement(String element)
-   {
-      this.element = element;
-   }
-
-   public Set<Object> getAliases()
-   {
-      return aliases;
-   }
-
-   public void setAliases(Set<Object> aliases)
-   {
-      this.aliases = aliases;
+      this.alias = alias;
    }
 }

@@ -21,11 +21,11 @@
 */
 package org.jboss.test.deployers.vfs.deployer.merge.support;
 
+import org.jboss.beans.metadata.spi.BeanMetaData;
+import org.jboss.beans.metadata.spi.builder.BeanMetaDataBuilder;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.helpers.AbstractSimpleRealDeployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
-import org.jboss.beans.metadata.spi.BeanMetaData;
-import org.jboss.beans.metadata.plugins.AbstractBeanMetaData;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
@@ -40,6 +40,8 @@ public class RarDeploymentDeployer extends AbstractSimpleRealDeployer<RarDeploym
 
    public void deploy(DeploymentUnit unit, RarDeploymentMetaData deployment) throws DeploymentException
    {
-      unit.addAttachment(BeanMetaData.class, new AbstractBeanMetaData(deployment.getAttribute(), deployment.getElement()));
+      BeanMetaDataBuilder builder = BeanMetaDataBuilder.createBuilder(deployment.getAttribute(), deployment.getElement());
+      builder.setAliases(deployment.getAliases());
+      unit.addAttachment(BeanMetaData.class, builder.getBeanMetaData());
    }
 }
