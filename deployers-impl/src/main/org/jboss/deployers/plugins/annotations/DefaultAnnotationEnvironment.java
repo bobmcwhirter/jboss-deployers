@@ -145,6 +145,11 @@ public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implemen
       return elements;
    }
 
+   public boolean hasClassAnnotatedWith(Class<? extends Annotation> annotation)
+   {
+      return getCSPairs(annotation, ElementType.TYPE).isEmpty() == false;
+   }
+
    public Set<Class<?>> classIsAnnotatedWith(Class<? extends Annotation> annotation)
    {
       return transformToClasses(getCSPairs(annotation, ElementType.TYPE));

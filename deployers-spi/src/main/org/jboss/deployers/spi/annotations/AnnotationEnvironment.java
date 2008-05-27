@@ -36,6 +36,16 @@ import java.util.Set;
 public interface AnnotationEnvironment
 {
    /**
+    * Does this annotation environment contain a class
+    * which is annotated with annotation parameter.
+    *
+    * @param annotation the annotation we're querying for
+    * @return true if there exists a class with annotation param
+    * @see #hasClassAnnotatedWith(Class annotation)
+    */
+   boolean hasClassAnnotatedWith(Class<? extends Annotation> annotation);
+
+   /**
     * Get all classes annotated with annotation param.
     *
     * @param annotation the annotation we're querying for

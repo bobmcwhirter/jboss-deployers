@@ -27,7 +27,6 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -353,8 +352,7 @@ public class MockEarStructureDeployer extends AbstractStructureDeployer
 
    private Integer getType(AnnotationEnvironment env, Class<? extends Annotation> annotation, int type)
    {
-      Set<Class<?>> classes = env.classIsAnnotatedWith(annotation);
-      return (classes != null && classes.isEmpty() == false) ? type : null;
+      return (env.hasClassAnnotatedWith(annotation)) ? type : null;
    }
 
    private String earRelativePath(String earPath, String pathName)
