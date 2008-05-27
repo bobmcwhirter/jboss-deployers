@@ -24,7 +24,7 @@ package org.jboss.deployers.vfs.spi.deployer;
 import java.util.Map;
 
 /**
- * MultipleObjectModelFactoryDeployer.
+ * MultipleJBossXBDeployer.
  *
  * @param <T> the expected type
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
