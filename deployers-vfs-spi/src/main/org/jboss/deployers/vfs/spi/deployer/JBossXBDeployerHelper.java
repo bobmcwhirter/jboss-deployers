@@ -210,6 +210,20 @@ public class JBossXBDeployerHelper<T>
    /**
     * Parse the file using object model factory.
     *
+    * @param file the file to parse
+    * @param root the previous root
+    * @param omf the object model factory
+    * @return new metadata instance
+    * @throws Exception for any error
+    */
+   public T parse(VirtualFile file, T root, ObjectModelFactory omf) throws Exception
+   {
+      return parse(output, file, root, omf);
+   }
+
+   /**
+    * Parse the file using object model factory.
+    *
     * @param expectedType the expected type
     * @param file the file to parse
     * @param root the previous root
