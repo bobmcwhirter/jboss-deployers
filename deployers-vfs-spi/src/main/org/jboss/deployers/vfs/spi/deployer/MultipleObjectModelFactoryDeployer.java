@@ -47,7 +47,7 @@ public abstract class MultipleObjectModelFactoryDeployer<T> extends MultipleJBos
    protected <U> U parse(Class<U> expectedType, VirtualFile file, Object root) throws Exception
    {
       U tRoot;
-      if (expectedType.isInstance(root))
+      if (root != null && expectedType.isInstance(root))
          tRoot = expectedType.cast(root);
       else
          tRoot = null;
