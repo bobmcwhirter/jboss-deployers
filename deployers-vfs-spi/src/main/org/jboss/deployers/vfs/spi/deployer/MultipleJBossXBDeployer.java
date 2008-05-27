@@ -21,26 +21,27 @@
 */
 package org.jboss.deployers.vfs.spi.deployer;
 
+import java.util.Map;
+
 /**
- * JBoss XB deployer.
+ * MultipleObjectModelFactoryDeployer.
  *
  * @param <T> the expected type
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  */
-public abstract class JBossXBDeployer<T> extends AbstractVFSParsingDeployer<T>
+public abstract class MultipleJBossXBDeployer<T> extends MultipleVFSParsingDeployer<T>
 {
    /** The helper */
    private JBossXBDeployerHelper<T> helper;
 
-   /**
-    * Create a new SchemaResolverDeployer.
-    *
-    * @param output the output
-    * @throws IllegalArgumentException for a null output
-    */
-   public JBossXBDeployer(Class<T> output)
+   public MultipleJBossXBDeployer(Class<T> output, Map<String, Class<?>> mappings)
    {
-      super(output);
+      this(output, mappings, null, null);
+   }
+
+   public MultipleJBossXBDeployer(Class<T> output, Map<String, Class<?>> mappings, String suffix, Class<?> suffixClass)
+   {
+      super(output, mappings, suffix, suffixClass);
       this.helper = new JBossXBDeployerHelper<T>(output);
    }
 

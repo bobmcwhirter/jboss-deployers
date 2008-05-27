@@ -21,46 +21,44 @@
 */
 package org.jboss.deployers.vfs.spi.deployer;
 
-import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
+import java.util.Map;
+
 import org.jboss.virtual.VirtualFile;
 import org.jboss.xb.binding.ObjectModelFactory;
 
 /**
- * ObjectModelFactoryDeployer extends the AbstractParsingDeployer to add an
- * abstract JBossXB ObjectModelFactory accessor that is used from within an
- * overriden parse(DeploymentUnit unit, VirtualFile file) to unmarshall the xml
- * document represented by file into an instance of deploymentType T.
- * 
- * @param <T> the expected type 
- * @author <a href="adrian@jboss.com">Adrian Brock</a>
- * @author Scott.Stark@jboss.org
+ * MultipleObjectModelFactoryDeployer.
+ *
+ * @param <T> the expected type
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
- * @version $Revision: 1.1 $
  */
-public abstract class ObjectModelFactoryDeployer<T> extends JBossXBDeployer<T>
+public abstract class MultipleObjectModelFactoryDeployer<T> extends MultipleJBossXBDeployer<T>
 {
-   /**
-    * Create a new SchemaResolverDeployer.
-    * 
-    * @param output the output
-    * @throws IllegalArgumentException for a null output
-    */
-   public ObjectModelFactoryDeployer(Class<T> output)
+   public MultipleObjectModelFactoryDeployer(Class<T> output, Map<String, Class<?>> mappings)
    {
-      super(output);
+      super(output, mappings);
    }
 
-   @Override
-   protected T parse(VFSDeploymentUnit unit, VirtualFile file, T root) throws Exception
+   public MultipleObjectModelFactoryDeployer(Class<T> output, Map<String, Class<?>> mappings, String suffix, Class<?> suffixClass)
    {
-      return getHelper().parseWithObjectModelFactory(getOutput(), file, root, getObjectModelFactory(root));
+      super(output, mappings, suffix, suffixClass);
+   }
+
+   protected <U> U parse(Class<U> expectedType, VirtualFile file, Object root) throws Exception
+   {
+      U tRoot;
+      if (expectedType.isInstance(root))
+         tRoot = expectedType.cast(root);
+      else
+         tRoot = null;
+      return getHelper().parseWithObjectModelFactory(expectedType, file, tRoot, getObjectModelFactory(tRoot));
    }
 
    /**
-    * Get the object model factory 
-    * 
+    * Get the object model factory
+    *
     * @param root - possibly null pre-existing root
     * @return the object model factory
     */
-   protected abstract ObjectModelFactory getObjectModelFactory(T root);
+   protected abstract ObjectModelFactory getObjectModelFactory(Object root);
 }

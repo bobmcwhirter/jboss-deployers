@@ -35,7 +35,7 @@ import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
  */
 public class MultiRarDeployer extends MultipleSchemaResolverDeployer<RarDeploymentMetaData>
 {
-   private static Map<String, Class<?>> getMappings()
+   private static Map<String, Class<?>> getCustomMappings()
    {
       Map<String, Class<?>> mappings = new HashMap<String, Class<?>>();
       mappings.put("rar.xml", RarMetaData.class);
@@ -47,7 +47,7 @@ public class MultiRarDeployer extends MultipleSchemaResolverDeployer<RarDeployme
 
    public MultiRarDeployer()
    {
-      super(RarDeploymentMetaData.class, getMappings());
+      super(RarDeploymentMetaData.class, getCustomMappings());
    }
 
    protected RarDeploymentMetaData mergeMetaData(VFSDeploymentUnit unit, Map<Class<?>, List<Object>> metadata) throws Exception

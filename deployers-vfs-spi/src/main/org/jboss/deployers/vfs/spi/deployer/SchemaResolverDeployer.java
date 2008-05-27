@@ -90,14 +90,14 @@ public class SchemaResolverDeployer<T> extends JBossXBDeployer<T>
    {
       if (isRegisterWithJBossXB())
       {
-         namespace = findNamespace(getOutput());
+         namespace = JBossXBDeployerHelper.findNamespace(getOutput());
          if (namespace == null || JBossXmlConstants.DEFAULT.equals(namespace))
             throw new IllegalArgumentException(
                   "RegisterWithJBossXB is enabled, but cannot find namespace on class or package: " + getOutput() +
                   ", perhaps missing @JBossXmlSchema or using default namespace attribute."
             );
 
-         addClassBinding(namespace, getOutput());
+         JBossXBDeployerHelper.addClassBinding(namespace, getOutput());
       }
    }
 
@@ -109,7 +109,7 @@ public class SchemaResolverDeployer<T> extends JBossXBDeployer<T>
       if (isRegisterWithJBossXB())
       {
          // namespace should exist, since we got past create
-         removeClassBinding(namespace);
+         JBossXBDeployerHelper.removeClassBinding(namespace);
       }
    }
 
@@ -117,6 +117,6 @@ public class SchemaResolverDeployer<T> extends JBossXBDeployer<T>
    {
       if (file == null)
          throw new IllegalArgumentException("Null file");
-      return parse(getOutput(), file);
+      return getHelper().parse(file);
    }
 }
