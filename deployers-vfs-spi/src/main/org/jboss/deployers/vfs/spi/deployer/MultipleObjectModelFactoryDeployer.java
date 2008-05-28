@@ -51,14 +51,29 @@ public abstract class MultipleObjectModelFactoryDeployer<T> extends MultipleJBos
          tRoot = expectedType.cast(root);
       else
          tRoot = null;
-      return getHelper().parse(expectedType, file, tRoot, getObjectModelFactory(tRoot));
+      return getHelper().parse(expectedType, file, tRoot, getObjectModelFactory(expectedType, file, tRoot));
    }
 
    /**
     * Get the object model factory
     *
+    * @param expectedType the expected class
+    * @param file - the file we're about to parse
     * @param root - possibly null pre-existing root
     * @return the object model factory
     */
-   protected abstract ObjectModelFactory getObjectModelFactory(Object root);
+   protected <U> ObjectModelFactory getObjectModelFactory(Class<U> expectedType, VirtualFile file, U root)
+   {
+      return getObjectModelFactory(expectedType, file.getName(), root);
+   }
+
+   /**
+    * Get the object model factory
+    *
+    * @param expectedType the expected class
+    * @param fileName - the fileName
+    * @param root - possibly null pre-existing root
+    * @return the object model factory
+    */
+   protected abstract <U> ObjectModelFactory getObjectModelFactory(Class<U> expectedType, String fileName, U root);
 }

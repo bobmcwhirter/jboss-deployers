@@ -31,6 +31,9 @@ import java.util.Set;
 /**
  * Information holder about annotation processing.
  *
+ * Implementations should delay the actual class loading
+ * until it's absolutely necessary.
+ *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
 public interface AnnotationEnvironment
@@ -38,6 +41,12 @@ public interface AnnotationEnvironment
    /**
     * Does this annotation environment contain a class
     * which is annotated with annotation parameter.
+    * This only applies to annotations for ElementType.TYPE level.
+    *
+    * This method should be used if we have no intention
+    * to do real lookup of annotated classes, but we're
+    * only interested in existance of the annotation.
+    * e.g. deployment unit contains @Stateful EJBs
     *
     * @param annotation the annotation we're querying for
     * @return true if there exists a class with annotation param
