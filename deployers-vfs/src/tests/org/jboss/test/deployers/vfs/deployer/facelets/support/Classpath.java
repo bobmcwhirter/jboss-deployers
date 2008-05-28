@@ -102,7 +102,6 @@ public final class Classpath
             }
             else if (path.endsWith(suffix))
             {
-               // result.add(new URL("file:/" + path));
                result.add(fc[i].toURL());
             }
          }
@@ -111,6 +110,17 @@ public final class Classpath
       return false;
    }
 
+   /**
+    * Search from URL.
+    * Fall back on prefix tokens if
+    * not able to read from original url param.
+    *
+    * @param result the result urls
+    * @param prefix the current prefix
+    * @param suffix the suffix to match
+    * @param url the current url to start search
+    * @throws IOException for any error
+    */
    private static void searchFromURL(Set result, String prefix, String suffix, URL url) throws IOException
    {
       boolean done = false;
@@ -123,7 +133,7 @@ public final class Classpath
             if (is instanceof ZipInputStream)
                zis = (ZipInputStream)is;
             else
-               zis = new ZipInputStream(is);   
+               zis = new ZipInputStream(is);
             ZipEntry entry = zis.getNextEntry();
             String urlString = url.toExternalForm();
             while (entry != null)
@@ -145,22 +155,36 @@ public final class Classpath
       {
          String urlString = url.toExternalForm();
          String[] split = prefix.split("/");
-         prefix = join(split, false);
-         String end = join(split, true);
+         prefix = join(split, true);
+         String end = join(split, false);
          int p = urlString.lastIndexOf(end);
          url = new URL(urlString.substring(0, p));
          searchFromURL(result, prefix, suffix, url);
       }
    }
 
-   private static String join(String[] split, boolean full)
+   /**
+    * Join tokens, exlude last if param equals true.
+    *
+    * @param tokens the tokens
+    * @param excludeLast do we exclude last token
+    * @return joined tokens
+    */
+   private static String join(String[] tokens, boolean excludeLast)
    {
       String join = "";
-      for (int i =0; i < split.length - (full ? 0 : 1); i++)
-         join += split[i];
+      for (int i = 0; i < tokens.length - (excludeLast ? 1 : 0); i++)
+         join += tokens[i];
       return join;
    }
 
+   /**
+    * Open input stream from url.
+    * Ignore any errors.
+    *
+    * @param url the url to open
+    * @return input stream or null if not possible
+    */
    private static InputStream getInputStream(URL url)
    {
       try

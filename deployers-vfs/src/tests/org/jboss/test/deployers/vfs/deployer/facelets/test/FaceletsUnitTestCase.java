@@ -61,6 +61,8 @@ public class FaceletsUnitTestCase extends AbstractDeployerUnitTest
    protected void setUp() throws Exception
    {
       super.setUp();
+      // Uncomment this to test VFS nested jar copy handling
+      //System.setProperty(VFSUtils.FORCE_COPY_KEY, "true");
       addStructureDeployer(main, new WARStructure());
    }
 
@@ -117,7 +119,7 @@ public class FaceletsUnitTestCase extends AbstractDeployerUnitTest
       testFacelets("packed");
    }
 
-   public void testUnpackedFacelets() throws Throwable
+   public void testExplodedFacelets() throws Throwable
    {
       testFacelets("exploded");
    }
