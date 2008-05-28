@@ -114,7 +114,7 @@ public class FaceletsUnitTestCase extends AbstractDeployerUnitTest
 
    public void testPackedFacelets() throws Throwable
    {
-//      testFacelets("packed");
+      testFacelets("packed");
    }
 
    public void testUnpackedFacelets() throws Throwable

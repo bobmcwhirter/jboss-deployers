@@ -23,6 +23,7 @@ package org.jboss.test.deployers.vfs.deployer.facelets.support;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -32,6 +33,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * Mock of Facelets's Classpath class.
@@ -73,21 +76,23 @@ public final class Classpath
             }
             else
             {
-               searchDir(all, new File(URLDecoder.decode(url.getFile(), "UTF-8")), suffix);
+               boolean searchDone = searchDir(all, new File(URLDecoder.decode(url.getFile(), "UTF-8")), suffix);
+               if (searchDone == false)
+               {
+                  searchFromURL(all, prefix, suffix, url);
+               }
             }
          }
       }
       return (URL[])all.toArray(new URL[all.size()]);
    }
 
-   private static void searchDir(Set result, File file, String suffix)
-         throws IOException
+   private static boolean searchDir(Set result, File file, String suffix) throws IOException
    {
       if (file.exists() && file.isDirectory())
       {
          File[] fc = file.listFiles();
          String path;
-         URL src;
          for (int i = 0; i < fc.length; i++)
          {
             path = fc[i].getAbsolutePath();
@@ -101,6 +106,70 @@ public final class Classpath
                result.add(fc[i].toURL());
             }
          }
+         return true;
+      }
+      return false;
+   }
+
+   private static void searchFromURL(Set result, String prefix, String suffix, URL url) throws IOException
+   {
+      boolean done = false;
+      InputStream is = getInputStream(url);
+      if (is != null)
+      {
+         try
+         {
+            ZipInputStream zis;
+            if (is instanceof ZipInputStream)
+               zis = (ZipInputStream)is;
+            else
+               zis = new ZipInputStream(is);   
+            ZipEntry entry = zis.getNextEntry();
+            String urlString = url.toExternalForm();
+            while (entry != null)
+            {
+               String entryName = entry.getName();
+               if (entryName.endsWith(suffix))
+               {
+                  result.add(new URL(urlString + entryName));
+               }
+               entry = zis.getNextEntry();
+            }
+            done = true;
+         }
+         catch (Exception ignore)
+         {
+         }
+      }
+      if (done == false && prefix.length() > 0)
+      {
+         String urlString = url.toExternalForm();
+         String[] split = prefix.split("/");
+         prefix = join(split, false);
+         String end = join(split, true);
+         int p = urlString.lastIndexOf(end);
+         url = new URL(urlString.substring(0, p));
+         searchFromURL(result, prefix, suffix, url);
+      }
+   }
+
+   private static String join(String[] split, boolean full)
+   {
+      String join = "";
+      for (int i =0; i < split.length - (full ? 0 : 1); i++)
+         join += split[i];
+      return join;
+   }
+
+   private static InputStream getInputStream(URL url)
+   {
+      try
+      {
+         return url.openStream();
+      }
+      catch (Throwable t)
+      {
+         return null;
       }
    }
 
