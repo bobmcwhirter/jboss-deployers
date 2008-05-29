@@ -172,10 +172,10 @@ public final class Classpath
     */
    private static String join(String[] tokens, boolean excludeLast)
    {
-      String join = "";
+      StringBuffer join = new StringBuffer();
       for (int i = 0; i < tokens.length - (excludeLast ? 1 : 0); i++)
-         join += tokens[i];
-      return join;
+         join.append(tokens[i]).append("/");
+      return join.toString();
    }
 
    /**
