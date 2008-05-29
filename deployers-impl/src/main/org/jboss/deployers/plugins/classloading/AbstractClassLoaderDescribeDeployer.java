@@ -91,7 +91,16 @@ public abstract class AbstractClassLoaderDescribeDeployer extends AbstractOption
          
          // For non top level classloaders, we need to control the domain
          // since the parent is the deployment classloader
-         deployment.setDomain(unit.getName());
+         String unitName = unit.getName();
+         if (deployment.getParentDomain() == null)
+         {
+            deployment.setDomain(unitName);
+            log.debug("Will use synthetic domain for classloader of subdeployment: " + unitName);
+         }
+         else
+         {
+            log.debug("Will create top level classloader for subdeployment: " + unitName);
+         }
       }
       
       // Create the module

@@ -28,6 +28,7 @@ import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.jboss.classloader.spi.ClassLoaderSystem;
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
 import org.jboss.deployers.client.spi.DeployerClient;
 import org.jboss.deployers.client.spi.Deployment;
@@ -78,7 +79,7 @@ public class SubDeploymentMockClassLoaderUnitTestCase extends ClassLoaderDepende
       assertNoDomain("top/sub");
    }
 
-   public void testSubDeploymentClassLoader() throws Exception
+   public void testSubDeploymentClassLoaderSynthetic() throws Exception
    {
       DeployerClient deployer = getMainDeployer();
 
@@ -90,6 +91,78 @@ public class SubDeploymentMockClassLoaderUnitTestCase extends ClassLoaderDepende
       
       DeploymentUnit unit = assertDeploy(deployer, deployment);
       assertDomain("top/sub");
+      
+      assertEquals(Arrays.asList("top", "top/sub"), deployer2.deployed);
+      assertEquals(NONE, deployer2.undeployed);
+      
+      ClassLoader cl = unit.getClassLoader();
+      assertLoadClass(cl, A.class);
+      assertLoadClassFail(cl, B.class);
+      
+      DeploymentUnit subDeployment = assertChild(unit, "top/sub");
+      ClassLoader clSub = subDeployment.getClassLoader();
+      assertLoadClass(clSub, A.class, cl);
+      assertLoadClass(clSub, B.class);
+      
+      assertUndeploy(deployer, deployment);
+      assertNoDomain("top/sub");
+
+      assertEquals(Arrays.asList("top", "top/sub"), deployer2.deployed);
+      assertEquals(Arrays.asList("top/sub", "top"), deployer2.undeployed);
+   }
+
+   public void testSubDeploymentClassLoaderSpecifiedDefaultDomain() throws Exception
+   {
+      DeployerClient deployer = getMainDeployer();
+
+      Deployment deployment = createSimpleDeployment("top");
+      ClassLoadingMetaData top = addClassLoadingMetaData(deployment, "top", null, A.class);
+      top.setImportAll(true);
+      
+      ContextInfo sub = addChild(deployment, "sub");
+      ClassLoadingMetaData topSub = addClassLoadingMetaData(sub, "top/sub", null, false, B.class);
+      topSub.setDomain(ClassLoaderSystem.DEFAULT_DOMAIN_NAME);
+      topSub.setParentDomain(ClassLoaderSystem.DEFAULT_DOMAIN_NAME);
+      topSub.setImportAll(true);
+      
+      DeploymentUnit unit = assertDeploy(deployer, deployment);
+      
+      assertEquals(Arrays.asList("top", "top/sub"), deployer2.deployed);
+      assertEquals(NONE, deployer2.undeployed);
+      
+      ClassLoader cl = unit.getClassLoader();
+      
+      DeploymentUnit subDeployment = assertChild(unit, "top/sub");
+      ClassLoader clSub = subDeployment.getClassLoader();
+
+      assertLoadClass(cl, A.class);
+      assertLoadClass(cl, B.class, clSub);
+      assertLoadClass(clSub, A.class, cl);
+      assertLoadClass(clSub, B.class);
+      
+      assertUndeploy(deployer, deployment);
+      assertNoDomain("top/sub");
+
+      assertEquals(Arrays.asList("top", "top/sub"), deployer2.deployed);
+      assertEquals(Arrays.asList("top/sub", "top"), deployer2.undeployed);
+   }
+
+   public void testSubDeploymentClassLoaderSpecifiedOtherDomain() throws Exception
+   {
+      DeployerClient deployer = getMainDeployer();
+
+      Deployment deployment = createSimpleDeployment("top");
+      ClassLoadingMetaData top = addClassLoadingMetaData(deployment, "top", null, A.class);
+      top.setImportAll(true);
+      
+      ContextInfo sub = addChild(deployment, "sub");
+      ClassLoadingMetaData topSub = addClassLoadingMetaData(sub, "top/sub", null, false, B.class);
+      topSub.setDomain("TestDomain");
+      topSub.setParentDomain(ClassLoaderSystem.DEFAULT_DOMAIN_NAME);
+      topSub.setImportAll(true);
+      
+      DeploymentUnit unit = assertDeploy(deployer, deployment);
+      assertDomain("TestDomain");
       
       assertEquals(Arrays.asList("top", "top/sub"), deployer2.deployed);
       assertEquals(NONE, deployer2.undeployed);
@@ -177,6 +250,51 @@ public class SubDeploymentMockClassLoaderUnitTestCase extends ClassLoaderDepende
 
       assertEquals(Arrays.asList("top", "top/sub"), deployer2.deployed);
       assertEquals(Arrays.asList("top/sub", "top"), deployer2.undeployed);
+   }
+
+   public void testMultipleSubDeploymentClassLoaderSpecifiedDomain() throws Exception
+   {
+      DeployerClient deployer = getMainDeployer();
+
+      Deployment deployment = createSimpleDeployment("top");
+      addClassLoadingMetaData(deployment, "top", null);
+      
+      ContextInfo sub1 = addChild(deployment, "sub1");
+      ClassLoadingMetaData topSub1 = addClassLoadingMetaData(sub1, "top/sub1", null, A.class);
+      topSub1.setDomain("TestDomain");
+      topSub1.setParentDomain(ClassLoaderSystem.DEFAULT_DOMAIN_NAME);
+      topSub1.setImportAll(true);
+      
+      ContextInfo sub2 = addChild(deployment, "sub2");
+      ClassLoadingMetaData topSub2 = addClassLoadingMetaData(sub2, "top/sub2", null, B.class);
+      topSub2.setDomain("TestDomain");
+      topSub2.setParentDomain(ClassLoaderSystem.DEFAULT_DOMAIN_NAME);
+      topSub2.setImportAll(true);
+      
+      DeploymentUnit unit = assertDeploy(deployer, deployment);
+      assertDomain("TestDomain");
+
+      ClassLoader cl = unit.getClassLoader();
+      assertLoadClassFail(cl, A.class);
+      assertLoadClassFail(cl, B.class);
+      
+      DeploymentUnit subDeployment1 = assertChild(unit, "top/sub1");
+      ClassLoader clSub1 = subDeployment1.getClassLoader();
+      DeploymentUnit subDeployment2 = assertChild(unit, "top/sub2");
+      ClassLoader clSub2 = subDeployment2.getClassLoader();
+
+      Class<?> aFrom1 = assertLoadClass(clSub1, A.class);
+      Class<?> bFrom1 = assertLoadClass(clSub1, B.class, clSub2);
+      
+      Class<?> aFrom2 = assertLoadClass(clSub2, A.class, clSub1);
+      Class<?> bFrom2 = assertLoadClass(clSub2, B.class);
+      
+      assertNotSame(clSub1, clSub2);
+      assertSame(aFrom1, aFrom2);
+      assertSame(bFrom1, bFrom2);
+      
+      assertUndeploy(deployer, deployment);
+      assertNoDomain("TopDomain");
    }
    
    protected DeploymentUnit assertChild(DeploymentUnit parent, String name)

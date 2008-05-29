@@ -114,7 +114,7 @@ public class AbstractLevelClassLoaderSystemDeployer extends AbstractClassLoaderD
          throw new IllegalStateException("Module is not an instance of " + ClassLoaderPolicyModule.class.getName() + " actual=" + module.getClass().getName());
       ClassLoaderPolicyModule classLoaderPolicyModule = (ClassLoaderPolicyModule) module;
 
-      if (unit.isTopLevel())
+      if (unit.isTopLevel() || module.getParentDomainName() != null)
       {
          // Top level, just create the classloader
          return classLoaderPolicyModule.registerClassLoaderPolicy(system);
