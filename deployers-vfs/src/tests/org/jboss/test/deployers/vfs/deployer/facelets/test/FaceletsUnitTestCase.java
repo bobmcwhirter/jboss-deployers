@@ -98,15 +98,15 @@ public class FaceletsUnitTestCase extends AbstractDeployerUnitTest
       addDeployer(main, deployer);
    }
 
-   protected void testFacelets(String name) throws Throwable
+   protected void testFacelets(String name, int size) throws Throwable
    {
-      VFSDeployment context = createDeployment("/facelets", name + ".jar");
+      VFSDeployment context = createDeployment("/facelets", name);
       assertDeploy(context);
       try
       {
          URL[] urls = deployer.getUrls();
          assertNotNull(urls);
-         assertEquals(3, urls.length);
+         assertEquals(size, urls.length);
       }
       finally
       {
@@ -116,11 +116,16 @@ public class FaceletsUnitTestCase extends AbstractDeployerUnitTest
 
    public void testPackedFacelets() throws Throwable
    {
-      testFacelets("packed");
+      testFacelets("packed.jar", 3);
    }
 
    public void testExplodedFacelets() throws Throwable
    {
-      testFacelets("exploded");
+      testFacelets("exploded.jar", 3);
+   }
+
+   public void testNumberguess() throws Throwable
+   {
+      testFacelets("numberguess.war", 5);
    }
 }

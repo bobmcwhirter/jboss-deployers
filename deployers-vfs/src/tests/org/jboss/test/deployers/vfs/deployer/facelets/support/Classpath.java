@@ -135,6 +135,9 @@ public final class Classpath
             else
                zis = new ZipInputStream(is);
             ZipEntry entry = zis.getNextEntry();
+            // initial entry should not be null
+            // if we assume this is some inner jar
+            done = (entry != null);
             String urlString = url.toExternalForm();
             while (entry != null)
             {
@@ -145,7 +148,6 @@ public final class Classpath
                }
                entry = zis.getNextEntry();
             }
-            done = true;
          }
          catch (Exception ignore)
          {
@@ -153,7 +155,8 @@ public final class Classpath
       }
       if (done == false && prefix.length() > 0)
       {
-         String urlString = url.toExternalForm();
+         // we add '/' at the end since join adds it as well
+         String urlString = url.toExternalForm() + "/";
          String[] split = prefix.split("/");
          prefix = join(split, true);
          String end = join(split, false);
