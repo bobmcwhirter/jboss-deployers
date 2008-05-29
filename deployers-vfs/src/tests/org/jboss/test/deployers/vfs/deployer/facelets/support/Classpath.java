@@ -138,12 +138,12 @@ public final class Classpath
             // initial entry should not be null
             // if we assume this is some inner jar
             done = (entry != null);
-            String urlString = url.toExternalForm();
             while (entry != null)
             {
                String entryName = entry.getName();
                if (entryName.endsWith(suffix))
                {
+                  String urlString = url.toExternalForm();
                   result.add(new URL(urlString + entryName));
                }
                entry = zis.getNextEntry();
