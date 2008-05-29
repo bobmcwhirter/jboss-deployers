@@ -271,7 +271,28 @@ public class DeployerSingleDeploymentTestCase extends AbstractMainDeployerTest
       for(int i = 0; i < n; i++)
       {
          threads[i].join();
-         assertTrue(runnables[i].toString(), runnables[i].isValid());
+      }
+
+      int failed = -1;
+      for(int i = 0; i < n; i++)
+      {
+         boolean valid = runnables[i].isValid();
+         if (valid == false && failed < 0)
+            failed = i;
+      }
+
+      if (failed >= 0)
+      {
+         StringBuilder builder = new StringBuilder();
+         builder.append("Failure cause: ").append(runnables[failed]).append("\n\n");
+         for (int i = 0; i < n; i++)
+         {
+            if (i != failed)
+            {
+               builder.append(i).append(". --> ").append(runnables[i]).append("\n");
+            }
+         }
+         fail(builder.toString());
       }
    }
 }
