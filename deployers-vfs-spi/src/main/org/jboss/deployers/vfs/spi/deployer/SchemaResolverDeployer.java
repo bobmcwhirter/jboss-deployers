@@ -115,6 +115,18 @@ public class SchemaResolverDeployer<T> extends JBossXBDeployer<T>
 
    protected T parse(VFSDeploymentUnit unit, VirtualFile file, T root) throws Exception
    {
+      return parse(file);
+   }
+
+   /**
+    * Parse the file.
+    *
+    * @param file the virtual file to parse
+    * @return new metadata instance
+    * @throws Exception for any error
+    */
+   protected T parse(VirtualFile file) throws Exception
+   {
       if (file == null)
          throw new IllegalArgumentException("Null file");
       return getHelper().parse(file);
