@@ -35,6 +35,7 @@ import java.util.Set;
 
 import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
 import org.jboss.deployers.spi.annotations.Element;
+import org.jboss.logging.Logger;
 import org.jboss.metadata.spi.signature.Signature;
 import org.jboss.util.collection.CollectionsFactory;
 
@@ -45,6 +46,9 @@ import org.jboss.util.collection.CollectionsFactory;
  */
 public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implements AnnotationEnvironment
 {
+   /** The log */
+   private static final Logger log = Logger.getLogger(DefaultAnnotationEnvironment.class);
+   /** The info map */
    private Map<Class<? extends Annotation>, Map<ElementType, Set<ClassSignaturePair>>> env;
 
    public DefaultAnnotationEnvironment(ClassLoader classLoader)
@@ -63,6 +67,9 @@ public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implemen
     */
    void putAnnotation(Class<? extends Annotation> annClass, ElementType type, String className, Signature signature)
    {
+      if (log.isTraceEnabled())
+         log.trace("Adding annotation @" + annClass.getSimpleName() + " for " + className + " at type " + type + ", signature: " + signature);
+      
       Map<ElementType, Set<ClassSignaturePair>> elements = env.get(annClass);
       if (elements == null)
       {

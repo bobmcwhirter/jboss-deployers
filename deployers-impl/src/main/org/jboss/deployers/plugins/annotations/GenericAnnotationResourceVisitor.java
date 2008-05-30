@@ -125,6 +125,9 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
     */
    protected void handleCtClass(CtClass ctClass, ResourceContext resource) throws ClassNotFoundException, NotFoundException
    {
+      if (log.isTraceEnabled())
+         log.trace("Scanning class " + ctClass + " for annotations, resource url: " + resource.getUrl());
+
       Object[] annotations = forceAnnotations ? ctClass.getAnnotations() : ctClass.getAvailableAnnotations();
       handleAnnotations(ElementType.TYPE, (Signature)null, annotations, resource);
       handleCtMembers(ElementType.CONSTRUCTOR, ctClass.getDeclaredConstructors(), resource);

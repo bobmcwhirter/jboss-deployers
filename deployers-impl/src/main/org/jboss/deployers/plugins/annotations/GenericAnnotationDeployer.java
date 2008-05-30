@@ -56,6 +56,9 @@ public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module
 
    public void deploy(DeploymentUnit unit, Module module) throws DeploymentException
    {
+      if (log.isTraceEnabled())
+         log.trace("Creating AnnotationEnvironment for " + unit + ", module: " + module + ", force annotations: " + forceAnnotations);
+
       ClassPool pool = ClassPool.getDefault();
       ClassLoader classLoader = unit.getClassLoader();
 
