@@ -134,19 +134,27 @@ public final class Classpath
                zis = (ZipInputStream)is;
             else
                zis = new ZipInputStream(is);
-            ZipEntry entry = zis.getNextEntry();
-            // initial entry should not be null
-            // if we assume this is some inner jar
-            done = (entry != null);
-            while (entry != null)
+
+            try
             {
-               String entryName = entry.getName();
-               if (entryName.endsWith(suffix))
+               ZipEntry entry = zis.getNextEntry();
+               // initial entry should not be null
+               // if we assume this is some inner jar
+               done = (entry != null);
+               while (entry != null)
                {
-                  String urlString = url.toExternalForm();
-                  result.add(new URL(urlString + entryName));
+                  String entryName = entry.getName();
+                  if (entryName.endsWith(suffix))
+                  {
+                     String urlString = url.toExternalForm();
+                     result.add(new URL(urlString + entryName));
+                  }
+                  entry = zis.getNextEntry();
                }
-               entry = zis.getNextEntry();
+            }
+            finally
+            {
+               zis.close();
             }
          }
          catch (Exception ignore)
