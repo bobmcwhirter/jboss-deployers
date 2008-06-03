@@ -21,13 +21,11 @@
 */
 package org.jboss.deployers.vfs.deployer.kernel;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.jboss.beans.metadata.spi.BeanMetaData;
-import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.helpers.AbstractComponentDeployer;
-import org.jboss.deployers.spi.deployer.helpers.DeploymentVisitor;
-import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.kernel.spi.deployment.KernelDeployment;
 
 public class KernelDeploymentDeployer extends AbstractComponentDeployer<KernelDeployment, BeanMetaData>
@@ -41,66 +39,35 @@ public class KernelDeploymentDeployer extends AbstractComponentDeployer<KernelDe
       setComponentVisitor(new BeanMetaDataVisitor());
    }
 
-   protected static void addBeanComponent(DeploymentUnit unit, BeanMetaData bean)
-   {
-      DeploymentUnit component = unit.addComponent(bean.getName());
-      component.addAttachment(BeanMetaData.class.getName(), bean);
-   }
-
-   protected static void removeBeanComponent(DeploymentUnit unit, BeanMetaData bean)
-   {
-      unit.removeComponent(bean.getName());
-   }
-   
    /**
     * KernelDeploymentVisitor.
     */
-   public static class KernelDeploymentVisitor implements DeploymentVisitor<KernelDeployment>
+   public static class KernelDeploymentVisitor extends BeanMetaDataFactoryVisitor<KernelDeployment>
    {
       public Class<KernelDeployment> getVisitorType()
       {
          return KernelDeployment.class;
       }
 
-      public void deploy(DeploymentUnit unit, KernelDeployment deployment) throws DeploymentException
+      protected List<BeanMetaData> getBeans(KernelDeployment deployment)
       {
-         List<BeanMetaData> beans = deployment.getBeans();
-         if (beans != null && beans.isEmpty() == false)
-         {
-            for (BeanMetaData bean : beans)
-               addBeanComponent(unit, bean);
-         }
-      }
-
-      public void undeploy(DeploymentUnit unit, KernelDeployment deployment)
-      {
-         List<BeanMetaData> beans = deployment.getBeans();
-         if (beans != null && beans.isEmpty() == false)
-         {
-            for (BeanMetaData bean : beans)
-               removeBeanComponent(unit, bean);
-         }
+         return deployment.getBeans();
       }
    }
 
    /**
     * BeanMetaDataVisitor.
     */
-   public static class BeanMetaDataVisitor implements DeploymentVisitor<BeanMetaData>
+   public static class BeanMetaDataVisitor extends BeanMetaDataFactoryVisitor<BeanMetaData>
    {
       public Class<BeanMetaData> getVisitorType()
       {
          return BeanMetaData.class;
       }
 
-      public void deploy(DeploymentUnit unit, BeanMetaData deployment) throws DeploymentException
+      protected List<BeanMetaData> getBeans(BeanMetaData deployment)
       {
-         addBeanComponent(unit, deployment);
-      }
-
-      public void undeploy(DeploymentUnit unit, BeanMetaData deployment)
-      {
-         removeBeanComponent(unit, deployment);
+         return Collections.singletonList(deployment);
       }
    }
 }

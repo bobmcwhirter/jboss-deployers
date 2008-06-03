@@ -22,10 +22,7 @@
 package org.jboss.deployers.vfs.deployer.kernel;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.jboss.beans.metadata.api.annotations.Bean;
@@ -35,10 +32,8 @@ import org.jboss.beans.metadata.spi.AliasMetaData;
 import org.jboss.beans.metadata.spi.BeanMetaData;
 import org.jboss.beans.metadata.spi.builder.BeanMetaDataBuilder;
 import org.jboss.beans.metadata.spi.factory.GenericBeanFactoryMetaData;
-import org.jboss.deployers.spi.DeploymentException;
-import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
-import org.jboss.deployers.spi.deployer.helpers.AbstractSimpleRealDeployer;
-import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.deployers.spi.deployer.helpers.AbstractAnnotationDeployer;
+import org.jboss.deployers.spi.deployer.helpers.AbstractAnnotationProcessor;
 
 /**
  * BeanScanningDeployer.<p>
@@ -48,163 +43,82 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
  *
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  */
-public class BeanScanningDeployer extends AbstractSimpleRealDeployer<AnnotationEnvironment>
+public class BeanScanningDeployer extends AbstractAnnotationDeployer
 {
    public BeanScanningDeployer()
    {
-      this(null);
+      super(new BeanAnnotationProcessor(), new BeanFactoryAnnotationProcessor());
    }
 
-   /**
-    * We depend on KernelDeploymentDeployer for the order if it's present,
-    * but can be null, then order doesn't matter, but we still go +10.
-    *
-    * @param kdd the kernel deployment deployer
-    */
-   public BeanScanningDeployer(KernelDeploymentDeployer kdd)
+   private static class BeanAnnotationProcessor extends AbstractAnnotationProcessor<Bean, BeanMetaData>
    {
-      super(AnnotationEnvironment.class);
-      setInputs(BeanMetaData.class);
-      setOutput(BeanMetaData.class);
-      if (kdd != null)
-         setRelativeOrder(kdd.getRelativeOrder() + 10);
-      else
-         setRelativeOrder(getRelativeOrder() + 10);
-   }
-
-   public void deploy(DeploymentUnit unit, AnnotationEnvironment env) throws DeploymentException
-   {
-      Map<String, DeploymentUnit> components = null;
-      Set<String> beanNames = null;
-
-      Set<Class<?>> beans = env.classIsAnnotatedWith(Bean.class);
-      if (beans != null && beans.isEmpty() == false)
+      public Class<Bean> getAnnotation()
       {
-         components = new HashMap<String, DeploymentUnit>();
-         mapComponents(unit, components);
-         beanNames = new HashSet<String>();
-
-         for (Class<?> beanClass : beans)
-         {
-            Bean bean = beanClass.getAnnotation(Bean.class);
-            String name = bean.name();
-            if (name == null)
-               throw new IllegalArgumentException("Null bean name: " + beanClass);
-
-            DeploymentUnit component = components.get(name);
-            BeanMetaData bmd = null;
-            if (component != null)
-               bmd = component.getAttachment(BeanMetaData.class);
-
-            if (bmd == null)
-            {
-               BeanMetaDataBuilder builder = BeanMetaDataBuilder.createBuilder(name, beanClass.getName());
-               String[] aliases = bean.aliases();
-               if (aliases != null && aliases.length > 0)
-                  builder.setAliases(new HashSet<Object>(Arrays.asList(aliases)));
-               builder.setMode(bean.mode())
-                      .setAccessMode(bean.accessMode())
-                      .setAutowireType(bean.autowireType())
-                      .setErrorHandlingMode(bean.errorHandlingMode())
-                      .setAutowireCandidate(bean.autowireCandidate());
-
-               KernelDeploymentDeployer.addBeanComponent(unit, builder.getBeanMetaData());
-               beanNames.add(name);
-            }
-            else
-            {
-               // TODO should we do something .. or leave it to previous metadata?
-               log.info("BeanMetaData with such name already exists: " + bmd + ", scanned: " + beanClass);
-            }
-         }
+         return Bean.class;
       }
 
-      Set<Class<?>> beanFactories = env.classIsAnnotatedWith(BeanFactory.class);
-      if (beanFactories != null && beanFactories.isEmpty() == false)
+      public Class<BeanMetaData> getOutput()
       {
-         if (components == null)
-         {
-            components = new HashMap<String, DeploymentUnit>();
-            mapComponents(unit, components);
-            beanNames = new HashSet<String>();
-         }
+         return BeanMetaData.class;
+      }
 
-         for (Class<?> beanFactoryClass : beanFactories)
-         {
-            BeanFactory beanFactory = beanFactoryClass.getAnnotation(BeanFactory.class);
-            String name = beanFactory.name();
-            if (name == null)
-               throw new IllegalArgumentException("Null bean name: " + beanFactoryClass);
+      protected BeanMetaData createMetaDataFromClass(Class<?> clazz, Bean bean)
+      {
+         String name = bean.name();
+         if (name == null)
+            throw new IllegalArgumentException("Null bean name: " + clazz);
 
-            DeploymentUnit component = components.get(name);
-            BeanMetaData bmd = null;
-            if (component != null)
-               bmd = component.getAttachment(BeanMetaData.class);
-
-            if (bmd == null)
-            {
-               GenericBeanFactoryMetaData gbfmd = new GenericBeanFactoryMetaData(name, beanFactoryClass.getName());
-               String[] aliases = beanFactory.aliases();
-               if (aliases != null && aliases.length > 0)
-               {
-                  Set<AliasMetaData> aliasesMD = new HashSet<AliasMetaData>();
-                  for (String alias : aliases)
-                  {
-                     AbstractAliasMetaData aamd = new AbstractAliasMetaData();
-                     aamd.setAlias(alias);
-                     aliasesMD.add(aamd);
-                  }
-                  gbfmd.setAliases(aliasesMD);
-               }
-               gbfmd.setMode(beanFactory.mode());
-               gbfmd.setAccessMode(beanFactory.accessMode());
-
-               List<BeanMetaData> bfBeans = gbfmd.getBeans();
-               for (BeanMetaData bfb : bfBeans)
-               {
-                  KernelDeploymentDeployer.addBeanComponent(unit, bfb);
-                  beanNames.add(name);
-               }
-            }
-            else
-            {
-               // TODO should we do something .. or leave it to previous metadata?               
-               log.info("BeanMetaData with such name already exists: " + bmd + ", scanned: " + beanFactoryClass);
-            }
-         }
-
-         if (beanNames != null && beanNames.isEmpty() == false)
-            unit.addAttachment(getClass() + ".Beans", beanNames);
+         BeanMetaDataBuilder builder = BeanMetaDataBuilder.createBuilder(name, clazz.getName());
+         String[] aliases = bean.aliases();
+         if (aliases != null && aliases.length > 0)
+            builder.setAliases(new HashSet<Object>(Arrays.asList(aliases)));
+         builder.setMode(bean.mode())
+               .setAccessMode(bean.accessMode())
+               .setAutowireType(bean.autowireType())
+               .setErrorHandlingMode(bean.errorHandlingMode())
+               .setAutowireCandidate(bean.autowireCandidate());
+         return builder.getBeanMetaData();
       }
    }
 
-   public void undeploy(DeploymentUnit unit, AnnotationEnvironment deployment)
+   private static class BeanFactoryAnnotationProcessor extends AbstractAnnotationProcessor<BeanFactory, BeanMetaData>
    {
-      @SuppressWarnings("unchecked")
-      Set<String> beanNames = unit.getAttachment(getClass() + ".Beans", Set.class);
-      if (beanNames != null)
+      public Class<BeanFactory> getAnnotation()
       {
-         for(String name : beanNames)
-            unit.removeComponent(name);
+         return BeanFactory.class;
       }
-   }
 
-   /**
-    * Map components.
-    *
-    * @param unit the deployment unit
-    * @param map  map to fill
-    */
-   protected static void mapComponents(DeploymentUnit unit, Map<String, DeploymentUnit> map)
-   {
-      List<DeploymentUnit> components = unit.getComponents();
-      if (components != null && components.isEmpty() == false)
+      public Class<BeanMetaData> getOutput()
       {
-         for (DeploymentUnit component : components)
+         return BeanMetaData.class;
+      }
+
+      protected BeanMetaData createMetaDataFromClass(Class<?> clazz, BeanFactory factory)
+      {
+         String name = factory.name();
+         if (name == null)
+            throw new IllegalArgumentException("Null bean name: " + factory);
+
+         GenericBeanFactoryMetaData gbfmd = new GenericBeanFactoryMetaData(name, clazz.getName());
+         Class<?> factoryClass = factory.getFactoryClass();
+         if (void.class.equals(factoryClass) == false)
+            gbfmd.setFactoryClass(factoryClass.getName());
+         String[] aliases = factory.aliases();
+         if (aliases != null && aliases.length > 0)
          {
-            map.put(component.getName(), component);
-            mapComponents(component, map);
+            Set<AliasMetaData> aliasesMD = new HashSet<AliasMetaData>();
+            for (String alias : aliases)
+            {
+               AbstractAliasMetaData aamd = new AbstractAliasMetaData();
+               aamd.setAlias(alias);
+               aliasesMD.add(aamd);
+            }
+            gbfmd.setAliases(aliasesMD);
          }
+         gbfmd.setMode(factory.mode());
+         gbfmd.setAccessMode(factory.accessMode());
+
+         return gbfmd.getBeanMetaData();
       }
    }
 }

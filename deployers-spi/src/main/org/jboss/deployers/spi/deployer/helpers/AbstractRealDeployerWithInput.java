@@ -33,6 +33,7 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
  * 
  * @param <T> the type of the input
  * @author <a href="adrian@jboss.org">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public abstract class AbstractRealDeployerWithInput<T> extends AbstractRealDeployer
@@ -86,7 +87,6 @@ public abstract class AbstractRealDeployerWithInput<T> extends AbstractRealDeplo
       setInput(input);
    }
 
-   @SuppressWarnings("unchecked")
    public void internalDeploy(DeploymentUnit unit) throws DeploymentException
    {
       if (visitor == null)
@@ -99,11 +99,27 @@ public abstract class AbstractRealDeployerWithInput<T> extends AbstractRealDeplo
          return;
       }
 
-      List<T> visited = new ArrayList();
+      deploy(unit, visitor);
+   }
+
+   /**
+    * Deploy over visitor.
+    * Unwind already deployed deployments on failure.
+    *
+    * @param unit the deployment unit
+    * @param visitor the visitor
+    * @throws DeploymentException for any error
+    */
+   protected <U> void deploy(DeploymentUnit unit, DeploymentVisitor<U> visitor) throws DeploymentException
+   {
+      if (visitor == null)
+         throw new IllegalArgumentException("Null visitor.");
+
+      List<U> visited = new ArrayList<U>();
       try
       {
-         Set<? extends T> deployments = unit.getAllMetaData(getInput());
-         for (T deployment : deployments)
+         Set<? extends U> deployments = unit.getAllMetaData(visitor.getVisitorType());
+         for (U deployment : deployments)
          {
             visitor.deploy(unit, deployment);
             visited.add(deployment);
@@ -126,12 +142,24 @@ public abstract class AbstractRealDeployerWithInput<T> extends AbstractRealDeplo
       }
    }
 
-   public void internalUndeploy(DeploymentUnit unit)
+   /**
+    * Undeploy over visitor.
+    *
+    * @param unit the deployment unit
+    * @param visitor the visitor
+    */
+   protected <U> void undeploy(DeploymentUnit unit, DeploymentVisitor<U> visitor)
    {
       if (visitor == null)
          return;
-      Set<? extends T> deployments = unit.getAllMetaData(getInput());
-      for (T deployment : deployments)
+
+      Set<? extends U> deployments = unit.getAllMetaData(visitor.getVisitorType());
+      for (U deployment : deployments)
          visitor.undeploy(unit, deployment);
+   }
+
+   public void internalUndeploy(DeploymentUnit unit)
+   {
+      undeploy(unit, visitor);
    }
 }

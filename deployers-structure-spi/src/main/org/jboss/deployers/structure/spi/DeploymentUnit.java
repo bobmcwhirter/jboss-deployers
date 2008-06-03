@@ -220,7 +220,15 @@ public interface DeploymentUnit extends MutableAttachments
     * @throws IllegalArgumentException for a null name
     */
    DeploymentUnit addComponent(String name);
-   
+
+   /**
+    * Get component.
+    *
+    * @param name the name
+    * @return component if matching component exists, else null
+    */
+   DeploymentUnit getComponent(String name);
+
    /**
     * Remove a component
     * 

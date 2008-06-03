@@ -19,46 +19,46 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.deployers.vfs.deployer.kernel;
+package org.jboss.deployers.spi.deployer.helpers;
 
-import java.util.List;
-
-import org.jboss.beans.metadata.spi.BeanMetaData;
-import org.jboss.beans.metadata.spi.BeanMetaDataFactory;
-import org.jboss.deployers.spi.deployer.helpers.AbstractRealDeployerWithInput;
+import java.lang.annotation.Annotation;
 
 /**
- * BeanMetaDataFactoryDeployer.<p>
+ * Annotation processor.
  *
- * @param <T> exact attachment type
+ * @param <A> the annotation type
+ * @param <T> the output type
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  */
-public class BeanMetaDataFactoryDeployer<T extends BeanMetaDataFactory> extends AbstractRealDeployerWithInput<T>
+public interface AnnotationProcessor<A extends Annotation, T>
 {
-   public BeanMetaDataFactoryDeployer(Class<T> clazz)
-   {
-      super(clazz);
-      setDeploymentVisitor(new BeanMetaDataFactoryDeployerVisitor(clazz));
-      setOutput(BeanMetaData.class);
-   }
+   /**
+    * Get the annotation class.
+    *
+    * @return the annotation class
+    */
+   Class<A> getAnnotation();
 
-   private class BeanMetaDataFactoryDeployerVisitor extends BeanMetaDataFactoryVisitor<T>
-   {
-      private Class<T> clazz;
+   /**
+    * Get output class.
+    *
+    * @return the output class
+    */
+   Class<T> getOutput();
 
-      private BeanMetaDataFactoryDeployerVisitor(Class<T> clazz)
-      {
-         this.clazz = clazz;
-      }
+   /**
+    * Create metadata attachment.
+    *
+    * @param attachment the previous attachment
+    * @return the new metadata instance or null if cannot be created
+    */
+   T createMetaData(Object attachment);
 
-      public Class<T> getVisitorType()
-      {
-         return clazz;
-      }
-
-      protected List<BeanMetaData> getBeans(T deployment)
-      {
-         return deployment.getBeans();
-      }
-   }
+   /**
+    * Create metadata from class.
+    *
+    * @param clazz the class containing annotation
+    * @return the new metadata from class or null if cannot be created
+    */
+   T createMetaDataFromClass(Class<?> clazz);
 }

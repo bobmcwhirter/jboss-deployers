@@ -256,17 +256,42 @@ public class AbstractDeploymentUnit extends AbstractMutableAttachments implement
       return unit;
    }
 
+   /**
+    * Get component deployment context.
+    *
+    * @param name the name
+    * @return component component context or null if no match
+    */
+   protected DeploymentContext getComponentContext(String name)
+   {
+      List<DeploymentContext> components = deploymentContext.getComponents();
+      if (components == null || components.isEmpty())
+         return null;
+
+      for (DeploymentContext component : components)
+      {
+         if (name.equals(component.getName()))
+            return component;
+      }
+      return null;
+   }
+
+   public DeploymentUnit getComponent(String name)
+   {
+      if (name == null)
+         throw new IllegalArgumentException("Null name");
+
+      DeploymentContext component = getComponentContext(name);
+      return component != null ? component.getDeploymentUnit() : null;
+   }
+
    public boolean removeComponent(String name)
    {
       if (name == null)
          throw new IllegalArgumentException("Null name");
-      
-      for (DeploymentContext component : deploymentContext.getComponents())
-      {
-         if (name.equals(component.getName()))
-            return deploymentContext.removeComponent(component);
-      }
-      return false;
+
+      DeploymentContext component = getComponentContext(name);
+      return component != null && deploymentContext.removeComponent(component);
    }
 
    public <T> Set<? extends T> getAllMetaData(Class<T> type)

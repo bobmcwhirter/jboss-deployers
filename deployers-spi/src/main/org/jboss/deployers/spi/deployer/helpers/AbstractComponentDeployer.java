@@ -21,8 +21,6 @@
 */
 package org.jboss.deployers.spi.deployer.helpers;
 
-import java.util.Set;
-
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 
@@ -32,12 +30,13 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
  * @param <D> the deployment type
  * @param <C> the component type
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public abstract class AbstractComponentDeployer<D, C> extends AbstractRealDeployerWithInput<D>
 {
    /** The component visitor */
-   private DeploymentVisitor<C> compVisitor;
+   protected DeploymentVisitor<C> compVisitor;
 
    /**
     * Create a new AbstractComponentDeployer.
@@ -77,22 +76,22 @@ public abstract class AbstractComponentDeployer<D, C> extends AbstractRealDeploy
    public void internalDeploy(DeploymentUnit unit) throws DeploymentException
    {
       super.internalDeploy(unit);
-      
+
       try
       {
          deployComponents(unit);
       }
       catch (Throwable t)
       {
-         undeployComponents(unit);
+         super.internalUndeploy(unit);
          throw DeploymentException.rethrowAsDeploymentException("Error deploying: " + unit.getName(), t);
       }
    }
    
    public void internalUndeploy(DeploymentUnit unit)
    {
-      super.internalUndeploy(unit);
       undeployComponents(unit);
+      super.internalUndeploy(unit);
    }
 
    protected void deployComponents(DeploymentUnit unit) throws DeploymentException
@@ -100,18 +99,11 @@ public abstract class AbstractComponentDeployer<D, C> extends AbstractRealDeploy
       if (compVisitor == null)
          return;
 
-      Set<? extends C> components = unit.getAllMetaData(getOutput());
-      for (C component : components)
-         compVisitor.deploy(unit, component);
+      deploy(unit, compVisitor);
    }
    
    protected void undeployComponents(DeploymentUnit unit)
    {
-      if (compVisitor == null)
-         return;
-      
-      Set<? extends C> components = unit.getAllMetaData(getOutput());
-      for (C component : components)
-         compVisitor.undeploy(unit, component);
+      undeploy(unit, compVisitor);
    }
 }

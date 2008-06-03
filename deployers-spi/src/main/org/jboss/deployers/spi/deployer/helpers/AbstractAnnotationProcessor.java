@@ -19,46 +19,35 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.deployers.vfs.deployer.kernel;
+package org.jboss.deployers.spi.deployer.helpers;
 
-import java.util.List;
-
-import org.jboss.beans.metadata.spi.BeanMetaData;
-import org.jboss.beans.metadata.spi.BeanMetaDataFactory;
-import org.jboss.deployers.spi.deployer.helpers.AbstractRealDeployerWithInput;
+import java.lang.annotation.Annotation;
 
 /**
- * BeanMetaDataFactoryDeployer.<p>
+ * Abstract annotation processor.
  *
- * @param <T> exact attachment type
+ * @param <A> the annotation type
+ * @param <T> the output type
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  */
-public class BeanMetaDataFactoryDeployer<T extends BeanMetaDataFactory> extends AbstractRealDeployerWithInput<T>
+public abstract class AbstractAnnotationProcessor<A extends Annotation, T> implements AnnotationProcessor<A, T>
 {
-   public BeanMetaDataFactoryDeployer(Class<T> clazz)
+   public T createMetaData(Object attachment)
    {
-      super(clazz);
-      setDeploymentVisitor(new BeanMetaDataFactoryDeployerVisitor(clazz));
-      setOutput(BeanMetaData.class);
+      return null;
    }
 
-   private class BeanMetaDataFactoryDeployerVisitor extends BeanMetaDataFactoryVisitor<T>
+   public T createMetaDataFromClass(Class<?> clazz)
    {
-      private Class<T> clazz;
-
-      private BeanMetaDataFactoryDeployerVisitor(Class<T> clazz)
-      {
-         this.clazz = clazz;
-      }
-
-      public Class<T> getVisitorType()
-      {
-         return clazz;
-      }
-
-      protected List<BeanMetaData> getBeans(T deployment)
-      {
-         return deployment.getBeans();
-      }
+      return createMetaDataFromClass(clazz, clazz.<A>getAnnotation(getAnnotation()));
    }
+
+   /**
+    * Create metadata from class.
+    *
+    * @param clazz the class
+    * @param annotation the annotation instance on a class
+    * @return new metadata instance of null if cannot be created
+    */
+   protected abstract T createMetaDataFromClass(Class<?> clazz, A annotation);
 }
