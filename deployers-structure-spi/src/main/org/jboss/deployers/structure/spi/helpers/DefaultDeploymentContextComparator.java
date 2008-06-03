@@ -45,7 +45,7 @@ public class DefaultDeploymentContextComparator implements Comparator<Deployment
       if (relative != 0)
          return relative;
       else
-         return o1.getSimpleName().compareTo(o2.getRelativePath());
+         return o1.getSimpleName().compareTo(o2.getSimpleName());
    }
 
    public static Comparator<DeploymentContext> getInstance()
