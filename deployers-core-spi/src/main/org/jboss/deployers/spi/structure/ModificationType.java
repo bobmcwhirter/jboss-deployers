@@ -25,13 +25,14 @@ import java.util.Arrays;
 
 /**
  * The modification type.
- * Unpack, ...
+ * Unpack, explode, ...
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
 public enum ModificationType
 {
-   UNPACK;
+   UNPACK,
+   EXPLODE;
 
    /**
     * Get the modification type.

@@ -164,6 +164,16 @@ public class DeployersAltDDTestCase extends BaseTestCase
             return false;
          }
 
+         public String getLocalPathName()
+         {
+            return null;
+         }
+
+         public boolean isNested() throws IOException
+         {
+            return false;
+         }
+
          public InputStream openStream() throws IOException
          {
             return null;
