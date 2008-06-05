@@ -27,6 +27,7 @@ import java.io.ObjectOutput;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Arrays;
 
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.structure.spi.helpers.AbstractDeploymentContext;
@@ -256,7 +257,7 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
             if (result != null && result.isEmpty() == false)
             {
                if (log.isTraceEnabled())
-                  log.trace("Found " + name + " in " + location.getName());
+                  log.trace("Found name=" + name + ", suffix=" + suffix + " in " + location.getName());
                results.addAll(result);
                deployed();
             }
@@ -318,7 +319,7 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
       {
          VirtualFile file = files[i];
          if (file == null)
-            throw new IllegalArgumentException("Null virtual file in " + files);
+            throw new IllegalArgumentException("Null virtual file in " + Arrays.toString(files));
          classPath.add(0, file);
       }
       setClassPath(classPath);
@@ -355,7 +356,7 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
       for (VirtualFile file : files)
       {
          if (file == null)
-            throw new IllegalArgumentException("Null virtual file in " + files);
+            throw new IllegalArgumentException("Null virtual file in " + Arrays.toString(files));
          classPath.add(file);
       }
       setClassPath(classPath);
