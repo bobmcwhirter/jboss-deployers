@@ -34,6 +34,9 @@ import java.util.Set;
  * Implementations should delay the actual class loading
  * until it's absolutely necessary.
  *
+ * All methods that have annotation name as parameter
+ * will use unit's classloader to load the actual annotation class.
+ *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
 public interface AnnotationEnvironment
@@ -55,12 +58,36 @@ public interface AnnotationEnvironment
    boolean hasClassAnnotatedWith(Class<? extends Annotation> annotation);
 
    /**
+    * Does this annotation environment contain a class
+    * which is annotated with annotation parameter.
+    * This only applies to annotations for ElementType.TYPE level.
+    *
+    * This method should be used if we have no intention
+    * to do real lookup of annotated classes, but we're
+    * only interested in existance of the annotation.
+    * e.g. deployment unit contains @Stateful EJBs
+    *
+    * @param annotationName the annotation name we're querying for
+    * @return true if there exists a class with annotation param
+    * @see #hasClassAnnotatedWith(Class annotation)
+    */
+   boolean hasClassAnnotatedWith(String annotationName);
+
+   /**
     * Get all classes annotated with annotation param.
     *
     * @param annotation the annotation we're querying for
     * @return set of matching classes
     */
    Set<Class<?>> classIsAnnotatedWith(Class<? extends Annotation> annotation);
+
+   /**
+    * Get all classes annotated with annotation param.
+    *
+    * @param annotationName the annotation name we're querying for
+    * @return set of matching classes
+    */
+   Set<Class<?>> classIsAnnotatedWith(String annotationName);
 
    /**
     * Get all classes who have some constructor annotated with annotation param.
@@ -71,12 +98,28 @@ public interface AnnotationEnvironment
    <A extends Annotation> Set<Element<A, Constructor>> classHasConstructorAnnotatedWith(Class<A> annotation);
 
    /**
+    * Get all classes who have some constructor annotated with annotation param.
+    *
+    * @param annotationName the annotation name we're querying for
+    * @return set of matching classes
+    */
+   Set<Element<Annotation, Constructor>> classHasConstructorAnnotatedWith(String annotationName);
+
+   /**
     * Get all classes who have some field annotated with annotation param.
     *
     * @param annotation the annotation we're querying for
     * @return set of matching classes
     */
    <A extends Annotation> Set<Element<A, Field>> classHasFieldAnnotatedWith(Class<A> annotation);
+
+   /**
+    * Get all classes who have some field annotated with annotation param.
+    *
+    * @param annotationName the annotation name we're querying for
+    * @return set of matching classes
+    */
+   Set<Element<Annotation, Field>> classHasFieldAnnotatedWith(String annotationName);
 
    /**
     * Get all classes who have some method annotated with annotation param.
@@ -87,10 +130,26 @@ public interface AnnotationEnvironment
    <A extends Annotation> Set<Element<A, Method>> classHasMethodAnnotatedWith(Class<A> annotation);
 
    /**
+    * Get all classes who have some method annotated with annotation param.
+    *
+    * @param annotationName the annotation name we're querying for
+    * @return set of matching classes
+    */
+   Set<Element<Annotation, Method>> classHasMethodAnnotatedWith(String annotationName);
+
+   /**
     * Get all classes who have some method's/constructor's parameter annotated with annotation param.
     *
     * @param annotation the annotation we're querying for
     * @return set of matching classes
     */
    <A extends Annotation> Set<Element<A, AccessibleObject>> classHasParameterAnnotatedWith(Class<A> annotation);
+
+   /**
+    * Get all classes who have some method's/constructor's parameter annotated with annotation param.
+    *
+    * @param annotationName the annotation name we're querying for
+    * @return set of matching classes
+    */
+   Set<Element<Annotation, AccessibleObject>> classHasParameterAnnotatedWith(String annotationName);
 }

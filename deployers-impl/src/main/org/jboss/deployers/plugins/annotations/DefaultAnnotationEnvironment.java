@@ -181,4 +181,49 @@ public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implemen
    {
       return transformToElements(ElementType.PARAMETER, annotation, AccessibleObject.class);
    }
+
+   /**
+    * Load the annotation class.
+    *
+    * @param annotationName the annoation class name
+    * @return annotation class
+    */
+   @SuppressWarnings("unchecked")
+   protected Class<Annotation> getAnnotationClass(String annotationName)
+   {
+      Class<?> clazz = loadClass(annotationName);
+      if (Annotation.class.isAssignableFrom(clazz) == false)
+         throw new IllegalArgumentException("Annotation name " + annotationName + " doesn't extend Annotation class.");
+      return (Class<Annotation>)clazz;
+   }
+
+   public boolean hasClassAnnotatedWith(String annotationName)
+   {
+      return hasClassAnnotatedWith(getAnnotationClass(annotationName));
+   }
+
+   public Set<Class<?>> classIsAnnotatedWith(String annotationName)
+   {
+      return classIsAnnotatedWith(getAnnotationClass(annotationName));
+   }
+
+   public Set<Element<Annotation, Constructor>> classHasConstructorAnnotatedWith(String annotationName)
+   {
+      return classHasConstructorAnnotatedWith(getAnnotationClass(annotationName));
+   }
+
+   public Set<Element<Annotation, Field>> classHasFieldAnnotatedWith(String annotationName)
+   {
+      return classHasFieldAnnotatedWith(getAnnotationClass(annotationName));
+   }
+
+   public Set<Element<Annotation, Method>> classHasMethodAnnotatedWith(String annotationName)
+   {
+      return classHasMethodAnnotatedWith(getAnnotationClass(annotationName));
+   }
+
+   public Set<Element<Annotation, AccessibleObject>> classHasParameterAnnotatedWith(String annotationName)
+   {
+      return classHasParameterAnnotatedWith(getAnnotationClass(annotationName));
+   }
 }

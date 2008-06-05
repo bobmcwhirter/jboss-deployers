@@ -23,9 +23,15 @@ package org.jboss.test.deployers.vfs.deployer.bean.test;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import org.jboss.beans.metadata.api.annotations.Bean;
 import org.jboss.beans.metadata.spi.builder.BeanMetaDataBuilder;
 import org.jboss.beans.metadata.spi.factory.BeanFactory;
+import org.jboss.classloader.plugins.filter.CombiningClassFilter;
+import org.jboss.classloader.plugins.system.DefaultClassLoaderSystem;
 import org.jboss.classloader.spi.ClassLoaderSystem;
+import org.jboss.classloader.spi.ParentPolicy;
+import org.jboss.classloader.spi.filter.ClassFilter;
+import org.jboss.classloader.spi.filter.PackageClassFilter;
 import org.jboss.classloading.spi.dependency.ClassLoading;
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
 import org.jboss.dependency.spi.ControllerContext;
@@ -41,8 +47,6 @@ import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.kernel.Kernel;
 import org.jboss.kernel.spi.dependency.KernelController;
 import org.jboss.test.deployers.vfs.deployer.AbstractDeployerUnitTest;
-import org.jboss.test.deployers.vfs.deployer.bean.support.BeanAnnotationHolder;
-import org.jboss.test.deployers.vfs.deployer.bean.support.BeanFactoryAnnotationHolder;
 
 /**
  * BeanScanningUnitTestCase.
@@ -85,9 +89,16 @@ public class BeanScanningUnitTestCase extends AbstractDeployerUnitTest
       }
       vfsdd.setClassLoading(classLoading);
 
+      ClassLoaderSystem system = new DefaultClassLoaderSystem();
+      // allow MC annotations, so that both, deployer and tester see the same
+      ClassFilter mcAnnFilter = new PackageClassFilter(new String[]{"org.jboss.beans.metadata.api.annotations"});
+      ClassFilter filter = new CombiningClassFilter(false, new ClassFilter[]{ClassFilter.JAVA_ONLY, mcAnnFilter});
+      ParentPolicy policy = new ParentPolicy(filter, ClassFilter.NOTHING);
+      system.getDefaultDomain().setParentPolicy(policy);
+
       AbstractLevelClassLoaderSystemDeployer clsd = new AbstractLevelClassLoaderSystemDeployer();
       clsd.setClassLoading(classLoading);
-      clsd.setSystem(ClassLoaderSystem.getInstance());
+      clsd.setSystem(system);
 
       GenericAnnotationDeployer gad = new GenericAnnotationDeployer();
       KernelDeploymentDeployer kernelDeploymentDeployer = new KernelDeploymentDeployer();
@@ -111,14 +122,20 @@ public class BeanScanningUnitTestCase extends AbstractDeployerUnitTest
 
       ControllerContext testCC = controller.getInstalledContext("Test");
       assertNotNull(testCC);
-      assertInstanceOf(testCC.getTarget(), BeanAnnotationHolder.class, false);
+      Object testTarget = testCC.getTarget();
+      assertNotNull(testTarget);
+      Class<?> testClass = testTarget.getClass();
+      assertTrue(testClass.isAnnotationPresent(Bean.class));
 
       ControllerContext testCCBF = controller.getInstalledContext("TestBF");
       assertNotNull(testCCBF);
       Object target = testCCBF.getTarget();
       assertInstanceOf(target, BeanFactory.class, false);
       BeanFactory bf = (BeanFactory)target;
-      assertInstanceOf(bf.createBean(), BeanFactoryAnnotationHolder.class, false);
+      Object bfTarget = bf.createBean();
+      assertNotNull(bfTarget);
+      Class<?> bfTClass = bfTarget.getClass();
+      assertTrue(bfTClass.isAnnotationPresent(org.jboss.beans.metadata.api.annotations.BeanFactory.class));
 
       assertUndeploy(context);
       assertNull(controller.getContext("TestBF", null));

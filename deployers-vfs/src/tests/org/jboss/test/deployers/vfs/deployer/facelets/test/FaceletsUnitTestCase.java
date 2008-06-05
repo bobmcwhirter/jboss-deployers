@@ -26,7 +26,9 @@ import java.net.URL;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.jboss.beans.metadata.spi.builder.BeanMetaDataBuilder;
+import org.jboss.classloader.plugins.system.DefaultClassLoaderSystem;
 import org.jboss.classloader.spi.ClassLoaderSystem;
+import org.jboss.classloader.spi.ParentPolicy;
 import org.jboss.classloading.spi.dependency.ClassLoading;
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
 import org.jboss.deployers.plugins.classloading.AbstractLevelClassLoaderSystemDeployer;
@@ -88,9 +90,12 @@ public class FaceletsUnitTestCase extends AbstractDeployerUnitTest
       }
       vfsdd.setClassLoading(classLoading);
 
+      ClassLoaderSystem system = new DefaultClassLoaderSystem();
+      system.getDefaultDomain().setParentPolicy(ParentPolicy.BEFORE_BUT_JAVA_ONLY);
+
       AbstractLevelClassLoaderSystemDeployer clsd = new AbstractLevelClassLoaderSystemDeployer();
       clsd.setClassLoading(classLoading);
-      clsd.setSystem(ClassLoaderSystem.getInstance());
+      clsd.setSystem(system);
 
       addDeployer(main, cldd);
       addDeployer(main, vfsdd);

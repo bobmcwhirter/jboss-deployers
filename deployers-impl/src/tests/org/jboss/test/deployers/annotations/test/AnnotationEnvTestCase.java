@@ -56,7 +56,7 @@ public class AnnotationEnvTestCase extends AnnotationsTest
    }
 
    @SuppressWarnings("unchecked")
-   public void testSimpleUsage() throws Exception
+   public void testDirectClassUsage() throws Exception
    {
       DeployerClient deployer = getMainDeployer();
 
@@ -109,6 +109,78 @@ public class AnnotationEnvTestCase extends AnnotationsTest
          assertNotNull(eps);
          assertEquals(2, eps.size());
          for (Element<TestAnnotation, AccessibleObject> ep : eps)
+         {
+            ta = ep.getAnnotation();
+            assertNotNull(ta);
+            Object value = getValue(ta);
+            AccessibleObject ao = ep.getAccessibleObject();
+            if ("cparameter".equals(value))
+               assertInstanceOf(ao, Constructor.class, false);
+            else if ("mparameter".equals(value))
+               assertInstanceOf(ao, Method.class, false);
+            else
+               fail("Illegal annotation value: " + value);
+         }
+      }
+      finally
+      {
+         assertUndeploy(deployer, deployment);
+      }
+   }
+
+   @SuppressWarnings("unchecked")
+   public void testSimpleClassUsage() throws Exception
+   {
+      DeployerClient deployer = getMainDeployer();
+
+      Deployment deployment = createSimpleDeployment("a");
+      addClassLoadingMetaData(
+            deployment,
+            deployment.getName(),
+            null,
+            ClassLoaderUtils.classNameToPath("org.jboss.test.deployers.annotations.support.AnnotationsHolder"),
+            ClassLoaderUtils.classNameToPath("org.jboss.test.deployers.annotations.support.TestAnnotation")
+      );
+
+      DeploymentUnit unit = assertDeploy(deployer, deployment);
+      try
+      {
+         String annotationName = "org.jboss.test.deployers.annotations.support.TestAnnotation";
+
+         assertNotLoaded(unit, "org.jboss.test.deployers.annotations.support.AnnotationsHolder");
+         // annotations are loaded, OK?
+         assertLoaded(unit, "org.jboss.test.deployers.annotations.support.TestAnnotation");
+
+         AnnotationEnvironment env = getAnnotationEnvironment(unit);
+         Set<Class<?>> classes = env.classIsAnnotatedWith(annotationName);
+         assertNotNull(classes);
+         assertEquals(1, classes.size());
+         assertEquals(AnnotationsHolder.class.getName(), classes.iterator().next().getName());
+
+         assertLoaded(unit, "org.jboss.test.deployers.annotations.support.AnnotationsHolder");
+
+         Element<Annotation, Constructor> ec = getSingleton(env.classHasConstructorAnnotatedWith(annotationName));
+         Annotation ta = ec.getAnnotation();
+         assertNotNull(ta);
+         assertEquals("constructor", getValue(ta));
+         assertInstanceOf(ec.getAccessibleObject(), Constructor.class, false);
+
+         Element<Annotation, Field> ef = getSingleton(env.classHasFieldAnnotatedWith(annotationName));
+         ta = ef.getAnnotation();
+         assertNotNull(ta);
+         assertEquals("field", getValue(ta));
+         assertInstanceOf(ef.getAccessibleObject(), Field.class, false);
+
+         Element<Annotation, Method> em = getSingleton(env.classHasMethodAnnotatedWith(annotationName));
+         ta = em.getAnnotation();
+         assertNotNull(ta);
+         assertEquals("method", getValue(ta));
+         assertInstanceOf(em.getAccessibleObject(), Method.class, false);
+
+         Set<Element<Annotation, AccessibleObject>> eps = env.classHasParameterAnnotatedWith(annotationName);
+         assertNotNull(eps);
+         assertEquals(2, eps.size());
+         for (Element<Annotation, AccessibleObject> ep : eps)
          {
             ta = ep.getAnnotation();
             assertNotNull(ta);
