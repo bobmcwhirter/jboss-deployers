@@ -109,6 +109,7 @@ public class VFSStructureBuilder extends AbstractStructureBuilder
       if (contextInfo == null)
          return file;
 
+      VirtualFile modified = file;
       ModificationType modificationType = contextInfo.getModificationType();
       if (modificationType != null)
       {
@@ -119,16 +120,21 @@ public class VFSStructureBuilder extends AbstractStructureBuilder
             log.trace("Modifying file: " + file + ", modification type: " + modificationType);
 
          if (ModificationType.UNPACK == modificationType)
-            file = VFSUtils.unpack(file);
+            modified = VFSUtils.unpack(file);
          else if (ModificationType.EXPLODE == modificationType)
-            file = VFSUtils.explode(file);
+            modified = VFSUtils.explode(file);
          else
             log.warn("Unsupported modification type: " + modificationType);
 
          if (trace && isSupported)
-            log.trace("Modified file: " + file);
+         {
+            if (modified != file)
+               log.trace("Modified file: " + modified);
+            else
+               log.trace("File already modified: " + modified);            
+         }
       }
-      return file;
+      return modified;
    }
 
    protected void applyContextInfo(DeploymentContext context, ContextInfo contextInfo) throws Exception
