@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.List;
 
 import junit.framework.Test;
-
 import org.jboss.deployers.client.spi.DeployerClient;
 import org.jboss.deployers.client.spi.Deployment;
 import org.jboss.deployers.client.spi.main.MainDeployer;
@@ -37,10 +36,6 @@ import org.jboss.deployers.structure.spi.DeploymentContext;
 import org.jboss.deployers.structure.spi.StructuralDeployers;
 import org.jboss.deployers.structure.spi.StructureBuilder;
 import org.jboss.deployers.structure.spi.helpers.AbstractStructureBuilder;
-import org.jboss.test.deployers.main.support.AddProcessRemoveProcessRunnable;
-import org.jboss.test.deployers.main.support.DeployUndeployRunnable;
-import org.jboss.test.deployers.main.support.DeployerTestRunnable;
-import org.jboss.test.deployers.main.support.FailedDeployUndeployRunnable;
 
 /**
  * Single deployment API test case.
@@ -248,6 +243,7 @@ public class DeployerSingleDeploymentTestCase extends AbstractMainDeployerTest
       assertEquals(expected, deployer.getUndeployedUnits());
    }
 
+/*
    public void testMultiThreads() throws Exception
    {
       DeployerClient main = getMainDeployer();
@@ -295,4 +291,5 @@ public class DeployerSingleDeploymentTestCase extends AbstractMainDeployerTest
          fail(builder.toString());
       }
    }
+*/
 }
