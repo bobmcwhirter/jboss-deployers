@@ -19,35 +19,36 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.deployers.spi.structure;
+package org.jboss.deployers.vfs.plugins.structure.modify;
 
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.jboss.deployers.spi.structure.ModificationType;
 
 /**
- * The modification type.
- * Unpack, explode, ...
- *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public enum ModificationType
+public class ModificationActions
 {
-   UNPACK,
-   EXPLODE,
-   TEMP;
+   private static final Map<ModificationType, ModificationAction> actions;
+
+   static
+   {
+      actions = new HashMap<ModificationType, ModificationAction>();
+      actions.put(ModificationType.UNPACK, new UnpackModificationAction());
+      actions.put(ModificationType.EXPLODE, new ExplodeModificationAction());
+      actions.put(ModificationType.TEMP, new TempModificationAction());
+   }
 
    /**
-    * Get the modification type.
+    * Get the modification action.
     *
-    * @param type the type
-    * @return matching modification type
+    * @param type the modification type
+    * @return modification action or null if it not supported
     */
-   public static ModificationType getModificationType(String type)
+   public static ModificationAction getAction(ModificationType type)
    {
-      for (ModificationType mt : values())
-      {
-         if (mt.toString().equalsIgnoreCase(type))
-            return mt;
-      }
-      throw new IllegalArgumentException("No such modification type: " + type + ", available: " + Arrays.asList(values()));
+      return actions.get(type);
    }
 }

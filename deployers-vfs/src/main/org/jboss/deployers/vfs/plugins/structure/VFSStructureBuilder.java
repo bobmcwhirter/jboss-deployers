@@ -35,6 +35,8 @@ import org.jboss.deployers.structure.spi.DeploymentContext;
 import org.jboss.deployers.structure.spi.helpers.AbstractStructureBuilder;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
+import org.jboss.deployers.vfs.plugins.structure.modify.ModificationAction;
+import org.jboss.deployers.vfs.plugins.structure.modify.ModificationActions;
 import org.jboss.logging.Logger;
 import org.jboss.virtual.VFSUtils;
 import org.jboss.virtual.VirtualFile;
@@ -113,25 +115,23 @@ public class VFSStructureBuilder extends AbstractStructureBuilder
       ModificationType modificationType = contextInfo.getModificationType();
       if (modificationType != null)
       {
-         boolean trace = log.isTraceEnabled();
-         boolean isSupported = (modificationType == ModificationType.UNPACK || modificationType == ModificationType.EXPLODE);
-
-         if (trace && isSupported)
-            log.trace("Modifying file: " + file + ", modification type: " + modificationType);
-
-         if (ModificationType.UNPACK == modificationType)
-            modified = VFSUtils.unpack(file);
-         else if (ModificationType.EXPLODE == modificationType)
-            modified = VFSUtils.explode(file);
-         else
-            log.warn("Unsupported modification type: " + modificationType);
-
-         if (trace && isSupported)
+         ModificationAction action = ModificationActions.getAction(modificationType);
+         if (action != null)
          {
-            if (modified != file)
-               log.trace("Modified file: " + modified);
-            else
-               log.trace("File already modified: " + modified);            
+            boolean trace = log.isTraceEnabled();
+
+            if (trace)
+               log.trace("Modifying file: " + file + ", modification type: " + modificationType);
+
+            modified = action.modify(file);
+
+            if (trace)
+            {
+               if (modified != file)
+                  log.trace("Modified file: " + modified);
+               else
+                  log.trace("File already modified: " + modified);
+            }
          }
       }
       return modified;

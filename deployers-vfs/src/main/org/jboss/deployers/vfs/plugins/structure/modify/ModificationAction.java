@@ -19,35 +19,27 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.deployers.spi.structure;
+package org.jboss.deployers.vfs.plugins.structure.modify;
 
-import java.util.Arrays;
+import java.io.IOException;
+import java.net.URISyntaxException;
+
+import org.jboss.virtual.VirtualFile;
 
 /**
- * The modification type.
- * Unpack, explode, ...
+ * Execute modification on file.
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public enum ModificationType
+public interface ModificationAction
 {
-   UNPACK,
-   EXPLODE,
-   TEMP;
-
    /**
-    * Get the modification type.
+    * Modify file.
     *
-    * @param type the type
-    * @return matching modification type
+    * @param original the original file
+    * @return modified file, if not already
+    * @throws IOException for any error
+    * @throws URISyntaxException for any URI syntax error
     */
-   public static ModificationType getModificationType(String type)
-   {
-      for (ModificationType mt : values())
-      {
-         if (mt.toString().equalsIgnoreCase(type))
-            return mt;
-      }
-      throw new IllegalArgumentException("No such modification type: " + type + ", available: " + Arrays.asList(values()));
-   }
+   VirtualFile modify(VirtualFile original) throws IOException, URISyntaxException;
 }
