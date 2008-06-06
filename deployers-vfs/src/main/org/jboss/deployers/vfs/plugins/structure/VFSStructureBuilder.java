@@ -133,6 +133,10 @@ public class VFSStructureBuilder extends AbstractStructureBuilder
                   log.trace("File already modified: " + modified);
             }
          }
+         else
+         {
+            log.info("Modification " + modificationType + " is not yet supported: " + file);
+         }
       }
       return modified;
    }
