@@ -352,7 +352,7 @@ public class MockEarStructureDeployer extends AbstractStructureDeployer
 
    private Integer getType(AnnotationEnvironment env, Class<? extends Annotation> annotation, int type)
    {
-      return (env.hasClassAnnotatedWith(annotation)) ? type : null;
+      return (env.hasClassAnnotatedWith(annotation.getName())) ? type : null;
    }
 
    private String earRelativePath(String earPath, String pathName)
