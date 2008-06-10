@@ -352,6 +352,9 @@ public class MockEarStructureDeployer extends AbstractStructureDeployer
 
    private Integer getType(AnnotationEnvironment env, Class<? extends Annotation> annotation, int type)
    {
+      // in real deployer this should use annotation class directly
+      // since annotation class on beans should be the same as
+      // annotation classes in deployer
       return (env.hasClassAnnotatedWith(annotation.getName())) ? type : null;
    }
 
