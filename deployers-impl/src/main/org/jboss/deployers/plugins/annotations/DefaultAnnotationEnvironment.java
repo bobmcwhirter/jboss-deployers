@@ -21,6 +21,7 @@
 */
 package org.jboss.deployers.plugins.annotations;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AccessibleObject;
@@ -44,17 +45,31 @@ import org.jboss.util.collection.CollectionsFactory;
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implements AnnotationEnvironment
+public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implements AnnotationEnvironment, Serializable
 {
+   private static final long serialVersionUID = 1L;
    /** The log */
    private static final Logger log = Logger.getLogger(DefaultAnnotationEnvironment.class);
    /** The info map */
-   private Map<Class<? extends Annotation>, Map<ElementType, Set<ClassSignaturePair>>> env;
+   private transient Map<Class<? extends Annotation>, Map<ElementType, Set<ClassSignaturePair>>> env;
 
    public DefaultAnnotationEnvironment(ClassLoader classLoader)
    {
       super(classLoader);
-      this.env = new HashMap<Class<? extends Annotation>, Map<ElementType, Set<ClassSignaturePair>>>();
+      env = new HashMap<Class<? extends Annotation>, Map<ElementType, Set<ClassSignaturePair>>>();
+   }
+
+   /**
+    * Get env map.
+    *
+    * @return the env map
+    */
+   protected Map<Class<? extends Annotation>, Map<ElementType, Set<ClassSignaturePair>>> getEnv()
+   {
+      if (env == null)
+         throw new IllegalArgumentException("Null env, previously serialized?");
+
+      return env;
    }
 
    /**
@@ -69,7 +84,9 @@ public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implemen
    {
       if (log.isTraceEnabled())
          log.trace("Adding annotation @" + annClass.getSimpleName() + " for " + className + " at type " + type + ", signature: " + signature);
-      
+
+      Map<Class<? extends Annotation>, Map<ElementType, Set<ClassSignaturePair>>> env = getEnv();
+
       Map<ElementType, Set<ClassSignaturePair>> elements = env.get(annClass);
       if (elements == null)
       {
@@ -96,7 +113,7 @@ public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implemen
    {
       Set<ClassSignaturePair> pairs = null;
 
-      Map<ElementType, Set<ClassSignaturePair>> elements = env.get(annClass);
+      Map<ElementType, Set<ClassSignaturePair>> elements = getEnv().get(annClass);
       if (elements != null)
          pairs = elements.get(type);
 

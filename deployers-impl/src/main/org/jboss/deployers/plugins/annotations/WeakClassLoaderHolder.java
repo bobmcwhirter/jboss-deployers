@@ -30,7 +30,7 @@ import java.lang.ref.WeakReference;
  */
 abstract class WeakClassLoaderHolder
 {
-   private WeakReference<ClassLoader> clRef;
+   private transient WeakReference<ClassLoader> clRef;
 
    public WeakClassLoaderHolder(ClassLoader classLoader)
    {
@@ -47,6 +47,9 @@ abstract class WeakClassLoaderHolder
     */
    protected ClassLoader getClassLoader()
    {
+      if (clRef == null)
+         throw new IllegalArgumentException("Null classloader ref, previously serialized?");
+
       ClassLoader classLoader = clRef.get();
       if (classLoader == null)
          throw new IllegalArgumentException("ClassLoader was already garbage collected.");
