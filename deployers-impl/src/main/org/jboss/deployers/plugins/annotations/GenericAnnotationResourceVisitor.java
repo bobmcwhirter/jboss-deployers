@@ -54,6 +54,7 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
    private ClassPool pool;
    private boolean forceAnnotations;
    private DefaultAnnotationEnvironment env;
+   private CtClass objectCtClass;
 
    public GenericAnnotationResourceVisitor(ClassLoader classLoader)
    {
@@ -69,6 +70,7 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
 
       this.pool = pool;
       this.env = new DefaultAnnotationEnvironment(classLoader);
+      this.objectCtClass = pool.makeClass(Object.class.getName());
    }
 
    public ResourceFilter getFilter()
@@ -125,6 +127,9 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
     */
    protected void handleCtClass(CtClass ctClass, ResourceContext resource) throws ClassNotFoundException, NotFoundException
    {
+      if (ctClass == null || objectCtClass.equals(ctClass))
+         return;
+
       if (log.isTraceEnabled())
          log.trace("Scanning class " + ctClass + " for annotations, resource url: " + resource.getUrl());
 
@@ -143,9 +148,7 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
       }
 
       // super class
-      ctClass = ctClass.getSuperclass();
-      if (ctClass != null)
-         handleCtClass(ctClass, resource);
+      handleCtClass(ctClass.getSuperclass(), resource);
    }
 
    /**
