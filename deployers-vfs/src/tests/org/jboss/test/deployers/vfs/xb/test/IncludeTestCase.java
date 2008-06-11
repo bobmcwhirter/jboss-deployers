@@ -19,35 +19,54 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.test.deployers.vfs.xb;
+package org.jboss.test.deployers.vfs.xb.test;
+
+import java.util.List;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
-import org.jboss.test.deployers.vfs.xb.test.IncludeTestCase;
-import org.jboss.test.deployers.vfs.xb.test.SchemaResolverXBPackageTestCase;
-import org.jboss.test.deployers.vfs.xb.test.SchemaResolverXBTestCase;
+import org.jboss.test.deployers.vfs.xb.support.IncludeMetaData;
+import org.jboss.test.deployers.vfs.xb.support.TestMetaData;
 
 /**
- * JBossXB deployers extensions.
- *
+ * Test include.
+ * 
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class JBossXBDeployersTestSuite extends TestSuite
+public class IncludeTestCase extends AbstractSchemaResolverXBTest<IncludeMetaData>
 {
-   public static void main(String[] args)
+   public IncludeTestCase(String name)
    {
-      TestRunner.run(suite());
+      super(name);
    }
 
    public static Test suite()
    {
-      TestSuite suite = new TestSuite("JBossXB Deployers Tests");
+      return suite(IncludeTestCase.class);
+   }
 
-      suite.addTest(SchemaResolverXBTestCase.suite());
-      suite.addTest(SchemaResolverXBPackageTestCase.suite());
-      suite.addTest(IncludeTestCase.suite());
+   protected Class<IncludeMetaData> getOutput()
+   {
+      return IncludeMetaData.class;
+   }
 
-      return suite;
+   protected String getSuffix()
+   {
+      return "-include.xml";
+   }
+
+   protected String getName(IncludeMetaData metadata)
+   {
+      return metadata.getName();
+   }
+
+   protected void assertMetaData(IncludeMetaData metaData) throws Exception
+   {
+      super.assertMetaData(metaData);
+      List<TestMetaData> others = metaData.getOthers();
+      assertNotNull(others);
+      int size = 2;
+      assertEquals(size, others.size());
+      for(int i=0; i < size; i++)
+         assertEquals("test" + i, others.get(i).getName());
    }
 }

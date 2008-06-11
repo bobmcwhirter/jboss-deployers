@@ -166,17 +166,17 @@ public abstract class JAXPDeployer<T> extends AbstractVFSParsingDeployer<T>
    {
       if (file == null)
          throw new IllegalArgumentException("Null file");
+
+      log.debug("Parsing: " + file.getName());
       
-      log.trace("Parsing: " + file.getName());
-      
+      DocumentBuilder parser = getDocumentBuilderFactory().newDocumentBuilder();
       InputStream is = openStreamAndValidate(file);
       try
       {
-         DocumentBuilder parser = getDocumentBuilderFactory().newDocumentBuilder();
          InputSource source = new InputSource(is);
          source.setSystemId(file.toURI().toString());
          parser.setEntityResolver(new JBossEntityResolver());
-         return parser.parse(is);
+         return parser.parse(source);
       }
       finally
       {

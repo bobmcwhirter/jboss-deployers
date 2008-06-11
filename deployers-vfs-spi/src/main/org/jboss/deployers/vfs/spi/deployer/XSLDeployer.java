@@ -147,6 +147,7 @@ public abstract class XSLDeployer<T> extends JAXPDeployer<T>
       Transformer trans = getTemplates().newTransformer();
       trans.setErrorListener(new JBossErrorHandler(file.getPathName(), null));
       Source s = new DOMSource(document);
+      s.setSystemId(file.toURI().toString());
       DOMResult r = new DOMResult();
       setParameters(trans);
       
@@ -169,15 +170,4 @@ public abstract class XSLDeployer<T> extends JAXPDeployer<T>
    {
       // nothing by default
    }
-
-   /**
-    * Parse a deployment
-    * 
-    * @param unit the deployment unit
-    * @param file the metadata file
-    * @param document the document
-    * @return the metadata
-    * @throws Exception for any error
-    */
-   protected abstract T parse(VFSDeploymentUnit unit, VirtualFile file, Document document) throws Exception;
 }

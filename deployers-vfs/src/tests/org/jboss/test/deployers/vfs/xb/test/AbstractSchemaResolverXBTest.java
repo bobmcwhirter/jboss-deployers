@@ -24,8 +24,6 @@ package org.jboss.test.deployers.vfs.xb.test;
 import java.net.URL;
 import java.util.Collections;
 
-import junit.framework.Test;
-
 import org.jboss.deployers.vfs.plugins.structure.AbstractVFSDeploymentContext;
 import org.jboss.deployers.vfs.plugins.structure.AbstractVFSDeploymentUnit;
 import org.jboss.deployers.vfs.spi.deployer.SchemaResolverDeployer;
@@ -45,11 +43,6 @@ public abstract class AbstractSchemaResolverXBTest<T> extends XBDeployersTest
    public AbstractSchemaResolverXBTest(String name)
    {
       super(name);
-   }
-
-   public static Test suite()
-   {
-      return suite(SchemaResolverXBPackageTestCase.class);
    }
 
    protected abstract Class<T> getOutput();
@@ -79,12 +72,17 @@ public abstract class AbstractSchemaResolverXBTest<T> extends XBDeployersTest
       try
       {
          T metaData = unit.getAttachment(getOutput());
-         assertNotNull(metaData);
-         assertEquals("mymetadata", getName(metaData));
+         assertMetaData(metaData);
       }
       finally
       {
          deployer.undeploy(unit);
       }
+   }
+
+   protected void assertMetaData(T metaData) throws Exception
+   {
+      assertNotNull(metaData);
+      assertEquals("mymetadata", getName(metaData));
    }
 }

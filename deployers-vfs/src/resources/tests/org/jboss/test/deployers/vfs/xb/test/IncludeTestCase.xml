@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<deployment xmlns="urn:jboss:bean-deployer:2.0">
+
+   <jbossxb-parser xmlns="urn:jboss:deployers:2.0"
+         name="deployer"
+         metadata="org.jboss.test.deployers.vfs.xb.support.IncludeMetaData"
+         suffix="-include.xml"
+         register-with-jbossxb="true"
+    />
+
+</deployment>

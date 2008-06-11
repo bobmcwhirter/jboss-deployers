@@ -23,7 +23,6 @@ package org.jboss.deployers.vfs.spi.deployer;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.logging.Logger;
@@ -34,6 +33,7 @@ import org.jboss.xb.binding.Unmarshaller;
 import org.jboss.xb.binding.UnmarshallerFactory;
 import org.jboss.xb.binding.sunday.unmarshalling.DefaultSchemaResolver;
 import org.jboss.xb.binding.sunday.unmarshalling.SingletonSchemaResolverFactory;
+import org.xml.sax.InputSource;
 
 /**
  * JBossXB deployer helper.
@@ -185,11 +185,12 @@ public class JBossXBDeployerHelper<T>
       unmarshaller.setSchemaValidation(isUseSchemaValidation());
       unmarshaller.setValidation(isUseValidation());
       InputStream is = openStreamAndValidate(file);
-      Object parsed = null;
+      Object parsed;
       try
       {
-         parsed = unmarshaller.unmarshal(is, resolver);
-         log.debug("Parsed file: "+file+" to: "+parsed);
+         InputSource source = new InputSource(is);
+         source.setSystemId(file.toURI().toString());
+         parsed = unmarshaller.unmarshal(source, resolver);
       }
       finally
       {
@@ -204,6 +205,7 @@ public class JBossXBDeployerHelper<T>
       if (parsed == null)
          throw new DeploymentException("The xml " + file.getPathName() + " is not well formed!");
 
+      log.debug("Parsed file: "+file+" to: "+parsed);
       return expectedType.cast(parsed);
    }
 
@@ -241,19 +243,28 @@ public class JBossXBDeployerHelper<T>
       Unmarshaller unmarshaller = factory.newUnmarshaller();
       unmarshaller.setSchemaValidation(isUseSchemaValidation());
       unmarshaller.setValidation(isUseValidation());
-      Object parsed = null;
+      InputStream is = openStreamAndValidate(file);
+      Object parsed;
       try
       {
-         URL url = file.toURL();
-         parsed = unmarshaller.unmarshal(url.toString(), omf, root);
+         InputSource source = new InputSource(is);
+         source.setSystemId(file.toURI().toString());
+         parsed = unmarshaller.unmarshal(source, omf, root);
       }
-      catch (Throwable t)
+      finally
       {
-         DeploymentException.rethrowAsDeploymentException("Error parsing meta data " + file.getPathName(), t);
+         try
+         {
+            is.close();
+         }
+         catch (Exception ignored)
+         {
+         }
       }
       if (parsed == null)
          throw new DeploymentException("The xml " + file.getPathName() + " is not well formed!");
 
+      log.debug("Parsed file: "+file+" to: "+parsed);
       return expectedType.cast(parsed);
    }
 

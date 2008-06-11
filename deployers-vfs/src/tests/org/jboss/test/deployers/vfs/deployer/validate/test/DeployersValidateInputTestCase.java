@@ -56,12 +56,16 @@ public class DeployersValidateInputTestCase extends BaseTestCase
 
    public void testNullStream() throws Exception
    {
+      // this one needs to be created first
+      TestXmlDeployer xmlDeployer = new TestXmlDeployer();
+      xmlDeployer.create();
+      
       AbstractVFSParsingDeployer<?>[] deployers = new AbstractVFSParsingDeployer<?>[]
             {
                   new Properties2BeansDeployer(),
                   new MockBshDeployer(),
 //                  new TestJaxbDeployer(),
-                  new TestXmlDeployer(),
+                  xmlDeployer,
                   new SchemaResolverDeployer<Object>(Object.class),
             };
 
