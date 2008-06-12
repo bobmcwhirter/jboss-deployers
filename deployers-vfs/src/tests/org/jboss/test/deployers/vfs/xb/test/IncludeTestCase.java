@@ -67,6 +67,6 @@ public class IncludeTestCase extends AbstractSchemaResolverXBTest<IncludeMetaDat
       int size = 2;
       assertEquals(size, others.size());
       for(int i=0; i < size; i++)
-         assertEquals("test" + i, others.get(i).getName());
+         assertEquals("test" + (i+1), others.get(i).getName());
    }
 }

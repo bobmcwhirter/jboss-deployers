@@ -2,7 +2,7 @@
 
 <jboss-include xmlns="urn:jboss:include:1.0" name="mymetadata" xmlns:xi="http://www.w3.org/2001/XInclude">
 
-  <jboss-test>test1</jboss-test>
-  <xi:include fixup-base-uris="false" fixup-language="false" href="included.xml"/>
+  <jboss-test name="test1"/>
+  <xi:include href="included.xml"/>
   
 </jboss-include>

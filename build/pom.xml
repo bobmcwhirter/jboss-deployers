@@ -28,7 +28,7 @@
     <version.jboss.common.core>2.2.4.GA</version.jboss.common.core>
     <version.jboss.common.logging.spi>2.0.4.GA</version.jboss.common.logging.spi>
     <version.jboss.common.logging.log4j>2.0.4.GA</version.jboss.common.logging.log4j>
-    <version.jbossxb>2.0.0-SNAPSHOT</version.jbossxb>
+    <version.jbossxb>2.0.0.CR10</version.jbossxb>
     <version.jboss.aop>2.0.0.CR11</version.jboss.aop>
     <version.jboss.vfs>2.0.0.Beta14</version.jboss.vfs>
     <version.org.jboss.test>1.0.5.GA</version.org.jboss.test>

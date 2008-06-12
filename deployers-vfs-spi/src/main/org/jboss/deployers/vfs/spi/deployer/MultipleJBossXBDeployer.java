@@ -34,6 +34,9 @@ public abstract class MultipleJBossXBDeployer<T> extends MultipleVFSParsingDeplo
    /** The helper */
    private JBossXBDeployerHelper<T> helper;
 
+   /** The features */
+   private Map<String, Boolean> features;
+
    public MultipleJBossXBDeployer(Class<T> output, Map<String, Class<?>> mappings)
    {
       this(output, mappings, null, null);
@@ -53,6 +56,15 @@ public abstract class MultipleJBossXBDeployer<T> extends MultipleVFSParsingDeplo
    protected JBossXBDeployerHelper<T> getHelper()
    {
       return helper;
+   }
+
+   public void start() throws Exception
+   {
+      if (features != null && features.isEmpty() == false)
+      {
+         for(Map.Entry<String,Boolean> entry : features.entrySet())
+            helper.setFeature(entry.getKey(), entry.getValue());
+      }
    }
 
    /**
@@ -93,5 +105,25 @@ public abstract class MultipleJBossXBDeployer<T> extends MultipleVFSParsingDeplo
    public void setUseValidation(boolean useValidation)
    {
       helper.setUseValidation(useValidation);
+   }
+
+   /**
+    * Get unmarshaller features.
+    *
+    * @return the features
+    */
+   public Map<String, Boolean> getFeatures()
+   {
+      return features;
+   }
+
+   /**
+    * Set the unmarshaller features.
+    *
+    * @param features the features
+    */
+   public void setFeatures(Map<String, Boolean> features)
+   {
+      this.features = features;
    }
 }

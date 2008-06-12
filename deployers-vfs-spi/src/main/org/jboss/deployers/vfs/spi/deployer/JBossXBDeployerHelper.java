@@ -41,7 +41,7 @@ import org.xml.sax.InputSource;
  * @param <T> the expected type
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  */
-public class JBossXBDeployerHelper<T>
+public class JBossXBDeployerHelper<T> implements org.jboss.deployers.vfs.spi.deployer.UnmarshallerFactory<Boolean>
 {
    /** The log */
    private Logger log = Logger.getLogger(JBossXBDeployerHelper.class);
@@ -72,6 +72,11 @@ public class JBossXBDeployerHelper<T>
       if (output == null)
          throw new IllegalArgumentException("Null output.");
       this.output = output;
+   }
+
+   public void setFeature(String featureName, Boolean flag) throws Exception
+   {
+      factory.setFeature(featureName, flag);
    }
 
    /**

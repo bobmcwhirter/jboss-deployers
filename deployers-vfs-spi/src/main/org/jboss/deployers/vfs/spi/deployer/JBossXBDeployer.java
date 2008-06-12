@@ -27,7 +27,7 @@ package org.jboss.deployers.vfs.spi.deployer;
  * @param <T> the expected type
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  */
-public abstract class JBossXBDeployer<T> extends AbstractVFSParsingDeployer<T>
+public abstract class JBossXBDeployer<T> extends UnmarshallerFactoryDeployer<T, Boolean>
 {
    /** The helper */
    private JBossXBDeployerHelper<T> helper;
@@ -52,6 +52,16 @@ public abstract class JBossXBDeployer<T> extends AbstractVFSParsingDeployer<T>
    protected JBossXBDeployerHelper<T> getHelper()
    {
       return helper;
+   }
+
+   protected UnmarshallerFactory<Boolean> createUnmarshallerFactory()
+   {
+      return getHelper();
+   }
+
+   protected Boolean fromString(String value)
+   {
+      return Boolean.valueOf(value);
    }
 
    /**

@@ -42,9 +42,10 @@ import org.xml.sax.InputSource;
  * @param <T> the expected type 
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
  * @author Scott.Stark@jboss.org
+ * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  * @version $Revision: 60707 $
  */
-public abstract class JAXPDeployer<T> extends AbstractVFSParsingDeployer<T>
+public abstract class JAXPDeployer<T> extends UnmarshallerFactoryDeployer<T, Boolean>
 {
    /** Use a namespace aware parser */
    private boolean useNamespaceAwareParser = true;
@@ -138,7 +139,23 @@ public abstract class JAXPDeployer<T> extends AbstractVFSParsingDeployer<T>
    {
       documentBuilderFactory = null;
    }
-   
+
+   protected UnmarshallerFactory<Boolean> createUnmarshallerFactory()
+   {
+      return new UnmarshallerFactory<Boolean>()
+      {
+         public void setFeature(String featureName, Boolean flag) throws Exception
+         {
+            getDocumentBuilderFactory().setFeature(featureName, flag);
+         }
+      };
+   }
+
+   protected Boolean fromString(String value)
+   {
+      return Boolean.valueOf(value);
+   }
+
    @Override
    protected T parse(VFSDeploymentUnit unit, VirtualFile file, T root) throws Exception
    {
