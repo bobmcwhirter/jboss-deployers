@@ -58,10 +58,6 @@ public abstract class UnmarshallerFactoryDeployer<T, U> extends AbstractVFSParsi
 
    public void start() throws Exception
    {
-      UnmarshallerFactory<U> unmarshallerFactory = createUnmarshallerFactory();
-      if (unmarshallerFactory == null)
-         throw new IllegalArgumentException("Unmarshaller factory cannot be null.");
-
       Map<String,U> features = getFeatures();
       if (isUseDefaultFeatures())
       {
@@ -77,6 +73,10 @@ public abstract class UnmarshallerFactoryDeployer<T, U> extends AbstractVFSParsi
 
       if (features != null && features.isEmpty() == false)
       {
+         UnmarshallerFactory<U> unmarshallerFactory = createUnmarshallerFactory();
+         if (unmarshallerFactory == null)
+            throw new IllegalArgumentException("Unmarshaller factory cannot be null.");
+
          for(Map.Entry<String,U> entry : features.entrySet())
             unmarshallerFactory.setFeature(entry.getKey(), entry.getValue());
       }
