@@ -30,7 +30,7 @@
     <version.jboss.common.logging.log4j>2.0.4.GA</version.jboss.common.logging.log4j>
     <version.jbossxb>2.0.0.CR10</version.jbossxb>
     <version.jboss.aop>2.0.0.CR11</version.jboss.aop>
-    <version.jboss.vfs>2.0.0.Beta16</version.jboss.vfs>
+    <version.jboss.vfs>2.0.0.Beta17</version.jboss.vfs>
     <version.org.jboss.test>1.0.5.GA</version.org.jboss.test>
     <version.junit>4.4</version.junit>
     <version.javassist>3.7.1.GA</version.javassist>
