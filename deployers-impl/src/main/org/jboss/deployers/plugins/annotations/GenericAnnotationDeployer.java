@@ -42,6 +42,7 @@ public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module
    {
       super(Module.class);
       setStage(DeploymentStages.PRE_REAL);
+      setOutput(AnnotationEnvironment.class);
    }
 
    /**
