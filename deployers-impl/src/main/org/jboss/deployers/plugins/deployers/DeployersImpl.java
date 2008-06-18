@@ -557,12 +557,12 @@ public class DeployersImpl implements Deployers, ControllerContextActions
             checkShutdown();
 
             DeploymentControllerContext deploymentControllerContext = new DeploymentControllerContext(context, this);
+            context.getTransientAttachments().addAttachment(ControllerContext.class, deploymentControllerContext);
             try
             {
                controller.install(deploymentControllerContext);
                context.setState(DeploymentState.DEPLOYING);
                log.debug("Deploying " + context.getName());
-               context.getTransientAttachments().addAttachment(ControllerContext.class, deploymentControllerContext);
                if (scopeBuilder != null)
                   context.getTransientAttachments().addAttachment(ScopeBuilder.class, scopeBuilder);
                if (repository != null)
