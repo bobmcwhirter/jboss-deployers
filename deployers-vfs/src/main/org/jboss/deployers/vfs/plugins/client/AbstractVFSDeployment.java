@@ -22,17 +22,22 @@
 package org.jboss.deployers.vfs.plugins.client;
 
 import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamField;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import org.jboss.deployers.client.plugins.deployment.AbstractDeployment;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
+import org.jboss.virtual.VFS;
 import org.jboss.virtual.VirtualFile;
 
 /**
  * AbstractVFSDeployment.
  * 
  * @author <a href="adrian@jboss.org">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public class AbstractVFSDeployment extends AbstractDeployment implements VFSDeployment
@@ -40,8 +45,17 @@ public class AbstractVFSDeployment extends AbstractDeployment implements VFSDepl
    /** The serialVersionUID */
    private static final long serialVersionUID = 3992263833911364088L;
 
+   private static final ObjectStreamField[] serialPersistentFields =
+   {
+      new ObjectStreamField("rootUrl", URL.class),
+      new ObjectStreamField("path", String.class),
+   };
+
+   /** Minimal info to get full vfs file structure */
+   private URL rootUrl;
+   private String path;
    /** The root */
-   private VirtualFile root;
+   private transient VirtualFile root;
 
    /**
     * Get the vfs file name safely
@@ -53,6 +67,7 @@ public class AbstractVFSDeployment extends AbstractDeployment implements VFSDepl
    {
       if (root == null)
          throw new IllegalArgumentException("Null root");
+
       try
       {
          return root.toURI().toString();
@@ -81,39 +96,61 @@ public class AbstractVFSDeployment extends AbstractDeployment implements VFSDepl
       super(safeVirtualFileName(root));
       this.root = root;
    }
-   
+
+   @SuppressWarnings("deprecation")
    public VirtualFile getRoot()
    {
+      if (root == null)
+      {
+         try
+         {
+            VirtualFile top = VFS.getRoot(rootUrl);
+            root = top.findChild(path);
+         }
+         catch (IOException e)
+         {
+            throw new IllegalArgumentException("Cannot find root: " + e);           
+         }
+      }
       return root;
    }
 
    @Override
    public String getSimpleName()
    {
-      return root.getName();
+      return getRoot().getName();
    }
-
    
    @Override
    public String toString()
    {
-      return "AbstractVFSDeployment("+getSimpleName()+")";
+      return "AbstractVFSDeployment(" + getSimpleName() + ")";
    }
 
-   public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException
+   private void writeObject(ObjectOutputStream out) throws IOException, URISyntaxException
    {
-      super.readExternal(in);
-      root = (VirtualFile) in.readObject();
+      URL url = rootUrl;
+      if (url == null)
+      {
+         VFS vfs = getRoot().getVFS();
+         url = vfs.getRoot().toURL();
+      }
+      String pathName = path;
+      if (pathName == null)
+         pathName = getRoot().getPathName();
+
+      out.defaultWriteObject();
+      ObjectOutputStream.PutField fields = out.putFields();
+      fields.put("rootUrl", url);
+      fields.put("path", pathName);
+      out.writeFields();
    }
 
-   /**
-    * @serialData root from {@link #getRoot()}
-    * @param out the output
-    * @throws IOException for any error
-    */
-   public void writeExternal(ObjectOutput out) throws IOException
+   private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
    {
-      super.writeExternal(out);
-      out.writeObject(root);
+      in.defaultReadObject();
+      ObjectInputStream.GetField fields = in.readFields();
+      rootUrl = (URL) fields.get("rootUrl", null);
+      path = (String) fields.get("path", null);
    }
 }
