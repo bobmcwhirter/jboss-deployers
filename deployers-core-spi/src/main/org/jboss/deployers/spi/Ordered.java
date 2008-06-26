@@ -45,15 +45,17 @@ public interface Ordered
     * 
     * @param order the order
     */
-   public void setRelativeOrder(int order);
+   void setRelativeOrder(int order);
 
-   /** The comparator for relative ordering of deployers */
-   Comparator<Ordered> COMPARATOR = new OrderedComparator();
+   /** 
+    * The comparator for relative ordering of deployers
+    */
+   final Comparator<Ordered> COMPARATOR = new OrderedComparator();
    
    /**
     * The comparator for relative ordering
     */
-   public class OrderedComparator implements Comparator<Ordered>
+   static class OrderedComparator implements Comparator<Ordered>
    {
       public int compare(Ordered o1, Ordered o2)
       {
