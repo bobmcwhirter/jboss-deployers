@@ -50,7 +50,7 @@ public interface Ordered
    /** 
     * The comparator for relative ordering of deployers
     */
-   final Comparator<Ordered> COMPARATOR = new OrderedComparator();
+   final static Comparator<Ordered> COMPARATOR = new OrderedComparator();
    
    /**
     * The comparator for relative ordering
