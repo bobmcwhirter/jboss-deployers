@@ -19,22 +19,20 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.test.deployers.vfs.deployer.jaxp;
-
-import org.jboss.test.deployers.vfs.deployer.jaxp.test.JAXPDeployerUnitTestCase;
-import org.jboss.test.deployers.vfs.deployer.validate.test.DeployersValidateInputTestCase;
+package org.jboss.test.deployers.vfs.deployer.validate;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
+import org.jboss.test.deployers.vfs.deployer.validate.test.DeployersValidateInputTestCase;
+import org.jboss.test.deployers.vfs.deployer.validate.test.ObjectMFDTestCase;
 
 /**
- * VFSDeployerTestSuite.
- * 
- * @author <a href="adrian@jboss.org">Adrian Brock</a>
- * @version $Revision: 1.1 $
+ * ValidateDeployerTestSuite.
+ *
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  */
-public class VFSDeployerTestSuite extends TestSuite
+public class ValidateDeployerTestSuite extends TestSuite
 {
    public static void main(String[] args)
    {
@@ -43,10 +41,10 @@ public class VFSDeployerTestSuite extends TestSuite
 
    public static Test suite()
    {
-      TestSuite suite = new TestSuite("VFS Deployer Tests");
+      TestSuite suite = new TestSuite("Validate Deployers Tests");
 
-      suite.addTest(JAXPDeployerUnitTestCase.suite());
       suite.addTest(DeployersValidateInputTestCase.suite());
+      suite.addTest(ObjectMFDTestCase.suite());
 
       return suite;
    }

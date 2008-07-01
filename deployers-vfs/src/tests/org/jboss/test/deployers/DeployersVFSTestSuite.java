@@ -27,9 +27,10 @@ import junit.textui.TestRunner;
 import org.jboss.test.deployers.vfs.classloader.ClassLoaderTestSuite;
 import org.jboss.test.deployers.vfs.deployer.bean.BeanDeployerTestSuite;
 import org.jboss.test.deployers.vfs.deployer.facelets.FaceletsTestSuite;
-import org.jboss.test.deployers.vfs.deployer.jaxp.VFSDeployerTestSuite;
+import org.jboss.test.deployers.vfs.deployer.jaxp.JAXPDeployerTestSuite;
 import org.jboss.test.deployers.vfs.deployer.merge.MergeDeployerTestSuite;
 import org.jboss.test.deployers.vfs.deployer.nonmetadata.NonMetadataDeployersTestSuite;
+import org.jboss.test.deployers.vfs.deployer.validate.ValidateDeployerTestSuite;
 import org.jboss.test.deployers.vfs.deploymentfactory.VFSDeploymentFactoryTestSuite;
 import org.jboss.test.deployers.vfs.managed.VFSManagedTestSuite;
 import org.jboss.test.deployers.vfs.matchers.VFSMatchersTestSuite;
@@ -59,7 +60,7 @@ public class DeployersVFSTestSuite extends TestSuite
       suite.addTest(VFSStructureBuilderTestSuite.suite());
       suite.addTest(VFSStructureTestSuite.suite());
       suite.addTest(VFSMetaDataTestSuite.suite());
-      suite.addTest(VFSDeployerTestSuite.suite());
+      suite.addTest(JAXPDeployerTestSuite.suite());
       suite.addTest(BeanDeployerTestSuite.suite());
       suite.addTest(VFSManagedTestSuite.suite());
       suite.addTest(NonMetadataDeployersTestSuite.suite());
@@ -68,6 +69,7 @@ public class DeployersVFSTestSuite extends TestSuite
       suite.addTest(JBossXBDeployersTestSuite.suite());
       suite.addTest(MergeDeployerTestSuite.suite());
       suite.addTest(FaceletsTestSuite.suite());
+      suite.addTest(ValidateDeployerTestSuite.suite());
 
       return suite;
    }
