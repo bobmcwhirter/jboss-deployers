@@ -56,7 +56,7 @@ public class AliasDeployerUnitTestCase extends AbstractDeployerUnitTest
       KernelDeploymentDeployer kernelDeploymentDeployer = new KernelDeploymentDeployer();
       AliasDeploymentDeployer aliasDeploymentDeployer = new AliasDeploymentDeployer();
       BeanMetaDataDeployer beanMetaDataDeployer = new BeanMetaDataDeployer(kernel);
-      DeploymentAliasMetaDataDeployer aliasMetaDataDeployer = new DeploymentAliasMetaDataDeployer(kernel);
+      DeploymentAliasMetaDataDeployer aliasMetaDataDeployer = new DeploymentAliasMetaDataDeployer(kernel.getController());
       addDeployer(main, beanDeployer);
       addDeployer(main, kernelDeploymentDeployer);
       addDeployer(main, aliasDeploymentDeployer);

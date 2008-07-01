@@ -21,13 +21,12 @@
 */
 package org.jboss.deployers.vfs.deployer.kernel;
 
-import org.jboss.beans.metadata.spi.NamedAliasMetaData;
 import org.jboss.beans.metadata.spi.BeanMetaData;
+import org.jboss.beans.metadata.spi.NamedAliasMetaData;
+import org.jboss.dependency.spi.Controller;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.helpers.AbstractSimpleRealDeployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
-import org.jboss.kernel.Kernel;
-import org.jboss.kernel.spi.dependency.KernelController;
 
 /**
  * DeploymentAliasMetaDataDeployer.<p>
@@ -36,22 +35,22 @@ import org.jboss.kernel.spi.dependency.KernelController;
  */
 public class DeploymentAliasMetaDataDeployer extends AbstractSimpleRealDeployer<NamedAliasMetaData>
 {
-   /** The kernel controller */
-   private final KernelController controller;
+   /** The controller */
+   private final Controller controller;
 
    /**
     * Create a new AliasDeployer.
     *
-    * @param kernel the kernel
-    * @throws IllegalArgumentException for a null kernel
+    * @param controller the controller
+    * @throws IllegalArgumentException for a null controller
     */
-   public DeploymentAliasMetaDataDeployer(Kernel kernel)
+   public DeploymentAliasMetaDataDeployer(Controller controller)
    {
       super(NamedAliasMetaData.class);
+      if (controller == null)
+         throw new IllegalArgumentException("Null controller");
+      this.controller = controller;
       addInput(BeanMetaData.class);
-      if (kernel == null)
-         throw new IllegalArgumentException("Null kernel");
-      controller = kernel.getController();
       setComponentsOnly(true);
    }
 
