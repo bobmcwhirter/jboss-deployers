@@ -26,12 +26,12 @@ import org.jboss.beans.metadata.plugins.AbstractValueMetaData;
 import org.jboss.beans.metadata.spi.BeanMetaData;
 import org.jboss.beans.metadata.spi.ClassLoaderMetaData;
 import org.jboss.beans.metadata.spi.ValueMetaData;
+import org.jboss.dependency.spi.Controller;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.helpers.AbstractSimpleRealDeployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.kernel.Kernel;
 import org.jboss.kernel.plugins.dependency.AbstractKernelControllerContext;
-import org.jboss.kernel.spi.dependency.KernelController;
 import org.jboss.kernel.spi.dependency.KernelControllerContext;
 
 /**
@@ -45,21 +45,46 @@ import org.jboss.kernel.spi.dependency.KernelControllerContext;
  */
 public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaData>
 {
-   /** The kernel controller */
-   private final KernelController controller;
+   /** The controller */
+   private Controller controller;
    
    /**
     * Create a new BeanDeployer.
     * 
     * @param kernel the kernel
     * @throws IllegalArgumentException for a null kernel
+    * @deprecated use other constructor
     */
    public BeanMetaDataDeployer(Kernel kernel)
    {
       super(BeanMetaData.class);
       if (kernel == null)
          throw new IllegalArgumentException("Null kernel");
-      controller = kernel.getController();
+      init(kernel.getController());
+   }
+
+   /**
+    * Create a new BeanDeployer.
+    *
+    * @param controller the controller
+    * @throws IllegalArgumentException for a null controller
+    */
+   public BeanMetaDataDeployer(Controller controller)
+   {
+      super(BeanMetaData.class);
+      init(controller);
+   }
+
+   /**
+    * Simple init.
+    *
+    * @param controller the controller
+    */
+   private void init(Controller controller)
+   {
+      if (controller == null)
+         throw new IllegalArgumentException("Null controller");
+      this.controller = controller;
       setComponentsOnly(true);
       setUseUnitName(true);
    }

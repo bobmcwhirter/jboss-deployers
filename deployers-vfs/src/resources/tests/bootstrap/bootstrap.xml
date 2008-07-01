@@ -30,7 +30,7 @@
    </bean>
 
    <!-- A declared structure descriptor deployer -->
-   <bean name="DeclaredStructure" class="org.jboss.deployers.vfs.plugins.structure.explicit.DeclaredStructure"></bean>
+   <bean name="DeclaredStructure" class="org.jboss.deployers.vfs.plugins.structure.explicit.DeclaredStructure"/>
 
     <!-- JAR Structure -->
     <bean name="JARStructure" class="org.jboss.deployers.vfs.plugins.structure.jar.JARStructure">
@@ -75,7 +75,7 @@
       <property name="type">beans</property>
    </bean>
    <bean name="BeanMetaDataDeployer" class="org.jboss.deployers.vfs.deployer.kernel.BeanMetaDataDeployer">
-      <constructor><parameter><inject bean="jboss.kernel:service=Kernel"/></parameter></constructor>
+      <constructor><parameter class="org.jboss.dependency.spi.Controller"><inject bean="jboss.kernel:service=KernelController"/></parameter></constructor>
       <property name="type">beans</property>
    </bean>
 
