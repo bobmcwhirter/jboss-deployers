@@ -27,6 +27,7 @@ import org.jboss.dependency.spi.Controller;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.helpers.AbstractSimpleRealDeployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.kernel.Kernel;
 
 /**
  * DeploymentAliasMetaDataDeployer.<p>
@@ -36,7 +37,7 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
 public class DeploymentAliasMetaDataDeployer extends AbstractSimpleRealDeployer<NamedAliasMetaData>
 {
    /** The controller */
-   private final Controller controller;
+   private Controller controller;
 
    /**
     * Create a new AliasDeployer.
@@ -47,6 +48,31 @@ public class DeploymentAliasMetaDataDeployer extends AbstractSimpleRealDeployer<
    public DeploymentAliasMetaDataDeployer(Controller controller)
    {
       super(NamedAliasMetaData.class);
+      init(controller);
+   }
+
+   /**
+    * Create a new AliasDeployer.
+    *
+    * @param kernel the kernel
+    * @throws IllegalArgumentException for a null kernel
+    * @deprecated use other constructor
+    */
+   public DeploymentAliasMetaDataDeployer(Kernel kernel)
+   {
+      super(NamedAliasMetaData.class);
+      if (kernel == null)
+         throw new IllegalArgumentException("Null  kernel");
+      init(kernel.getController());
+   }
+
+   /**
+    * Simple init.
+    *
+    * @param controller the controller
+    */
+   protected void init(Controller controller)
+   {
       if (controller == null)
          throw new IllegalArgumentException("Null controller");
       this.controller = controller;

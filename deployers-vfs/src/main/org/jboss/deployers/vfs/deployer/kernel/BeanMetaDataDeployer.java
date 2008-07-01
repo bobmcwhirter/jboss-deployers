@@ -80,7 +80,7 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
     *
     * @param controller the controller
     */
-   private void init(Controller controller)
+   protected void init(Controller controller)
    {
       if (controller == null)
          throw new IllegalArgumentException("Null controller");
