@@ -22,7 +22,7 @@
 package org.jboss.test.deployers.annotations.test;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.AnnotatedElement;
 import java.util.Set;
 
 import org.jboss.classloader.plugins.system.DefaultClassLoaderSystem;
@@ -121,7 +121,7 @@ public abstract class AnnotationsTest extends AbstractDeployerTest
       return env;
    }
 
-   protected <A extends Annotation, M extends AccessibleObject> Element<A,M> getSingleton(Set<Element<A,M>> elements)
+   protected <A extends Annotation, M extends AnnotatedElement> Element<A,M> getSingleton(Set<Element<A,M>> elements)
    {
       assertNotNull(elements);
       assertEquals(1, elements.size());

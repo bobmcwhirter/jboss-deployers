@@ -19,47 +19,27 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.deployers.spi.annotations;
+package org.jboss.deployers.plugins.annotations;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
 /**
- * Annotation holder element.
+ * Class annotations element.
  *
- * @param <A> exact annotation type
- * @param <M> exact annotated element type
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public interface Element<A extends Annotation, M extends AnnotatedElement>
+public class ClassElement<A extends Annotation, M extends AnnotatedElement> extends AbstractElement<A, M>
 {
-   /**
-    * Get the owner class name.
-    *
-    * Until we hit getOwner method the class should not be loaded.
-    *
-    * @return the owner classname
-    */
-   String getOwnerClassName();
+   public ClassElement(ClassLoader classLoader, String className, Class<A> annClass)
+   {
+      super(classLoader, className, annClass);
+   }
 
-   /**
-    * Get the annotation owner class.
-    *
-    * @return the annotation owner class
-    */
-   Class<?> getOwner();
-
-   /**
-    * Get the annotation instance.
-    *
-    * @return the annotation instance
-    */
-   A getAnnotation();
-
-   /**
-    * Get the annotated element that holds the annotation.
-    *
-    * @return the annotated element instance
-    */
-   M getAnnotatedElement();
+   @SuppressWarnings("unchecked")
+   public M getAnnotatedElement()
+   {
+      AnnotatedElement em = getOwner();
+      return (M)em;
+   }
 }

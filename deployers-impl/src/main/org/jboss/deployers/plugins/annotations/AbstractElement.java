@@ -1,0 +1,79 @@
+/*
+* JBoss, Home of Professional Open Source
+* Copyright 2006, JBoss Inc., and individual contributors as indicated
+* by the @authors tag. See the copyright.txt in the distribution for a
+* full listing of individual contributors.
+*
+* This is free software; you can redistribute it and/or modify it
+* under the terms of the GNU Lesser General Public License as
+* published by the Free Software Foundation; either version 2.1 of
+* the License, or (at your option) any later version.
+*
+* This software is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+* Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public
+* License along with this software; if not, write to the Free
+* Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+* 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+*/
+package org.jboss.deployers.plugins.annotations;
+
+import java.lang.annotation.Annotation;
+import java.lang.ref.SoftReference;
+import java.lang.reflect.AnnotatedElement;
+
+import org.jboss.deployers.spi.annotations.Element;
+
+/**
+ * Abstract annotations element.
+ *
+ * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
+ */
+public abstract class AbstractElement<A extends Annotation, M extends AnnotatedElement> extends WeakClassLoaderHolder implements Element<A, M>
+{
+   protected String className;
+   protected Class<A> annClass;
+
+   private SoftReference<Class<?>> classRef;
+
+   public AbstractElement(ClassLoader classLoader, String className, Class<A> annClass)
+   {
+      super(classLoader);
+
+      if (className == null)
+         throw new IllegalArgumentException("Null className");
+      if (annClass == null)
+         throw new IllegalArgumentException("Null annotation class");
+
+      this.className = className;
+      this.annClass = annClass;
+   }
+
+   public String getOwnerClassName()
+   {
+      return className;
+   }
+
+   public Class<?> getOwner()
+   {
+      if (classRef != null)
+      {
+         Class<?> clazz = classRef.get();
+         if (clazz != null)
+            return clazz;
+      }
+
+      Class<?> clazz = loadClass(className);
+      classRef = new SoftReference<Class<?>>(clazz);
+      return clazz;
+   }
+
+   public A getAnnotation()
+   {
+      AnnotatedElement annotatedElement = getAnnotatedElement();
+      return annotatedElement.getAnnotation(annClass);
+   }
+}

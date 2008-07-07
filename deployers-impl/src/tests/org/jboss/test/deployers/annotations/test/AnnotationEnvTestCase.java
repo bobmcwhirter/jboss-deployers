@@ -22,7 +22,7 @@
 package org.jboss.test.deployers.annotations.test;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -80,40 +80,44 @@ public class AnnotationEnvTestCase extends AnnotationsTest
          assertLoaded(unit, "org.jboss.test.deployers.annotations.support.TestAnnotation");
 
          AnnotationEnvironment env = getAnnotationEnvironment(unit);
-         Set<Class<?>> classes = env.classIsAnnotatedWith(taClass);
+         Set<Element<TestAnnotation, Class>> classes = env.classIsAnnotatedWith(taClass);
          assertNotNull(classes);
          assertEquals(1, classes.size());
-         assertEquals(AnnotationsHolder.class.getName(), classes.iterator().next().getName());
+         assertEquals(AnnotationsHolder.class.getName(), classes.iterator().next().getOwnerClassName());
+         assertNotLoaded(unit, "org.jboss.test.deployers.annotations.support.AnnotationsHolder");
 
-         assertLoaded(unit, "org.jboss.test.deployers.annotations.support.AnnotationsHolder");
+         Element<TestAnnotation, Class> ecl = getSingleton(env.classIsAnnotatedWith(taClass));
+         Annotation tacl = ecl.getAnnotation();
+         assertNotNull(tacl);
+         assertEquals("class", getValue(tacl));
 
          Element<TestAnnotation, Constructor> ec = getSingleton(env.classHasConstructorAnnotatedWith(taClass));
          Annotation ta = ec.getAnnotation();
          assertNotNull(ta);
          assertEquals("constructor", getValue(ta));
-         assertInstanceOf(ec.getAccessibleObject(), Constructor.class, false);
+         assertInstanceOf(ec.getAnnotatedElement(), Constructor.class, false);
 
          Element<TestAnnotation, Field> ef = getSingleton(env.classHasFieldAnnotatedWith(taClass));
          ta = ef.getAnnotation();
          assertNotNull(ta);
          assertEquals("field", getValue(ta));
-         assertInstanceOf(ef.getAccessibleObject(), Field.class, false);
+         assertInstanceOf(ef.getAnnotatedElement(), Field.class, false);
 
          Element<TestAnnotation, Method> em = getSingleton(env.classHasMethodAnnotatedWith(taClass));
          ta = em.getAnnotation();
          assertNotNull(ta);
          assertEquals("method", getValue(ta));
-         assertInstanceOf(em.getAccessibleObject(), Method.class, false);
+         assertInstanceOf(em.getAnnotatedElement(), Method.class, false);
 
-         Set<Element<TestAnnotation, AccessibleObject>> eps = env.classHasParameterAnnotatedWith(taClass);
+         Set<Element<TestAnnotation, AnnotatedElement>> eps = env.classHasParameterAnnotatedWith(taClass);
          assertNotNull(eps);
          assertEquals(2, eps.size());
-         for (Element<TestAnnotation, AccessibleObject> ep : eps)
+         for (Element<TestAnnotation, AnnotatedElement> ep : eps)
          {
             ta = ep.getAnnotation();
             assertNotNull(ta);
             Object value = getValue(ta);
-            AccessibleObject ao = ep.getAccessibleObject();
+            AnnotatedElement ao = ep.getAnnotatedElement();
             if ("cparameter".equals(value))
                assertInstanceOf(ao, Constructor.class, false);
             else if ("mparameter".equals(value))
@@ -152,40 +156,44 @@ public class AnnotationEnvTestCase extends AnnotationsTest
          assertLoaded(unit, "org.jboss.test.deployers.annotations.support.TestAnnotation");
 
          AnnotationEnvironment env = getAnnotationEnvironment(unit);
-         Set<Class<?>> classes = env.classIsAnnotatedWith(annotationName);
+         Set<Element<Annotation, Class>> classes = env.classIsAnnotatedWith(annotationName);
          assertNotNull(classes);
          assertEquals(1, classes.size());
-         assertEquals(AnnotationsHolder.class.getName(), classes.iterator().next().getName());
+         assertEquals(AnnotationsHolder.class.getName(), classes.iterator().next().getOwnerClassName());
+         assertNotLoaded(unit, "org.jboss.test.deployers.annotations.support.AnnotationsHolder");
 
-         assertLoaded(unit, "org.jboss.test.deployers.annotations.support.AnnotationsHolder");
+         Element<Annotation, Class> ecl = getSingleton(env.classIsAnnotatedWith(annotationName));
+         Annotation tacl = ecl.getAnnotation();
+         assertNotNull(tacl);
+         assertEquals("class", getValue(tacl));
 
          Element<Annotation, Constructor> ec = getSingleton(env.classHasConstructorAnnotatedWith(annotationName));
          Annotation ta = ec.getAnnotation();
          assertNotNull(ta);
          assertEquals("constructor", getValue(ta));
-         assertInstanceOf(ec.getAccessibleObject(), Constructor.class, false);
+         assertInstanceOf(ec.getAnnotatedElement(), Constructor.class, false);
 
          Element<Annotation, Field> ef = getSingleton(env.classHasFieldAnnotatedWith(annotationName));
          ta = ef.getAnnotation();
          assertNotNull(ta);
          assertEquals("field", getValue(ta));
-         assertInstanceOf(ef.getAccessibleObject(), Field.class, false);
+         assertInstanceOf(ef.getAnnotatedElement(), Field.class, false);
 
          Element<Annotation, Method> em = getSingleton(env.classHasMethodAnnotatedWith(annotationName));
          ta = em.getAnnotation();
          assertNotNull(ta);
          assertEquals("method", getValue(ta));
-         assertInstanceOf(em.getAccessibleObject(), Method.class, false);
+         assertInstanceOf(em.getAnnotatedElement(), Method.class, false);
 
-         Set<Element<Annotation, AccessibleObject>> eps = env.classHasParameterAnnotatedWith(annotationName);
+         Set<Element<Annotation, AnnotatedElement>> eps = env.classHasParameterAnnotatedWith(annotationName);
          assertNotNull(eps);
          assertEquals(2, eps.size());
-         for (Element<Annotation, AccessibleObject> ep : eps)
+         for (Element<Annotation, AnnotatedElement> ep : eps)
          {
             ta = ep.getAnnotation();
             assertNotNull(ta);
             Object value = getValue(ta);
-            AccessibleObject ao = ep.getAccessibleObject();
+            AnnotatedElement ao = ep.getAnnotatedElement();
             if ("cparameter".equals(value))
                assertInstanceOf(ao, Constructor.class, false);
             else if ("mparameter".equals(value))

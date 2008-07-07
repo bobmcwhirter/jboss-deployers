@@ -22,7 +22,7 @@
 package org.jboss.deployers.spi.annotations;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -79,7 +79,7 @@ public interface AnnotationEnvironment
     * @param annotation the annotation we're querying for
     * @return set of matching classes
     */
-   Set<Class<?>> classIsAnnotatedWith(Class<? extends Annotation> annotation);
+   <A extends Annotation> Set<Element<A, Class>> classIsAnnotatedWith(Class<A> annotation);
 
    /**
     * Get all classes annotated with annotation param.
@@ -87,7 +87,7 @@ public interface AnnotationEnvironment
     * @param annotationName the annotation name we're querying for
     * @return set of matching classes
     */
-   Set<Class<?>> classIsAnnotatedWith(String annotationName);
+   Set<Element<Annotation, Class>> classIsAnnotatedWith(String annotationName);
 
    /**
     * Get all classes who have some constructor annotated with annotation param.
@@ -143,7 +143,7 @@ public interface AnnotationEnvironment
     * @param annotation the annotation we're querying for
     * @return set of matching classes
     */
-   <A extends Annotation> Set<Element<A, AccessibleObject>> classHasParameterAnnotatedWith(Class<A> annotation);
+   <A extends Annotation> Set<Element<A, AnnotatedElement>> classHasParameterAnnotatedWith(Class<A> annotation);
 
    /**
     * Get all classes who have some method's/constructor's parameter annotated with annotation param.
@@ -151,5 +151,5 @@ public interface AnnotationEnvironment
     * @param annotationName the annotation name we're querying for
     * @return set of matching classes
     */
-   Set<Element<Annotation, AccessibleObject>> classHasParameterAnnotatedWith(String annotationName);
+   Set<Element<Annotation, AnnotatedElement>> classHasParameterAnnotatedWith(String annotationName);
 }

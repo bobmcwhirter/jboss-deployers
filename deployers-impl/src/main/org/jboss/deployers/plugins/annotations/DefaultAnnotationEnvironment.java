@@ -24,7 +24,7 @@ package org.jboss.deployers.plugins.annotations;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
-import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -123,29 +123,12 @@ public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implemen
    /**
     * Transform class names into classes.
     *
-    * @param pairs the cs pairs
-    * @return classes
-    */
-   protected Set<Class<?>> transformToClasses(Set<ClassSignaturePair> pairs)
-   {
-      if (pairs.isEmpty())
-         return Collections.emptySet();
-
-      Set<Class<?>> classes = new HashSet<Class<?>>(pairs.size());
-      for (ClassSignaturePair pair : pairs)
-         classes.add(loadClass(pair.getClassName()));
-      return classes;
-   }
-
-   /**
-    * Transform class names into classes.
-    *
     * @param type the annotation type
     * @param annClass the annotation class
     * @param aoClass the ao class
     * @return classes
     */
-   protected <A extends Annotation, M extends AccessibleObject> Set<Element<A, M>> transformToElements(
+   protected <A extends Annotation, M extends AnnotatedElement> Set<Element<A, M>> transformToElements(
          ElementType type,
          Class<A> annClass,
          Class<M> aoClass
@@ -160,7 +143,9 @@ public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implemen
       for (ClassSignaturePair pair : pairs)
       {
          Element<A, M> element;
-         if (type == ElementType.PARAMETER)
+         if (type == ElementType.TYPE)
+            element = new ClassElement<A, M>(classLoader, pair.getClassName(), annClass);
+         else if (type == ElementType.PARAMETER)
             element = new ParametersElement<A,M>(classLoader, pair.getClassName(), pair.getSignature(), annClass, aoClass);
          else
             element = new DefaultElement<A,M>(classLoader, pair.getClassName(), pair.getSignature(), annClass, aoClass);
@@ -174,9 +159,9 @@ public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implemen
       return getCSPairs(annotation, ElementType.TYPE).isEmpty() == false;
    }
 
-   public Set<Class<?>> classIsAnnotatedWith(Class<? extends Annotation> annotation)
+   public <A extends Annotation> Set<Element<A, Class>> classIsAnnotatedWith(Class<A> annotation)
    {
-      return transformToClasses(getCSPairs(annotation, ElementType.TYPE));
+      return transformToElements(ElementType.TYPE, annotation, Class.class);
    }
 
    public <A extends Annotation> Set<Element<A, Constructor>> classHasConstructorAnnotatedWith(Class<A> annotation)
@@ -194,9 +179,9 @@ public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implemen
       return transformToElements(ElementType.METHOD, annotation, Method.class);
    }
 
-   public <A extends Annotation> Set<Element<A, AccessibleObject>> classHasParameterAnnotatedWith(Class<A> annotation)
+   public <A extends Annotation> Set<Element<A, AnnotatedElement>> classHasParameterAnnotatedWith(Class<A> annotation)
    {
-      return transformToElements(ElementType.PARAMETER, annotation, AccessibleObject.class);
+      return transformToElements(ElementType.PARAMETER, annotation, AnnotatedElement.class);
    }
 
    /**
@@ -219,7 +204,7 @@ public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implemen
       return hasClassAnnotatedWith(getAnnotationClass(annotationName));
    }
 
-   public Set<Class<?>> classIsAnnotatedWith(String annotationName)
+   public Set<Element<Annotation, Class>> classIsAnnotatedWith(String annotationName)
    {
       return classIsAnnotatedWith(getAnnotationClass(annotationName));
    }
@@ -239,7 +224,7 @@ public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implemen
       return classHasMethodAnnotatedWith(getAnnotationClass(annotationName));
    }
 
-   public Set<Element<Annotation, AccessibleObject>> classHasParameterAnnotatedWith(String annotationName)
+   public Set<Element<Annotation, AnnotatedElement>> classHasParameterAnnotatedWith(String annotationName)
    {
       return classHasParameterAnnotatedWith(getAnnotationClass(annotationName));
    }

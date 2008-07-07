@@ -21,10 +21,12 @@
 */
 package org.jboss.deployers.spi.deployer.helpers;
 
+import java.lang.annotation.Annotation;
 import java.util.Set;
 
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
+import org.jboss.deployers.spi.annotations.Element;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 
 /**
@@ -64,9 +66,10 @@ public class AbstractAnnotationDeployer extends AbstractSimpleRealDeployer<Annot
          if (metadata != null)
             unit.addAttachment(attachmentName, metadata);
 
-         Set<Class<?>> classes = deployment.classIsAnnotatedWith(processor.getAnnotation());
-         for (Class<?> clazz : classes)
+         Set<Element<Annotation, Class>> elements = deployment.classIsAnnotatedWith(processor.getAnnotation());
+         for (Element<Annotation, Class> elt : elements)
          {
+            Class<?> clazz = elt.getOwner();
             metadata = processor.createMetaDataFromClass(clazz);
             if (metadata != null)
                unit.addAttachment(attachmentName + "#" + clazz.getName(), metadata);

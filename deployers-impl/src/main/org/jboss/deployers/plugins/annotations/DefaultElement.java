@@ -22,16 +22,14 @@
 package org.jboss.deployers.plugins.annotations;
 
 import java.lang.annotation.Annotation;
-import java.lang.ref.SoftReference;
-import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.AnnotatedElement;
 
-import org.jboss.deployers.spi.annotations.Element;
 import org.jboss.metadata.spi.signature.ConstructorParametersSignature;
 import org.jboss.metadata.spi.signature.ConstructorSignature;
 import org.jboss.metadata.spi.signature.FieldSignature;
+import org.jboss.metadata.spi.signature.MethodParametersSignature;
 import org.jboss.metadata.spi.signature.MethodSignature;
 import org.jboss.metadata.spi.signature.Signature;
-import org.jboss.metadata.spi.signature.MethodParametersSignature;
 import org.jboss.reflect.plugins.introspection.ReflectionUtils;
 
 /**
@@ -39,57 +37,27 @@ import org.jboss.reflect.plugins.introspection.ReflectionUtils;
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class DefaultElement<A extends Annotation, M extends AccessibleObject> extends WeakClassLoaderHolder implements Element<A, M>
+public class DefaultElement<A extends Annotation, M extends AnnotatedElement> extends AbstractElement<A, M>
 {
-   protected String className;
    protected Signature signature;
-   protected Class<A> annClass;
    protected Class<M> aoClass;
-
-   private SoftReference<Class<?>> classRef;
 
    public DefaultElement(ClassLoader classLoader, String className, Signature signature, Class<A> annClass, Class<M> aoClass)
    {
-      super(classLoader);
+      super(classLoader, className, annClass);
 
-      if (className == null)
-         throw new IllegalArgumentException("Null className");
       if (signature == null)
          throw new IllegalArgumentException("Null signature");
-      if (annClass == null)
-         throw new IllegalArgumentException("Null annotation class");
       if (aoClass == null)
          throw new IllegalArgumentException("Null ao class");
 
-      this.className = className;
       this.signature = signature;
-      this.annClass = annClass;
       this.aoClass = aoClass;
    }
 
-   public Class<?> getOwner()
+   public M getAnnotatedElement()
    {
-      if (classRef != null)
-      {
-         Class<?> clazz = classRef.get();
-         if (clazz != null)
-            return clazz;
-      }
-
-      Class<?> clazz = loadClass(className);
-      classRef = new SoftReference<Class<?>>(clazz);
-      return clazz;
-   }
-
-   public A getAnnotation()
-   {
-      AccessibleObject accessibleObject = getAccessibleObject();
-      return accessibleObject.getAnnotation(annClass);
-   }
-
-   public M getAccessibleObject()
-   {
-      AccessibleObject result = null;
+      AnnotatedElement result = null;
 
       Class<?> clazz = getOwner();
       if (signature instanceof ConstructorSignature || signature instanceof ConstructorParametersSignature)

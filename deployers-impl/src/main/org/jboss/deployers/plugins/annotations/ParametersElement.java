@@ -22,7 +22,7 @@
 package org.jboss.deployers.plugins.annotations;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -36,7 +36,7 @@ import org.jboss.metadata.spi.signature.Signature;
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class ParametersElement<A extends Annotation, M extends AccessibleObject> extends DefaultElement<A, M>
+public class ParametersElement<A extends Annotation, M extends AnnotatedElement> extends DefaultElement<A, M>
 {
    public ParametersElement(ClassLoader classLoader, String className, Signature signature, Class<A> annClass, Class<M> aoClass)
    {
