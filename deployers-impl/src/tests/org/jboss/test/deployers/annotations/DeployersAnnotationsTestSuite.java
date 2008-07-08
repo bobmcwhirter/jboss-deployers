@@ -24,6 +24,7 @@ package org.jboss.test.deployers.annotations;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
+import org.jboss.test.deployers.annotations.test.AnnotationEnvKeepTestCase;
 import org.jboss.test.deployers.annotations.test.AnnotationEnvTestCase;
 
 /**
@@ -43,6 +44,7 @@ public class DeployersAnnotationsTestSuite extends TestSuite
       TestSuite suite = new TestSuite("Annotations Scanning Tests");
 
       suite.addTest(AnnotationEnvTestCase.suite());
+      suite.addTest(AnnotationEnvKeepTestCase.suite());
 
       return suite;
    }

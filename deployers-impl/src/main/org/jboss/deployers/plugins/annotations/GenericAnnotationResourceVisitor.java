@@ -236,7 +236,7 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
          for (Object annObject : annotations)
          {
             Annotation annotation = Annotation.class.cast(annObject);
-            env.putAnnotation(annotation.annotationType(), type, resource.getClassName(), signature);
+            env.putAnnotation(annotation, type, resource.getClassName(), signature);
          }
       }
    }
@@ -249,6 +249,16 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
    public void setForceAnnotations(boolean forceAnnotations)
    {
       this.forceAnnotations = forceAnnotations;
+   }
+
+   /**
+    * Set the keep annotations flag.
+    *
+    * @param keepAnnotations the keep annotations flag
+    */
+   public void setKeepAnnotations(boolean keepAnnotations)
+   {
+      env.setKeepAnnotations(keepAnnotations);
    }
 
    /**

@@ -19,27 +19,34 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.deployers.plugins.annotations;
+package org.jboss.test.deployers.annotations.test;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
+import junit.framework.Test;
+import org.jboss.deployers.spi.deployer.Deployer;
+import org.jboss.deployers.plugins.annotations.GenericAnnotationDeployer;
 
 /**
- * Class annotations element.
+ * AnnotationEnvKeepTestCase.
+ * In this test we keep the javassist provided annotations.
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class ClassElement<A extends Annotation, M extends AnnotatedElement> extends AbstractElement<A, M>
+public class AnnotationEnvKeepTestCase extends AnnotationEnvTestCase
 {
-   public ClassElement(ClassLoader classLoader, String className, Class<A> annClass, A annotation)
+   public AnnotationEnvKeepTestCase(String name)
    {
-      super(classLoader, className, annClass, annotation);
+      super(name);
    }
 
-   @SuppressWarnings("unchecked")
-   public M getAnnotatedElement()
+   public static Test suite()
    {
-      AnnotatedElement em = getOwner();
-      return (M)em;
+      return suite(AnnotationEnvKeepTestCase.class);
+   }
+
+   protected Deployer createGenericAnnotationDeployer()
+   {
+      GenericAnnotationDeployer deployer = new GenericAnnotationDeployer();
+      deployer.setKeepAnnotations(true);
+      return deployer; 
    }
 }

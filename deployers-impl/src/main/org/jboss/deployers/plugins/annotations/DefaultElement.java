@@ -42,9 +42,9 @@ public class DefaultElement<A extends Annotation, M extends AnnotatedElement> ex
    protected Signature signature;
    protected Class<M> aoClass;
 
-   public DefaultElement(ClassLoader classLoader, String className, Signature signature, Class<A> annClass, Class<M> aoClass)
+   public DefaultElement(ClassLoader classLoader, String className, Signature signature, Class<A> annClass, A annotation, Class<M> aoClass)
    {
-      super(classLoader, className, annClass);
+      super(classLoader, className, annClass, annotation);
 
       if (signature == null)
          throw new IllegalArgumentException("Null signature");

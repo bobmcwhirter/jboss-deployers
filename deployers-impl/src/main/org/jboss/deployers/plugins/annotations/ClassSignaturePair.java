@@ -21,11 +21,17 @@
 */
 package org.jboss.deployers.plugins.annotations;
 
+import java.lang.annotation.Annotation;
+
 import org.jboss.metadata.spi.signature.Signature;
 import org.jboss.util.JBossObject;
 
 /**
  * Class name and signature pair.
+ * With those two we can re-create annotation value.
+ *
+ * If the keepAnnotations flag is on in DefaultAnnotationEnvironment
+ * we cache the annotation value from GenericAnnotationResourceVisitor.
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
@@ -33,24 +39,51 @@ public class ClassSignaturePair extends JBossObject
 {
    private String className;
    private Signature signature;
+   private Annotation annotation;
 
    public ClassSignaturePair(String className, Signature signature)
+   {
+      this(className, signature, null);
+   }
+
+   public ClassSignaturePair(String className, Signature signature, Annotation annotation)
    {
       if (className == null)
          throw new IllegalArgumentException("Null class name");
 
       this.className = className;
       this.signature = signature;
+      this.annotation = annotation;
    }
 
+   /**
+    * Get the classname.
+    *
+    * @return the classname
+    */
    public String getClassName()
    {
       return className;
    }
 
+   /**
+    * Get the signature.
+    *
+    * @return the signature
+    */
    public Signature getSignature()
    {
       return signature;
+   }
+
+   /**
+    * Get the annotation.
+    *
+    * @return the annotation
+    */
+   public Annotation getAnnotation()
+   {
+      return annotation;
    }
 
    protected int getHashCode()

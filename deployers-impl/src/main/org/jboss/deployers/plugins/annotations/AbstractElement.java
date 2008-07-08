@@ -36,10 +36,11 @@ public abstract class AbstractElement<A extends Annotation, M extends AnnotatedE
 {
    protected String className;
    protected Class<A> annClass;
+   protected A annotation;
 
    private SoftReference<Class<?>> classRef;
 
-   public AbstractElement(ClassLoader classLoader, String className, Class<A> annClass)
+   public AbstractElement(ClassLoader classLoader, String className, Class<A> annClass, A annotation)
    {
       super(classLoader);
 
@@ -50,6 +51,7 @@ public abstract class AbstractElement<A extends Annotation, M extends AnnotatedE
 
       this.className = className;
       this.annClass = annClass;
+      this.annotation = annotation;
    }
 
    public String getOwnerClassName()
@@ -72,6 +74,19 @@ public abstract class AbstractElement<A extends Annotation, M extends AnnotatedE
    }
 
    public A getAnnotation()
+   {
+      if (annotation == null)
+         annotation = readAnnotation();
+
+      return annotation;
+   }
+
+   /**
+    * Read the annotation.
+    *
+    * @return the read annotation
+    */
+   protected A readAnnotation()
    {
       AnnotatedElement annotatedElement = getAnnotatedElement();
       return annotatedElement.getAnnotation(annClass);

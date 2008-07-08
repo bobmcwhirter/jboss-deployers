@@ -37,6 +37,7 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
 public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module>
 {
    private boolean forceAnnotations;
+   private boolean keepAnnotations;
 
    public GenericAnnotationDeployer()
    {
@@ -55,6 +56,16 @@ public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module
       this.forceAnnotations = forceAnnotations;
    }
 
+   /**
+    * Set the keep annotations flag.
+    *
+    * @param keepAnnotations the keep annotations flag
+    */
+   public void setKeepAnnotations(boolean keepAnnotations)
+   {
+      this.keepAnnotations = keepAnnotations;
+   }
+
    public void deploy(DeploymentUnit unit, Module module) throws DeploymentException
    {
       if (log.isTraceEnabled())
@@ -65,9 +76,9 @@ public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module
 
       GenericAnnotationResourceVisitor visitor = new GenericAnnotationResourceVisitor(pool, classLoader);
       visitor.setForceAnnotations(forceAnnotations);
+      visitor.setKeepAnnotations(keepAnnotations);
 
       ClassLoader tcl = Thread.currentThread().getContextClassLoader();
-      // TODO - any other way?
       Thread.currentThread().setContextClassLoader(classLoader);
       try
       {

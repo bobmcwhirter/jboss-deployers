@@ -170,7 +170,7 @@ public abstract class AnnotationsTest extends AbstractDeployerTest
       deployer2.setClassLoading(classLoading);
       deployer2.setSystem(system);
 
-      Deployer deployer3 = new GenericAnnotationDeployer();
+      Deployer deployer3 = createGenericAnnotationDeployer();
 
       if (deployers != null && deployers.length > 0)
       {
@@ -183,5 +183,10 @@ public abstract class AnnotationsTest extends AbstractDeployerTest
       }
 
       return createMainDeployer(deployer1, deployer2, deployer3);
+   }
+
+   protected Deployer createGenericAnnotationDeployer()
+   {
+      return new GenericAnnotationDeployer();
    }
 }

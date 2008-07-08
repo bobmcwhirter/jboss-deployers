@@ -38,12 +38,12 @@ import org.jboss.metadata.spi.signature.Signature;
  */
 public class ParametersElement<A extends Annotation, M extends AnnotatedElement> extends DefaultElement<A, M>
 {
-   public ParametersElement(ClassLoader classLoader, String className, Signature signature, Class<A> annClass, Class<M> aoClass)
+   public ParametersElement(ClassLoader classLoader, String className, Signature signature, Class<A> annClass, A annotation, Class<M> aoClass)
    {
-      super(classLoader, className, signature, annClass, aoClass);
+      super(classLoader, className, signature, annClass, annotation, aoClass);
    }
 
-   public A getAnnotation()
+   protected A readAnnotation()
    {
       Annotation[] annotations = null;
       Class<?> clazz = getOwner();

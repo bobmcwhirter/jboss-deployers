@@ -47,16 +47,29 @@ import org.jboss.util.collection.CollectionsFactory;
  */
 public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implements AnnotationEnvironment, Serializable
 {
+   /** The serial version UID */
    private static final long serialVersionUID = 1L;
    /** The log */
    private static final Logger log = Logger.getLogger(DefaultAnnotationEnvironment.class);
    /** The info map */
    private transient Map<Class<? extends Annotation>, Map<ElementType, Set<ClassSignaturePair>>> env;
+   /** Should we keep the annotation */
+   private boolean keepAnnotations;
 
    public DefaultAnnotationEnvironment(ClassLoader classLoader)
    {
       super(classLoader);
       env = new HashMap<Class<? extends Annotation>, Map<ElementType, Set<ClassSignaturePair>>>();
+   }
+
+   /**
+    * Set the keep annotations flag.
+    *
+    * @param keepAnnotations the keep annotations flag
+    */
+   public void setKeepAnnotations(boolean keepAnnotations)
+   {
+      this.keepAnnotations = keepAnnotations;
    }
 
    /**
@@ -75,13 +88,15 @@ public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implemen
    /**
     * Put the annotation info.
     *
-    * @param annClass the annotation class
+    * @param annotation the annotation
     * @param type the annotation type
     * @param className the class name
     * @param signature the signature
     */
-   void putAnnotation(Class<? extends Annotation> annClass, ElementType type, String className, Signature signature)
+   void putAnnotation(Annotation annotation, ElementType type, String className, Signature signature)
    {
+      Class<? extends Annotation> annClass = annotation.annotationType();
+
       if (log.isTraceEnabled())
          log.trace("Adding annotation @" + annClass.getSimpleName() + " for " + className + " at type " + type + ", signature: " + signature);
 
@@ -93,13 +108,20 @@ public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implemen
          elements = new HashMap<ElementType, Set<ClassSignaturePair>>();
          env.put(annClass, elements);
       }
+
       Set<ClassSignaturePair> classes = elements.get(type);
       if (classes == null)
       {
          classes = CollectionsFactory.createLazySet();
          elements.put(type, classes);
       }
-      classes.add(new ClassSignaturePair(className, signature));
+
+      ClassSignaturePair pair;
+      if (keepAnnotations)
+         pair = new ClassSignaturePair(className, signature, annotation);
+      else
+         pair = new ClassSignaturePair(className, signature);
+      classes.add(pair);
    }
 
    /**
@@ -142,13 +164,16 @@ public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implemen
       Set<Element<A, M>> elements = new HashSet<Element<A, M>>();
       for (ClassSignaturePair pair : pairs)
       {
+         String className = pair.getClassName();
+         A annotation = annClass.cast(pair.getAnnotation());
+
          Element<A, M> element;
          if (type == ElementType.TYPE)
-            element = new ClassElement<A, M>(classLoader, pair.getClassName(), annClass);
+            element = new ClassElement<A, M>(classLoader, className, annClass, annotation);
          else if (type == ElementType.PARAMETER)
-            element = new ParametersElement<A,M>(classLoader, pair.getClassName(), pair.getSignature(), annClass, aoClass);
+            element = new ParametersElement<A,M>(classLoader, className, pair.getSignature(), annClass, annotation, aoClass);
          else
-            element = new DefaultElement<A,M>(classLoader, pair.getClassName(), pair.getSignature(), annClass, aoClass);
+            element = new DefaultElement<A,M>(classLoader, className, pair.getSignature(), annClass, annotation, aoClass);
          elements.add(element);
       }
       return elements;
