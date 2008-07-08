@@ -36,7 +36,7 @@ public abstract class AbstractElement<A extends Annotation, M extends AnnotatedE
 {
    protected String className;
    protected Class<A> annClass;
-   protected A annotation;
+   private A annotation;
 
    private SoftReference<Class<?>> classRef;
 
