@@ -111,24 +111,64 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
       return inputStream;
    }
 
+   /**
+    * Get metadata file.
+    * First try altDD, then fallback to original name.
+    *
+    * @param unit the vfs deployment unit
+    * @param altPrefix altDD prefix
+    * @param originalName the original file name
+    * @return metadata file or null if it doesn't exist
+    */
+   protected VirtualFile getMetadataFile(VFSDeploymentUnit unit, String altPrefix, String originalName)
+   {
+      VirtualFile file = unit.getAttachment(altPrefix + ".altDD", VirtualFile.class);
+      if(file == null && originalName != null)
+         file = unit.getMetaDataFile(originalName);
+
+      return file;
+   }
+
+   /**
+    * Match file name to metadata class.
+    *
+    * @param fileName the file name
+    * @return matching metadata class
+    */
+   protected Class<?> matchFileToClass(String fileName)
+   {
+      return null;
+   }
+
+   /**
+    * Get altDD prefix from file name.
+    *
+    * First look into matching metadata classes.
+    * If no match found, fall back to file name.
+    *
+    * @param fileName the file name
+    * @return altDD prefix
+    */
+   protected String getAltDDPrefix(String fileName)
+   {
+      Class<?> expectedClass = matchFileToClass(fileName);
+      if (expectedClass != null)
+         return expectedClass.getName();
+      else
+         return fileName;
+   }
+
    @Override
    protected T parse(DeploymentUnit unit, String name, T root) throws Exception
    {
       // Try to find the metadata
       VFSDeploymentUnit vfsDeploymentUnit = (VFSDeploymentUnit) unit;
 
-      VirtualFile file = (VirtualFile) unit.getAttachment(getOutput().getName() + ".altDD");
+      VirtualFile file = getMetadataFile(vfsDeploymentUnit, getOutput().getName(), name);
       if(file == null)
-      {
-         file = vfsDeploymentUnit.getMetaDataFile(name);
-         if (file == null)
             return null;
-      }
-      
-      T result = parse(vfsDeploymentUnit, file, root);
-      if (result != null)
-         init(vfsDeploymentUnit, result, file);
-      return result;
+
+      return parseAndInit(vfsDeploymentUnit, file, root);
    }
 
    protected T parse(DeploymentUnit unit, Set<String> names, T root) throws Exception
@@ -143,7 +183,7 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
 
       for (String name : names)
       {
-         VirtualFile file = vfsDeploymentUnit.getMetaDataFile(name);
+         VirtualFile file = getMetadataFile(vfsDeploymentUnit, getAltDDPrefix(name), name);
          if (file != null)
             files.add(file);
          else
@@ -166,27 +206,40 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
       
       // Try to find the metadata
       VFSDeploymentUnit vfsDeploymentUnit = (VFSDeploymentUnit) unit;
+
+      // let's check altDD first
+      VirtualFile file = getMetadataFile(vfsDeploymentUnit, getOutput().getName(), null);
+      if (file != null)
+         return parseAndInit(vfsDeploymentUnit, file, root);
+
+      // try all name+suffix matches
       List<VirtualFile> files = vfsDeploymentUnit.getMetaDataFiles(name, suffix);
+      switch (files.size())
+      {
+         case 0 :
+            return null;
+         case 1 :
+            return parseAndInit(vfsDeploymentUnit, files.get(0), root);
+         default :
+            return handleMultipleFiles(vfsDeploymentUnit, root, files);
+      }
+   }
 
-      if (files.size() == 0)
-      {
-         return null;
-      }
-      else if (files.size() > 1)
-      {
-         return handleMultipleFiles(vfsDeploymentUnit, root, files);
-      }
-      else
-      {
-         VirtualFile file = (VirtualFile) unit.getAttachment(getOutput().getName() + ".altDD");
-         if(file == null)
-            file = files.get(0);
-
-         T result = parse(vfsDeploymentUnit, file, root);
-         if (result != null)
-            init(vfsDeploymentUnit, result, file);
-         return result;
-      }
+   /**
+    * Parse the file, initialize the result if exists.
+    *
+    * @param unit the deployment unit
+    * @param file the file
+    * @param root the root
+    * @return parsed result
+    * @throws Exception for any error
+    */
+   protected T parseAndInit(VFSDeploymentUnit unit, VirtualFile file, T root) throws Exception
+   {
+      T result = parse(unit, file, root);
+      if (result != null)
+         init(unit, result, file);
+      return result;
    }
 
    protected T parse(DeploymentUnit unit, Set<String> names, String suffix, T root) throws Exception
@@ -201,11 +254,20 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
 
       for (String name : names)
       {
-         List<VirtualFile> matched = vfsDeploymentUnit.getMetaDataFiles(name, suffix);
-         if (matched != null && matched.isEmpty() == false)
-            files.addAll(matched);
+         // try finding altDD file
+         VirtualFile file = getMetadataFile(vfsDeploymentUnit, getAltDDPrefix(name), null);
+         if (file == null)
+         {
+            List<VirtualFile> matched = vfsDeploymentUnit.getMetaDataFiles(name, suffix);
+            if (matched != null && matched.isEmpty() == false)
+               files.addAll(matched);
+            else
+               missingFiles.add(name);
+         }
          else
-            missingFiles.add(name);
+         {
+            files.add(file);
+         }
       }
 
       if (missingFiles.size() == names.size())

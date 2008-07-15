@@ -59,7 +59,7 @@ public class DeployersValidateInputTestCase extends BaseTestCase
       // this one needs to be created first
       TestXmlDeployer xmlDeployer = new TestXmlDeployer();
       xmlDeployer.create();
-      
+
       AbstractVFSParsingDeployer<?>[] deployers = new AbstractVFSParsingDeployer<?>[]
             {
                   new Properties2BeansDeployer(),
@@ -75,10 +75,12 @@ public class DeployersValidateInputTestCase extends BaseTestCase
 
       for(AbstractVFSParsingDeployer<?> deployer : deployers)
       {
+         // set name to "" to match in deployment
+         deployer.setName("");
          try
          {
             deployer.deploy(unit);
-            fail("Should not be here.");
+            fail("Should not be here: " + deployer);
          }
          catch(Exception e)
          {

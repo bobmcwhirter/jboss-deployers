@@ -67,7 +67,26 @@ public abstract class MultipleVFSParsingDeployer<T> extends AbstractVFSParsingDe
     */
    protected Class<?> matchFileToClass(VirtualFile file)
    {
-      String fileName = file.getName();
+      if (file == null)
+         throw new IllegalArgumentException("Null file");
+
+      return matchFileToClass(file.getName(), true);
+   }
+
+   protected Class<?> matchFileToClass(String fileName)
+   {
+      return matchFileToClass(fileName, false);
+   }
+
+   /**
+    * Match file name mappings.
+    *
+    * @param fileName the file name
+    * @param throwException should we throw an exception if no match found
+    * @return match or null or IllegalArgumentException
+    */
+   protected Class<?> matchFileToClass(String fileName, boolean throwException)
+   {
       Class<?> result = mappings.get(fileName);
       if (result == null)
       {
@@ -75,9 +94,9 @@ public abstract class MultipleVFSParsingDeployer<T> extends AbstractVFSParsingDe
             result = suffixClass;
       }
 
-      if (result == null)
+      if (result == null && throwException)
          throw new IllegalArgumentException(
-               "Should not be here, file '" + file +
+               "Should not be here, file name '" + fileName +
                "' must macth some mapping " + mappings + " or suffix " + getSuffix()
          );
 
