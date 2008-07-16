@@ -23,6 +23,8 @@ package org.jboss.deployers.plugins.annotations;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
+import java.io.InputStream;
+import java.io.IOException;
 
 import javassist.ClassPool;
 import javassist.CtBehavior;
@@ -82,14 +84,28 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
    {
       try
       {
-         CtClass ctClass = pool.makeClass(resource.getInputStream());
+         InputStream stream = resource.getInputStream();
          try
          {
-            handleCtClass(ctClass, resource);
+            CtClass ctClass = pool.makeClass(stream);
+            try
+            {
+               handleCtClass(ctClass, resource);
+            }
+            finally
+            {
+               ctClass.detach();
+            }
          }
          finally
          {
-            ctClass.detach();               
+            try
+            {
+               stream.close();
+            }
+            catch (IOException ignored)
+            {
+            }
          }
       }
       catch (ClassNotFoundException e)
