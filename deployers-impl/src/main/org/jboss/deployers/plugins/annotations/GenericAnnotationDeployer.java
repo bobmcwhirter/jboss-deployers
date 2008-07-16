@@ -66,6 +66,24 @@ public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module
       this.keepAnnotations = keepAnnotations;
    }
 
+   /**
+    * Create GenericAnnotationResourceVisitor.
+    *
+    * Can be used change existing GARV's filter.
+    * Or determin if we need to force/keep annotations.
+    *
+    * @param pool the class pool
+    * @param classLoader the classloader
+    * @return new generic annotation visitor
+    */
+   protected GenericAnnotationResourceVisitor createGenericAnnotationResourceVisitor(ClassPool pool, ClassLoader classLoader)
+   {
+      GenericAnnotationResourceVisitor visitor = new GenericAnnotationResourceVisitor(pool, classLoader);
+      visitor.setForceAnnotations(forceAnnotations);
+      visitor.setKeepAnnotations(keepAnnotations);
+      return visitor;
+   }
+
    public void deploy(DeploymentUnit unit, Module module) throws DeploymentException
    {
       if (log.isTraceEnabled())
@@ -73,10 +91,7 @@ public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module
 
       ClassPool pool = ClassPool.getDefault();
       ClassLoader classLoader = unit.getClassLoader();
-
-      GenericAnnotationResourceVisitor visitor = new GenericAnnotationResourceVisitor(pool, classLoader);
-      visitor.setForceAnnotations(forceAnnotations);
-      visitor.setKeepAnnotations(keepAnnotations);
+      GenericAnnotationResourceVisitor visitor = createGenericAnnotationResourceVisitor(pool, classLoader);
 
       ClassLoader tcl = Thread.currentThread().getContextClassLoader();
       Thread.currentThread().setContextClassLoader(classLoader);
