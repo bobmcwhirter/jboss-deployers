@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
+import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.virtual.VirtualFile;
 
 /**
@@ -64,31 +65,44 @@ public abstract class MultipleVFSParsingDeployer<T> extends AbstractVFSParsingDe
    /**
     * Match file to mapping metadata class.
     *
+    * @param unit the deployment unit
     * @param file the file
     * @return matching metadata class
     */
-   protected Class<?> matchFileToClass(VirtualFile file)
+   protected Class<?> matchFileToClass(DeploymentUnit unit, VirtualFile file)
    {
       if (file == null)
          throw new IllegalArgumentException("Null file");
 
-      return matchFileToClass(file.getName(), true);
+      return matchFileToClass(unit, file.getName(), true);
    }
 
-   protected Class<?> matchFileToClass(String fileName)
+   protected Class<?> matchFileToClass(DeploymentUnit unit, String fileName)
    {
-      return matchFileToClass(fileName, false);
+      return matchFileToClass(unit, fileName, false);
    }
 
    /**
     * Match file name mappings.
     *
+    * @param unit the deployment unit
     * @param fileName the file name
     * @param throwException should we throw an exception if no match found
     * @return match or null or IllegalArgumentException
     */
-   protected Class<?> matchFileToClass(String fileName, boolean throwException)
+   protected Class<?> matchFileToClass(DeploymentUnit unit, String fileName, boolean throwException)
    {
+      if (fileName == null)
+         throw new IllegalArgumentException("Null file name");
+
+      Map<String, Class<?>> altMappingsMap = getAltMappings(unit);
+      if (altMappingsMap != null)
+      {
+         Class<?> result = altMappingsMap.get(fileName);
+         if (result != null)
+            return result;
+      }
+
       Class<?> result = mappings.get(fileName);
       if (result == null)
       {
@@ -108,7 +122,7 @@ public abstract class MultipleVFSParsingDeployer<T> extends AbstractVFSParsingDe
    @SuppressWarnings("unchecked")
    protected T parse(VFSDeploymentUnit unit, VirtualFile file, T root) throws Exception
    {
-      Class<?> expectedType = matchFileToClass(file);
+      Class<?> expectedType = matchFileToClass(unit, file);
       if (getOutput().isAssignableFrom(expectedType) == false)
          throw new IllegalArgumentException("Matched " + expectedType + " which is not assignable to output " + getOutput());
       if (root != null && expectedType.isInstance(root) == false)
@@ -136,7 +150,7 @@ public abstract class MultipleVFSParsingDeployer<T> extends AbstractVFSParsingDe
       Map<Class<?> , List<Object>> metadata = new HashMap<Class<?>, List<Object>>();
       for (VirtualFile file : files)
       {
-         Class<?> clazz = matchFileToClass(file);
+         Class<?> clazz = matchFileToClass(unit, file);
          List<Object> instances = metadata.get(clazz);
          if (instances == null)
          {

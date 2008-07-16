@@ -21,12 +21,14 @@
  */
 package org.jboss.deployers.vfs.spi.deployer;
 
-import java.util.List;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.ArrayList;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.HashMap;
 
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.helpers.AbstractParsingDeployerWithOutput;
@@ -44,6 +46,9 @@ import org.jboss.virtual.VirtualFile;
  */
 public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeployerWithOutput<T> implements FileMatcher
 {
+   /** The alt mappings key */
+   private static final String ALT_MAPPINGS_MAP_KEY = "AltMappingsMap";
+
    /** The allow multiple fiels flag */
    private boolean allowMultipleFiles;
 
@@ -112,18 +117,46 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
    }
 
    /**
+    * Get the alt mappings map.
+    *
+    * @param unit the deployment unit
+    * @return alt mappings map from attachments
+    */
+   @SuppressWarnings("unchecked")
+   protected static Map<String, Class<?>> getAltMappings(DeploymentUnit unit)
+   {
+      if (unit == null)
+         throw new IllegalArgumentException("Null deployment unit");
+
+      return unit.getAttachment(ALT_MAPPINGS_MAP_KEY, Map.class);
+   }
+
+   /**
     * Get metadata file.
     * First try altDD, then fallback to original name.
     *
     * @param unit the vfs deployment unit
-    * @param altPrefix altDD prefix
+    * @param altExpectedClass the expected class of altDD
     * @param originalName the original file name
+    * @param checkMetaDataFile should we fall back to metadata file
     * @return metadata file or null if it doesn't exist
     */
-   protected VirtualFile getMetadataFile(VFSDeploymentUnit unit, String altPrefix, String originalName)
+   protected VirtualFile getMetadataFile(VFSDeploymentUnit unit, Class<?> altExpectedClass, String originalName, boolean checkMetaDataFile)
    {
+      String altPrefix = (altExpectedClass != null ? altExpectedClass.getName() : originalName);
       VirtualFile file = unit.getAttachment(altPrefix + ".altDD", VirtualFile.class);
-      if(file == null && originalName != null)
+
+      if (file != null && altExpectedClass != null)
+      {
+         Map<String, Class<?>> altMappingsMap = getAltMappings(unit);
+         if (altMappingsMap == null)
+         {
+            altMappingsMap = new HashMap<String, Class<?>>();
+            unit.addAttachment(ALT_MAPPINGS_MAP_KEY, altMappingsMap, Map.class);
+         }
+         altMappingsMap.put(file.getName(), altExpectedClass);
+      }
+      if(checkMetaDataFile && file == null)
          file = unit.getMetaDataFile(originalName);
 
       return file;
@@ -132,30 +165,14 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
    /**
     * Match file name to metadata class.
     *
+    * @param unit the deployment unit
     * @param fileName the file name
     * @return matching metadata class
     */
-   protected Class<?> matchFileToClass(String fileName)
+   protected Class<?> matchFileToClass(DeploymentUnit unit, String fileName)
    {
-      return null;
-   }
-
-   /**
-    * Get altDD prefix from file name.
-    *
-    * First look into matching metadata classes.
-    * If no match found, fall back to file name.
-    *
-    * @param fileName the file name
-    * @return altDD prefix
-    */
-   protected String getAltDDPrefix(String fileName)
-   {
-      Class<?> expectedClass = matchFileToClass(fileName);
-      if (expectedClass != null)
-         return expectedClass.getName();
-      else
-         return fileName;
+      Map<String, Class<?>> altMappingsMap = getAltMappings(unit);
+      return altMappingsMap != null ? altMappingsMap.get(fileName) : null;
    }
 
    @Override
@@ -164,7 +181,7 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
       // Try to find the metadata
       VFSDeploymentUnit vfsDeploymentUnit = (VFSDeploymentUnit) unit;
 
-      VirtualFile file = getMetadataFile(vfsDeploymentUnit, getOutput().getName(), name);
+      VirtualFile file = getMetadataFile(vfsDeploymentUnit, getOutput(), name, true);
       if(file == null)
             return null;
 
@@ -183,7 +200,7 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
 
       for (String name : names)
       {
-         VirtualFile file = getMetadataFile(vfsDeploymentUnit, getAltDDPrefix(name), name);
+         VirtualFile file = getMetadataFile(vfsDeploymentUnit, matchFileToClass(unit, name), name, true);
          if (file != null)
             files.add(file);
          else
@@ -208,7 +225,7 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
       VFSDeploymentUnit vfsDeploymentUnit = (VFSDeploymentUnit) unit;
 
       // let's check altDD first
-      VirtualFile file = getMetadataFile(vfsDeploymentUnit, getOutput().getName(), null);
+      VirtualFile file = getMetadataFile(vfsDeploymentUnit, getOutput(), name, false);
       if (file != null)
          return parseAndInit(vfsDeploymentUnit, file, root);
 
@@ -255,7 +272,7 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
       for (String name : names)
       {
          // try finding altDD file
-         VirtualFile file = getMetadataFile(vfsDeploymentUnit, getAltDDPrefix(name), null);
+         VirtualFile file = getMetadataFile(vfsDeploymentUnit, matchFileToClass(unit, name), name, false);
          if (file == null)
          {
             List<VirtualFile> matched = vfsDeploymentUnit.getMetaDataFiles(name, suffix);
