@@ -49,13 +49,15 @@ public abstract class MultipleVFSParsingDeployer<T> extends AbstractVFSParsingDe
    public MultipleVFSParsingDeployer(Class<T> output, Map<String, Class<?>> mappings, String suffix, Class<?> suffixClass)
    {
       super(output);
+
       if (mappings == null || mappings.isEmpty())
          throw new IllegalArgumentException("Illegal mappings");
+      if (suffix != null && suffixClass == null)
+         throw new IllegalArgumentException("Null suffix class");
+
       this.mappings = mappings;
       setNames(mappings.keySet());
       setSuffix(suffix);
-      if (suffix != null && suffixClass == null)
-         throw new IllegalArgumentException("Null suffix class");
       this.suffixClass = suffixClass;
    }
 
