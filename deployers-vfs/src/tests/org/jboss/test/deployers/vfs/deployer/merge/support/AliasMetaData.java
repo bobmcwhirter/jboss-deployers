@@ -35,7 +35,7 @@ import org.jboss.xb.annotations.JBossXmlSchema;
 @XmlRootElement(name="aliases")
 public class AliasMetaData implements Serializable
 {
-   public static final long serialUIDVersion = 1l;
+   public static final long serialVersionUID = 1l;
 
    private String alias;
 

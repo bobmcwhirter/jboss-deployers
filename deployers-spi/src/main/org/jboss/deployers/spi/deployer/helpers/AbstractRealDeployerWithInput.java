@@ -106,6 +106,7 @@ public abstract class AbstractRealDeployerWithInput<T> extends AbstractRealDeplo
     * Deploy over visitor.
     * Unwind already deployed deployments on failure.
     *
+    * @param <U> the deployment type
     * @param unit the deployment unit
     * @param visitor the visitor
     * @throws DeploymentException for any error
@@ -145,6 +146,7 @@ public abstract class AbstractRealDeployerWithInput<T> extends AbstractRealDeplo
    /**
     * Undeploy over visitor.
     *
+    * @param <U> the deployment type
     * @param unit the deployment unit
     * @param visitor the visitor
     */

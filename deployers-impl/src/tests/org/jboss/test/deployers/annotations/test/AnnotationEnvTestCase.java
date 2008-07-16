@@ -80,18 +80,18 @@ public class AnnotationEnvTestCase extends AnnotationsTest
          assertLoaded(unit, "org.jboss.test.deployers.annotations.support.TestAnnotation");
 
          AnnotationEnvironment env = getAnnotationEnvironment(unit);
-         Set<Element<TestAnnotation, Class>> classes = env.classIsAnnotatedWith(taClass);
+         Set<Element<TestAnnotation, Class<?>>> classes = env.classIsAnnotatedWith(taClass);
          assertNotNull(classes);
          assertEquals(1, classes.size());
          assertEquals(AnnotationsHolder.class.getName(), classes.iterator().next().getOwnerClassName());
          assertNotLoaded(unit, "org.jboss.test.deployers.annotations.support.AnnotationsHolder");
 
-         Element<TestAnnotation, Class> ecl = getSingleton(env.classIsAnnotatedWith(taClass));
+         Element<TestAnnotation, Class<?>> ecl = getSingleton(env.classIsAnnotatedWith(taClass));
          Annotation tacl = ecl.getAnnotation();
          assertNotNull(tacl);
          assertEquals("class", getValue(tacl));
 
-         Element<TestAnnotation, Constructor> ec = getSingleton(env.classHasConstructorAnnotatedWith(taClass));
+         Element<TestAnnotation, Constructor<?>> ec = getSingleton(env.classHasConstructorAnnotatedWith(taClass));
          Annotation ta = ec.getAnnotation();
          assertNotNull(ta);
          assertEquals("constructor", getValue(ta));
@@ -156,18 +156,18 @@ public class AnnotationEnvTestCase extends AnnotationsTest
          assertLoaded(unit, "org.jboss.test.deployers.annotations.support.TestAnnotation");
 
          AnnotationEnvironment env = getAnnotationEnvironment(unit);
-         Set<Element<Annotation, Class>> classes = env.classIsAnnotatedWith(annotationName);
+         Set<Element<Annotation, Class<?>>> classes = env.classIsAnnotatedWith(annotationName);
          assertNotNull(classes);
          assertEquals(1, classes.size());
          assertEquals(AnnotationsHolder.class.getName(), classes.iterator().next().getOwnerClassName());
          assertNotLoaded(unit, "org.jboss.test.deployers.annotations.support.AnnotationsHolder");
 
-         Element<Annotation, Class> ecl = getSingleton(env.classIsAnnotatedWith(annotationName));
+         Element<Annotation, Class<?>> ecl = getSingleton(env.classIsAnnotatedWith(annotationName));
          Annotation tacl = ecl.getAnnotation();
          assertNotNull(tacl);
          assertEquals("class", getValue(tacl));
 
-         Element<Annotation, Constructor> ec = getSingleton(env.classHasConstructorAnnotatedWith(annotationName));
+         Element<Annotation, Constructor<?>> ec = getSingleton(env.classHasConstructorAnnotatedWith(annotationName));
          Annotation ta = ec.getAnnotation();
          assertNotNull(ta);
          assertEquals("constructor", getValue(ta));

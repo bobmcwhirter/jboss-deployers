@@ -76,10 +76,11 @@ public interface AnnotationEnvironment
    /**
     * Get all classes annotated with annotation param.
     *
+    * @param <A> the annotation type
     * @param annotation the annotation we're querying for
     * @return set of matching classes
     */
-   <A extends Annotation> Set<Element<A, Class>> classIsAnnotatedWith(Class<A> annotation);
+   <A extends Annotation> Set<Element<A, Class<?>>> classIsAnnotatedWith(Class<A> annotation);
 
    /**
     * Get all classes annotated with annotation param.
@@ -87,15 +88,16 @@ public interface AnnotationEnvironment
     * @param annotationName the annotation name we're querying for
     * @return set of matching classes
     */
-   Set<Element<Annotation, Class>> classIsAnnotatedWith(String annotationName);
+   Set<Element<Annotation, Class<?>>> classIsAnnotatedWith(String annotationName);
 
    /**
     * Get all classes who have some constructor annotated with annotation param.
     *
+    * @param <A> the annotation type
     * @param annotation the annotation we're querying for
     * @return set of matching classes
     */
-   <A extends Annotation> Set<Element<A, Constructor>> classHasConstructorAnnotatedWith(Class<A> annotation);
+   <A extends Annotation> Set<Element<A, Constructor<?>>> classHasConstructorAnnotatedWith(Class<A> annotation);
 
    /**
     * Get all classes who have some constructor annotated with annotation param.
@@ -103,11 +105,12 @@ public interface AnnotationEnvironment
     * @param annotationName the annotation name we're querying for
     * @return set of matching classes
     */
-   Set<Element<Annotation, Constructor>> classHasConstructorAnnotatedWith(String annotationName);
+   Set<Element<Annotation, Constructor<?>>> classHasConstructorAnnotatedWith(String annotationName);
 
    /**
     * Get all classes who have some field annotated with annotation param.
     *
+    * @param <A> the annotation type
     * @param annotation the annotation we're querying for
     * @return set of matching classes
     */
@@ -124,6 +127,7 @@ public interface AnnotationEnvironment
    /**
     * Get all classes who have some method annotated with annotation param.
     *
+    * @param <A> the annotation type
     * @param annotation the annotation we're querying for
     * @return set of matching classes
     */
@@ -140,6 +144,7 @@ public interface AnnotationEnvironment
    /**
     * Get all classes who have some method's/constructor's parameter annotated with annotation param.
     *
+    * @param <A> the annotation type
     * @param annotation the annotation we're querying for
     * @return set of matching classes
     */

@@ -27,6 +27,8 @@ import java.lang.reflect.AnnotatedElement;
 /**
  * Class annotations element.
  *
+ * @param <A> the annotation type
+ * @param <M> the annotated element type
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
 public class ClassElement<A extends Annotation, M extends AnnotatedElement> extends AbstractElement<A, M>

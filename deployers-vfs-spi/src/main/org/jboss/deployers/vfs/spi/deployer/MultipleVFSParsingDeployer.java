@@ -137,6 +137,7 @@ public abstract class MultipleVFSParsingDeployer<T> extends AbstractVFSParsingDe
     * Root doesn't have U signature, since it conflicts
     * with its usage in the parse(VFSDeployment unit, VirtualFile file, T root) method.
     *
+    * @param <U> the expect type
     * @param expectedType the expected class
     * @param file the file to parse
     * @param root the previous root
@@ -191,6 +192,7 @@ public abstract class MultipleVFSParsingDeployer<T> extends AbstractVFSParsingDe
    /**
     * Get single metadata instance from metadata.
     *
+    * @param <S> the metadata type
     * @param metadata the metadatas map
     * @param clazz metadata class
     * @return matching metadata instance

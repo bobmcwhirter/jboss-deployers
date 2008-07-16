@@ -29,7 +29,7 @@ import java.util.Set;
  */
 public class RarDeploymentMetaData implements Serializable
 {
-   public static final long serialUIDVersion = 1l;
+   public static final long serialVersionUID = 1l;
 
    private Set<Object> aliases;
    private String attribute;

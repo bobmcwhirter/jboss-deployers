@@ -34,6 +34,8 @@ import org.jboss.metadata.spi.signature.Signature;
 /**
  * Parameters annotations element.
  *
+ * @param <A> the annotation type
+ * @param <M> the annotated element type
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
 public class ParametersElement<A extends Annotation, M extends AnnotatedElement> extends DefaultElement<A, M>
@@ -52,7 +54,7 @@ public class ParametersElement<A extends Annotation, M extends AnnotatedElement>
          ConstructorParametersSignature cps = (ConstructorParametersSignature)signature;
          try
          {
-            Constructor constructor = clazz.getConstructor(signature.getParametersTypes(clazz));
+            Constructor<?> constructor = clazz.getConstructor(signature.getParametersTypes(clazz));
             annotations = constructor.getParameterAnnotations()[cps.getParam()];
          }
          catch (NoSuchMethodException ignored)

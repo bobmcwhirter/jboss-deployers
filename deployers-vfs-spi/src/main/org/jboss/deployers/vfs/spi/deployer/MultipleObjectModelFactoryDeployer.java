@@ -62,6 +62,7 @@ public abstract class MultipleObjectModelFactoryDeployer<T> extends MultipleJBos
    /**
     * Get the object model factory
     *
+    * @param <U> the expect type
     * @param expectedType the expected class
     * @param file - the file we're about to parse
     * @param root - possibly null pre-existing root
@@ -75,6 +76,7 @@ public abstract class MultipleObjectModelFactoryDeployer<T> extends MultipleJBos
    /**
     * Get the object model factory
     *
+    * @param <U> the expect type
     * @param expectedType the expected class
     * @param fileName - the fileName
     * @param root - possibly null pre-existing root

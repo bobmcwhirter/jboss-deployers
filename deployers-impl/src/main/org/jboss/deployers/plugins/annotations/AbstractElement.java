@@ -30,6 +30,8 @@ import org.jboss.deployers.spi.annotations.Element;
 /**
  * Abstract annotations element.
  *
+ * @param <A> the annotation type
+ * @param <M> the annotated element type
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
 public abstract class AbstractElement<A extends Annotation, M extends AnnotatedElement> extends WeakClassLoaderHolder implements Element<A, M>

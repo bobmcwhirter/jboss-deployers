@@ -35,6 +35,8 @@ import org.jboss.reflect.plugins.introspection.ReflectionUtils;
 /**
  * Default annotations element.
  *
+ * @param <A> the annotation type
+ * @param <M> the annotated element type
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
 public class DefaultElement<A extends Annotation, M extends AnnotatedElement> extends AbstractElement<A, M>

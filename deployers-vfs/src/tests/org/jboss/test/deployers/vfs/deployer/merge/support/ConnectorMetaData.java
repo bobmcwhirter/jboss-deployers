@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public class ConnectorMetaData implements Serializable
 {
-   public static final long serialUIDVersion = 1l;
+   public static final long serialVersionUID = 1l;
 
    private double version;
    private String attribute;

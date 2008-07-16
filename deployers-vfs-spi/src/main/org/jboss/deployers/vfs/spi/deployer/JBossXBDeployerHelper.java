@@ -173,6 +173,7 @@ public class JBossXBDeployerHelper<T> implements org.jboss.deployers.vfs.spi.dep
    /**
     * Parse the file to create metadata instance.
     *
+    * @param <U> the expect type
     * @param expectedType the expected type
     * @param file the file
     * @return new metadata instance
@@ -231,6 +232,7 @@ public class JBossXBDeployerHelper<T> implements org.jboss.deployers.vfs.spi.dep
    /**
     * Parse the file using object model factory.
     *
+    * @param <U> the expect type
     * @param expectedType the expected type
     * @param file the file to parse
     * @param root the previous root

@@ -61,7 +61,7 @@ public abstract class JBossExtensionDeployer<U, V, T> extends MultipleSchemaReso
       this.jbossClass = jbossClass;
    }
 
-   protected static Map<String, Class<?>> toMap(String specName, Class specClass, String jbossName, Class jbossClass)
+   protected static Map<String, Class<?>> toMap(String specName, Class<?> specClass, String jbossName, Class<?> jbossClass)
    {
       Map<String, Class<?>> map = new HashMap<String, Class<?>>();
       map.put(specName, specClass);

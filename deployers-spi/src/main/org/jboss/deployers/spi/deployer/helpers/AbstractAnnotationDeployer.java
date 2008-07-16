@@ -37,15 +37,15 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
 public class AbstractAnnotationDeployer extends AbstractSimpleRealDeployer<AnnotationEnvironment>
 {
    /** The annotation processors */
-   private AnnotationProcessor[] processors;
+   private AnnotationProcessor<?, ?>[] processors;
 
-   public AbstractAnnotationDeployer(AnnotationProcessor... processors)
+   public AbstractAnnotationDeployer(AnnotationProcessor<?, ?>... processors)
    {
       super(AnnotationEnvironment.class);
       if (processors != null && processors.length > 0)
       {
          this.processors = processors;
-         for (AnnotationProcessor processor : processors)
+         for (AnnotationProcessor<?, ?> processor : processors)
          {
             addInput(processor.getAnnotation());
             addOutput(processor.getOutput());

@@ -145,6 +145,8 @@ public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implemen
    /**
     * Transform class names into classes.
     *
+    * @param <A> the annotation type
+    * @param <M> the annotated element type
     * @param type the annotation type
     * @param annClass the annotation class
     * @param aoClass the ao class
@@ -184,14 +186,16 @@ public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implemen
       return getCSPairs(annotation, ElementType.TYPE).isEmpty() == false;
    }
 
-   public <A extends Annotation> Set<Element<A, Class>> classIsAnnotatedWith(Class<A> annotation)
+   @SuppressWarnings("unchecked")
+   public <A extends Annotation> Set<Element<A, Class<?>>> classIsAnnotatedWith(Class<A> annotation)
    {
-      return transformToElements(ElementType.TYPE, annotation, Class.class);
+      return (Set) transformToElements(ElementType.TYPE, annotation, Class.class);
    }
 
-   public <A extends Annotation> Set<Element<A, Constructor>> classHasConstructorAnnotatedWith(Class<A> annotation)
+   @SuppressWarnings("unchecked")
+   public <A extends Annotation> Set<Element<A, Constructor<?>>> classHasConstructorAnnotatedWith(Class<A> annotation)
    {
-      return transformToElements(ElementType.CONSTRUCTOR, annotation, Constructor.class);
+      return (Set) transformToElements(ElementType.CONSTRUCTOR, annotation, Constructor.class);
    }
 
    public <A extends Annotation> Set<Element<A, Field>> classHasFieldAnnotatedWith(Class<A> annotation)
@@ -229,12 +233,12 @@ public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implemen
       return hasClassAnnotatedWith(getAnnotationClass(annotationName));
    }
 
-   public Set<Element<Annotation, Class>> classIsAnnotatedWith(String annotationName)
+   public Set<Element<Annotation, Class<?>>> classIsAnnotatedWith(String annotationName)
    {
       return classIsAnnotatedWith(getAnnotationClass(annotationName));
    }
 
-   public Set<Element<Annotation, Constructor>> classHasConstructorAnnotatedWith(String annotationName)
+   public Set<Element<Annotation, Constructor<?>>> classHasConstructorAnnotatedWith(String annotationName)
    {
       return classHasConstructorAnnotatedWith(getAnnotationClass(annotationName));
    }

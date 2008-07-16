@@ -28,6 +28,7 @@ import java.util.Map;
  * Unmarshaller factory deployer.
  * Able to apply features to unmarshaller factory.
  *
+ * @param <T> the output type
  * @param <U> exact unmarshaller factory's flag type
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  */

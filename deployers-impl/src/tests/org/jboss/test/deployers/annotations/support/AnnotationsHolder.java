@@ -28,6 +28,7 @@ package org.jboss.test.deployers.annotations.support;
 public class AnnotationsHolder
 {
    @TestAnnotation("field")
+   @SuppressWarnings("unused")
    private Object object;
 
    @TestAnnotation("constructor")
