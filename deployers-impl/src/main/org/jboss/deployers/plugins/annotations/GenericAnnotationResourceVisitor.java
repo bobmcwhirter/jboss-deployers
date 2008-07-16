@@ -53,6 +53,7 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
 {
    private static final Logger log = Logger.getLogger(GenericAnnotationResourceVisitor.class);
 
+   private ResourceFilter resourceFilter = ClassFilter.INSTANCE;
    private ClassPool pool;
    private boolean forceAnnotations;
    private DefaultAnnotationEnvironment env;
@@ -77,7 +78,7 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
 
    public ResourceFilter getFilter()
    {
-      return ClassFilter.INSTANCE;
+      return resourceFilter;
    }
 
    public void visit(ResourceContext resource)
@@ -258,6 +259,16 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
             env.putAnnotation(annotation, type, resource.getClassName(), signature);
          }
       }
+   }
+
+   /**
+    * Set the resource filter.
+    *
+    * @param resourceFilter the resource filter
+    */
+   public void setResourceFilter(ResourceFilter resourceFilter)
+   {
+      this.resourceFilter = resourceFilter;
    }
 
    /**

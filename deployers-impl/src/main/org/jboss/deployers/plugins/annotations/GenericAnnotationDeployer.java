@@ -72,16 +72,32 @@ public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module
     * Can be used change existing GARV's filter.
     * Or determin if we need to force/keep annotations.
     *
+    * @param unit the deployment unit
     * @param pool the class pool
     * @param classLoader the classloader
     * @return new generic annotation visitor
     */
-   protected GenericAnnotationResourceVisitor createGenericAnnotationResourceVisitor(ClassPool pool, ClassLoader classLoader)
+   protected GenericAnnotationResourceVisitor createGenericAnnotationResourceVisitor(DeploymentUnit unit, ClassPool pool, ClassLoader classLoader)
    {
       GenericAnnotationResourceVisitor visitor = new GenericAnnotationResourceVisitor(pool, classLoader);
       visitor.setForceAnnotations(forceAnnotations);
       visitor.setKeepAnnotations(keepAnnotations);
       return visitor;
+   }
+
+   /**
+    * Prepare module.
+    *
+    * Util method to add some behavior to Module
+    * before we visit it.
+    *
+    * @param unit the deployment unit
+    * @param original the original module
+    * @return prepared module
+    */
+   protected Module prepareModule(DeploymentUnit unit, Module original)
+   {
+      return original;
    }
 
    public void deploy(DeploymentUnit unit, Module module) throws DeploymentException
@@ -91,13 +107,14 @@ public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module
 
       ClassPool pool = ClassPool.getDefault();
       ClassLoader classLoader = unit.getClassLoader();
-      GenericAnnotationResourceVisitor visitor = createGenericAnnotationResourceVisitor(pool, classLoader);
+      GenericAnnotationResourceVisitor visitor = createGenericAnnotationResourceVisitor(unit, pool, classLoader);
 
       ClassLoader tcl = Thread.currentThread().getContextClassLoader();
       Thread.currentThread().setContextClassLoader(classLoader);
       try
       {
-         module.visit(visitor);
+         Module preparedModule = prepareModule(unit, module);
+         preparedModule.visit(visitor);
       }
       finally
       {
