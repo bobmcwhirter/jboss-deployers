@@ -85,6 +85,9 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
       try
       {
          InputStream stream = resource.getInputStream();
+         if (stream == null)
+            throw new IllegalArgumentException("Null resource input stream: " + resource);
+
          try
          {
             CtClass ctClass = pool.makeClass(stream);
