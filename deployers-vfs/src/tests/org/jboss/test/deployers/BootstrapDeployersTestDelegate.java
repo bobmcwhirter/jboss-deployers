@@ -23,6 +23,12 @@ package org.jboss.test.deployers;
 
 import java.net.URL;
 
+import org.jboss.classloader.plugins.ClassLoaderUtils;
+import org.jboss.classloader.plugins.filter.PatternClassFilter;
+import org.jboss.classloader.spi.ClassLoaderDomain;
+import org.jboss.classloader.spi.ClassLoaderSystem;
+import org.jboss.classloader.spi.ParentPolicy;
+import org.jboss.classloader.spi.filter.ClassFilter;
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaData10;
 import org.jboss.classloading.spi.vfs.metadata.VFSClassLoaderFactory10;
 import org.jboss.dependency.spi.ControllerState;
@@ -39,6 +45,8 @@ import org.jboss.xb.binding.sunday.unmarshalling.SingletonSchemaResolverFactory;
  */
 public class BootstrapDeployersTestDelegate extends MicrocontainerTestDelegate
 {
+   private static ParentPolicy parentPolicy;
+   
    private MainDeployerImpl mainDeployer;
 
    static
@@ -46,6 +54,39 @@ public class BootstrapDeployersTestDelegate extends MicrocontainerTestDelegate
       DefaultSchemaResolver resolver = (DefaultSchemaResolver) SingletonSchemaResolverFactory.getInstance().getSchemaBindingResolver();
       resolver.addClassBinding("urn:jboss:classloader:1.0", VFSClassLoaderFactory10.class);
       resolver.addClassBinding("urn:jboss:classloading:1.0", ClassLoadingMetaData10.class);
+
+      // TODO add a negating class filter to jboss-classloader
+      ClassFilter classFilter = new ClassFilter()
+      {
+         String packageName = BootstrapDeployersTest.class.getPackage().getName();
+         String packagePath = ClassLoaderUtils.packageNameToPath(BootstrapDeployersTest.class.getName());
+         ClassFilter patternFilter = new PatternClassFilter(
+               new String[] { packageName + "\\..+" }, 
+               new String[] { packagePath + "/.+" },
+               new String[] { packageName, packageName + "\\..*"}
+         ); 
+         public boolean matchesClassName(String className)
+         {
+            return patternFilter.matchesClassName(className) == false;
+         }
+
+         public boolean matchesPackageName(String packageName)
+         {
+            return patternFilter.matchesPackageName(packageName) == false;
+         }
+
+         public boolean matchesResourcePath(String resourcePath)
+         {
+            return patternFilter.matchesResourcePath(resourcePath) == false;
+         }
+         
+         public String toString()
+         {
+            return "EXCLUDE " + patternFilter;
+         }
+      };
+      
+      parentPolicy = new ParentPolicy(classFilter, ClassFilter.NOTHING, "BEFORE");
    }
    
    public BootstrapDeployersTestDelegate(Class<?> clazz) throws Exception
@@ -61,6 +102,10 @@ public class BootstrapDeployersTestDelegate extends MicrocontainerTestDelegate
          throw new IllegalStateException(common + " not found");
       deploy(url);
 
+      ClassLoaderSystem system = getBean("ClassLoaderSystem", ControllerState.INSTALLED, ClassLoaderSystem.class);
+      ClassLoaderDomain domain = system.getDefaultDomain();
+      domain.setParentPolicy(parentPolicy);
+      
       super.deploy();
    }
    

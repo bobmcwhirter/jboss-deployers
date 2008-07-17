@@ -26,6 +26,7 @@ import org.jboss.test.deployers.vfs.classloader.test.DeploymentDependsOnDeployme
 import org.jboss.test.deployers.vfs.classloader.test.DeploymentDependsOnManualClassLoaderUnitTestCase;
 import org.jboss.test.deployers.vfs.classloader.test.InMemoryClasesUnitTestCase;
 import org.jboss.test.deployers.vfs.classloader.test.ManagedObjectClassLoadingParserUnitTestCase;
+import org.jboss.test.deployers.vfs.classloader.test.ManifestClassLoaderUnitTestCase;
 import org.jboss.test.deployers.vfs.classloader.test.ManualDependsOnDeploymentClassLoaderUnitTestCase;
 import org.jboss.test.deployers.vfs.classloader.test.NotVFSClassLoaderUnitTestCase;
 import org.jboss.test.deployers.vfs.classloader.test.SubDeploymentClassLoaderUnitTestCase;
@@ -63,6 +64,7 @@ public class ClassLoaderTestSuite extends TestSuite
       suite.addTest(ManagedObjectClassLoadingParserUnitTestCase.suite());
       suite.addTest(SubDeploymentClassLoaderUnitTestCase.suite());
       suite.addTest(NotVFSClassLoaderUnitTestCase.suite());
+      suite.addTest(ManifestClassLoaderUnitTestCase.suite());
 
       return suite;
    }

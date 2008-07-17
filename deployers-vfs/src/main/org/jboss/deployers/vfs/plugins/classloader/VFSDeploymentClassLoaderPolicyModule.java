@@ -39,6 +39,7 @@ import org.jboss.deployers.plugins.classloading.AbstractDeploymentClassLoaderPol
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.vfs.spi.structure.helpers.ClassPathVisitor;
+import org.jboss.logging.Logger;
 import org.jboss.virtual.VirtualFile;
 
 /**
@@ -52,6 +53,12 @@ public class VFSDeploymentClassLoaderPolicyModule extends AbstractDeploymentClas
    /** The serialVersionUID */
    private static final long serialVersionUID = 1L;
 
+   /** The log */
+   private static final Logger log  = Logger.getLogger(VFSDeploymentClassLoaderPolicyModule.class);
+   
+   /** The attachment containing the final classpath */
+   public static final String VFS_CLASS_PATH = "VFSClassPath";
+   
    /** The cached roots */
    private VirtualFile[] vfsRoots;
    
@@ -108,21 +115,47 @@ public class VFSDeploymentClassLoaderPolicyModule extends AbstractDeploymentClas
     * 
     * @return the roots
     */
+   @SuppressWarnings("unchecked")
    protected VirtualFile[] determineVFSRoots()
    {
       if (vfsRoots != null)
          return vfsRoots;
 
-      ClassPathVisitor visitor = new ClassPathVisitor(getDeploymentUnit());
+      DeploymentUnit unit = getDeploymentUnit();
+      ClassPathVisitor visitor = new ClassPathVisitor(unit);
       try
       {
-         getDeploymentUnit().visit(visitor);
+         unit.visit(visitor);
       }
       catch (DeploymentException e)
       {
          throw new RuntimeException("Error visiting deployment: " + e);
       }
       Set<VirtualFile> classPath = visitor.getClassPath();
+      
+      // Weed out parent classpaths
+      if (getParentDomainName() == null)
+      {
+         DeploymentUnit parent = unit.getParent();
+         while (parent != null)
+         {
+            Set<VirtualFile> parentClassPath = parent.getAttachment(VFS_CLASS_PATH, Set.class);
+            if (parentClassPath != null)
+            {
+               if (log.isTraceEnabled())
+               {
+                  for (VirtualFile parentFile : parentClassPath)
+                  {
+                     if (classPath.contains(parentFile))
+                        log.trace(unit + " weeding duplicate entry " + parentFile + " from classpath already in parent " + parent);
+                  }
+               }
+               classPath.removeAll(parentClassPath);
+            }
+            parent = parent.getParent();
+         }
+      }
+      unit.addAttachment(VFS_CLASS_PATH, classPath);
       
       vfsRoots = classPath.toArray(new VirtualFile[classPath.size()]);
       return vfsRoots;

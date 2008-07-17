@@ -31,6 +31,9 @@ import org.jboss.classloading.spi.metadata.ExportAll;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.test.deployers.BootstrapDeployersTest;
+import org.jboss.test.deployers.vfs.classloader.support.a.A;
+import org.jboss.test.deployers.vfs.classloader.support.b.B;
+import org.jboss.virtual.AssembledDirectory;
 
 /**
  * BootstrapDeployersSmokeTestUnitTestCase.
@@ -103,6 +106,50 @@ public class BootstrapDeployersSmokeTestUnitTestCase extends BootstrapDeployersT
       finally
       {
          undeploy(unit);
+      }
+   }
+   
+   public void testAssembledDirectory() throws Exception
+   {
+      AssembledDirectory dirA = createAssembledDirectory("a");
+      addPackage(dirA, A.class);
+      addPath(dirA, "/bootstrap/test-assembled", "META-INF");
+      VFSDeploymentUnit unitA = assertDeploy(dirA);
+      try
+      {
+         ClassLoader clA = getClassLoader(unitA);
+         assertLoadClass(A.class, clA);
+         assertLoadClassFail(B.class, clA);
+         
+         assertNoResource("META-INF/test.xml", getClass().getClassLoader());
+         assertGetResource("META-INF/test.xml", clA);
+      }
+      finally
+      {
+         undeploy(unitA);
+      }
+   }
+   
+   public void testAssembledSubDirectory() throws Exception
+   {
+      AssembledDirectory dirA = createAssembledDirectory("a");
+      addPackage(dirA, A.class);
+      AssembledDirectory dirB = dirA.mkdir("b");
+      addPackage(dirB, B.class);
+      addPath(dirB, "/bootstrap/test-assembled", "META-INF");
+      VFSDeploymentUnit unitA = assertDeploy(dirA);
+      try
+      {
+         ClassLoader clA = getClassLoader(unitA);
+         assertLoadClass(A.class, clA);
+         assertLoadClass(B.class, clA);
+         
+         assertNoResource("META-INF/test.xml", getClass().getClassLoader());
+         assertGetResource("META-INF/test.xml", clA);
+      }
+      finally
+      {
+         undeploy(unitA);
       }
    }
 }

@@ -24,9 +24,12 @@ package org.jboss.test.deployers;
 import java.net.URL;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
+import java.util.List;
 
 import junit.framework.AssertionFailedError;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.jboss.classloader.plugins.ClassLoaderUtils;
 import org.jboss.classloader.plugins.jdk.AbstractJDKChecker;
 import org.jboss.dependency.spi.ControllerContext;
@@ -39,8 +42,15 @@ import org.jboss.deployers.vfs.spi.client.VFSDeploymentFactory;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.test.AbstractTestDelegate;
 import org.jboss.test.kernel.junit.MicrocontainerTest;
+import org.jboss.virtual.AssembledDirectory;
 import org.jboss.virtual.VFS;
 import org.jboss.virtual.VirtualFile;
+import org.jboss.virtual.VirtualFileVisitor;
+import org.jboss.virtual.VisitorAttributes;
+import org.jboss.virtual.plugins.context.file.FileSystemContext;
+import org.jboss.virtual.plugins.context.jar.JarUtils;
+import org.jboss.virtual.plugins.context.vfs.AssembledContext;
+import org.jboss.virtual.plugins.vfs.helpers.SuffixesExcludeFilter;
 
 /**
  * BootstrapDeployersTest.
@@ -103,6 +113,13 @@ public abstract class BootstrapDeployersTest extends MicrocontainerTest
    protected VFSDeploymentUnit assertDeploy(String root, String child) throws Exception
    {
       VFSDeployment deployment = createVFSDeployment(root, child);
+      getDeployerClient().deploy(deployment);
+      return (VFSDeploymentUnit) getMainDeployerStructure().getDeploymentUnit(deployment.getName(), true);
+   }
+   
+   protected VFSDeploymentUnit assertDeploy(VirtualFile file) throws Exception
+   {
+      VFSDeployment deployment = createVFSDeployment(file);
       getDeployerClient().deploy(deployment);
       return (VFSDeploymentUnit) getMainDeployerStructure().getDeploymentUnit(deployment.getName(), true);
    }
@@ -273,11 +290,74 @@ public abstract class BootstrapDeployersTest extends MicrocontainerTest
          throw new RuntimeException("Unexpected error getting classloader", e);
       }
    }
+
+   // FIXME Missing factor method in the public api
+   protected AssembledDirectory createAssembledDirectory(String name) throws Exception
+   {
+      AssembledContext ctx = new AssembledContext(name, "");
+      return (AssembledDirectory) ctx.getRoot().getVirtualFile();
+   }
+
+   protected void addPackage(AssembledDirectory dir, Class<?> reference) throws Exception
+   {
+      String packagePath = ClassLoaderUtils.packageNameToPath(reference.getName());
+      dir.addResources(reference, new String[] { packagePath + "/*.class" } , new String[0]);
+   }
+
+   // FIXME why doesn't AssembledDirectory support this simple use case?
+   protected void addPath(final AssembledDirectory dir, String path, String name) throws Exception
+   {
+      URL url = getResource(path);
+      if (url == null)
+         fail(path + " not found");
+      VirtualFile file = VFS.getVirtualFile(url, name);
+
+      final VisitorAttributes va = new VisitorAttributes();
+      va.setLeavesOnly(true);
+      SuffixesExcludeFilter noJars = new SuffixesExcludeFilter(JarUtils.getSuffixes());
+      va.setRecurseFilter(noJars);
+
+      VirtualFileVisitor visitor = new VirtualFileVisitor()
+      {
+         public VisitorAttributes getAttributes()
+         {
+            return va; 
+         }
+
+         public void visit(VirtualFile virtualFile)
+         {
+            dir.mkdirs(virtualFile.getPathName()).addChild(virtualFile);
+         }
+      };
+      file.visit(visitor);
+   }
    
+   protected DeploymentUnit assertChild(DeploymentUnit parent, String name)
+   {
+      // FIXME AssembledContext URLs are broken
+      String parentName = parent.getName();
+      if (parentName.endsWith("/"))
+         parentName = parentName.substring(0, parentName.length()-1);
+      name = name + "/";
+      
+      name = parentName + name ;
+      List<DeploymentUnit> children = parent.getChildren();
+      for (DeploymentUnit child : children)
+      {
+         if (name.equals(child.getName()))
+            return child;
+      }
+      throw new AssertionFailedError("Child " + name + " not found in " + children);
+   }
+
    protected void setUp() throws Exception
    {
       super.setUp();
       // This is a hack for a hack. ;-)
       AbstractJDKChecker.getExcluded().add(BootstrapDeployersTest.class);
+
+      // Reduce the noise from the VFS
+      // FIXME add method change logging levels to AbstractTestCase
+      Logger.getLogger(FileSystemContext.class).setLevel(Level.INFO);
    }
 }
