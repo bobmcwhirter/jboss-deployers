@@ -29,12 +29,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.jboss.classloader.spi.filter.ClassFilter;
 import org.jboss.classloading.plugins.vfs.PackageVisitor;
 import org.jboss.classloading.plugins.vfs.VFSResourceVisitor;
+import org.jboss.classloading.spi.dependency.Module;
 import org.jboss.classloading.spi.metadata.Capability;
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaDataFactory;
 import org.jboss.classloading.spi.metadata.ExportAll;
 import org.jboss.classloading.spi.vfs.policy.VFSClassLoaderPolicy;
-import org.jboss.classloading.spi.visitor.ResourceVisitor;
 import org.jboss.classloading.spi.visitor.ResourceFilter;
+import org.jboss.classloading.spi.visitor.ResourceVisitor;
 import org.jboss.deployers.plugins.classloading.AbstractDeploymentClassLoaderPolicyModule;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
@@ -122,6 +123,21 @@ public class VFSDeploymentClassLoaderPolicyModule extends AbstractDeploymentClas
          return vfsRoots;
 
       DeploymentUnit unit = getDeploymentUnit();
+      Set<VirtualFile> classPath = determineClassPath(unit, this);
+      vfsRoots = classPath.toArray(new VirtualFile[classPath.size()]);
+      return vfsRoots;
+   }
+
+   /**
+    * Determine classpath.
+    *
+    * @param unit the deployment unit we check
+    * @param module the unit's module
+    * @return unit's classpath
+    */
+   @SuppressWarnings("unchecked")
+   protected static Set<VirtualFile> determineClassPath(DeploymentUnit unit, Module module)
+   {
       ClassPathVisitor visitor = new ClassPathVisitor(unit);
       try
       {
@@ -132,15 +148,17 @@ public class VFSDeploymentClassLoaderPolicyModule extends AbstractDeploymentClas
          throw new RuntimeException("Error visiting deployment: " + e);
       }
       Set<VirtualFile> classPath = visitor.getClassPath();
-      
       // Weed out parent classpaths
-      if (getParentDomainName() == null)
+      if (module != null && module.getParentDomainName() == null)
       {
          DeploymentUnit parent = unit.getParent();
          while (parent != null)
          {
             Set<VirtualFile> parentClassPath = parent.getAttachment(VFS_CLASS_PATH, Set.class);
-            if (parentClassPath != null)
+            if (parentClassPath == null)
+               parentClassPath = determineClassPath(parent, parent.getAttachment(Module.class));
+
+            if (parentClassPath != null && parentClassPath.isEmpty() == false)
             {
                if (log.isTraceEnabled())
                {
@@ -156,9 +174,7 @@ public class VFSDeploymentClassLoaderPolicyModule extends AbstractDeploymentClas
          }
       }
       unit.addAttachment(VFS_CLASS_PATH, classPath);
-      
-      vfsRoots = classPath.toArray(new VirtualFile[classPath.size()]);
-      return vfsRoots;
+      return classPath;
    }
 
    @Override
