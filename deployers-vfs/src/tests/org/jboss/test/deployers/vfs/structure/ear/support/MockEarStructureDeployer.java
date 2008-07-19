@@ -319,7 +319,7 @@ public class MockEarStructureDeployer extends AbstractStructureDeployer
       ClassFilter included = null;
       ClassFilter excluded = null;
       ResourceFilter filter = org.jboss.classloading.spi.visitor.ClassFilter.INSTANCE;
-      VFSResourceVisitor.visit(new VirtualFile[]{archive}, included, excluded, classLoader, visitor, filter);
+      VFSResourceVisitor.visit(new VirtualFile[]{archive}, included, excluded, classLoader, visitor, filter, null);
       AnnotationEnvironment env = visitor.getEnv();
 
       Integer ejbs = getType(env, Stateless.class, J2eeModuleMetaData.EJB);

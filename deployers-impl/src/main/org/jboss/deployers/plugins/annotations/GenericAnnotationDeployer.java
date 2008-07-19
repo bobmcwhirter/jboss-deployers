@@ -86,18 +86,18 @@ public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module
    }
 
    /**
-    * Prepare module.
+    * Visit module.
     *
     * Util method to add some behavior to Module
     * before we visit it.
     *
     * @param unit the deployment unit
-    * @param original the original module
-    * @return prepared module
+    * @param module the module
+    * @param visitor the resource visitor
     */
-   protected Module prepareModule(DeploymentUnit unit, Module original)
+   protected void visitModule(DeploymentUnit unit, Module module, GenericAnnotationResourceVisitor visitor)
    {
-      return original;
+      module.visit(visitor);
    }
 
    public void deploy(DeploymentUnit unit, Module module) throws DeploymentException
@@ -113,8 +113,7 @@ public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module
       Thread.currentThread().setContextClassLoader(classLoader);
       try
       {
-         Module preparedModule = prepareModule(unit, module);
-         preparedModule.visit(visitor);
+         visitModule(unit, module, visitor);
       }
       finally
       {

@@ -38,6 +38,7 @@ public class AbstractResourceVisitorDeployer extends AbstractSimpleRealDeployer<
 {
    private ResourceVisitor visitor;
    private ResourceFilter filter;
+   private ResourceFilter recurseFilter;
 
    public AbstractResourceVisitorDeployer()
    {
@@ -57,19 +58,43 @@ public class AbstractResourceVisitorDeployer extends AbstractSimpleRealDeployer<
       this.filter = filter;
    }
 
+   public AbstractResourceVisitorDeployer(ResourceVisitor visitor, ResourceFilter filter, ResourceFilter recurseFilter)
+   {
+      this(visitor, filter);
+      this.recurseFilter = recurseFilter;
+   }
+
    public void deploy(DeploymentUnit unit, Module module) throws DeploymentException
    {
-      ResourceVisitor currentVisitor = visitor;
+      ResourceVisitor currentVisitor = createVisitor(unit);
       if (currentVisitor == null)
-         currentVisitor = createVisitor(unit);
-      ResourceFilter currentFilter = filter;
+         currentVisitor = visitor;
+      ResourceFilter currentFilter = createFilter(unit);
       if (currentFilter == null)
-         currentFilter = createFilter(unit);
+         currentFilter = filter;
+      ResourceFilter recurse = createRecurseFilter(unit);
+      if (recurse == null)
+         currentFilter = recurseFilter;
 
-      if (currentFilter != null)
-         module.visit(currentVisitor, currentFilter);
-      else
-         module.visit(currentVisitor);
+      visitModule(module, currentVisitor, currentFilter, recurse);
+   }
+
+   /**
+    * Visit module.
+    * 
+    * By default we don't care if filters are null,
+    * we always visit Module's visit methods that takes all three.
+    * It should be up to uper classes if they want to differentiate between
+    * the Module::visit method.
+    *
+    * @param module the module
+    * @param visitor the visitor
+    * @param filter the filter
+    * @param recurse the recurse filter
+    */
+   protected void visitModule(Module module, ResourceVisitor visitor, ResourceFilter filter, ResourceFilter recurse)
+   {
+      module.visit(visitor, filter, recurse);
    }
 
    /**
@@ -80,7 +105,7 @@ public class AbstractResourceVisitorDeployer extends AbstractSimpleRealDeployer<
     */
    protected ResourceVisitor createVisitor(DeploymentUnit unit)
    {
-      throw new UnsupportedOperationException("Missing resource visitor");
+      return null;
    }
 
    /**
@@ -90,6 +115,17 @@ public class AbstractResourceVisitorDeployer extends AbstractSimpleRealDeployer<
     * @return new resource filter
     */
    protected ResourceFilter createFilter(DeploymentUnit unit)
+   {
+      return null;
+   }
+
+   /**
+    * Create recurse filter from unit.
+    *
+    * @param unit the deployment unit
+    * @return new recurse filter
+    */
+   protected ResourceFilter createRecurseFilter(DeploymentUnit unit)
    {
       return null;
    }

@@ -153,7 +153,8 @@ public class MockDeploymentClassLoaderPolicyModule extends AbstractDeploymentCla
       return classLoader.getResource(path);
    }
 
-   public void visit(ResourceVisitor visitor, ResourceFilter filter)
+   @Override
+   public void visit(ResourceVisitor visitor, ResourceFilter filter, ResourceFilter recurseFilter)
    {
       MockClassLoadingMetaData mclmd = getClassLoadingMetaData();
       String[] paths = mclmd.getPaths();

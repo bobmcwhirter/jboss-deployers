@@ -24,7 +24,7 @@
     <version.jboss.man>2.0.0.Beta12</version.jboss.man>
     <version.jboss.mdr>2.0.0.Beta15</version.jboss.mdr>
     <version.jboss.microcontainer>2.0.0.Beta16</version.jboss.microcontainer>
-    <version.jboss.classloader>2.0.0.Beta12</version.jboss.classloader>
+    <version.jboss.classloader>2.0.0-SNAPSHOT</version.jboss.classloader>
     <version.jboss.common.core>2.2.4.GA</version.jboss.common.core>
     <version.jboss.common.logging.spi>2.0.4.GA</version.jboss.common.logging.spi>
     <version.jboss.common.logging.log4j>2.0.4.GA</version.jboss.common.logging.log4j>

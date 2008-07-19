@@ -21,10 +21,8 @@
 */
 package org.jboss.deployers.plugins.annotations;
 
-import javassist.ClassPool;
-import org.jboss.classloader.spi.filter.ClassFilter;
-import org.jboss.classloading.spi.dependency.Module;
 import org.jboss.classloading.spi.visitor.ResourceFilter;
+import org.jboss.classloading.spi.dependency.Module;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 
 /**
@@ -39,8 +37,7 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
 public class FilteredGenericAnnotationDeployer extends GenericAnnotationDeployer
 {
    private ResourceFilter resourceFilter;
-   private ClassFilter includedFilter;
-   private ClassFilter excludedFilter;
+   private ResourceFilter recurseFilter;
 
    /**
     * Get filter.
@@ -61,21 +58,24 @@ public class FilteredGenericAnnotationDeployer extends GenericAnnotationDeployer
       return result;
    }
 
-   protected GenericAnnotationResourceVisitor createGenericAnnotationResourceVisitor(DeploymentUnit unit, ClassPool pool, ClassLoader classLoader)
+   /**
+    * We look for filter attachments:
+    * * org.jboss.classloading.spi.visitor.ResourceFilter.resource - plain resource filter
+    * * org.jboss.classloading.spi.visitor.ResourceFilter.recurse  - recurse resource filter
+    *
+    * @see Module#visit(org.jboss.classloading.spi.visitor.ResourceVisitor, org.jboss.classloading.spi.visitor.ResourceFilter, org.jboss.classloading.spi.visitor.ResourceFilter)
+    *
+    * @param unit the deployment unit
+    * @param module the underlying module
+    * @param visitor the current generic annotation resource visitor
+    */
+   protected void visitModule(DeploymentUnit unit, Module module, GenericAnnotationResourceVisitor visitor)
    {
-      GenericAnnotationResourceVisitor visitor = super.createGenericAnnotationResourceVisitor(unit, pool, classLoader);
-      ResourceFilter filter = getFilter(unit, ResourceFilter.class, null, resourceFilter);
+      ResourceFilter filter = getFilter(unit, ResourceFilter.class, "resource", resourceFilter);
       if (filter != null)
-         visitor.setResourceFilter(filter);
-      return visitor;
-   }
-
-   protected Module prepareModule(DeploymentUnit unit, Module original)
-   {
-      ClassFilter included = getFilter(unit, ClassFilter.class, "included", includedFilter);
-      ClassFilter excluded = getFilter(unit, ClassFilter.class, "excluded", excludedFilter);
-      // TODO - temp set this two
-      return super.prepareModule(unit, original);
+         filter = visitor.getFilter();
+      ResourceFilter recurse = getFilter(unit, ResourceFilter.class, "recurse", recurseFilter);
+      module.visit(visitor, filter, recurse);
    }
 
    /**
@@ -89,22 +89,12 @@ public class FilteredGenericAnnotationDeployer extends GenericAnnotationDeployer
    }
 
    /**
-    * Set included class filter.
+    * Set recurse filter.
     *
-    * @param includedFilter included class filter
+    * @param recurseFilter the recurse filter
     */
-   public void setIncludedFilter(ClassFilter includedFilter)
+   public void setRecurseFilter(ResourceFilter recurseFilter)
    {
-      this.includedFilter = includedFilter;
-   }
-
-   /**
-    * Set excluded class filter.
-    *
-    * @param excludedFilter excluded class filter
-    */
-   public void setExcludedFilter(ClassFilter excludedFilter)
-   {
-      this.excludedFilter = excludedFilter;
+      this.recurseFilter = recurseFilter;
    }
 }
