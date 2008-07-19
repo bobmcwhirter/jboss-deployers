@@ -138,6 +138,10 @@ public class VFSDeploymentClassLoaderPolicyModule extends AbstractDeploymentClas
    @SuppressWarnings("unchecked")
    protected static Set<VirtualFile> determineClassPath(DeploymentUnit unit, Module module)
    {
+      Set<VirtualFile> classPath = unit.getAttachment(VFS_CLASS_PATH, Set.class);
+      if (classPath != null)
+         return classPath;
+
       ClassPathVisitor visitor = new ClassPathVisitor(unit);
       try
       {
@@ -147,17 +151,15 @@ public class VFSDeploymentClassLoaderPolicyModule extends AbstractDeploymentClas
       {
          throw new RuntimeException("Error visiting deployment: " + e);
       }
-      Set<VirtualFile> classPath = visitor.getClassPath();
+      classPath = visitor.getClassPath();
+
       // Weed out parent classpaths
       if (module != null && module.getParentDomainName() == null)
       {
          DeploymentUnit parent = unit.getParent();
          while (parent != null)
          {
-            Set<VirtualFile> parentClassPath = parent.getAttachment(VFS_CLASS_PATH, Set.class);
-            if (parentClassPath == null)
-               parentClassPath = determineClassPath(parent, parent.getAttachment(Module.class));
-
+            Set<VirtualFile> parentClassPath = determineClassPath(parent, parent.getAttachment(Module.class));
             if (parentClassPath != null && parentClassPath.isEmpty() == false)
             {
                if (log.isTraceEnabled())
