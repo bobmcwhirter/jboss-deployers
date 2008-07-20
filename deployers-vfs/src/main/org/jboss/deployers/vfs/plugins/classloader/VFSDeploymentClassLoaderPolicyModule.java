@@ -116,7 +116,6 @@ public class VFSDeploymentClassLoaderPolicyModule extends AbstractDeploymentClas
     * 
     * @return the roots
     */
-   @SuppressWarnings("unchecked")
    protected VirtualFile[] determineVFSRoots()
    {
       if (vfsRoots != null)
@@ -135,9 +134,9 @@ public class VFSDeploymentClassLoaderPolicyModule extends AbstractDeploymentClas
     * @param module the unit's module
     * @return unit's classpath
     */
-   @SuppressWarnings("unchecked")
    protected static Set<VirtualFile> determineClassPath(DeploymentUnit unit, Module module)
    {
+      @SuppressWarnings("unchecked")
       Set<VirtualFile> classPath = unit.getAttachment(VFS_CLASS_PATH, Set.class);
       if (classPath != null)
          return classPath;
