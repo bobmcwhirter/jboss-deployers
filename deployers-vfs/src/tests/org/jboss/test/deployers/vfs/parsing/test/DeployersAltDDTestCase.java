@@ -198,6 +198,16 @@ public class DeployersAltDDTestCase extends BaseTestCase
          {
 
          }
+
+         public boolean removeChild(String name) throws IOException
+         {
+            return false;
+         }
+
+         public boolean delete(int gracePeriod) throws IOException
+         {
+            return false;
+         }
       });
       return altDD;
    }

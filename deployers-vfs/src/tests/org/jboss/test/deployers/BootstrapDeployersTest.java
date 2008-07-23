@@ -27,7 +27,6 @@ import java.security.ProtectionDomain;
 import java.util.List;
 
 import junit.framework.AssertionFailedError;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.jboss.classloader.plugins.ClassLoaderUtils;
@@ -45,11 +44,8 @@ import org.jboss.test.kernel.junit.MicrocontainerTest;
 import org.jboss.virtual.AssembledDirectory;
 import org.jboss.virtual.VFS;
 import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VirtualFileVisitor;
-import org.jboss.virtual.VisitorAttributes;
 import org.jboss.virtual.plugins.context.file.FileSystemContext;
 import org.jboss.virtual.plugins.context.jar.JarUtils;
-import org.jboss.virtual.plugins.context.vfs.AssembledContext;
 import org.jboss.virtual.plugins.vfs.helpers.SuffixesExcludeFilter;
 
 /**
@@ -291,11 +287,9 @@ public abstract class BootstrapDeployersTest extends MicrocontainerTest
       }
    }
 
-   // FIXME Missing factor method in the public api
    protected AssembledDirectory createAssembledDirectory(String name) throws Exception
    {
-      AssembledContext ctx = new AssembledContext(name, "");
-      return (AssembledDirectory) ctx.getRoot().getVirtualFile();
+      return AssembledDirectory.createAssembledDirectory(name, "");
    }
 
    protected void addPackage(AssembledDirectory dir, Class<?> reference) throws Exception
@@ -304,43 +298,27 @@ public abstract class BootstrapDeployersTest extends MicrocontainerTest
       dir.addResources(reference, new String[] { packagePath + "/*.class" } , new String[0]);
    }
 
-   // FIXME why doesn't AssembledDirectory support this simple use case?
    protected void addPath(final AssembledDirectory dir, String path, String name) throws Exception
    {
       URL url = getResource(path);
       if (url == null)
          fail(path + " not found");
+
       VirtualFile file = VFS.getVirtualFile(url, name);
-
-      final VisitorAttributes va = new VisitorAttributes();
-      va.setLeavesOnly(true);
+      // TODO - remove this filter after new VFS relase
       SuffixesExcludeFilter noJars = new SuffixesExcludeFilter(JarUtils.getSuffixes());
-      va.setRecurseFilter(noJars);
-
-      VirtualFileVisitor visitor = new VirtualFileVisitor()
-      {
-         public VisitorAttributes getAttributes()
-         {
-            return va; 
-         }
-
-         public void visit(VirtualFile virtualFile)
-         {
-            dir.mkdirs(virtualFile.getPathName()).addChild(virtualFile);
-         }
-      };
-      file.visit(visitor);
-   }
+      dir.addPath(file, noJars);
+  }
    
    protected DeploymentUnit assertChild(DeploymentUnit parent, String name)
    {
-      // FIXME AssembledContext URLs are broken
       String parentName = parent.getName();
-      if (parentName.endsWith("/"))
-         parentName = parentName.substring(0, parentName.length()-1);
-      name = name + "/";
-      
-      name = parentName + name ;
+      if (parentName.endsWith("/") == false)
+         parentName += "/";
+      name = parentName + name;
+      if (name.endsWith("/") == false)
+         name += "/";
+
       List<DeploymentUnit> children = parent.getChildren();
       for (DeploymentUnit child : children)
       {
