@@ -5,8 +5,8 @@
   <classpathentry kind="var" path="M2_REPO/javax/activation/activation/1.0.2/activation-1.0.2.jar"/>
   <classpathentry kind="var" path="M2_REPO/wutka-dtdparser/dtdparser121/1.2.1/dtdparser121-1.2.1.jar"/>
   <classpathentry kind="var" path="M2_REPO/javax/xml/bind/jaxb-api/2.1/jaxb-api-2.1.jar" sourcepath="M2_REPO/javax/xml/bind/jaxb-api/2.1/jaxb-api-2.1-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/cl/jboss-classloader/2.0.0.Beta12/jboss-classloader-2.0.0.Beta12.jar" sourcepath="M2_REPO/org/jboss/cl/jboss-classloader/2.0.0.Beta12/jboss-classloader-2.0.0.Beta12-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/cl/jboss-classloading/2.0.0.Beta12/jboss-classloading-2.0.0.Beta12.jar" sourcepath="M2_REPO/org/jboss/cl/jboss-classloading/2.0.0.Beta12/jboss-classloading-2.0.0.Beta12-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/cl/jboss-classloader/2.0.0-SNAPSHOT/jboss-classloader-2.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/jboss/cl/jboss-classloader/2.0.0-SNAPSHOT/jboss-classloader-2.0.0-SNAPSHOT-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/cl/jboss-classloading/2.0.0-SNAPSHOT/jboss-classloading-2.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/jboss/cl/jboss-classloading/2.0.0-SNAPSHOT/jboss-classloading-2.0.0-SNAPSHOT-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-classloading-spi/5.0.0.Beta4/jboss-classloading-spi-5.0.0.Beta4.jar" sourcepath="M2_REPO/org/jboss/jboss-classloading-spi/5.0.0.Beta4/jboss-classloading-spi-5.0.0.Beta4-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-common-core/2.2.4.GA/jboss-common-core-2.2.4.GA.jar" sourcepath="M2_REPO/org/jboss/jboss-common-core/2.2.4.GA/jboss-common-core-2.2.4.GA-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/jboss/jboss-common-logging-spi/2.0.4.GA/jboss-common-logging-spi-2.0.4.GA.jar" sourcepath="M2_REPO/jboss/jboss-common-logging-spi/2.0.4.GA/jboss-common-logging-spi-2.0.4.GA-sources.jar"/>
@@ -20,7 +20,7 @@
   <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-mdr/2.0.0.Beta15/jboss-mdr-2.0.0.Beta15.jar" sourcepath="M2_REPO/org/jboss/jboss-mdr/2.0.0.Beta15/jboss-mdr-2.0.0.Beta15-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/man/jboss-metatype/2.0.0.Beta12/jboss-metatype-2.0.0.Beta12.jar" sourcepath="M2_REPO/org/jboss/man/jboss-metatype/2.0.0.Beta12/jboss-metatype-2.0.0.Beta12-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-reflect/2.0.0.Beta12/jboss-reflect-2.0.0.Beta12.jar" sourcepath="M2_REPO/org/jboss/jboss-reflect/2.0.0.Beta12/jboss-reflect-2.0.0.Beta12-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-vfs/2.0.0.Beta19/jboss-vfs-2.0.0.Beta19.jar" sourcepath="M2_REPO/org/jboss/jboss-vfs/2.0.0.Beta19/jboss-vfs-2.0.0.Beta19-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-vfs/2.0.0-SNAPSHOT/jboss-vfs-2.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/jboss/jboss-vfs/2.0.0-SNAPSHOT/jboss-vfs-2.0.0-SNAPSHOT-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/jbossxb/2.0.0.CR10/jbossxb-2.0.0.CR10.jar" sourcepath="M2_REPO/org/jboss/jbossxb/2.0.0.CR10/jbossxb-2.0.0.CR10-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/javax/xml/stream/stax-api/1.0-2/stax-api-1.0-2.jar" sourcepath="M2_REPO/javax/xml/stream/stax-api/1.0-2/stax-api-1.0-2-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/apache-xerces/xercesImpl/2.9.1/xercesImpl-2.9.1.jar"/>

@@ -8,10 +8,10 @@
   <classpathentry kind="var" path="M2_REPO/wutka-dtdparser/dtdparser121/1.2.1/dtdparser121-1.2.1.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/javassist/3.7.1.GA/javassist-3.7.1.GA.jar" sourcepath="M2_REPO/org/jboss/javassist/3.7.1.GA/javassist-3.7.1.GA-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/javax/xml/bind/jaxb-api/2.1/jaxb-api-2.1.jar" sourcepath="M2_REPO/javax/xml/bind/jaxb-api/2.1/jaxb-api-2.1-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/cl/jboss-classloader/2.0.0.Beta12/jboss-classloader-2.0.0.Beta12.jar" sourcepath="M2_REPO/org/jboss/cl/jboss-classloader/2.0.0.Beta12/jboss-classloader-2.0.0.Beta12-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/cl/jboss-classloading/2.0.0.Beta12/jboss-classloading-2.0.0.Beta12.jar" sourcepath="M2_REPO/org/jboss/cl/jboss-classloading/2.0.0.Beta12/jboss-classloading-2.0.0.Beta12-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/cl/jboss-classloader/2.0.0-SNAPSHOT/jboss-classloader-2.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/jboss/cl/jboss-classloader/2.0.0-SNAPSHOT/jboss-classloader-2.0.0-SNAPSHOT-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/cl/jboss-classloading/2.0.0-SNAPSHOT/jboss-classloading-2.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/jboss/cl/jboss-classloading/2.0.0-SNAPSHOT/jboss-classloading-2.0.0-SNAPSHOT-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-classloading-spi/5.0.0.Beta4/jboss-classloading-spi-5.0.0.Beta4.jar" sourcepath="M2_REPO/org/jboss/jboss-classloading-spi/5.0.0.Beta4/jboss-classloading-spi-5.0.0.Beta4-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/cl/jboss-classloading-vfs/2.0.0.Beta12/jboss-classloading-vfs-2.0.0.Beta12.jar" sourcepath="M2_REPO/org/jboss/cl/jboss-classloading-vfs/2.0.0.Beta12/jboss-classloading-vfs-2.0.0.Beta12-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/cl/jboss-classloading-vfs/2.0.0-SNAPSHOT/jboss-classloading-vfs-2.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/jboss/cl/jboss-classloading-vfs/2.0.0-SNAPSHOT/jboss-classloading-vfs-2.0.0-SNAPSHOT-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-common-core/2.2.4.GA/jboss-common-core-2.2.4.GA.jar" sourcepath="M2_REPO/org/jboss/jboss-common-core/2.2.4.GA/jboss-common-core-2.2.4.GA-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/jboss/jboss-common-logging-log4j/2.0.4.GA/jboss-common-logging-log4j-2.0.4.GA.jar" sourcepath="M2_REPO/jboss/jboss-common-logging-log4j/2.0.4.GA/jboss-common-logging-log4j-2.0.4.GA-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/jboss/jboss-common-logging-spi/2.0.4.GA/jboss-common-logging-spi-2.0.4.GA.jar" sourcepath="M2_REPO/jboss/jboss-common-logging-spi/2.0.4.GA/jboss-common-logging-spi-2.0.4.GA-sources.jar"/>
@@ -31,7 +31,7 @@
   <classpathentry kind="var" path="M2_REPO/org/jboss/man/jboss-metatype/2.0.0.Beta12/jboss-metatype-2.0.0.Beta12.jar" sourcepath="M2_REPO/org/jboss/man/jboss-metatype/2.0.0.Beta12/jboss-metatype-2.0.0.Beta12-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-reflect/2.0.0.Beta12/jboss-reflect-2.0.0.Beta12.jar" sourcepath="M2_REPO/org/jboss/jboss-reflect/2.0.0.Beta12/jboss-reflect-2.0.0.Beta12-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-test/1.0.5.GA/jboss-test-1.0.5.GA.jar" sourcepath="M2_REPO/org/jboss/jboss-test/1.0.5.GA/jboss-test-1.0.5.GA-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-vfs/2.0.0.Beta19/jboss-vfs-2.0.0.Beta19.jar" sourcepath="M2_REPO/org/jboss/jboss-vfs/2.0.0.Beta19/jboss-vfs-2.0.0.Beta19-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-vfs/2.0.0-SNAPSHOT/jboss-vfs-2.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/jboss/jboss-vfs/2.0.0-SNAPSHOT/jboss-vfs-2.0.0-SNAPSHOT-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/jbossxb/2.0.0.CR10/jbossxb-2.0.0.CR10.jar" sourcepath="M2_REPO/org/jboss/jbossxb/2.0.0.CR10/jbossxb-2.0.0.CR10-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/junit/junit/4.4/junit-4.4.jar" sourcepath="M2_REPO/junit/junit/4.4/junit-4.4-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/log4j/log4j/1.2.14/log4j-1.2.14.jar" sourcepath="M2_REPO/log4j/log4j/1.2.14/log4j-1.2.14-sources.jar"/>
