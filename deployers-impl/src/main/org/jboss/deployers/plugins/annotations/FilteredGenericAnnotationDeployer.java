@@ -43,6 +43,7 @@ public class FilteredGenericAnnotationDeployer extends GenericAnnotationDeployer
     * Get filter.
     * Try attachment first, then deployer's filter.
     *
+    * @param <T> the expected class type
     * @param unit the deployment unit
     * @param expectedClass the expected class
     * @param suffix the suffix
