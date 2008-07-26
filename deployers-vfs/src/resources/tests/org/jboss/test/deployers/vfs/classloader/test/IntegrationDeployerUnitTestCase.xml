@@ -1,0 +1,7 @@
+<deployment xmlns="urn:jboss:bean-deployer:2.0">
+
+  <bean name="PathUrlIntegrationDeployer" class="org.jboss.test.deployers.vfs.classloader.support.TestPathUrlIntegrationDeployer"/>
+
+  <bean name="MetaDataUrlIntegrationDeployer" class="org.jboss.test.deployers.vfs.classloader.support.TestMetaDataUrlIntegrationDeployer"/>
+
+</deployment>
