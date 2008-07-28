@@ -314,7 +314,7 @@ public class MockEarStructureDeployer extends AbstractStructureDeployer
 
    private Integer determineType(VirtualFile archive)
    {
-      ClassLoader classLoader = getClass().getClassLoader();
+      ClassLoader classLoader = new SimpleVFSResourceLoader(Thread.currentThread().getContextClassLoader(), archive);
       GenericAnnotationResourceVisitor visitor = new GenericAnnotationResourceVisitor(classLoader);
       ClassFilter included = null;
       ClassFilter excluded = null;
