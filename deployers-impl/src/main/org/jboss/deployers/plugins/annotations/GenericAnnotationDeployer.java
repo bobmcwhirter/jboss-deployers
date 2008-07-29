@@ -21,7 +21,9 @@
 */
 package org.jboss.deployers.plugins.annotations;
 
+import javassist.ClassPath;
 import javassist.ClassPool;
+import javassist.LoaderClassPath;
 import org.jboss.classloading.spi.dependency.Module;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
@@ -38,6 +40,7 @@ public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module
 {
    private boolean forceAnnotations;
    private boolean keepAnnotations;
+   private boolean checkInterfaces = true;
 
    public GenericAnnotationDeployer()
    {
@@ -67,6 +70,16 @@ public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module
    }
 
    /**
+    * Should we check interfaces for annotations as well.
+    *
+    * @param checkInterfaces the check interfaces flag
+    */
+   public void setCheckInterfaces(boolean checkInterfaces)
+   {
+      this.checkInterfaces = checkInterfaces;
+   }
+
+   /**
     * Create GenericAnnotationResourceVisitor.
     *
     * Can be used change existing GARV's filter.
@@ -82,7 +95,22 @@ public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module
       GenericAnnotationResourceVisitor visitor = new GenericAnnotationResourceVisitor(pool, classLoader);
       visitor.setForceAnnotations(forceAnnotations);
       visitor.setKeepAnnotations(keepAnnotations);
+      visitor.setCheckInterfaces(checkInterfaces);
       return visitor;
+   }
+
+   /**
+    * Create class pool.
+    *
+    * @param classLoader the class loader
+    * @return javassist class pool
+    */
+   protected ClassPool createClassPool(ClassLoader classLoader)
+   {
+      ClassPool pool = new ClassPool();
+      ClassPath classPath = new LoaderClassPath(classLoader);
+      pool.insertClassPath(classPath);
+      return pool;
    }
 
    /**
@@ -105,10 +133,12 @@ public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module
       if (log.isTraceEnabled())
          log.trace("Creating AnnotationEnvironment for " + unit + ", module: " + module + ", force annotations: " + forceAnnotations);
 
-      ClassPool pool = ClassPool.getDefault();
       ClassLoader classLoader = unit.getClassLoader();
+
+      ClassPool pool = createClassPool(classLoader);
       GenericAnnotationResourceVisitor visitor = createGenericAnnotationResourceVisitor(unit, pool, classLoader);
 
+      // something in javassist uses TCL
       ClassLoader tcl = Thread.currentThread().getContextClassLoader();
       Thread.currentThread().setContextClassLoader(classLoader);
       try

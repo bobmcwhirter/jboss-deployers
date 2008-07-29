@@ -56,6 +56,7 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
    private ResourceFilter resourceFilter = ClassFilter.INSTANCE;
    private ClassPool pool;
    private boolean forceAnnotations;
+   private boolean checkInterfaces = true;
    private DefaultAnnotationEnvironment env;
    private CtClass objectCtClass;
 
@@ -150,6 +151,9 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
       if (ctClass == null || objectCtClass.equals(ctClass))
          return;
 
+      if (checkInterfaces == false && ctClass.isInterface())
+         return;
+
       if (log.isTraceEnabled())
          log.trace("Scanning class " + ctClass + " for annotations, resource url: " + resource.getUrl());
 
@@ -159,12 +163,15 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
       handleCtMembers(ElementType.METHOD, ctClass.getDeclaredMethods(), resource);
       handleCtMembers(ElementType.FIELD, ctClass.getDeclaredFields(), resource);
 
-      // interfaces
-      CtClass[] interfaces = ctClass.getInterfaces();
-      if (interfaces != null && interfaces.length > 0)
+      if (checkInterfaces)
       {
-         for (CtClass intf : interfaces)
-            handleCtClass(intf, resource);
+         // interfaces
+         CtClass[] interfaces = ctClass.getInterfaces();
+         if (interfaces != null && interfaces.length > 0)
+         {
+            for (CtClass intf : interfaces)
+               handleCtClass(intf, resource);
+         }
       }
 
       // super class
@@ -289,6 +296,16 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
    public void setKeepAnnotations(boolean keepAnnotations)
    {
       env.setKeepAnnotations(keepAnnotations);
+   }
+
+   /**
+    * Should we check interfaces for annotations as well.
+    *
+    * @param checkInterfaces the check interfaces flag
+    */
+   public void setCheckInterfaces(boolean checkInterfaces)
+   {
+      this.checkInterfaces = checkInterfaces;
    }
 
    /**

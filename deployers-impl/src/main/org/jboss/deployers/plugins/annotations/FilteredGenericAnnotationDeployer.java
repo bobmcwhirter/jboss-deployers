@@ -34,7 +34,7 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class FilteredGenericAnnotationDeployer extends GenericAnnotationDeployer
+public class FilteredGenericAnnotationDeployer extends ScopedGenericAnnotationDeployer
 {
    private ResourceFilter resourceFilter;
    private ResourceFilter recurseFilter;
