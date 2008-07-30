@@ -21,18 +21,20 @@
 */
 package org.jboss.deployers.plugins.annotations;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
-import java.io.InputStream;
-import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
 
 import javassist.ClassPool;
 import javassist.CtBehavior;
 import javassist.CtClass;
-import javassist.CtMember;
-import javassist.NotFoundException;
 import javassist.CtConstructor;
+import javassist.CtMember;
 import javassist.CtMethod;
+import javassist.NotFoundException;
 import org.jboss.classloading.spi.visitor.ClassFilter;
 import org.jboss.classloading.spi.visitor.ResourceContext;
 import org.jboss.classloading.spi.visitor.ResourceFilter;
@@ -40,9 +42,9 @@ import org.jboss.classloading.spi.visitor.ResourceVisitor;
 import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
 import org.jboss.logging.Logger;
 import org.jboss.metadata.spi.signature.Signature;
-import org.jboss.metadata.spi.signature.javassist.JavassistSignatureFactory;
 import org.jboss.metadata.spi.signature.javassist.JavassistConstructorParametersSignature;
 import org.jboss.metadata.spi.signature.javassist.JavassistMethodParametersSignature;
+import org.jboss.metadata.spi.signature.javassist.JavassistSignatureFactory;
 
 /**
  * Generic annotation scanner deployer.
@@ -95,7 +97,12 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
             CtClass ctClass = pool.makeClass(stream);
             try
             {
-               handleCtClass(ctClass);
+               List<CommitElement> commit = new ArrayList<CommitElement>();
+               handleCtClass(ctClass, commit);
+               for (CommitElement ce : commit)
+               {
+                  env.putAnnotation(ce.getAnnotation(), ce.getType(), ce.getClassName(), ce.getSignature());
+               }
             }
             finally
             {
@@ -142,10 +149,11 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
     * Handle CtClass for annotations.
     *
     * @param ctClass the ct class instance
+    * @param commit the commit list
     * @throws ClassNotFoundException for any annotations lookup problems
     * @throws NotFoundException for any annotations lookup problems
     */
-   protected void handleCtClass(CtClass ctClass) throws ClassNotFoundException, NotFoundException
+   protected void handleCtClass(CtClass ctClass, List<CommitElement> commit) throws ClassNotFoundException, NotFoundException
    {
       if (ctClass == null || objectCtClass.equals(ctClass))
          return;
@@ -158,10 +166,11 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
 
       String className = ctClass.getName();
       Object[] annotations = forceAnnotations ? ctClass.getAnnotations() : ctClass.getAvailableAnnotations();
-      handleAnnotations(ElementType.TYPE, (Signature)null, annotations, className);
-      handleCtMembers(ElementType.CONSTRUCTOR, ctClass.getDeclaredConstructors(), className);
-      handleCtMembers(ElementType.METHOD, ctClass.getDeclaredMethods(), className);
-      handleCtMembers(ElementType.FIELD, ctClass.getDeclaredFields(), className);
+      handleAnnotations(ElementType.TYPE, (Signature)null, annotations, className, commit);
+
+      handleCtMembers(ElementType.CONSTRUCTOR, ctClass.getDeclaredConstructors(), className, commit);
+      handleCtMembers(ElementType.METHOD, ctClass.getDeclaredMethods(), className, commit);
+      handleCtMembers(ElementType.FIELD, ctClass.getDeclaredFields(), className, commit);
 
       if (checkInterfaces)
       {
@@ -170,12 +179,12 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
          if (interfaces != null && interfaces.length > 0)
          {
             for (CtClass intf : interfaces)
-               handleCtClass(intf);
+               handleCtClass(intf, commit);
          }
       }
 
       // super class
-      handleCtClass(ctClass.getSuperclass());
+      handleCtClass(ctClass.getSuperclass(), commit);
    }
 
    /**
@@ -184,23 +193,24 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
     * @param type where we found the annotations
     * @param members the ct member instances
     * @param className the className
+    * @param commit the commit list
     * @throws ClassNotFoundException for any annotations lookup problems
     */
-   protected void handleCtMembers(ElementType type, CtMember[] members, String className) throws ClassNotFoundException
+   protected void handleCtMembers(ElementType type, CtMember[] members, String className, List<CommitElement> commit) throws ClassNotFoundException
    {
       if (members != null && members.length > 0)
       {
          for (CtMember member : members)
          {
             Object[] annotations = forceAnnotations ? member.getAnnotations() : member.getAvailableAnnotations();
-            handleAnnotations(type, member, annotations, className);
+            handleAnnotations(type, member, annotations, className, commit);
             if (member instanceof CtBehavior)
             {
                CtBehavior behavior = (CtBehavior)member;
                Object[][] paramAnnotations = forceAnnotations ? behavior.getParameterAnnotations() : behavior.getAvailableParameterAnnotations();
                for (int index = 0; index < paramAnnotations.length; index++)
                {
-                  handleAnnotations(ElementType.PARAMETER, getBehaviorSignature(behavior, index), paramAnnotations[index], className);
+                  handleAnnotations(ElementType.PARAMETER, getBehaviorSignature(behavior, index), paramAnnotations[index], className, commit);
                }
             }
          }
@@ -215,7 +225,7 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
     * @return parameters signature
     * @throws ClassNotFoundException for any error
     */
-   protected Signature getBehaviorSignature(CtBehavior behavior, int index) throws ClassNotFoundException
+   protected static Signature getBehaviorSignature(CtBehavior behavior, int index) throws ClassNotFoundException
    {
       try
       {
@@ -239,13 +249,14 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
     * @param member the ct member
     * @param annotations the actual annotations
     * @param className the className
+    * @param commit the commit list
     */
-   protected void handleAnnotations(ElementType type, CtMember member, Object[] annotations, String className)
+   protected static void handleAnnotations(ElementType type, CtMember member, Object[] annotations, String className, List<CommitElement> commit)
    {
       Signature signature = null;
       if (member != null)
          signature = JavassistSignatureFactory.getSignature(member);
-      handleAnnotations(type, signature, annotations, className);
+      handleAnnotations(type, signature, annotations, className, commit);
    }
 
    /**
@@ -255,15 +266,16 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
     * @param signature the signature
     * @param annotations the actual annotations
     * @param className the className
+    * @param commit the commit list
     */
-   protected void handleAnnotations(ElementType type, Signature signature, Object[] annotations, String className)
+   protected static void handleAnnotations(ElementType type, Signature signature, Object[] annotations, String className, List<CommitElement> commit)
    {
       if (annotations != null && annotations.length > 0)
       {
          for (Object annObject : annotations)
          {
             Annotation annotation = Annotation.class.cast(annObject);
-            env.putAnnotation(annotation, type, className, signature);
+            commit.add(new CommitElement(annotation, type, className, signature));
          }
       }
    }
