@@ -75,7 +75,7 @@ public abstract class AbstractMutableAttachments extends AbstractAttachments imp
       if (result == null)
          return null;
       if (expectedType.isInstance(result) == false)
-         throw new IllegalArgumentException("Removed attachment not of the same type: expected=" + expectedType + ", previous=" + result);      
+         throw new IllegalArgumentException("Removed attachment not of the same type: expected=" + expectedType + ", removed=" + result);      
       return expectedType.cast(result);
    }
 
