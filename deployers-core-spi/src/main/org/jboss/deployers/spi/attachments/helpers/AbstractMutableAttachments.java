@@ -44,6 +44,8 @@ public abstract class AbstractMutableAttachments extends AbstractAttachments imp
       Object result = addAttachment(name, attachment);
       if (result == null)
          return null;
+      if (expectedType.isInstance(result) == false)
+         throw new IllegalArgumentException("Previous attachment not of the same type: expected=" + expectedType + ", previous=" + result);
       return expectedType.cast(result);
    }
 
@@ -72,6 +74,8 @@ public abstract class AbstractMutableAttachments extends AbstractAttachments imp
       Object result = removeAttachment(name);
       if (result == null)
          return null;
+      if (expectedType.isInstance(result) == false)
+         throw new IllegalArgumentException("Removed attachment not of the same type: expected=" + expectedType + ", previous=" + result);      
       return expectedType.cast(result);
    }
 
