@@ -46,7 +46,9 @@ import org.jboss.deployers.client.spi.DeploymentFactory;
 import org.jboss.deployers.plugins.classloading.AbstractClassLoaderDescribeDeployer;
 import org.jboss.deployers.spi.attachments.MutableAttachments;
 import org.jboss.deployers.spi.attachments.PredeterminedManagedObjectAttachments;
+import org.jboss.deployers.spi.deployer.Deployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.deployers.vfs.plugins.classloader.VFSClassLoaderClassPathDeployer;
 import org.jboss.deployers.vfs.plugins.classloader.VFSClassLoaderDescribeDeployer;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.client.VFSDeploymentFactory;
@@ -255,6 +257,8 @@ public abstract class VFSClassLoaderDependenciesTest extends BaseDeployersVFSTes
       deployer2.setClassLoading(classLoading);
       deployer2.setSystem(system);
 
-      return createMainDeployer(deployer1, deployer2);
+      Deployer deployer3 = new VFSClassLoaderClassPathDeployer();
+      
+      return createMainDeployer(deployer1, deployer2, deployer3);
    }
 }

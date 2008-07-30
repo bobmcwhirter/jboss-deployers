@@ -36,6 +36,7 @@ import org.jboss.deployers.client.spi.Deployment;
 import org.jboss.deployers.spi.deployer.Deployer;
 import org.jboss.deployers.structure.spi.main.MainDeployerStructure;
 import org.jboss.deployers.vfs.plugins.classloader.InMemoryClassesDeployer;
+import org.jboss.deployers.vfs.plugins.classloader.VFSClassLoaderClassPathDeployer;
 import org.jboss.deployers.vfs.plugins.classloader.VFSClassLoaderDescribeDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.test.deployers.vfs.classloader.support.TestLevelClassLoaderSystemDeployer;
@@ -115,6 +116,8 @@ public class InMemoryClasesUnitTestCase extends VFSClassLoaderDependenciesTest
       
       Deployer deployer3 = new InMemoryClassesDeployer();
 
-      return createMainDeployer(deployer1, deployer2, deployer3);
+      Deployer deployer4 = new VFSClassLoaderClassPathDeployer();
+      
+      return createMainDeployer(deployer1, deployer2, deployer3, deployer4);
    }
 }

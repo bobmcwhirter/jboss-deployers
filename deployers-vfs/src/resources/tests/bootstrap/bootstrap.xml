@@ -99,6 +99,7 @@
          <classloading xmlns="urn:jboss:classloading:1.0" export-all="NON_EMPTY" import-all="true"/>
       </property>
    </bean>
+   <bean name="ClassLoaderClassPathDeployer" class="org.jboss.deployers.vfs.plugins.classloader.VFSClassLoaderClassPathDeployer"/>
    <bean name="ClassLoaderDescribeDeployer" class="org.jboss.deployers.vfs.plugins.classloader.VFSClassLoaderDescribeDeployer">
       <property name="classLoading"><inject bean="ClassLoading"/></property>
    </bean>

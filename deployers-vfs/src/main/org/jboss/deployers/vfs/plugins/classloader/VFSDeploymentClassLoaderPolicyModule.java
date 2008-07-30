@@ -29,7 +29,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.jboss.classloader.spi.filter.ClassFilter;
 import org.jboss.classloading.plugins.vfs.PackageVisitor;
 import org.jboss.classloading.plugins.vfs.VFSResourceVisitor;
-import org.jboss.classloading.spi.dependency.Module;
 import org.jboss.classloading.spi.metadata.Capability;
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaDataFactory;
 import org.jboss.classloading.spi.metadata.ExportAll;
@@ -37,10 +36,7 @@ import org.jboss.classloading.spi.vfs.policy.VFSClassLoaderPolicy;
 import org.jboss.classloading.spi.visitor.ResourceFilter;
 import org.jboss.classloading.spi.visitor.ResourceVisitor;
 import org.jboss.deployers.plugins.classloading.AbstractDeploymentClassLoaderPolicyModule;
-import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
-import org.jboss.deployers.vfs.spi.structure.helpers.ClassPathVisitor;
-import org.jboss.logging.Logger;
 import org.jboss.virtual.VirtualFile;
 
 /**
@@ -53,15 +49,15 @@ public class VFSDeploymentClassLoaderPolicyModule extends AbstractDeploymentClas
 {
    /** The serialVersionUID */
    private static final long serialVersionUID = 1L;
-
-   /** The log */
-   private static final Logger log  = Logger.getLogger(VFSDeploymentClassLoaderPolicyModule.class);
    
-   /** The attachment containing the final classpath */
-   public static final String VFS_CLASS_PATH = "VFSClassPath";
+   /** No roots */
+   private static final VirtualFile[] NO_ROOTS = new VirtualFile[0];
    
    /** The cached roots */
    private VirtualFile[] vfsRoots;
+   
+   /** The excluded roots */
+   private VirtualFile[] excludedRoots;
    
    /**
     * Create a new VFSDeploymentClassLoaderPolicyModule.
@@ -69,16 +65,25 @@ public class VFSDeploymentClassLoaderPolicyModule extends AbstractDeploymentClas
     * @param unit the deployment unit
     * @throws IllegalArgumentException for a null deployment unit
     */
+   @SuppressWarnings("unchecked")
    public VFSDeploymentClassLoaderPolicyModule(DeploymentUnit unit)
    {
       super(unit);
+      List<VirtualFile> vfsClassPath = unit.getAttachment(VFSClassLoaderClassPathDeployer.VFS_CLASS_PATH, List.class);
+      if (vfsClassPath == null)
+         vfsRoots = NO_ROOTS;
+      else
+         vfsRoots = vfsClassPath.toArray(new VirtualFile[vfsClassPath.size()]);
+      Set<VirtualFile> vfsExcludes = unit.getAttachment(VFSClassLoaderClassPathDeployer.VFS_EXCLUDES, Set.class);
+      if (vfsExcludes != null)
+         excludedRoots = vfsExcludes.toArray(new VirtualFile[vfsExcludes.size()]);
    }
 
    @Override
    protected List<Capability> determineCapabilities()
    {
       // While we are here, check the roots
-      VirtualFile[] roots = determineVFSRoots();
+      VirtualFile[] roots = vfsRoots;
 
       List<Capability> capabilities = super.determineCapabilities();
       if (capabilities != null)
@@ -100,7 +105,7 @@ public class VFSDeploymentClassLoaderPolicyModule extends AbstractDeploymentClas
       ExportAll exportAll = getExportAll();
       if (exportAll != null)
       {
-         Set<String> exportedPackages = PackageVisitor.determineAllPackages(roots, exportAll, included, excluded, excludedExport);
+         Set<String> exportedPackages = PackageVisitor.determineAllPackages(roots, excludedRoots, exportAll, included, excluded, excludedExport);
          for (String packageName : exportedPackages)
          {
             capability = factory.createPackage(packageName, version);
@@ -109,73 +114,6 @@ public class VFSDeploymentClassLoaderPolicyModule extends AbstractDeploymentClas
       }
       
       return capabilities;
-   }
-   
-   /**
-    * Get the virtual file roots
-    * 
-    * @return the roots
-    */
-   protected VirtualFile[] determineVFSRoots()
-   {
-      if (vfsRoots != null)
-         return vfsRoots;
-
-      DeploymentUnit unit = getDeploymentUnit();
-      Set<VirtualFile> classPath = determineClassPath(unit, this);
-      vfsRoots = classPath.toArray(new VirtualFile[classPath.size()]);
-      return vfsRoots;
-   }
-
-   /**
-    * Determine classpath.
-    *
-    * @param unit the deployment unit we check
-    * @param module the unit's module
-    * @return unit's classpath
-    */
-   protected static Set<VirtualFile> determineClassPath(DeploymentUnit unit, Module module)
-   {
-      @SuppressWarnings("unchecked")
-      Set<VirtualFile> classPath = unit.getAttachment(VFS_CLASS_PATH, Set.class);
-      if (classPath != null)
-         return classPath;
-
-      ClassPathVisitor visitor = new ClassPathVisitor(unit);
-      try
-      {
-         unit.visit(visitor);
-      }
-      catch (DeploymentException e)
-      {
-         throw new RuntimeException("Error visiting deployment: " + e);
-      }
-      classPath = visitor.getClassPath();
-
-      // Weed out parent classpaths
-      if (module != null && module.getParentDomainName() == null)
-      {
-         DeploymentUnit parent = unit.getParent();
-         while (parent != null)
-         {
-            Set<VirtualFile> parentClassPath = determineClassPath(parent, parent.getAttachment(Module.class));
-            if (parentClassPath != null && parentClassPath.isEmpty() == false)
-            {
-               if (log.isTraceEnabled())
-               {
-                  for (VirtualFile parentFile : parentClassPath)
-                  {
-                     if (classPath.contains(parentFile))
-                        log.trace(unit + " weeding duplicate entry " + parentFile + " from classpath already in parent " + parent);
-                  }
-               }
-               classPath.removeAll(parentClassPath);
-            }
-            parent = parent.getParent();
-         }
-      }
-      unit.addAttachment(VFS_CLASS_PATH, classPath);
-      return classPath;
    }
 
    @Override
@@ -187,8 +125,7 @@ public class VFSDeploymentClassLoaderPolicyModule extends AbstractDeploymentClas
    @Override
    protected VFSClassLoaderPolicy determinePolicy()
    {
-      VirtualFile[] roots = determineVFSRoots();
-      VFSClassLoaderPolicy policy = VFSClassLoaderPolicy.createVFSClassLoaderPolicy(getContextName(), roots);
+      VFSClassLoaderPolicy policy = VFSClassLoaderPolicy.createVFSClassLoaderPolicy(getContextName(), vfsRoots, excludedRoots);
       String[] packageNames = getPackageNames();
       policy.setExportedPackages(packageNames);
       policy.setIncluded(getIncluded());
@@ -209,25 +146,18 @@ public class VFSDeploymentClassLoaderPolicyModule extends AbstractDeploymentClas
    }
 
    @Override
-   public void reset()
-   {
-      super.reset();
-      vfsRoots = null;
-   }
-
-   @Override
    public void visit(ResourceVisitor visitor, ResourceFilter filter, ResourceFilter recurseFilter)
    {
       ClassLoader classLoader = getClassLoader();
       if (classLoader == null)
          throw new IllegalStateException("ClassLoader has not been constructed for " + getContextName());
 
-      VirtualFile[] roots = determineVFSRoots();
+      VirtualFile[] roots = vfsRoots;
       if (roots != null)
       {
          ClassFilter included = getIncluded();
          ClassFilter excluded = getExcluded();
-         VFSResourceVisitor.visit(roots, included, excluded, classLoader, visitor, filter, recurseFilter);
+         VFSResourceVisitor.visit(roots, excludedRoots, included, excluded, classLoader, visitor, filter, recurseFilter);
       }
    }
 }

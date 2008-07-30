@@ -76,6 +76,7 @@ public class ManifestClassLoaderUnitTestCase extends BootstrapDeployersTest
       AssembledDirectory sub = topLevel.mkdir("sub.jar");
       addPackage(sub, UseA.class);
       addPath(sub, "/classloader/manifest/scoped", "META-INF");
+      enableTrace("org.jboss.deployers");
       VFSDeploymentUnit unit = assertDeploy(topLevel);
       try
       {

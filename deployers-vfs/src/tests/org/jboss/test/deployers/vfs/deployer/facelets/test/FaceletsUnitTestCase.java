@@ -33,6 +33,7 @@ import org.jboss.classloading.spi.dependency.ClassLoading;
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
 import org.jboss.deployers.plugins.classloading.AbstractLevelClassLoaderSystemDeployer;
 import org.jboss.deployers.plugins.classloading.ClassLoadingDefaultDeployer;
+import org.jboss.deployers.vfs.plugins.classloader.VFSClassLoaderClassPathDeployer;
 import org.jboss.deployers.vfs.plugins.classloader.VFSClassLoaderDescribeDeployer;
 import org.jboss.deployers.vfs.plugins.structure.war.WARStructure;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
@@ -74,6 +75,7 @@ public class FaceletsUnitTestCase extends AbstractDeployerUnitTest
       ClassLoadingMetaData clmd = new ClassLoadingMetaData();
       cldd.setDefaultMetaData(clmd);
 
+      VFSClassLoaderClassPathDeployer vfscp = new VFSClassLoaderClassPathDeployer();
       VFSClassLoaderDescribeDeployer vfsdd = new VFSClassLoaderDescribeDeployer();
       ClassLoading classLoading = new ClassLoading();
       KernelController controller = kernel.getController();
@@ -99,6 +101,7 @@ public class FaceletsUnitTestCase extends AbstractDeployerUnitTest
 
       addDeployer(main, cldd);
       addDeployer(main, vfsdd);
+      addDeployer(main, vfscp);
       addDeployer(main, clsd);
       addDeployer(main, deployer);
    }

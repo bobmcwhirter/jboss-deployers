@@ -42,6 +42,7 @@ import org.jboss.deployers.vfs.deployer.kernel.BeanDeployer;
 import org.jboss.deployers.vfs.deployer.kernel.BeanMetaDataDeployer;
 import org.jboss.deployers.vfs.deployer.kernel.BeanScanningDeployer;
 import org.jboss.deployers.vfs.deployer.kernel.KernelDeploymentDeployer;
+import org.jboss.deployers.vfs.plugins.classloader.VFSClassLoaderClassPathDeployer;
 import org.jboss.deployers.vfs.plugins.classloader.VFSClassLoaderDescribeDeployer;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.kernel.Kernel;
@@ -73,6 +74,7 @@ public class BeanScanningUnitTestCase extends AbstractDeployerUnitTest
       ClassLoadingMetaData clmd = new ClassLoadingMetaData();
       cldd.setDefaultMetaData(clmd);
 
+      VFSClassLoaderClassPathDeployer vfscp = new VFSClassLoaderClassPathDeployer();
       VFSClassLoaderDescribeDeployer vfsdd = new VFSClassLoaderDescribeDeployer();
       ClassLoading classLoading = new ClassLoading();
       KernelController controller = kernel.getController();
@@ -108,6 +110,7 @@ public class BeanScanningUnitTestCase extends AbstractDeployerUnitTest
       addDeployer(main, beanDeployer);
       addDeployer(main, cldd);
       addDeployer(main, vfsdd);
+      addDeployer(main, vfscp);
       addDeployer(main, clsd);
       addDeployer(main, gad);
       addDeployer(main, kernelDeploymentDeployer);
