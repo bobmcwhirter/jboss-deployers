@@ -95,7 +95,7 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
             CtClass ctClass = pool.makeClass(stream);
             try
             {
-               handleCtClass(ctClass, resource);
+               handleCtClass(ctClass);
             }
             finally
             {
@@ -142,11 +142,10 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
     * Handle CtClass for annotations.
     *
     * @param ctClass the ct class instance
-    * @param resource the resource we're visiting
     * @throws ClassNotFoundException for any annotations lookup problems
     * @throws NotFoundException for any annotations lookup problems
     */
-   protected void handleCtClass(CtClass ctClass, ResourceContext resource) throws ClassNotFoundException, NotFoundException
+   protected void handleCtClass(CtClass ctClass) throws ClassNotFoundException, NotFoundException
    {
       if (ctClass == null || objectCtClass.equals(ctClass))
          return;
@@ -155,13 +154,14 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
          return;
 
       if (log.isTraceEnabled())
-         log.trace("Scanning class " + ctClass + " for annotations, resource url: " + resource.getUrl());
+         log.trace("Scanning class " + ctClass + " for annotations");
 
+      String className = ctClass.getName();
       Object[] annotations = forceAnnotations ? ctClass.getAnnotations() : ctClass.getAvailableAnnotations();
-      handleAnnotations(ElementType.TYPE, (Signature)null, annotations, resource);
-      handleCtMembers(ElementType.CONSTRUCTOR, ctClass.getDeclaredConstructors(), resource);
-      handleCtMembers(ElementType.METHOD, ctClass.getDeclaredMethods(), resource);
-      handleCtMembers(ElementType.FIELD, ctClass.getDeclaredFields(), resource);
+      handleAnnotations(ElementType.TYPE, (Signature)null, annotations, className);
+      handleCtMembers(ElementType.CONSTRUCTOR, ctClass.getDeclaredConstructors(), className);
+      handleCtMembers(ElementType.METHOD, ctClass.getDeclaredMethods(), className);
+      handleCtMembers(ElementType.FIELD, ctClass.getDeclaredFields(), className);
 
       if (checkInterfaces)
       {
@@ -170,12 +170,12 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
          if (interfaces != null && interfaces.length > 0)
          {
             for (CtClass intf : interfaces)
-               handleCtClass(intf, resource);
+               handleCtClass(intf);
          }
       }
 
       // super class
-      handleCtClass(ctClass.getSuperclass(), resource);
+      handleCtClass(ctClass.getSuperclass());
    }
 
    /**
@@ -183,24 +183,24 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
     *
     * @param type where we found the annotations
     * @param members the ct member instances
-    * @param resource the resource we're visiting
+    * @param className the className
     * @throws ClassNotFoundException for any annotations lookup problems
     */
-   protected void handleCtMembers(ElementType type, CtMember[] members, ResourceContext resource) throws ClassNotFoundException
+   protected void handleCtMembers(ElementType type, CtMember[] members, String className) throws ClassNotFoundException
    {
       if (members != null && members.length > 0)
       {
          for (CtMember member : members)
          {
             Object[] annotations = forceAnnotations ? member.getAnnotations() : member.getAvailableAnnotations();
-            handleAnnotations(type, member, annotations, resource);
+            handleAnnotations(type, member, annotations, className);
             if (member instanceof CtBehavior)
             {
                CtBehavior behavior = (CtBehavior)member;
                Object[][] paramAnnotations = forceAnnotations ? behavior.getParameterAnnotations() : behavior.getAvailableParameterAnnotations();
                for (int index = 0; index < paramAnnotations.length; index++)
                {
-                  handleAnnotations(ElementType.PARAMETER, getBehaviorSignature(behavior, index), paramAnnotations[index], resource);                  
+                  handleAnnotations(ElementType.PARAMETER, getBehaviorSignature(behavior, index), paramAnnotations[index], className);
                }
             }
          }
@@ -238,14 +238,14 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
     * @param type where we found the annotations
     * @param member the ct member
     * @param annotations the actual annotations
-    * @param resource the resource we're visiting
+    * @param className the className
     */
-   protected void handleAnnotations(ElementType type, CtMember member, Object[] annotations, ResourceContext resource)
+   protected void handleAnnotations(ElementType type, CtMember member, Object[] annotations, String className)
    {
       Signature signature = null;
       if (member != null)
          signature = JavassistSignatureFactory.getSignature(member);
-      handleAnnotations(type, signature, annotations, resource);
+      handleAnnotations(type, signature, annotations, className);
    }
 
    /**
@@ -254,16 +254,16 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
     * @param type where we found the annotations
     * @param signature the signature
     * @param annotations the actual annotations
-    * @param resource the resource we're visiting
+    * @param className the className
     */
-   protected void handleAnnotations(ElementType type, Signature signature, Object[] annotations, ResourceContext resource)
+   protected void handleAnnotations(ElementType type, Signature signature, Object[] annotations, String className)
    {
       if (annotations != null && annotations.length > 0)
       {
          for (Object annObject : annotations)
          {
             Annotation annotation = Annotation.class.cast(annObject);
-            env.putAnnotation(annotation, type, resource.getClassName(), signature);
+            env.putAnnotation(annotation, type, className, signature);
          }
       }
    }
