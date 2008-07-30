@@ -58,7 +58,7 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
    private ResourceFilter resourceFilter = ClassFilter.INSTANCE;
    private ClassPool pool;
    private boolean forceAnnotations;
-   private boolean checkInterfaces = true;
+   private boolean checkInterfaces;
    private DefaultAnnotationEnvironment env;
    private CtClass objectCtClass;
 
@@ -77,6 +77,7 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
       this.pool = pool;
       this.env = new DefaultAnnotationEnvironment(classLoader);
       this.objectCtClass = pool.makeClass(Object.class.getName());
+      this.checkInterfaces = true;
    }
 
    public ResourceFilter getFilter()
@@ -159,12 +160,16 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
          return;
 
       if (checkInterfaces == false && ctClass.isInterface())
+      {
+         if (log.isTraceEnabled())
+            log.trace("Skipping interface: " + ctClass.getName());
          return;
-
-      if (log.isTraceEnabled())
-         log.trace("Scanning class " + ctClass + " for annotations");
+      }
 
       String className = ctClass.getName();
+      if (log.isTraceEnabled())
+         log.trace("Scanning class " + className + " for annotations");
+
       Object[] annotations = forceAnnotations ? ctClass.getAnnotations() : ctClass.getAvailableAnnotations();
       handleAnnotations(ElementType.TYPE, (Signature)null, annotations, className, commit);
 

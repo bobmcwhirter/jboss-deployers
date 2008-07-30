@@ -40,13 +40,14 @@ public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module
 {
    private boolean forceAnnotations;
    private boolean keepAnnotations;
-   private boolean checkInterfaces = true;
+   private boolean checkInterfaces;
 
    public GenericAnnotationDeployer()
    {
       super(Module.class);
       setStage(DeploymentStages.POST_CLASSLOADER);
       setOutput(AnnotationEnvironment.class);
+      checkInterfaces = true;
    }
 
    /**
