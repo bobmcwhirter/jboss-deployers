@@ -21,23 +21,24 @@
 */
 package org.jboss.test.deployers.classloading.support;
 
-import java.util.List;
+import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.net.URL;
 
+import org.jboss.classloader.spi.filter.ClassFilter;
 import org.jboss.classloader.test.support.MockClassLoaderHelper;
 import org.jboss.classloader.test.support.MockClassLoaderPolicy;
-import org.jboss.classloader.spi.filter.ClassFilter;
+import org.jboss.classloading.plugins.visitor.DefaultResourceContext;
 import org.jboss.classloading.spi.dependency.policy.mock.MockClassLoadingMetaData;
 import org.jboss.classloading.spi.metadata.Capability;
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaDataFactory;
-import org.jboss.classloading.spi.visitor.ResourceVisitor;
-import org.jboss.classloading.spi.visitor.ResourceFilter;
 import org.jboss.classloading.spi.visitor.ResourceContext;
+import org.jboss.classloading.spi.visitor.ResourceFilter;
+import org.jboss.classloading.spi.visitor.ResourceVisitor;
 import org.jboss.deployers.plugins.classloading.AbstractDeploymentClassLoaderPolicyModule;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 
@@ -154,7 +155,7 @@ public class MockDeploymentClassLoaderPolicyModule extends AbstractDeploymentCla
    }
 
    @Override
-   public void visit(ResourceVisitor visitor, ResourceFilter filter, ResourceFilter recurseFilter)
+   public void visit(ResourceVisitor visitor, ResourceFilter filter, ResourceFilter recurseFilter, URL... urls)
    {
       MockClassLoadingMetaData mclmd = getClassLoadingMetaData();
       String[] paths = mclmd.getPaths();
@@ -180,7 +181,7 @@ public class MockDeploymentClassLoaderPolicyModule extends AbstractDeploymentCla
             if (excludedFilter != null && excludedFilter.matchesResourcePath(path))
                continue;
 
-            ResourceContext context = new ResourceContext(getURL(path), path, classLoader);
+            ResourceContext context = new DefaultResourceContext(getURL(path), path, classLoader);
             if (filter == null || filter.accepts(context))
                visitor.visit(context);
          }

@@ -21,6 +21,8 @@
 */
 package org.jboss.deployers.plugins.annotations;
 
+import java.net.URL;
+
 import javassist.ClassPath;
 import javassist.ClassPool;
 import javassist.LoaderClassPath;
@@ -126,7 +128,17 @@ public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module
     */
    protected void visitModule(DeploymentUnit unit, Module module, GenericAnnotationResourceVisitor visitor)
    {
-      module.visit(visitor);
+      module.visit(visitor, null, null, getUrls());
+   }
+
+   /**
+    * Get the new root urls.
+    *
+    * @return the new root urls
+    */
+   protected URL[] getUrls()
+   {
+      return null;
    }
 
    public void deploy(DeploymentUnit unit, Module module) throws DeploymentException

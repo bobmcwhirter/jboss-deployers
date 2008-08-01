@@ -64,8 +64,6 @@ public class FilteredGenericAnnotationDeployer extends ScopedGenericAnnotationDe
     * * org.jboss.classloading.spi.visitor.ResourceFilter.resource - plain resource filter
     * * org.jboss.classloading.spi.visitor.ResourceFilter.recurse  - recurse resource filter
     *
-    * @see Module#visit(org.jboss.classloading.spi.visitor.ResourceVisitor, org.jboss.classloading.spi.visitor.ResourceFilter, org.jboss.classloading.spi.visitor.ResourceFilter)
-    *
     * @param unit the deployment unit
     * @param module the underlying module
     * @param visitor the current generic annotation resource visitor
@@ -76,7 +74,7 @@ public class FilteredGenericAnnotationDeployer extends ScopedGenericAnnotationDe
       if (filter != null)
          filter = visitor.getFilter();
       ResourceFilter recurse = getFilter(unit, ResourceFilter.class, "recurse", recurseFilter);
-      module.visit(visitor, filter, recurse);
+      module.visit(visitor, filter, recurse, getUrls());
    }
 
    /**
