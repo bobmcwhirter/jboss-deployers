@@ -24,7 +24,6 @@ package org.jboss.deployers.vfs.plugins.classloader;
 import java.net.URL;
 import java.util.List;
 import java.util.Set;
-import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.jboss.classloader.spi.filter.ClassFilter;
@@ -39,7 +38,6 @@ import org.jboss.classloading.spi.visitor.ResourceVisitor;
 import org.jboss.deployers.plugins.classloading.AbstractDeploymentClassLoaderPolicyModule;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VFS;
 
 /**
  * VFSDeploymentClassLoaderPolicyModule.
@@ -157,65 +155,9 @@ public class VFSDeploymentClassLoaderPolicyModule extends AbstractDeploymentClas
       VirtualFile[] roots = vfsRoots;
       if (roots != null && roots.length > 0)
       {
-         if (urls != null && urls.length > 0)
-            roots = matchUrlsWithRoots(urls, roots);
-         
          ClassFilter included = getIncluded();
          ClassFilter excluded = getExcluded();
-         VFSResourceVisitor.visit(roots, excludedRoots, included, excluded, classLoader, visitor, filter, recurseFilter);
+         VFSResourceVisitor.visit(roots, excludedRoots, included, excluded, classLoader, visitor, filter, recurseFilter, urls);
       }
-   }
-
-   /**
-    * Match urls with roots.
-    *
-    * @param urls the urls
-    * @param roots the old roots
-    * @return new roots
-    */
-   protected static VirtualFile[] matchUrlsWithRoots(URL[] urls, VirtualFile[] roots)
-   {
-      try
-      {
-         String[] rootURLStrings = new String[urls.length];
-         List<VirtualFile> newRoots = new ArrayList<VirtualFile>(urls.length);
-         for (URL url : urls)
-         {
-            String urlString = stripProtocol(url);
-            for(int i=0; i < roots.length; i++)
-            {
-               if (rootURLStrings[i] == null)
-                  rootURLStrings[i] = stripProtocol(roots[i].toURL());
-
-               if (urlString.startsWith(rootURLStrings[i]))
-               {
-                  VirtualFile newRoot = VFS.getRoot(url);
-                  newRoots.add(newRoot);
-                  break;
-               }
-            }
-         }
-         return newRoots.toArray(new VirtualFile[newRoots.size()]);
-      }
-      catch (Exception e)
-      {
-         throw new RuntimeException("Cannot match urls to roots.", e);
-      }
-   }
-
-   /**
-    * Strip the url protocol.
-    *
-    * @param url the url
-    * @return url external form w/o protocol
-    */
-   protected static String stripProtocol(URL url)
-   {
-      if (url == null)
-         throw new IllegalArgumentException("Null url");
-
-      String urlString = url.toExternalForm();
-      int p = urlString.indexOf(":/");
-      return urlString.substring(p + 2);
    }
 }

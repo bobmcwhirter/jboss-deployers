@@ -19,32 +19,37 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.deployers.plugins.annotations;
+package org.jboss.deployers.vfs.plugins.annotations;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javassist.ClassPath;
 import javassist.ClassPool;
 import javassist.LoaderClassPath;
 import org.jboss.classloading.spi.dependency.Module;
+import org.jboss.deployers.plugins.annotations.GenericAnnotationResourceVisitor;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
-import org.jboss.deployers.spi.deployer.helpers.AbstractSimpleRealDeployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.deployers.vfs.spi.deployer.AbstractOptionalVFSRealDeployer;
+import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
+import org.jboss.virtual.VirtualFile;
 
 /**
- * Generic annotation scanner deployer.
+ * A POST_CLASSLOADER deployer which creates AnnotationEnvironment for sub-deployments.
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module>
+public class AnnotationEnvironmentDeployer extends AbstractOptionalVFSRealDeployer<Module>
 {
    private boolean forceAnnotations;
    private boolean keepAnnotations;
    private boolean checkInterfaces;
 
-   public GenericAnnotationDeployer()
+   public AnnotationEnvironmentDeployer()
    {
       super(Module.class);
       setStage(DeploymentStages.POST_CLASSLOADER);
@@ -125,25 +130,62 @@ public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module
     * @param unit the deployment unit
     * @param module the module
     * @param visitor the resource visitor
+    * @throws DeploymentException for any error
     */
-   protected void visitModule(DeploymentUnit unit, Module module, GenericAnnotationResourceVisitor visitor)
+   protected void visitModule(VFSDeploymentUnit unit, Module module, GenericAnnotationResourceVisitor visitor) throws DeploymentException
    {
-      module.visit(visitor, null, null, getUrls(unit));
+      try
+      {
+         module.visit(visitor, null, null, getURL(unit));
+      }
+      catch (Exception e)
+      {
+         throw DeploymentException.rethrowAsDeploymentException("Exception visiting module", e);
+      }
    }
 
    /**
-    * Get the new root urls.
+    * Get the matching urls.
     *
     * @param unit the deployment unit
-    * @return the new root urls
+    * @return matching urls
+    * @throws Exception for any error
     */
-   protected URL[] getUrls(DeploymentUnit unit)
+   protected static URL[] getURL(VFSDeploymentUnit unit) throws Exception
    {
-      return null;
+      List<VirtualFile> classpath = unit.getClassPath();
+      if (classpath != null && classpath.isEmpty() == false)
+      {
+         List<URL> urls = new ArrayList<URL>();
+         VirtualFile root = unit.getRoot();
+         for (VirtualFile cp : classpath)
+         {
+            VirtualFile check = cp;
+            while(check != null && check.equals(root) == false)
+               check = check.getParent();
+
+            if (check != null)
+               urls.add(cp.toURL());
+         }
+         return urls.toArray(new URL[urls.size()]);
+      }
+      return new URL[0];
    }
 
-   public void deploy(DeploymentUnit unit, Module module) throws DeploymentException
+   public void deploy(VFSDeploymentUnit unit, Module module) throws DeploymentException
    {
+      if (module == null)
+      {
+         VFSDeploymentUnit parent = unit.getParent();
+         while(parent != null && module == null)
+         {
+            module = parent.getAttachment(Module.class);
+            parent = parent.getParent();
+         }
+         if (module == null)
+            throw new IllegalArgumentException("No module in deployment unit's hierarchy: " + unit.getName());
+      }
+
       if (log.isTraceEnabled())
          log.trace("Creating AnnotationEnvironment for " + unit.getName() + ", module: " + module + ", force annotations: " + forceAnnotations);
 
