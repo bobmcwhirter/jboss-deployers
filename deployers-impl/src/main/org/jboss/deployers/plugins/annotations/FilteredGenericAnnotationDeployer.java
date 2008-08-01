@@ -74,7 +74,7 @@ public class FilteredGenericAnnotationDeployer extends ScopedGenericAnnotationDe
       if (filter != null)
          filter = visitor.getFilter();
       ResourceFilter recurse = getFilter(unit, ResourceFilter.class, "recurse", recurseFilter);
-      module.visit(visitor, filter, recurse, getUrls());
+      module.visit(visitor, filter, recurse, getUrls(unit));
    }
 
    /**
