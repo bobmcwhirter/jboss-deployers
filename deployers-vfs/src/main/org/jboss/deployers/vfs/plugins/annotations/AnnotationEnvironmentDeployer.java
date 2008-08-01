@@ -151,7 +151,7 @@ public class AnnotationEnvironmentDeployer extends AbstractOptionalVFSRealDeploy
     * @return matching urls
     * @throws Exception for any error
     */
-   protected static URL[] getURL(VFSDeploymentUnit unit) throws Exception
+   protected URL[] getURL(VFSDeploymentUnit unit) throws Exception
    {
       List<VirtualFile> classpath = unit.getClassPath();
       if (classpath != null && classpath.isEmpty() == false)
@@ -167,7 +167,13 @@ public class AnnotationEnvironmentDeployer extends AbstractOptionalVFSRealDeploy
             if (check != null)
                urls.add(cp.toURL());
          }
-         return urls.toArray(new URL[urls.size()]);
+         if (urls.isEmpty() == false)
+         {
+            if (log.isTraceEnabled())
+               log.trace("Explicit urls: " + urls);
+
+            return urls.toArray(new URL[urls.size()]);
+         }
       }
       return new URL[0];
    }
