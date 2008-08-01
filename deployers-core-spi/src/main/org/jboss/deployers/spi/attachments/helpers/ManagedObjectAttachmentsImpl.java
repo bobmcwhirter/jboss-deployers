@@ -41,7 +41,7 @@ public class ManagedObjectAttachmentsImpl extends PredeterminedManagedObjectAtta
    private static final long serialVersionUID = -195530143173768763L;
    
    /** The transient managed objects */
-   private MutableAttachments transientManagedObjects = AttachmentsFactory.createMutableAttachments();
+   private transient MutableAttachments transientManagedObjects = AttachmentsFactory.createMutableAttachments();
 
    public MutableAttachments getTransientManagedObjects()
    {
@@ -51,7 +51,6 @@ public class ManagedObjectAttachmentsImpl extends PredeterminedManagedObjectAtta
    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException
    {
       super.readExternal(in);
-      transientManagedObjects = (MutableAttachments) in.readObject();
    }
 
    /**
@@ -62,6 +61,5 @@ public class ManagedObjectAttachmentsImpl extends PredeterminedManagedObjectAtta
    public void writeExternal(ObjectOutput out) throws IOException
    {
       super.writeExternal(out);
-      out.writeObject(transientManagedObjects);
    }
 }
