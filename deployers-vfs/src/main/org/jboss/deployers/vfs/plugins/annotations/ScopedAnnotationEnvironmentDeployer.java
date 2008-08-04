@@ -35,12 +35,10 @@ public class ScopedAnnotationEnvironmentDeployer extends AnnotationEnvironmentDe
 
    public ScopedAnnotationEnvironmentDeployer()
    {
-      super();
    }
 
    public ScopedAnnotationEnvironmentDeployer(ScopedClassPoolRepository repository)
    {
-      this();
       this.repository = repository;
    }
 
