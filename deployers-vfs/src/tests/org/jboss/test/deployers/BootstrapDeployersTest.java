@@ -289,7 +289,12 @@ public abstract class BootstrapDeployersTest extends MicrocontainerTest
 
    protected AssembledDirectory createAssembledDirectory(String name) throws Exception
    {
-      return AssembledDirectory.createAssembledDirectory(name, "");
+      return createAssembledDirectory(name, "");     
+   }
+
+   protected AssembledDirectory createAssembledDirectory(String name, String rootName) throws Exception
+   {
+      return AssembledDirectory.createAssembledDirectory(name, rootName);
    }
 
    protected void addPackage(AssembledDirectory dir, Class<?> reference) throws Exception

@@ -136,7 +136,7 @@ public class AnnotationEnvironmentDeployer extends AbstractOptionalVFSRealDeploy
    {
       try
       {
-         module.visit(visitor, null, null, getURL(unit));
+         module.visit(visitor, visitor.getFilter(), null, getUrls(unit));
       }
       catch (Exception e)
       {
@@ -151,7 +151,7 @@ public class AnnotationEnvironmentDeployer extends AbstractOptionalVFSRealDeploy
     * @return matching urls
     * @throws Exception for any error
     */
-   protected URL[] getURL(VFSDeploymentUnit unit) throws Exception
+   protected URL[] getUrls(VFSDeploymentUnit unit) throws Exception
    {
       List<VirtualFile> classpath = unit.getClassPath();
       if (classpath != null && classpath.isEmpty() == false)

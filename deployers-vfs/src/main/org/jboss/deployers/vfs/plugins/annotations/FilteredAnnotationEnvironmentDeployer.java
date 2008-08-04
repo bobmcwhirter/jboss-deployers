@@ -19,14 +19,17 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.deployers.plugins.annotations;
+package org.jboss.deployers.vfs.plugins.annotations;
 
-import org.jboss.classloading.spi.visitor.ResourceFilter;
 import org.jboss.classloading.spi.dependency.Module;
+import org.jboss.classloading.spi.visitor.ResourceFilter;
+import org.jboss.deployers.plugins.annotations.GenericAnnotationResourceVisitor;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
+import org.jboss.deployers.spi.DeploymentException;
 
 /**
- * Filtered generic annotation scanner deployer.
+ * Filtered annotation environment deployer.
  *
  * It first checks if there are some filters present
  * in deployment unit as attachment,
@@ -34,7 +37,7 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class FilteredGenericAnnotationDeployer extends ScopedGenericAnnotationDeployer
+public class FilteredAnnotationEnvironmentDeployer extends ScopedAnnotationEnvironmentDeployer
 {
    private ResourceFilter resourceFilter;
    private ResourceFilter recurseFilter;
@@ -68,13 +71,20 @@ public class FilteredGenericAnnotationDeployer extends ScopedGenericAnnotationDe
     * @param module the underlying module
     * @param visitor the current generic annotation resource visitor
     */
-   protected void visitModule(DeploymentUnit unit, Module module, GenericAnnotationResourceVisitor visitor)
+   protected void visitModule(VFSDeploymentUnit unit, Module module, GenericAnnotationResourceVisitor visitor) throws DeploymentException
    {
       ResourceFilter filter = getFilter(unit, ResourceFilter.class, "resource", resourceFilter);
       if (filter == null)
          filter = visitor.getFilter();
       ResourceFilter recurse = getFilter(unit, ResourceFilter.class, "recurse", recurseFilter);
-      module.visit(visitor, filter, recurse, getUrls(unit));
+      try
+      {
+         module.visit(visitor, filter, recurse, getUrls(unit));
+      }
+      catch (Exception e)
+      {
+         throw DeploymentException.rethrowAsDeploymentException("Exception visiting module", e);
+      }
    }
 
    /**
