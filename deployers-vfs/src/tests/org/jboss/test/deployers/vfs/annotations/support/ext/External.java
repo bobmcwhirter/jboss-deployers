@@ -29,6 +29,7 @@ import org.jboss.test.deployers.vfs.annotations.support.Marked;
 @Marked
 public class External
 {
+   @SuppressWarnings("unused")
    private @Marked Object foo;
 
    @Marked
