@@ -24,8 +24,6 @@ package org.jboss.test.deployers.vfs.deployer.bean.test;
 import java.util.Collections;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import org.jboss.beans.metadata.plugins.AbstractBeanMetaData;
 import org.jboss.beans.metadata.spi.BeanMetaDataFactory;
 import org.jboss.dependency.spi.ControllerContext;
@@ -54,16 +52,17 @@ public class KernelScopeUnitTestCase extends AbstractDeployerUnitTest
 {
    public static Test suite()
    {
-      return new TestSuite(KernelScopeUnitTestCase.class);
+      return suite(KernelScopeUnitTestCase.class);
    }
 
-   TestMetaDataBeanDeployer testMetaDataDeployer;
+   protected TestMetaDataBeanDeployer testMetaDataDeployer;
 
    public KernelScopeUnitTestCase(String name) throws Throwable
    {
       super(name);
    }
 
+   @SuppressWarnings("deprecation")
    protected void addDeployers(Kernel kernel)
    {
       MutableMetaDataRepository repository = kernel.getMetaDataRepository().getMetaDataRepository();
