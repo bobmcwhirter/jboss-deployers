@@ -21,10 +21,8 @@
  */
 package org.jboss.deployers.vfs.spi.structure;
 
-import org.jboss.deployers.spi.Ordered;
 import org.jboss.deployers.spi.DeploymentException;
-import org.jboss.deployers.spi.structure.StructureMetaData;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.deployers.spi.Ordered;
 
 /**
  * A StructureDeployer translates a deployment virtual file root into
@@ -38,13 +36,9 @@ public interface StructureDeployer extends Ordered
    /**
     * Determine the structure of a deployment
     * 
-    * @param root the root file
-    * @param parent the parent file
-    * @param file the candidate file of the deployment
-    * @param metaData the structure metadata to build
-    * @param deployers the available structure deployers
-    * @return true when it is recognised
-    * @throws DeploymentException for any error
+    * @param context the structure context
+    * @return true when it recognised the context
+    * @throws DeploymentException for an error
     */
-   boolean determineStructure(VirtualFile root, VirtualFile parent, VirtualFile file, StructureMetaData metaData, VFSStructuralDeployers deployers) throws DeploymentException;
+   boolean determineStructure(StructureContext context) throws DeploymentException;
 }

@@ -43,5 +43,16 @@ public interface VFSStructuralDeployers
     * @return true when recognised, false otherwise
     * @throws DeploymentException for any error
     */
+   @Deprecated // Remove this JBDEPLOY-66
    boolean determineStructure(VirtualFile root, VirtualFile parent, VirtualFile file, StructureMetaData structureMetaData) throws DeploymentException;
+
+   /**
+    * Determine the structure of a virtual file
+    *
+    * @param file the virtual file
+    * @param parentContext the parent context
+    * @return true when recognised, false otherwise
+    * @throws DeploymentException for any error
+    */
+   boolean determineStructure(VirtualFile file, StructureContext parentContext) throws DeploymentException;
 }

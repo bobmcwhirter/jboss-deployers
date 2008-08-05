@@ -36,6 +36,7 @@ import org.jboss.deployers.spi.structure.StructureMetaData;
 import org.jboss.deployers.spi.structure.StructureMetaDataFactory;
 import org.jboss.deployers.structure.spi.helpers.AbstractStructuralDeployers;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
+import org.jboss.deployers.vfs.spi.structure.StructureContext;
 import org.jboss.deployers.vfs.spi.structure.StructureDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSStructuralDeployers;
 import org.jboss.deployers.vfs.spi.structure.helpers.AbstractStructureDeployer;
@@ -134,10 +135,12 @@ public class VFSStructuralDeployersImpl extends AbstractStructuralDeployers impl
       log.debug("Removed structure deployer " + deployer);
    }
    
+   @Deprecated // Remove this JBDEPLOY-66 
    public boolean determineStructure(VirtualFile root, VirtualFile parent, VirtualFile file, StructureMetaData structureMetaData) throws DeploymentException
    {
       StructureMetaData structure = StructureMetaDataFactory.createStructureMetaData();
-      boolean result = doDetermineStructure(root, parent, file, structure);
+      StructureContext context = new StructureContext(root, parent, file, structure, this, null);
+      boolean result = doDetermineStructure(context);
       if (result)
       {
          String relativePath = AbstractStructureDeployer.getRelativePath(parent, file);
@@ -164,17 +167,46 @@ public class VFSStructuralDeployersImpl extends AbstractStructuralDeployers impl
       return result;
    }
    
+   public boolean determineStructure(VirtualFile file, StructureContext parentContext) throws DeploymentException
+   {
+      StructureMetaData structure = StructureMetaDataFactory.createStructureMetaData();
+      StructureContext context = new StructureContext(file, structure, parentContext);
+      boolean result = doDetermineStructure(context);
+      if (result)
+      {
+         String relativePath = AbstractStructureDeployer.getRelativePath(context.getParent(), file);
+         
+         // Something said it recognised it
+         ContextInfo recognised = structure.getContext("");
+         if (recognised == null)
+            throw new IllegalStateException("Something recognised the deployment, but there is no context? " + file);
+         
+         // Create the context in the parent structure
+         ContextInfo parentContextInfo;
+         List<String> metaDataPath = recognised.getMetaDataPath();
+         if (metaDataPath == null || metaDataPath.isEmpty())
+            parentContextInfo = StructureMetaDataFactory.createContextInfo(relativePath, recognised.getClassPath());
+         else
+            parentContextInfo = StructureMetaDataFactory.createContextInfo(relativePath, metaDataPath, recognised.getClassPath());
+
+         // copy the modification type information
+         parentContextInfo.setModificationType(recognised.getModificationType());
+         StructureMetaData structureMetaData = parentContext.getMetaData();
+         structureMetaData.addContext(parentContextInfo);
+         MutableAttachments attachments = (MutableAttachments) parentContextInfo.getPredeterminedManagedObjects();
+         attachments.addAttachment(StructureMetaData.class, structure);
+      }
+      return result;
+   }
+   
    /**
     * Determine the structure
     * 
-    * @param root the root file
-    * @param parent the parent file
-    * @param file the file
-    * @param structureMetaData the structure metadata
+    * @param context the structure context
     * @return true when recognised
     * @throws DeploymentException for any error
     */
-   protected boolean doDetermineStructure(VirtualFile root, VirtualFile parent, VirtualFile file, StructureMetaData structureMetaData) throws DeploymentException
+   protected boolean doDetermineStructure(StructureContext context) throws DeploymentException
    {
       StructureDeployer[] theDeployers; 
       synchronized (this)
@@ -187,22 +219,22 @@ public class VFSStructuralDeployersImpl extends AbstractStructuralDeployers impl
 
       boolean trace = log.isTraceEnabled();
       if (trace)
-         log.trace("Determining structure for " + file.getName() + " deployers=" + Arrays.asList(theDeployers));
+         log.trace("Determining structure for " + context.getName() + " deployers=" + Arrays.asList(theDeployers));
       
       
       boolean result = false;
       for (StructureDeployer deployer : theDeployers)
       {
-         if (deployer.determineStructure(root, parent, file, structureMetaData, this))
+         if (deployer.determineStructure(context))
          {
             if (trace)
-               log.trace(file.getName() + " recognised by " + deployer);
+               log.trace(context.getName() + " recognised by " + deployer);
             result = true;
             break;
          }
       }
       if (result == false && trace)
-         log.trace(file.getName() + " not recognised");
+         log.trace(context.getName() + " not recognised");
       return result;
    }
 
@@ -217,7 +249,8 @@ public class VFSStructuralDeployersImpl extends AbstractStructuralDeployers impl
       VirtualFile root = vfsDeployment.getRoot();
       if (root == null)
          throw new IllegalStateException("Deployment has no root " + deployment);
-      if (doDetermineStructure(root, null, root, structure) == false)
+      StructureContext context = new StructureContext(root, structure, this);
+      if (doDetermineStructure(context) == false)
          throw new DeploymentException("No deployer recognised the structure of " + deployment.getName());
    }
 }

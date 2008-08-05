@@ -21,9 +21,7 @@
 */
 package org.jboss.deployers.vfs.spi.structure.helpers;
 
-import org.jboss.deployers.spi.structure.StructureMetaData;
-import org.jboss.deployers.vfs.spi.structure.VFSStructuralDeployers;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.deployers.vfs.spi.structure.StructureContext;
 import org.jboss.virtual.VirtualFileVisitor;
 import org.jboss.virtual.VisitorAttributes;
 
@@ -38,13 +36,10 @@ public interface CandidateStructureVisitorFactory
    /**
     * Create the visitor
     * 
-    * @param root the root virtual file
-    * @param parent the parent virtual file
-    * @param metaData the structure metaData
-    * @param deployers the structure deployers
+    * @param context the structure context
     * @param attributes the visitor attributes uses {@link VisitorAttributes#DEFAULT} when null
     * @return the visitor
     * @throws Exception for any error
     */
-   VirtualFileVisitor createVisitor(VirtualFile root, VirtualFile parent, StructureMetaData metaData, VFSStructuralDeployers deployers, VisitorAttributes attributes) throws Exception;
+   VirtualFileVisitor createVisitor(StructureContext context, VisitorAttributes attributes) throws Exception;
 }

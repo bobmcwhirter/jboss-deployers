@@ -25,7 +25,7 @@ import java.io.IOException;
 
 import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.deployers.spi.structure.StructureMetaData;
-import org.jboss.deployers.vfs.spi.structure.VFSStructuralDeployers;
+import org.jboss.deployers.vfs.spi.structure.StructureContext;
 import org.jboss.logging.Logger;
 import org.jboss.virtual.VirtualFile;
 import org.jboss.virtual.VirtualFileFilter;
@@ -43,17 +43,8 @@ public class AbstractCandidateStructureVisitor extends AbstractVirtualFileVisito
    /** The log */
    private static final Logger log = Logger.getLogger(AbstractCandidateStructureVisitor.class);
 
-   /** The root deployment file */
-   private final VirtualFile root;
-
-   /** The parent deployment file */
-   private final VirtualFile parent;
-
-   /** The meta data */
-   private final StructureMetaData metaData;
-   
-   /** The deployers */
-   private final VFSStructuralDeployers deployers;
+   /** The structure context */
+   private StructureContext context;
 
    /** Ignore directories */
    private boolean ignoreDirectories;
@@ -64,36 +55,27 @@ public class AbstractCandidateStructureVisitor extends AbstractVirtualFileVisito
    /**
     * Create a new CandidateStructureVisitor.
     * 
-    * @param root the root
-    * @param parent the parent
-    * @param metaData the structure meta data
-    * @param deployers the structure deployers
+    * @param context the context
     * @throws IllegalArgumentException for a null parent
     */
-   public AbstractCandidateStructureVisitor(VirtualFile root, VirtualFile parent, StructureMetaData metaData, VFSStructuralDeployers deployers)
+   public AbstractCandidateStructureVisitor(StructureContext context)
    {
-      this(root, parent, metaData, deployers, null);
+      this(context, null);
    }
    
    /**
     * Create a new CandidateStructureVisitor.
     * 
-    * @param root the root
-    * @param parent the parent
-    * @param metaData the structure meta data
-    * @param deployers the structure deployers
+    * @param context the context
     * @param attributes the attributes
     * @throws IllegalArgumentException for a null parent
     */
-   public AbstractCandidateStructureVisitor(VirtualFile root, VirtualFile parent, StructureMetaData metaData, VFSStructuralDeployers deployers, VisitorAttributes attributes)
+   public AbstractCandidateStructureVisitor(StructureContext context, VisitorAttributes attributes)
    {
       super(attributes);
-      if (parent == null)
-         throw new IllegalArgumentException("Null parent");
-      this.root = root;
-      this.parent = parent;
-      this.metaData = metaData;
-      this.deployers = deployers;
+      if (context == null)
+         throw new IllegalArgumentException("Null context");
+      this.context = context;
    }
 
    /**
@@ -103,7 +85,7 @@ public class AbstractCandidateStructureVisitor extends AbstractVirtualFileVisito
     */
    public VirtualFile getParent()
    {
-      return parent;
+      return context.getFile();
    }
 
    /**
@@ -148,9 +130,10 @@ public class AbstractCandidateStructureVisitor extends AbstractVirtualFileVisito
 
    public void visit(VirtualFile file)
    {
-      String path = AbstractStructureDeployer.getRelativePath(parent, file);
-      ContextInfo context = metaData.getContext(path);
-      if (context == null)
+      String path = AbstractStructureDeployer.getRelativePath(context, file);
+      StructureMetaData metaData = context.getMetaData();
+      ContextInfo contextInfo = metaData.getContext(path);
+      if (contextInfo == null)
       {
          // Ignore directories when asked
          try
@@ -171,7 +154,7 @@ public class AbstractCandidateStructureVisitor extends AbstractVirtualFileVisito
          try
          {
             // Ask the deployers to process this file
-            deployers.determineStructure(root, parent, file, metaData);
+            context.determineChildStructure(file);
          }
          catch (Exception e)
          {

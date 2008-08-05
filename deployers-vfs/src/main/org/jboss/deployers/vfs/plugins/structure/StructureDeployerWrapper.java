@@ -22,11 +22,9 @@
 package org.jboss.deployers.vfs.plugins.structure;
 
 import org.jboss.deployers.spi.DeploymentException;
-import org.jboss.deployers.spi.structure.StructureMetaData;
+import org.jboss.deployers.vfs.spi.structure.StructureContext;
 import org.jboss.deployers.vfs.spi.structure.StructureDeployer;
-import org.jboss.deployers.vfs.spi.structure.VFSStructuralDeployers;
 import org.jboss.logging.Logger;
-import org.jboss.virtual.VirtualFile;
 
 /**
  * StructureDeployerWrapper.<p>
@@ -61,21 +59,21 @@ public class StructureDeployerWrapper implements StructureDeployer
       this.classLoader = SecurityActions.getContextClassLoader();
    }
    
-   public boolean determineStructure(VirtualFile root, VirtualFile parent, VirtualFile file, StructureMetaData metaData, VFSStructuralDeployers deployers) throws DeploymentException
+   public boolean determineStructure(StructureContext context) throws DeploymentException
    {
-      if (file == null)
-         throw new IllegalArgumentException("Null file");
+      if (context == null)
+         throw new IllegalArgumentException("Null context");
 
       ClassLoader previous = SecurityActions.setContextClassLoader(classLoader);
       try
       {
-         boolean result = deployer.determineStructure(root, parent, file, metaData, deployers);
+         boolean result = deployer.determineStructure(context);
          if (log.isTraceEnabled())
          {
             if (result == false)
-               log.trace("Not recognised: " + file.getName());
+               log.trace("Not recognised: " + context.getName());
             else
-               log.trace("Recognised: " + file.getName());
+               log.trace("Recognised: " + context.getName());
          }
          return result;
       }
