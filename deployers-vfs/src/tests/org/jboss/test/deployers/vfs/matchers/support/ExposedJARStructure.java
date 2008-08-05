@@ -25,10 +25,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.jboss.deployers.spi.DeploymentException;
-import org.jboss.deployers.spi.structure.StructureMetaData;
 import org.jboss.deployers.vfs.plugins.structure.jar.JARStructure;
-import org.jboss.deployers.vfs.spi.structure.VFSStructuralDeployers;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.deployers.vfs.spi.structure.StructureContext;
 
 /**
  * Exposes recognized files.
@@ -44,11 +42,11 @@ public class ExposedJARStructure extends JARStructure
       return recognized;
    }
 
-   public boolean determineStructure(VirtualFile root, VirtualFile parent, VirtualFile file, StructureMetaData metaData, VFSStructuralDeployers deployers) throws DeploymentException
+   public boolean determineStructure(StructureContext structureContext) throws DeploymentException
    {
-      boolean determined = super.determineStructure(root, parent, file, metaData, deployers);
+      boolean determined = super.determineStructure(structureContext);
       if (determined)
-         recognized.add(file.getName());
+         recognized.add(structureContext.getName());
       return determined;
    }
 }

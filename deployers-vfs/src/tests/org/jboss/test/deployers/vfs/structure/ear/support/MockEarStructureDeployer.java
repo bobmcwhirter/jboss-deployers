@@ -37,8 +37,7 @@ import org.jboss.deployers.plugins.annotations.GenericAnnotationResourceVisitor;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
 import org.jboss.deployers.spi.structure.ContextInfo;
-import org.jboss.deployers.spi.structure.StructureMetaData;
-import org.jboss.deployers.vfs.spi.structure.VFSStructuralDeployers;
+import org.jboss.deployers.vfs.spi.structure.StructureContext;
 import org.jboss.deployers.vfs.spi.structure.helpers.AbstractStructureDeployer;
 import org.jboss.virtual.VFSUtils;
 import org.jboss.virtual.VirtualFile;
@@ -94,16 +93,17 @@ public class MockEarStructureDeployer extends AbstractStructureDeployer
       this.earLibFilter = earLibFilter;
    }
 
-   public boolean determineStructure(VirtualFile root, VirtualFile parent, VirtualFile file, StructureMetaData metaData, VFSStructuralDeployers deployers) throws DeploymentException
+   public boolean determineStructure(StructureContext structureContext) throws DeploymentException
    {
       ContextInfo context;
       boolean valid;
+      VirtualFile file = structureContext.getFile();
       try
       {
          if (file.isLeaf() == true || file.getName().endsWith(".ear") == false)
             return false;
 
-         context = createContext(file, "META-INF", metaData);
+         context = createContext(structureContext, "META-INF");
 
          VirtualFile applicationProps = getMetaDataFile(file, "META-INF/application.properties");
          VirtualFile jbossProps = getMetaDataFile(file, "META-INF/jboss-application.properties");
@@ -126,7 +126,7 @@ public class MockEarStructureDeployer extends AbstractStructureDeployer
             {
                List<VirtualFile> archives = lib.getChildren(earLibFilter);
                for (VirtualFile archive : archives)
-                  super.addClassPath(root, archive, true, true, context);
+                  super.addClassPath(structureContext, archive, true, true, context);
             }
          }
          catch (IOException ignored)
@@ -135,7 +135,7 @@ public class MockEarStructureDeployer extends AbstractStructureDeployer
          }
 
          // Add the ear manifest locations?
-         super.addClassPath(root, file, false, true, context);
+         super.addClassPath(structureContext, file, false, true, context);
 
          if (scan)
             scanEar(file, modules);
@@ -156,7 +156,7 @@ public class MockEarStructureDeployer extends AbstractStructureDeployer
                            + file.getName());
                   }
                   // Ask the deployers to analyze this
-                  if (deployers.determineStructure(root, file, module, metaData) == false)
+                  if (structureContext.determineChildStructure(module) == false)
                   {
                      throw new RuntimeException(fileName
                            + " module listed in application.xml is not a recognized deployment, .ear: "

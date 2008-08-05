@@ -419,7 +419,7 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
       // Determine whether the metadata path exists
       if (metaDataPath != null)
       {
-         VirtualFile root = context.getRoot();
+         VirtualFile root = context.getFile();
          try
          {
             VirtualFile child = root.getChild(metaDataPath);
@@ -503,7 +503,7 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
       if (context == null)
          throw new IllegalArgumentException("Null context");
 
-      VirtualFile root = context.getRoot();
+      VirtualFile root = context.getFile();
       List<String> metaDataPath = CollectionsFactory.createLazyList();
       // Determine whether the metadata paths exists
       if (metaDataPaths != null && metaDataPaths.length > 0)

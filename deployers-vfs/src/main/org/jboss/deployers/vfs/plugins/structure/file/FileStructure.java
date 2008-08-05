@@ -24,15 +24,14 @@ package org.jboss.deployers.vfs.plugins.structure.file;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.jboss.deployers.spi.structure.ContextInfo;
-import org.jboss.deployers.spi.structure.StructureMetaData;
-import org.jboss.deployers.spi.DeploymentException;
-import org.jboss.deployers.vfs.spi.structure.VFSStructuralDeployers;
-import org.jboss.deployers.vfs.spi.structure.helpers.AbstractStructureDeployer;
-import org.jboss.deployers.vfs.spi.deployer.FileMatcher;
-import org.jboss.virtual.VirtualFile;
 import org.jboss.beans.metadata.api.annotations.Install;
 import org.jboss.beans.metadata.api.annotations.Uninstall;
+import org.jboss.deployers.spi.DeploymentException;
+import org.jboss.deployers.spi.structure.ContextInfo;
+import org.jboss.deployers.vfs.spi.deployer.FileMatcher;
+import org.jboss.deployers.vfs.spi.structure.StructureContext;
+import org.jboss.deployers.vfs.spi.structure.helpers.AbstractStructureDeployer;
+import org.jboss.virtual.VirtualFile;
 
 /**
  * FileStructure is a simple suffix recognition structure deployer.
@@ -165,9 +164,10 @@ public class FileStructure extends AbstractStructureDeployer
       return false;
    }
 
-   public boolean determineStructure(VirtualFile root, VirtualFile parent, VirtualFile file, StructureMetaData metaData, VFSStructuralDeployers deployers) throws DeploymentException
+   public boolean determineStructure(StructureContext structureContext) throws DeploymentException
    {
       ContextInfo context = null;
+      VirtualFile file = structureContext.getFile();
       try
       {
          boolean trace = log.isTraceEnabled();
@@ -177,7 +177,7 @@ public class FileStructure extends AbstractStructureDeployer
             if( trace )
                log.trace(file + " is a leaf");
             // See if this is a top-level by checking the parent
-            if (isTopLevel(parent) == false)
+            if (structureContext.isTopLevel() == false)
             {
                if (isKnownFile(file.getName()) == false && checkFileMatchers(file) == false)
                {
@@ -199,7 +199,8 @@ public class FileStructure extends AbstractStructureDeployer
             }
 
             // Create a context info for this file
-            context = createContext(file, metaData);
+            if (isFile)
+               context = createContext(structureContext);
             // There are no subdeployments for files
             if (trace)
                log.trace(file + " isFile: " + isFile);
@@ -215,7 +216,7 @@ public class FileStructure extends AbstractStructureDeployer
       catch (Exception e)
       {
          if (context != null)
-            metaData.removeContext(context);
+            structureContext.removeChild(context);
 
          throw DeploymentException.rethrowAsDeploymentException("Error determining structure: " + file.getName(), e);
       }

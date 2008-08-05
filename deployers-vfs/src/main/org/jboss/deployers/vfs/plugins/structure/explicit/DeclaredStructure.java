@@ -25,8 +25,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.jboss.deployers.spi.DeploymentException;
-import org.jboss.deployers.spi.structure.StructureMetaData;
-import org.jboss.deployers.vfs.spi.structure.VFSStructuralDeployers;
+import org.jboss.deployers.vfs.spi.structure.StructureContext;
 import org.jboss.deployers.vfs.spi.structure.helpers.AbstractStructureDeployer;
 import org.jboss.virtual.VirtualFile;
 import org.jboss.xb.binding.Unmarshaller;
@@ -49,8 +48,9 @@ public class DeclaredStructure extends AbstractStructureDeployer
       setRelativeOrder(0);
    }
 
-   public boolean determineStructure(VirtualFile root, VirtualFile parent, VirtualFile file, StructureMetaData metaData, VFSStructuralDeployers deployers) throws DeploymentException
+   public boolean determineStructure(StructureContext structureContext) throws DeploymentException
    {
+      VirtualFile file = structureContext.getFile();
       try
       {
          boolean trace = log.isTraceEnabled();
@@ -69,7 +69,7 @@ public class DeclaredStructure extends AbstractStructureDeployer
                   UnmarshallerFactory factory = UnmarshallerFactory.newInstance();
                   Unmarshaller unmarshaller = factory.newUnmarshaller();
                   StructureMetaDataObjectFactory ofactory = new StructureMetaDataObjectFactory();
-                  unmarshaller.unmarshal(url.toString(), ofactory, metaData);
+                  unmarshaller.unmarshal(url.toString(), ofactory, structureContext.getMetaData());
                   isJBossStructure = true;
                }
             }

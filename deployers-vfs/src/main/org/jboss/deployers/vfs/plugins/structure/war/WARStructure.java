@@ -26,8 +26,7 @@ import java.util.List;
 
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.structure.ContextInfo;
-import org.jboss.deployers.spi.structure.StructureMetaData;
-import org.jboss.deployers.vfs.spi.structure.VFSStructuralDeployers;
+import org.jboss.deployers.vfs.spi.structure.StructureContext;
 import org.jboss.deployers.vfs.spi.structure.helpers.AbstractStructureDeployer;
 import org.jboss.virtual.VirtualFile;
 import org.jboss.virtual.VirtualFileFilter;
@@ -80,9 +79,10 @@ public class WARStructure extends AbstractStructureDeployer
       this.webInfLibFilter = webInfLibFilter;
    }
 
-   public boolean determineStructure(VirtualFile root, VirtualFile parent, VirtualFile file, StructureMetaData metaData, VFSStructuralDeployers deployers) throws DeploymentException
+   public boolean determineStructure(StructureContext structureContext) throws DeploymentException
    {
       ContextInfo context = null;
+      VirtualFile file = structureContext.getFile();
       try
       {
          boolean trace = log.isTraceEnabled();
@@ -120,17 +120,17 @@ public class WARStructure extends AbstractStructureDeployer
 
             // Create a context for this war file with WEB-INF as the location for metadata
             // Some wars also might have metadata in WEB-INF/classes/META-INF, e.g. persistence.xml
-            context = createContext(file, new String[]{"WEB-INF", "WEB-INF/classes/META-INF"}, metaData);
+            context = createContext(structureContext, new String[]{"WEB-INF", "WEB-INF/classes/META-INF"});
 
             // Add the war manifest classpath entries
-            addClassPath(root, file, false, true, context);
+            addClassPath(structureContext, file, false, true, context);
             try
             {
                // The classpath is WEB-INF/classes
                VirtualFile classes = file.getChild("WEB-INF/classes");
                // Add the war manifest classpath entries
                if (classes != null)
-                  addClassPath(root, classes, true, false, context);
+                  addClassPath(structureContext, classes, true, false, context);
                else if (trace)
                   log.trace("No WEB-INF/classes for: " + file.getPathName());
             }
@@ -146,7 +146,7 @@ public class WARStructure extends AbstractStructureDeployer
                {
                   List<VirtualFile> archives = webinfLib.getChildren(webInfLibFilter);
                   for (VirtualFile jar : archives)
-                     addClassPath(root, jar, true, true, context);
+                     addClassPath(structureContext, jar, true, true, context);
                }
                else if (trace)
                   log.trace("No WEB-INF/lib for: " + file.getPathName());
@@ -170,7 +170,7 @@ public class WARStructure extends AbstractStructureDeployer
       {
          // Remove the invalid context
          if (context != null)
-            metaData.removeContext(context);
+            structureContext.removeChild(context);
 
          throw DeploymentException.rethrowAsDeploymentException("Error determining structure: " + file.getName(), e);
       }

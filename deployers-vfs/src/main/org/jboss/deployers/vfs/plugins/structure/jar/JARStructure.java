@@ -24,16 +24,15 @@ package org.jboss.deployers.vfs.plugins.structure.jar;
 import java.io.IOException;
 import java.util.Set;
 
+import org.jboss.beans.metadata.api.annotations.Install;
+import org.jboss.beans.metadata.api.annotations.Uninstall;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.matchers.JarExtensionProvider;
 import org.jboss.deployers.spi.structure.ContextInfo;
-import org.jboss.deployers.spi.structure.StructureMetaData;
-import org.jboss.deployers.vfs.spi.structure.VFSStructuralDeployers;
+import org.jboss.deployers.vfs.spi.structure.StructureContext;
 import org.jboss.deployers.vfs.spi.structure.helpers.AbstractStructureDeployer;
 import org.jboss.virtual.VirtualFile;
 import org.jboss.virtual.plugins.context.jar.JarUtils;
-import org.jboss.beans.metadata.api.annotations.Install;
-import org.jboss.beans.metadata.api.annotations.Uninstall;
 
 /**
  * JARStructure.
@@ -98,9 +97,10 @@ public class JARStructure extends AbstractStructureDeployer
          JarUtils.removeJarSuffix(extension);
    }
 
-   public boolean determineStructure(VirtualFile root, VirtualFile parent, VirtualFile file, StructureMetaData metaData, VFSStructuralDeployers deployers) throws DeploymentException
+   public boolean determineStructure(StructureContext structureContext) throws DeploymentException
    {
       ContextInfo context = null;
+      VirtualFile file = structureContext.getFile();
       try
       {
          boolean trace = log.isTraceEnabled();
@@ -111,7 +111,7 @@ public class JARStructure extends AbstractStructureDeployer
             // we require a META-INF otherwise each subdirectory would be a subdeployment
             if (JarUtils.isArchive(file.getName()) == false)
             {
-               if (isTopLevel(parent) == false)
+               if (structureContext.isTopLevel() == false)
                {
                   try
                   {
@@ -153,20 +153,20 @@ public class JARStructure extends AbstractStructureDeployer
          }
 
          // Create a context for this jar file with META-INF as the location for metadata  
-         context = createContext(file, "META-INF", metaData);
+         context = createContext(structureContext, "META-INF");
 
          // The classpath is the root
-         super.addClassPath(root, file, true, true, context);
+         super.addClassPath(structureContext, file, true, true, context);
 
          // We try all the children as potential subdeployments
-         addAllChildren(root, file, metaData, deployers);
+         addAllChildren(structureContext);
          return true;
       }
       catch (Exception e)
       {
          // Remove the invalid context
          if(context != null)
-            metaData.removeContext(context);
+            structureContext.removeChild(context);
 
          throw DeploymentException.rethrowAsDeploymentException("Error determining structure: " + file.getName(), e);
       }

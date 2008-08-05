@@ -161,7 +161,7 @@ public class StructureContext
    {
       return parent == null;
    }
-
+   
    /**
     * Get the file.
     * 
@@ -206,18 +206,19 @@ public class StructureContext
     * Determine the child structure
     * 
     * @param child the child
+    * @return true when recognised
     * @throws DeploymentException for any error
     */
-   public void determineChildStructure(VirtualFile child) throws DeploymentException
+   public boolean determineChildStructure(VirtualFile child) throws DeploymentException
    {
       if (child == null)
          throw new IllegalArgumentException("Null child");
       
-      getDeployers().determineStructure(child, this);
+      return getDeployers().determineStructure(child, this);
    }
    
    /**
-    * Add a context
+    * Add a child context
     * 
     * @param child the child
     */
@@ -227,5 +228,18 @@ public class StructureContext
          throw new IllegalArgumentException("Null child");
       
       getMetaData().addContext(child);
+   }
+   
+   /**
+    * Remove a child context
+    * 
+    * @param child the child
+    */
+   public void removeChild(ContextInfo child)
+   {
+      if (child == null)
+         throw new IllegalArgumentException("Null child");
+      
+      getMetaData().removeContext(child);
    }
 }

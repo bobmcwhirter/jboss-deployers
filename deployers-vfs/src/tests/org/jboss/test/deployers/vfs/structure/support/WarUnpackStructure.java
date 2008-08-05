@@ -21,19 +21,19 @@
 */
 package org.jboss.test.deployers.vfs.structure.support;
 
-import org.jboss.deployers.vfs.plugins.structure.war.WARStructure;
 import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.deployers.spi.structure.ModificationType;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.deployers.vfs.plugins.structure.war.WARStructure;
+import org.jboss.deployers.vfs.spi.structure.StructureContext;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
 public class WarUnpackStructure extends WARStructure
 {
-   protected void applyContextInfo(VirtualFile root, ContextInfo result)
+   protected void applyContextInfo(StructureContext context, ContextInfo result)
    {
-      super.applyContextInfo(root, result);
+      super.applyContextInfo(context, result);
       result.setModificationType(ModificationType.UNPACK);
    }
 }

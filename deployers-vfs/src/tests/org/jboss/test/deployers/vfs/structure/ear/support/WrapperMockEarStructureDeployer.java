@@ -21,10 +21,8 @@
 */
 package org.jboss.test.deployers.vfs.structure.ear.support;
 
-import org.jboss.virtual.VirtualFile;
-import org.jboss.deployers.spi.structure.StructureMetaData;
 import org.jboss.deployers.spi.DeploymentException;
-import org.jboss.deployers.vfs.spi.structure.VFSStructuralDeployers;
+import org.jboss.deployers.vfs.spi.structure.StructureContext;
 
 /**
  * @author ales.justin@jboss.org
@@ -34,10 +32,10 @@ public class WrapperMockEarStructureDeployer extends MockEarStructureDeployer
    private boolean touched;
    private boolean valid;
 
-   public boolean determineStructure(VirtualFile root, VirtualFile parent, VirtualFile file, StructureMetaData metaData, VFSStructuralDeployers deployers) throws DeploymentException
+   public boolean determineStructure(StructureContext structureContext) throws DeploymentException
    {
       touched = true;
-      valid = super.determineStructure(root, parent, file, metaData, deployers);
+      valid = super.determineStructure(structureContext);
       return valid;
    }
 

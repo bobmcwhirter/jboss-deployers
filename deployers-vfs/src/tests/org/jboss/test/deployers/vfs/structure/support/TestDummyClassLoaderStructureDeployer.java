@@ -22,10 +22,8 @@
 package org.jboss.test.deployers.vfs.structure.support;
 
 import org.jboss.deployers.spi.DeploymentException;
-import org.jboss.deployers.spi.structure.StructureMetaData;
-import org.jboss.deployers.vfs.spi.structure.VFSStructuralDeployers;
+import org.jboss.deployers.vfs.spi.structure.StructureContext;
 import org.jboss.deployers.vfs.spi.structure.helpers.AbstractStructureDeployer;
-import org.jboss.virtual.VirtualFile;
 
 /**
  * TestDummyClassLoaderStructureDeployer.
@@ -54,8 +52,7 @@ public class TestDummyClassLoaderStructureDeployer extends AbstractStructureDepl
       setRelativeOrder(-1);
    }
    
-   public boolean determineStructure(VirtualFile root, VirtualFile parent, VirtualFile file,
-         StructureMetaData metaData, VFSStructuralDeployers deployers) throws DeploymentException
+   public boolean determineStructure(StructureContext structureContext) throws DeploymentException
    {
       checkClassLoader();
       return false;
