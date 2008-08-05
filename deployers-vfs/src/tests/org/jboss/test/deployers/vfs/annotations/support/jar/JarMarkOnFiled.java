@@ -28,5 +28,6 @@ import org.jboss.test.deployers.vfs.annotations.support.Marked;
  */
 public class JarMarkOnFiled
 {
+   @SuppressWarnings("unused")
    private @Marked Object field;
 }
