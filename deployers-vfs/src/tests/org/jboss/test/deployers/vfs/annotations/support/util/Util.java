@@ -29,6 +29,7 @@ import org.jboss.test.deployers.vfs.annotations.support.Marked;
 @Marked
 public class Util
 {
+   @SuppressWarnings("unused")
    private @Marked Object marked;
 
    @Marked
