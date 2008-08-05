@@ -28,6 +28,7 @@ import org.jboss.test.deployers.vfs.deployer.bean.test.AliasDeployerUnitTestCase
 import org.jboss.test.deployers.vfs.deployer.bean.test.BeanScanningUnitTestCase;
 import org.jboss.test.deployers.vfs.deployer.bean.test.BeanManagedDeploymentUnitTestCase;
 import org.jboss.test.deployers.vfs.deployer.bean.test.BeanMetaDataFactoryDeployerUnitTestCase;
+import org.jboss.test.deployers.vfs.deployer.bean.test.KernelScopeUnitTestCase;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -58,6 +59,7 @@ public class BeanDeployerTestSuite extends TestSuite
       suite.addTest(BeanManagedDeploymentUnitTestCase.suite());
       suite.addTest(BeanScanningUnitTestCase.suite());
       suite.addTest(BeanMetaDataFactoryDeployerUnitTestCase.suite());
+      suite.addTest(KernelScopeUnitTestCase.suite());
 
       return suite;
    }
