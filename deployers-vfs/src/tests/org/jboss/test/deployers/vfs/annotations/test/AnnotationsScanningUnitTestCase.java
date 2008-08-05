@@ -80,6 +80,7 @@ public class AnnotationsScanningUnitTestCase extends BootstrapDeployersTest
       }
    }
 
+   @SuppressWarnings("unchecked")
    protected void assertAnnotations(DeploymentUnit unit, int onClass, int onMethod, int onFiled)
    {
       AnnotationEnvironment env = unit.getAttachment(AnnotationEnvironment.class);
