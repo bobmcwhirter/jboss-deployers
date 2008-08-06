@@ -21,11 +21,14 @@
 */
 package org.jboss.test.deployers.vfs.deployer;
 
+import org.jboss.deployers.plugins.deployers.DeployersImpl;
+import org.jboss.deployers.spi.deployer.Deployers;
 import org.jboss.deployers.vfs.plugins.structure.file.FileStructure;
 import org.jboss.deployers.vfs.plugins.structure.jar.JARStructure;
 import org.jboss.kernel.Kernel;
 import org.jboss.kernel.plugins.bootstrap.basic.BasicBootstrap;
 import org.jboss.kernel.spi.dependency.KernelController;
+import org.jboss.metadata.spi.repository.MutableMetaDataRepository;
 
 /**
  * AbstractDeployerUnitTestCase.
@@ -39,6 +42,11 @@ public abstract class AbstractDeployerUnitTest extends DeployerClientTest
    public AbstractDeployerUnitTest(String name) throws Throwable
    {
       super(name);
+   }
+
+   protected KernelController getController()
+   {
+      return controller;
    }
 
    protected void setUp() throws Exception
@@ -61,6 +69,15 @@ public abstract class AbstractDeployerUnitTest extends DeployerClientTest
       {
          throw new RuntimeException(t);
       }
+   }
+
+   protected Deployers createDeployers()
+   {
+      DeployersImpl deployers = (DeployersImpl) super.createDeployers();
+      KernelController controller = getController();
+      MutableMetaDataRepository repository = controller.getKernel().getMetaDataRepository().getMetaDataRepository();
+      deployers.setRepository(repository);
+      return deployers;
    }
 
    protected abstract void addDeployers(Kernel kernel);

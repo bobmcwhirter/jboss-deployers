@@ -25,11 +25,7 @@ import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.spi.deployer.helpers.AbstractDeployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
-import org.jboss.metadata.plugins.loader.memory.MemoryMetaDataLoader;
 import org.jboss.metadata.spi.repository.MutableMetaDataRepository;
-import org.jboss.metadata.spi.scope.CommonLevels;
-import org.jboss.metadata.spi.scope.Scope;
-import org.jboss.metadata.spi.scope.ScopeKey;
 
 /**
  * TestMetaDataBeanDeployer.
@@ -49,18 +45,6 @@ public class TestMetaDataBeanDeployer extends AbstractDeployer
 
    public void deploy(DeploymentUnit unit) throws DeploymentException
    {
-      Scope applicationScope = unit.getScope().getScope(CommonLevels.APPLICATION);
-      
-      MemoryMetaDataLoader applicationMetaData = new MemoryMetaDataLoader(new ScopeKey(applicationScope));
-      repository.addMetaDataRetrieval(applicationMetaData);
-      
-      applicationMetaData.addMetaData("test", this, TestMetaDataBeanDeployer.class);
-   }
-
-   public void undeploy(DeploymentUnit unit)
-   {
-      Scope applicationScope = unit.getScope().getScope(CommonLevels.APPLICATION);
-      
-      repository.removeMetaDataRetrieval(new ScopeKey(applicationScope));
+      unit.getMutableMetaData().addMetaData("test", this, TestMetaDataBeanDeployer.class);
    }
 }

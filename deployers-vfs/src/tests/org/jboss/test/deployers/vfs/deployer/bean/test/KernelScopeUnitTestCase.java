@@ -24,6 +24,7 @@ package org.jboss.test.deployers.vfs.deployer.bean.test;
 import java.util.Collections;
 
 import junit.framework.Test;
+
 import org.jboss.beans.metadata.plugins.AbstractBeanMetaData;
 import org.jboss.beans.metadata.spi.BeanMetaDataFactory;
 import org.jboss.dependency.spi.ControllerContext;
