@@ -25,7 +25,6 @@ import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.spi.deployer.helpers.AbstractDeployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
-import org.jboss.metadata.spi.repository.MutableMetaDataRepository;
 
 /**
  * TestMetaDataBeanDeployer.
@@ -35,11 +34,8 @@ import org.jboss.metadata.spi.repository.MutableMetaDataRepository;
  */
 public class TestMetaDataBeanDeployer extends AbstractDeployer
 {
-   MutableMetaDataRepository repository;
-   
-   public TestMetaDataBeanDeployer(MutableMetaDataRepository repository)
+   public TestMetaDataBeanDeployer()
    {
-      this.repository = repository;
       setStage(DeploymentStages.PRE_REAL);
    }
 

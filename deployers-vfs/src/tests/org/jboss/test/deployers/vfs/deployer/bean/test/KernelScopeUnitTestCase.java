@@ -66,8 +66,7 @@ public class KernelScopeUnitTestCase extends AbstractDeployerUnitTest
    @SuppressWarnings("deprecation")
    protected void addDeployers(Kernel kernel)
    {
-      MutableMetaDataRepository repository = kernel.getMetaDataRepository().getMetaDataRepository();
-      testMetaDataDeployer = new TestMetaDataBeanDeployer(repository);
+      testMetaDataDeployer = new TestMetaDataBeanDeployer();
       KernelDeploymentDeployer kernelDeploymentDeployer = new KernelDeploymentDeployer();
       BeanMetaDataDeployer beanMetaDataDeployer = new BeanMetaDataDeployer(kernel);
       addDeployer(main, testMetaDataDeployer);
