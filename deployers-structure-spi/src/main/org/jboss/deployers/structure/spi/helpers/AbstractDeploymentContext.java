@@ -402,12 +402,6 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
       this.comparator = comparator;
    }
 
-   @Deprecated
-   public Set<String> getTypes()
-   {
-      return deploymentTypes;
-   }
-
    public ScopeKey getScope()
    {
       if (scope == null)

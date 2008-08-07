@@ -68,15 +68,10 @@
     </bean>
 
    <!-- POJO Deployment -->
-   <bean name="BeanDeployer" class="org.jboss.deployers.vfs.deployer.kernel.BeanDeployer">
-      <property name="type">beans</property>
-   </bean>
-   <bean name="KernelDeploymentDeployer" class="org.jboss.deployers.vfs.deployer.kernel.KernelDeploymentDeployer">
-      <property name="type">beans</property>
-   </bean>
+   <bean name="BeanDeployer" class="org.jboss.deployers.vfs.deployer.kernel.BeanDeployer"/>
+   <bean name="KernelDeploymentDeployer" class="org.jboss.deployers.vfs.deployer.kernel.KernelDeploymentDeployer"/>
    <bean name="BeanMetaDataDeployer" class="org.jboss.deployers.vfs.deployer.kernel.BeanMetaDataDeployer">
       <constructor><parameter class="org.jboss.dependency.spi.Controller"><inject bean="jboss.kernel:service=KernelController"/></parameter></constructor>
-      <property name="type">beans</property>
    </bean>
 
    <!-- VFS ClassLoader -->

@@ -171,12 +171,6 @@ public class ComponentDeploymentContext implements DeploymentContext
       // No relative ordering of components?
    }
 
-   @Deprecated
-   public Set<String> getTypes()
-   {
-      return parent.getTypes();
-   }
-   
    public ScopeKey getScope()
    {
       if (scope == null)
