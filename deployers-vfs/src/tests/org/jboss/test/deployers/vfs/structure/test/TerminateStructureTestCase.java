@@ -22,13 +22,12 @@
 package org.jboss.test.deployers.vfs.structure.test;
 
 import junit.framework.Test;
-
 import org.jboss.deployers.spi.DeploymentException;
+import org.jboss.deployers.vfs.plugins.structure.AbstractVFSStructureDeployer;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
 import org.jboss.deployers.vfs.spi.structure.StructureDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
-import org.jboss.deployers.vfs.spi.structure.helpers.AbstractStructureDeployer;
 import org.jboss.test.deployers.vfs.structure.AbstractStructureTest;
 
 /**
@@ -107,7 +106,7 @@ public class TerminateStructureTestCase extends AbstractStructureTest
       throw new UnsupportedOperationException("No use case.");
    }
 
-   private class PassStructureDeployer extends AbstractStructureDeployer
+   private class PassStructureDeployer extends AbstractVFSStructureDeployer
    {
       public PassStructureDeployer(int order)
       {
@@ -120,7 +119,7 @@ public class TerminateStructureTestCase extends AbstractStructureTest
       }
    }
 
-   private class FailStructureDeployer extends AbstractStructureDeployer
+   private class FailStructureDeployer extends AbstractVFSStructureDeployer
    {
       public FailStructureDeployer(int order)
       {
@@ -133,7 +132,7 @@ public class TerminateStructureTestCase extends AbstractStructureTest
       }
    }
 
-   private class REStructureDeployer extends AbstractStructureDeployer
+   private class REStructureDeployer extends AbstractVFSStructureDeployer
    {
       public REStructureDeployer(int order)
       {

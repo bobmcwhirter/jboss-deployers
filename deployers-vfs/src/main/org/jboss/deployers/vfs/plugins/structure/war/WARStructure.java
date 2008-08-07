@@ -26,8 +26,8 @@ import java.util.List;
 
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.structure.ContextInfo;
+import org.jboss.deployers.vfs.plugins.structure.AbstractVFSStructureDeployer;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
-import org.jboss.deployers.vfs.spi.structure.helpers.AbstractStructureDeployer;
 import org.jboss.virtual.VirtualFile;
 import org.jboss.virtual.VirtualFileFilter;
 import org.jboss.virtual.VisitorAttributes;
@@ -39,7 +39,7 @@ import org.jboss.virtual.plugins.vfs.helpers.SuffixMatchFilter;
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
  * @version $Revision: 1.1 $
  */
-public class WARStructure extends AbstractStructureDeployer
+public class WARStructure extends AbstractVFSStructureDeployer
 {
    /** The default filter which allows jars/jar directories */
    public static final VirtualFileFilter DEFAULT_WEB_INF_LIB_FILTER = new SuffixMatchFilter(".jar", VisitorAttributes.DEFAULT);

@@ -22,10 +22,14 @@
 package org.jboss.deployers.vfs.spi.structure.helpers;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.jboss.deployers.spi.DeploymentException;
+import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
 import org.jboss.deployers.spi.structure.ClassPathEntry;
 import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.deployers.spi.structure.StructureMetaData;
@@ -33,12 +37,13 @@ import org.jboss.deployers.spi.structure.StructureMetaDataFactory;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
 import org.jboss.deployers.vfs.spi.structure.StructureDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSStructuralDeployers;
+import org.jboss.deployers.vfs.spi.structure.CandidateAnnotationsCallback;
 import org.jboss.logging.Logger;
+import org.jboss.util.collection.CollectionsFactory;
 import org.jboss.virtual.VFSUtils;
 import org.jboss.virtual.VirtualFile;
 import org.jboss.virtual.VirtualFileVisitor;
 import org.jboss.virtual.VisitorAttributes;
-import org.jboss.util.collection.CollectionsFactory;
 
 /**
  * AbstractStructureDeployer.<p>
@@ -62,6 +67,12 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
 
    /** The context info order */
    private Integer contextInfoOrder;
+
+   /** The supports annotations flag */
+   private boolean supportsCandidateAnnotations;
+
+   /** The candidate annotations */
+   private Set<Class<? extends Annotation>> candidateAnnotations;
 
    /**
     * Get the relative path between two virtual files
@@ -129,6 +140,38 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
       this.contextInfoOrder = contextInfoOrder;
    }
 
+   /**
+    * Get the candidate annotations.
+    *
+    * @return the candidate annotations
+    */
+   public Set<Class<? extends Annotation>> getCandidateAnnotations()
+   {
+      return candidateAnnotations;
+   }
+
+   /**
+    * Set the candidate annotations.
+    *
+    * @param candidateAnnotations the candidate annotations
+    */
+   public void setCandidateAnnotations(Set<Class<? extends Annotation>> candidateAnnotations)
+   {
+      this.candidateAnnotations = candidateAnnotations;
+   }
+
+   /**
+    * Add candidate annotation.
+    *
+    * @param annotationClass the candidate annotation class
+    */
+   public void addCandidateAnnotation(Class<? extends Annotation> annotationClass)
+   {
+      if (candidateAnnotations == null)
+         candidateAnnotations = new LinkedHashSet<Class<? extends Annotation>>();
+      candidateAnnotations.add(annotationClass);
+   }
+
    // This should be an abstract method JBDEPLOY-66
    public boolean determineStructure(StructureContext context) throws DeploymentException
    {
@@ -140,7 +183,22 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
    {
       return false;
    }
-   
+
+   public boolean isSupportsCandidateAnnotations()
+   {
+      return supportsCandidateAnnotations;
+   }
+
+   /**
+    * Set supportsCandidateAnnotations flag.
+    *
+    * @param supportsCandidateAnnotations the support candidate annotations flag
+    */
+   public void setSupportsCandidateAnnotations(boolean supportsCandidateAnnotations)
+   {
+      this.supportsCandidateAnnotations = supportsCandidateAnnotations;
+   }
+
    /**
     * Get the candidateStructureVisitorFactory.
     * 
@@ -270,6 +328,51 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
          if (trace)
             log.trace("Added classpath entry " + entryPath + " for " + vf.getName() + " from " + root);
       }
+   }
+
+   /**
+    * Create annotation environment
+    *
+    * @param root the deployment root
+    * @return new annotation environment
+    */
+   protected abstract AnnotationEnvironment createAnnotationEnvironment(VirtualFile root);
+
+   /**
+    * Check for candidate annotations.
+    *
+    * @param context the structure context
+    * @param roots the roots to check
+    * @return return true if one of the roots includes some candidate annotation
+    */
+   protected boolean checkCandidateAnnotations(StructureContext context, VirtualFile... roots)
+   {
+      if (roots == null || roots.length == 0)
+         throw new IllegalArgumentException("Null or empty roots");
+
+      StructureContext parentContext = context.getParentContext();
+      if (candidateAnnotations == null || candidateAnnotations.isEmpty() || parentContext == null)
+         return true;
+
+      Set<CandidateAnnotationsCallback> callbacks = parentContext.getCallbacks(CandidateAnnotationsCallback.class);
+      if (callbacks.isEmpty())
+         return true;
+
+      boolean result = false;
+      for(VirtualFile root : roots)
+      {
+         AnnotationEnvironment env = createAnnotationEnvironment(root);
+         for (Class<? extends Annotation> annotationClass : candidateAnnotations)
+         {
+            if (env.hasClassAnnotatedWith(annotationClass))
+            {
+               result = true;
+               for (CandidateAnnotationsCallback callback : callbacks)
+                  callback.executeCallback(root, context, env, annotationClass);
+            }
+         }
+      }
+      return result;
    }
 
    /**

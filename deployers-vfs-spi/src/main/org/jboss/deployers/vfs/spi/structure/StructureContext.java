@@ -21,6 +21,10 @@
 */
 package org.jboss.deployers.vfs.spi.structure;
 
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Collections;
+
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.deployers.spi.structure.StructureMetaData;
@@ -30,6 +34,7 @@ import org.jboss.virtual.VirtualFile;
  * StructureContext.
  * 
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public class StructureContext
@@ -51,6 +56,12 @@ public class StructureContext
    
    /** The parent structure context */
    private StructureContext parentContext;
+
+   /** The candidate annotation scanning */
+   private boolean candidateAnnotationScanning;
+
+   /** The callbacks */
+   private Set<Object> callbacks;
 
    /**
     * Helper method to check parent is not null before retrieving parameters
@@ -201,7 +212,72 @@ public class StructureContext
    {
       return parentContext;
    }
-   
+
+   /**
+    * Get the candidate annotation scanning.
+    *
+    * @return the candidate annotation scanning
+    */
+   public boolean isCandidateAnnotationScanning()
+   {
+      return candidateAnnotationScanning;
+   }
+
+   /**
+    * Set the candidate annotation scanning.
+    *
+    * @param candidateAnnotationScanning the candidate annotation scanning
+    */
+   public void setCandidateAnnotationScanning(boolean candidateAnnotationScanning)
+   {
+      this.candidateAnnotationScanning = candidateAnnotationScanning;
+   }
+
+   /***
+    * Get the matching callbacks.
+    *
+    * @param <T> exact callback type
+    * @param callbackType the exact callback type
+    * @return the callbacks
+    */
+   public <T> Set<T> getCallbacks(Class<T> callbackType)
+   {
+      if (callbackType == null)
+         throw new IllegalArgumentException("Null callback type");
+
+      if (callbacks == null || callbacks.isEmpty())
+         return Collections.emptySet();
+
+      Set<T> set = new HashSet<T>();
+      for (Object callback : callbacks)
+      {
+         if (callbackType.isInstance(callback))
+            set.add(callbackType.cast(callback));
+      }
+      return set;
+   }
+
+   /**
+    * Add the callback.
+    *
+    * @param callback the callback
+    */
+   public void addCallback(Object callback)
+   {
+      if (callbacks == null)
+         callbacks = new HashSet<Object>();
+      callbacks.add(callback);
+   }
+
+   /**
+    * Set the callbacks.
+    * @param callbacks the callbacks
+    */
+   public void setCallbacks(Set<Object> callbacks)
+   {
+      this.callbacks = callbacks;
+   }
+
    /**
     * Determine the child structure
     * 

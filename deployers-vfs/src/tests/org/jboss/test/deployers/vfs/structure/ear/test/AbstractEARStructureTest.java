@@ -28,10 +28,14 @@ import org.jboss.deployers.vfs.plugins.structure.file.FileStructure;
 import org.jboss.deployers.vfs.plugins.structure.jar.JARStructure;
 import org.jboss.deployers.vfs.plugins.structure.war.WARStructure;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
-import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.deployers.vfs.spi.structure.StructureDeployer;
+import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.test.deployers.vfs.structure.AbstractStructureTest;
+import org.jboss.test.deployers.vfs.structure.ear.support.AppClient;
 import org.jboss.test.deployers.vfs.structure.ear.support.MockEarStructureDeployer;
+import org.jboss.test.deployers.vfs.structure.ear.support.Service;
+import org.jboss.test.deployers.vfs.structure.ear.support.Servlet;
+import org.jboss.test.deployers.vfs.structure.ear.support.Stateless;
 import org.jboss.virtual.plugins.context.jar.JarUtils;
 
 /**
@@ -62,6 +66,11 @@ public abstract class AbstractEARStructureTest extends AbstractStructureTest
    {
       Set<String> defaultSuffixes = JarUtils.getSuffixes();
       JARStructure jarStructure = new JARStructure();
+      jarStructure.setSupportsCandidateAnnotations(true);
+      jarStructure.addCandidateAnnotation(Stateless.class);
+      jarStructure.addCandidateAnnotation(Service.class);
+      jarStructure.addCandidateAnnotation(AppClient.class);
+      jarStructure.addCandidateAnnotation(Servlet.class);
       try
       {
          Set<String> suffixes = new HashSet<String>(jarStructure.getSuffixes());

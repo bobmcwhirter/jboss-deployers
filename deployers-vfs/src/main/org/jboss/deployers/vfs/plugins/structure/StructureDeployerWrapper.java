@@ -64,6 +64,9 @@ public class StructureDeployerWrapper implements StructureDeployer
       if (context == null)
          throw new IllegalArgumentException("Null context");
 
+      if (context.isCandidateAnnotationScanning() && deployer.isSupportsCandidateAnnotations() == false)
+         return false;
+      
       ClassLoader previous = SecurityActions.setContextClassLoader(classLoader);
       try
       {
@@ -82,7 +85,12 @@ public class StructureDeployerWrapper implements StructureDeployer
          SecurityActions.resetContextClassLoader(previous);
       }
    }
-   
+
+   public boolean isSupportsCandidateAnnotations()
+   {
+      return deployer.isSupportsCandidateAnnotations();
+   }
+
    public int getRelativeOrder()
    {
       return deployer.getRelativeOrder();

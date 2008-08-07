@@ -41,4 +41,11 @@ public interface StructureDeployer extends Ordered
     * @throws DeploymentException for an error
     */
    boolean determineStructure(StructureContext context) throws DeploymentException;
+
+   /**
+    * Do we support candidate annotations lookup.
+    *
+    * @return true if candidate annotaiotns lookup is supported, false otherwise
+    */
+   boolean isSupportsCandidateAnnotations();
 }

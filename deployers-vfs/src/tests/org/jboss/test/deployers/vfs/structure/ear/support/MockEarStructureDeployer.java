@@ -25,20 +25,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
-import org.jboss.classloader.spi.filter.ClassFilter;
-import org.jboss.classloading.plugins.vfs.VFSResourceVisitor;
-import org.jboss.classloading.spi.visitor.ResourceFilter;
-import org.jboss.deployers.plugins.annotations.GenericAnnotationResourceVisitor;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
 import org.jboss.deployers.spi.structure.ContextInfo;
+import org.jboss.deployers.vfs.plugins.structure.AbstractVFSStructureDeployer;
+import org.jboss.deployers.vfs.spi.structure.CandidateAnnotationsCallback;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
-import org.jboss.deployers.vfs.spi.structure.helpers.AbstractStructureDeployer;
+import org.jboss.logging.Logger;
 import org.jboss.virtual.VFSUtils;
 import org.jboss.virtual.VirtualFile;
 import org.jboss.virtual.VirtualFileFilter;
@@ -52,7 +52,7 @@ import org.jboss.virtual.plugins.vfs.helpers.SuffixMatchFilter;
  * @author Ales.Justin@jboss.org
  * @version $Revision:$
  */
-public class MockEarStructureDeployer extends AbstractStructureDeployer
+public class MockEarStructureDeployer extends AbstractVFSStructureDeployer
 {
    /**
     * The default ear/lib filter
@@ -135,10 +135,10 @@ public class MockEarStructureDeployer extends AbstractStructureDeployer
          }
 
          // Add the ear manifest locations?
-         super.addClassPath(structureContext, file, false, true, context);
+         addClassPath(structureContext, file, false, true, context);
 
          if (scan)
-            scanEar(file, modules);
+            scanEar(structureContext, file, modules);
 
          // Create subdeployments for the ear modules
          for (EarModule mod : modules)
@@ -204,11 +204,16 @@ public class MockEarStructureDeployer extends AbstractStructureDeployer
       }
    }
 
-   private void scanEar(VirtualFile root, List<EarModule> modules) throws IOException
+   private void scanEar(StructureContext context, VirtualFile root, List<EarModule> modules) throws Exception
    {
       List<VirtualFile> archives = root.getChildren();
-      if (archives != null)
+      if (archives != null && archives.isEmpty() == false)
       {
+         // enable candidate annotations
+         context.setCandidateAnnotationScanning(true);
+         EarCandidateAnnotationsCallback callback = new EarCandidateAnnotationsCallback();
+         context.addCallback(callback);
+
          String earPath = root.getPathName();
          int counter = 0;
          for (VirtualFile vfArchive : archives)
@@ -218,7 +223,18 @@ public class MockEarStructureDeployer extends AbstractStructureDeployer
             EarModule moduleMetaData = getModule(modules, filename);
             if (moduleMetaData == null)
             {
-               int type = typeFromSuffix(filename, vfArchive);
+               // reset callback result
+               callback.reset();
+
+               int type = typeFromSuffix(context, filename, vfArchive);
+               Integer callbackResult = null;
+               if (type < 0)
+               {
+                  callbackResult = callback.getResult();
+                  if (callbackResult != null)
+                     type = callbackResult;
+               }
+
                if (type >= 0)
                {
                   String typeString = null;
@@ -241,12 +257,19 @@ public class MockEarStructureDeployer extends AbstractStructureDeployer
                         typeString = "Web";
                         break;
                   }
-                  moduleMetaData = new EarModule(typeString + "Module" + counter, filename);
-                  modules.add(moduleMetaData);
-                  counter++;
+                  // we didin't do full recognition yet
+                  if (callbackResult == null)
+                  {
+                     moduleMetaData = new EarModule(typeString + "Module" + counter, filename);
+                     modules.add(moduleMetaData);
+                     counter++;
+                  }
                }
             }
          }
+
+         // reset candidate annotation scanning flag
+         context.setCandidateAnnotationScanning(false);
       }
    }
 
@@ -258,10 +281,10 @@ public class MockEarStructureDeployer extends AbstractStructureDeployer
       return null;
    }
 
-   private int typeFromSuffix(String path, VirtualFile archive)
-         throws IOException
+   private int typeFromSuffix(StructureContext context, String path, VirtualFile archive) throws Exception
    {
       int type = -1;
+
       if (path.endsWith(".war"))
          type = J2eeModuleMetaData.WEB;
       else if (path.endsWith(".rar"))
@@ -292,9 +315,7 @@ public class MockEarStructureDeployer extends AbstractStructureDeployer
             }
             else
             {
-               Integer dt = determineType(archive);
-               if (dt != null)
-                  type = dt;
+               determineType(context, archive);
             }
          }
          else if (ejbXml != null || jbossXml != null)
@@ -303,59 +324,16 @@ public class MockEarStructureDeployer extends AbstractStructureDeployer
          }
          else
          {
-            Integer dt = determineType(archive);
-            if (dt != null)
-               type = dt;
+            determineType(context, archive);
          }
       }
 
       return type;
    }
 
-   private Integer determineType(VirtualFile archive)
+   private void determineType(StructureContext context, VirtualFile archive) throws Exception
    {
-      ClassLoader classLoader = new SimpleVFSResourceLoader(Thread.currentThread().getContextClassLoader(), archive);
-      GenericAnnotationResourceVisitor visitor = new GenericAnnotationResourceVisitor(classLoader);
-      ClassFilter included = null;
-      ClassFilter excluded = null;
-      ResourceFilter filter = org.jboss.classloading.spi.visitor.ClassFilter.INSTANCE;
-      VFSResourceVisitor.visit(new VirtualFile[]{archive}, null, included, excluded, classLoader, visitor, filter, null);
-      AnnotationEnvironment env = visitor.getEnv();
-
-      Integer ejbs = getType(env, Stateless.class, J2eeModuleMetaData.EJB);
-      if (ejbs != null)
-      {
-         // check some conflicts - e.g. no @Servlet, ...?
-         return ejbs;
-      }
-
-      Integer services = getType(env, Service.class, J2eeModuleMetaData.SERVICE);
-      if (services != null)
-      {
-         // check some conflicts - e.g. no @Servlet, ...?
-         return services;
-      }
-
-      Integer appc = getType(env, AppClient.class, J2eeModuleMetaData.CLIENT);
-      if (appc != null)
-      {
-         // check some conflicts - e.g. no @Servlet, ...?
-         return appc;
-      }
-
-      Integer wars = getType(env, Servlet.class, J2eeModuleMetaData.WEB);
-      if (wars != null)
-         return wars;
-
-      return null;
-   }
-
-   private Integer getType(AnnotationEnvironment env, Class<? extends Annotation> annotation, int type)
-   {
-      // in real deployer this should use annotation class directly
-      // since annotation class on beans should be the same as
-      // annotation classes in deployer
-      return (env.hasClassAnnotatedWith(annotation.getName())) ? type : null;
+      context.determineChildStructure(archive);
    }
 
    private String earRelativePath(String earPath, String pathName)
@@ -376,5 +354,44 @@ public class MockEarStructureDeployer extends AbstractStructureDeployer
       {
       }
       return metaFile;
+   }
+
+   private static class EarCandidateAnnotationsCallback implements CandidateAnnotationsCallback
+   {
+      private static final Logger log = Logger.getLogger(EarCandidateAnnotationsCallback.class);
+      private Integer result;
+
+      private final static Map<Class<? extends Annotation>, Integer> map;
+
+      static
+      {
+         map = new HashMap<Class<? extends Annotation>, Integer>();
+         map.put(Stateless.class, J2eeModuleMetaData.EJB);
+         map.put(Service.class, J2eeModuleMetaData.SERVICE);
+         map.put(AppClient.class, J2eeModuleMetaData.CLIENT);
+         map.put(Servlet.class, J2eeModuleMetaData.WEB);
+      }
+
+      public void executeCallback(VirtualFile root, StructureContext currentContext, AnnotationEnvironment env, Class<? extends Annotation> annotationClass)
+      {
+         if (result == null)
+         {
+            result = map.get(annotationClass);
+         }
+         else
+         {
+            log.warn("Result already set: " + result);
+         }
+      }
+
+      public void reset()
+      {
+         result = null;
+      }
+
+      public Integer getResult()
+      {
+         return result;
+      }
    }
 }

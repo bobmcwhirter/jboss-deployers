@@ -29,8 +29,8 @@ import org.jboss.beans.metadata.api.annotations.Uninstall;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.matchers.JarExtensionProvider;
 import org.jboss.deployers.spi.structure.ContextInfo;
+import org.jboss.deployers.vfs.plugins.structure.AbstractVFSStructureDeployer;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
-import org.jboss.deployers.vfs.spi.structure.helpers.AbstractStructureDeployer;
 import org.jboss.virtual.VirtualFile;
 import org.jboss.virtual.plugins.context.jar.JarUtils;
 
@@ -40,7 +40,7 @@ import org.jboss.virtual.plugins.context.jar.JarUtils;
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
  * @version $Revision: 1.1 $
  */
-public class JARStructure extends AbstractStructureDeployer
+public class JARStructure extends AbstractVFSStructureDeployer
 {
    /**
     * Create a new JARStructure. with the default suffixes
@@ -152,15 +152,24 @@ public class JARStructure extends AbstractStructureDeployer
             return false;
          }
 
-         // Create a context for this jar file with META-INF as the location for metadata  
-         context = createContext(structureContext, "META-INF");
+         boolean valid = true;
 
-         // The classpath is the root
-         super.addClassPath(structureContext, file, true, true, context);
+         StructureContext parentContext = structureContext.getParentContext();
+         if (parentContext != null && parentContext.isCandidateAnnotationScanning() && isSupportsCandidateAnnotations())
+            valid = checkCandidateAnnotations(structureContext, file);
 
-         // We try all the children as potential subdeployments
-         addAllChildren(structureContext);
-         return true;
+         if (valid)
+         {
+            // Create a context for this jar file with META-INF as the location for metadata
+            context = createContext(structureContext, "META-INF");
+
+            // The classpath is the root
+            addClassPath(structureContext, file, true, true, context);
+
+            // We try all the children as potential subdeployments
+            addAllChildren(structureContext);
+         }
+         return valid;
       }
       catch (Exception e)
       {

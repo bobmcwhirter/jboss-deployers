@@ -22,8 +22,8 @@
 package org.jboss.test.deployers.vfs.structure.support;
 
 import org.jboss.deployers.spi.DeploymentException;
+import org.jboss.deployers.vfs.plugins.structure.AbstractVFSStructureDeployer;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
-import org.jboss.deployers.vfs.spi.structure.helpers.AbstractStructureDeployer;
 
 /**
  * TestDummyClassLoaderStructureDeployer.
@@ -31,7 +31,7 @@ import org.jboss.deployers.vfs.spi.structure.helpers.AbstractStructureDeployer;
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
  * @version $Revision: 1.1 $
  */
-public class TestDummyClassLoaderStructureDeployer extends AbstractStructureDeployer
+public class TestDummyClassLoaderStructureDeployer extends AbstractVFSStructureDeployer
 {
    private static ClassLoader classLoader;
 

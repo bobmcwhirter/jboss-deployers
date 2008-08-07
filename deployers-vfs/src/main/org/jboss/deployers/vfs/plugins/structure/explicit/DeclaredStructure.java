@@ -25,8 +25,8 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.jboss.deployers.spi.DeploymentException;
+import org.jboss.deployers.vfs.plugins.structure.AbstractVFSStructureDeployer;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
-import org.jboss.deployers.vfs.spi.structure.helpers.AbstractStructureDeployer;
 import org.jboss.virtual.VirtualFile;
 import org.jboss.xb.binding.Unmarshaller;
 import org.jboss.xb.binding.UnmarshallerFactory;
@@ -38,7 +38,7 @@ import org.jboss.xb.binding.UnmarshallerFactory;
  * @author Scott.Stark@jboss.org
  * @version $Revision: 1.1 $
  */
-public class DeclaredStructure extends AbstractStructureDeployer
+public class DeclaredStructure extends AbstractVFSStructureDeployer
 {
    /**
     * Set the relative order to 0 by default.

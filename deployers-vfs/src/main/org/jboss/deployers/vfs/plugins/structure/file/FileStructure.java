@@ -28,9 +28,9 @@ import org.jboss.beans.metadata.api.annotations.Install;
 import org.jboss.beans.metadata.api.annotations.Uninstall;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.structure.ContextInfo;
+import org.jboss.deployers.vfs.plugins.structure.AbstractVFSStructureDeployer;
 import org.jboss.deployers.vfs.spi.deployer.FileMatcher;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
-import org.jboss.deployers.vfs.spi.structure.helpers.AbstractStructureDeployer;
 import org.jboss.virtual.VirtualFile;
 
 /**
@@ -39,7 +39,7 @@ import org.jboss.virtual.VirtualFile;
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
  * @version $Revision: 1.1 $
  */
-public class FileStructure extends AbstractStructureDeployer
+public class FileStructure extends AbstractVFSStructureDeployer
 {
    /** The file suffixes */
    private static Set<String> fileSuffixes = new CopyOnWriteArraySet<String>();
