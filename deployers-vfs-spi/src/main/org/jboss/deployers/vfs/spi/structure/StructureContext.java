@@ -271,6 +271,7 @@ public class StructureContext
 
    /**
     * Set the callbacks.
+    * 
     * @param callbacks the callbacks
     */
    public void setCallbacks(Set<Object> callbacks)
