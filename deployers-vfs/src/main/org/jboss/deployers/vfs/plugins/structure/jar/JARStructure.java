@@ -38,6 +38,7 @@ import org.jboss.virtual.plugins.context.jar.JarUtils;
  * JARStructure.
  * 
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public class JARStructure extends AbstractVFSStructureDeployer
@@ -154,9 +155,12 @@ public class JARStructure extends AbstractVFSStructureDeployer
 
          boolean valid = true;
 
-         StructureContext parentContext = structureContext.getParentContext();
-         if (parentContext != null && parentContext.isCandidateAnnotationScanning() && isSupportsCandidateAnnotations())
-            valid = checkCandidateAnnotations(structureContext, file);
+         if (isSupportsCandidateAnnotations())
+         {
+            StructureContext parentContext = structureContext.getParentContext();
+            if (parentContext != null && parentContext.isCandidateAnnotationScanning())
+               valid = checkCandidateAnnotations(structureContext, file);
+         }
 
          if (valid)
          {

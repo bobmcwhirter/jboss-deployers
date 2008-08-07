@@ -350,8 +350,11 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
       if (roots == null || roots.length == 0)
          throw new IllegalArgumentException("Null or empty roots");
 
+      if (candidateAnnotations == null || candidateAnnotations.isEmpty())
+         return true;
+
       StructureContext parentContext = context.getParentContext();
-      if (candidateAnnotations == null || candidateAnnotations.isEmpty() || parentContext == null)
+      if (parentContext == null)
          return true;
 
       Set<CandidateAnnotationsCallback> callbacks = parentContext.getCallbacks(CandidateAnnotationsCallback.class);
