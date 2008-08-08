@@ -21,10 +21,12 @@
 */
 package org.jboss.test.deployers.vfs.deployer.bean.test;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
+import java.util.HashSet;
 
 import junit.framework.Test;
-
 import org.jboss.beans.metadata.plugins.AbstractBeanMetaData;
 import org.jboss.beans.metadata.spi.BeanMetaDataFactory;
 import org.jboss.dependency.spi.ControllerContext;
@@ -38,7 +40,8 @@ import org.jboss.deployers.vfs.deployer.kernel.KernelDeploymentDeployer;
 import org.jboss.kernel.Kernel;
 import org.jboss.kernel.plugins.deployment.AbstractKernelDeployment;
 import org.jboss.metadata.spi.MetaData;
-import org.jboss.metadata.spi.repository.MutableMetaDataRepository;
+import org.jboss.metadata.spi.scope.Scope;
+import org.jboss.metadata.spi.scope.ScopeKey;
 import org.jboss.test.deployers.vfs.deployer.AbstractDeployerUnitTest;
 import org.jboss.test.deployers.vfs.deployer.bean.support.Simple;
 import org.jboss.test.deployers.vfs.deployer.bean.support.TestMetaDataBeanDeployer;
@@ -95,13 +98,27 @@ public class KernelScopeUnitTestCase extends AbstractDeployerUnitTest
       MainDeployerStructure mds = (MainDeployerStructure) main;
       DeploymentUnit unit = mds.getDeploymentUnit("KernelDeployerTest", true);
       DeploymentUnit component = unit.getComponent("Test");
-      assertEquals(component.getScope(), scopeInfo.getScope());
-      assertEquals(component.getMutableScope(), scopeInfo.getMutableScope());
+      assertScopeKeys(component.getScope(), scopeInfo.getScope());
+      assertScopeKeys(component.getMutableScope(), scopeInfo.getMutableScope());
       
       MetaData md = ctx.getScopeInfo().getMetaData();
       assertEquals(testMetaDataDeployer, md.getMetaData("test"));
       
       assertUndeploy(context);
       assertNull(controller.getContext("Test", null));
+   }
+
+   /**
+    * Component scopes should be subset of context scopes.  
+    */
+   protected void assertScopeKeys(ScopeKey component, ScopeKey context)
+   {
+      Collection<Scope> componentScopes = component.getScopes();
+      Collection<Scope> contextScopes = context.getScopes();
+
+      Set<Scope> first = new HashSet<Scope>(componentScopes);
+      Set<Scope> second = new HashSet<Scope>(contextScopes);
+      second.retainAll(first);
+      assertEquals(first, second);
    }
 }
