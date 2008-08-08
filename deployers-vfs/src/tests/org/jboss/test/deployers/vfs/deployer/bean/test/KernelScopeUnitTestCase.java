@@ -44,6 +44,7 @@ import org.jboss.metadata.spi.scope.Scope;
 import org.jboss.metadata.spi.scope.ScopeKey;
 import org.jboss.test.deployers.vfs.deployer.AbstractDeployerUnitTest;
 import org.jboss.test.deployers.vfs.deployer.bean.support.Simple;
+import org.jboss.test.deployers.vfs.deployer.bean.support.TestInstanceMetaDataBeanDeployer;
 import org.jboss.test.deployers.vfs.deployer.bean.support.TestMetaDataBeanDeployer;
 
 /**
@@ -61,6 +62,8 @@ public class KernelScopeUnitTestCase extends AbstractDeployerUnitTest
 
    protected TestMetaDataBeanDeployer testMetaDataDeployer;
 
+   protected TestInstanceMetaDataBeanDeployer testInstanceMetaDataDeployer;
+
    public KernelScopeUnitTestCase(String name) throws Throwable
    {
       super(name);
@@ -70,9 +73,11 @@ public class KernelScopeUnitTestCase extends AbstractDeployerUnitTest
    protected void addDeployers(Kernel kernel)
    {
       testMetaDataDeployer = new TestMetaDataBeanDeployer();
+      testInstanceMetaDataDeployer = new TestInstanceMetaDataBeanDeployer();
       KernelDeploymentDeployer kernelDeploymentDeployer = new KernelDeploymentDeployer();
       BeanMetaDataDeployer beanMetaDataDeployer = new BeanMetaDataDeployer(kernel);
       addDeployer(main, testMetaDataDeployer);
+      addDeployer(main, testInstanceMetaDataDeployer);
       addDeployer(main, kernelDeploymentDeployer);
       addDeployer(main, beanMetaDataDeployer);
    }
@@ -103,6 +108,7 @@ public class KernelScopeUnitTestCase extends AbstractDeployerUnitTest
       
       MetaData md = ctx.getScopeInfo().getMetaData();
       assertEquals(testMetaDataDeployer, md.getMetaData("test"));
+      assertEquals(testInstanceMetaDataDeployer, md.getMetaData("instance"));
       
       assertUndeploy(context);
       assertNull(controller.getContext("Test", null));
