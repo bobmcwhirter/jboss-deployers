@@ -109,7 +109,10 @@ public class KernelScopeUnitTestCase extends AbstractDeployerUnitTest
    }
 
    /**
-    * Component scopes should be subset of context scopes.  
+    * Component scopes should be subset of context scopes.
+    *
+    * @param component the component scope key
+    * @param context the context scope key 
     */
    protected void assertScopeKeys(ScopeKey component, ScopeKey context)
    {
