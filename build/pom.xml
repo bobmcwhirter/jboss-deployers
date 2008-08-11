@@ -21,19 +21,19 @@
   </scm>
 
   <properties>
-    <version.jboss.man>2.0.0.Beta12</version.jboss.man>
-    <version.jboss.mdr>2.0.0-SNAPSHOT</version.jboss.mdr>
-    <version.jboss.microcontainer>2.0.0-SNAPSHOT</version.jboss.microcontainer>
-    <version.jboss.classloader>2.0.0-SNAPSHOT</version.jboss.classloader>
-    <version.jboss.common.core>2.2.4.GA</version.jboss.common.core>
-    <version.jboss.common.logging.spi>2.0.4.GA</version.jboss.common.logging.spi>
-    <version.jboss.common.logging.log4j>2.0.4.GA</version.jboss.common.logging.log4j>
-    <version.jbossxb>2.0.0.CR10</version.jbossxb>
-    <version.jboss.aop>2.0.0.CR11</version.jboss.aop>
-    <version.jboss.vfs>2.0.0-SNAPSHOT</version.jboss.vfs>
+    <version.jboss.man>2.0.0.Beta16</version.jboss.man>
+    <version.jboss.mdr>2.0.0.Beta16</version.jboss.mdr>
+    <version.jboss.microcontainer>2.0.0.Beta17</version.jboss.microcontainer>
+    <version.jboss.classloader>2.0.0.Beta13</version.jboss.classloader>
+    <version.jboss.common.core>2.2.7.GA</version.jboss.common.core>
+    <version.jboss.logging.spi>2.0.5.GA</version.jboss.logging.spi>
+    <version.jboss.logging.log4j>2.0.5.GA</version.jboss.logging.log4j>
+    <version.jbossxb>2.0.0.CR12</version.jbossxb>
+    <version.jboss.aop>2.0.0.CR15</version.jboss.aop>
+    <version.jboss.vfs>2.0.0.Beta21</version.jboss.vfs>
     <version.org.jboss.test>1.0.5.GA</version.org.jboss.test>
     <version.junit>4.4</version.junit>
-    <version.javassist>3.7.1.GA</version.javassist>
+    <version.javassist>3.8.1.GA</version.javassist>
   </properties>
 
   <build>
@@ -283,14 +283,14 @@
         <version>${version.jboss.common.core}</version>
       </dependency>
       <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jboss-common-logging-spi</artifactId>
-        <version>${version.jboss.common.logging.spi}</version>
+        <groupId>org.jboss.logging</groupId>
+        <artifactId>jboss-logging-spi</artifactId>
+        <version>${version.jboss.logging.spi}</version>
       </dependency>
       <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jboss-common-logging-log4j</artifactId>
-        <version>${version.jboss.common.logging.log4j}</version>
+        <groupId>org.jboss.logging</groupId>
+        <artifactId>jboss-logging-log4j</artifactId>
+        <version>${version.jboss.logging.log4j}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss</groupId>
@@ -308,7 +308,7 @@
         <version>${version.jboss.aop}</version>
       </dependency>
       <dependency>
-        <groupId>org.jboss</groupId>
+        <groupId>javassist</groupId>
         <artifactId>javassist</artifactId>
         <version>${version.javassist}</version>
       </dependency>

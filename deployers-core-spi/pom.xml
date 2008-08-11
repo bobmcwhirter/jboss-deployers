@@ -18,8 +18,8 @@
       <artifactId>jboss-common-core</artifactId>
       <exclusions>
         <exclusion>
-          <groupId>jboss</groupId>
-          <artifactId>jboss-common-logging-spi</artifactId>
+          <groupId>org.jboss.logging</groupId>
+          <artifactId>jboss-logging-spi</artifactId>
         </exclusion>
         <exclusion>
           <groupId>apache-httpclient</groupId>
