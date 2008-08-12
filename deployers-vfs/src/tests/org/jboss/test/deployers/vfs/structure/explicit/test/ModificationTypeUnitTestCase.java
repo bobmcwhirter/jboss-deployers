@@ -57,7 +57,8 @@ public class ModificationTypeUnitTestCase extends AbstractStructureTest
 
    protected VFSDeploymentContext determineStructure(VFSDeployment deployment) throws Exception
    {
-      return determineStructureWithStructureDeployers(deployment, new DeclaredStructure(), new JARStructure(), new WARStructure(), new FileStructure());
+      // TODO - check serialization of modifed roots
+      return determineStructureWithStructureDeployers(deployment, false, new DeclaredStructure(), new JARStructure(), new WARStructure(), new FileStructure());
    }
 
    public void testExplicitInnerUnpack() throws Throwable

@@ -196,13 +196,7 @@ public abstract class AbstractStructureTest extends BaseTestCase
    
    protected VFSDeploymentContext determineStructureWithStructureDeployer(VFSDeployment deployment, StructureDeployer structureDeployer) throws Exception
    {
-      VFSStructuralDeployersImpl structuralDeployers = new VFSStructuralDeployersImpl();
-      VFSStructureBuilder builder = new VFSStructureBuilder();
-      structuralDeployers.setStructureBuilder(builder);
-      
-      structuralDeployers.addDeployer(structureDeployer);
-      
-      return (VFSDeploymentContext) structuralDeployers.determineStructure(deployment);
+      return determineStructureWithStructureDeployers(deployment, structureDeployer);
    }
    
    protected VFSDeploymentContext determineStructureWithAllStructureDeployers(VFSDeployment deployment) throws Exception
@@ -212,14 +206,23 @@ public abstract class AbstractStructureTest extends BaseTestCase
    
    protected VFSDeploymentContext determineStructureWithStructureDeployers(VFSDeployment deployment, StructureDeployer... deployers) throws Exception
    {
+      return determineStructureWithStructureDeployers(deployment, true, deployers);
+   }
+
+   protected VFSDeploymentContext determineStructureWithStructureDeployers(VFSDeployment deployment, boolean serialize, StructureDeployer... deployers) throws Exception
+   {
       VFSStructuralDeployersImpl structuralDeployers = new VFSStructuralDeployersImpl();
       VFSStructureBuilder builder = new VFSStructureBuilder();
       structuralDeployers.setStructureBuilder(builder);
       
       for (StructureDeployer deployer : deployers)
          structuralDeployers.addDeployer(deployer);
-      
-      return (VFSDeploymentContext) structuralDeployers.determineStructure(deployment);
+
+      VFSDeploymentContext context = (VFSDeploymentContext)structuralDeployers.determineStructure(deployment);
+      if (serialize)
+         return serializeDeserialize(context, VFSDeploymentContext.class);
+      else
+         return context;
    }
    
    protected VFSDeploymentContext deploy(String context, String path) throws Throwable
@@ -262,7 +265,8 @@ public abstract class AbstractStructureTest extends BaseTestCase
    protected VFSDeployment createDeployment(String context, String path) throws Exception
    {
       VirtualFile root = getVirtualFile(context, path);
-      return VFSDeploymentFactory.getInstance().createVFSDeployment(root);
+      VFSDeployment deployment = VFSDeploymentFactory.getInstance().createVFSDeployment(root);
+      return serializeDeserialize(deployment, VFSDeployment.class);
    }
 
    protected VirtualFile getVirtualFile(String root, String path) throws Exception

@@ -33,6 +33,7 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.structure.spi.helpers.AbstractDeploymentContext;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentResourceLoader;
+import org.jboss.deployers.vfs.plugins.vfs.VirtualFileSerializator;
 import org.jboss.logging.Logger;
 import org.jboss.virtual.VFSUtils;
 import org.jboss.virtual.VirtualFile;
@@ -52,13 +53,13 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
    private static final Logger log = Logger.getLogger(AbstractVFSDeploymentContext.class);
 
    /** The root virtual file */
-   private VirtualFile root;
+   private transient VirtualFile root;
    
    /** The meta data locations */
-   private List<VirtualFile> metaDataLocations;
+   private transient List<VirtualFile> metaDataLocations;
    
    /** The class paths */
-   private List<VirtualFile> classPath;
+   private transient List<VirtualFile> classPath;
    
    /** The loader */
    private transient VFSDeploymentResourceLoader loader;
@@ -387,11 +388,16 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException
    {
       super.readExternal(in);
-      root = (VirtualFile) in.readObject();
+      VirtualFileSerializator serializator = (VirtualFileSerializator) in.readObject();
+      root = serializator.getFile();
       boolean isNullOrEmpty = in.readBoolean();
       if (isNullOrEmpty == false)
-         metaDataLocations = (List<VirtualFile>) in.readObject();
-      classPath = (List) in.readObject();
+      {
+         List<VirtualFileSerializator> mdlSerializators = (List<VirtualFileSerializator>)in.readObject();
+         metaDataLocations = VirtualFileSerializator.toVirtualFiles(mdlSerializators);
+      }
+      List<VirtualFileSerializator> cpSerializators = (List<VirtualFileSerializator>)in.readObject();
+      classPath = VirtualFileSerializator.toVirtualFiles(cpSerializators);
    }
 
    /**
@@ -404,11 +410,11 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
    public void writeExternal(ObjectOutput out) throws IOException
    {
       super.writeExternal(out);
-      out.writeObject(root);
+      out.writeObject(new VirtualFileSerializator(root));
       boolean isNullOrEmpty = metaDataLocations == null || metaDataLocations.isEmpty();
       out.writeBoolean(isNullOrEmpty);
       if (isNullOrEmpty == false)
-         out.writeObject(metaDataLocations);
-      out.writeObject(classPath);
+         out.writeObject(VirtualFileSerializator.toVirtualFileSerializators(metaDataLocations));
+      out.writeObject(VirtualFileSerializator.toVirtualFileSerializators(classPath));
    }
 }
