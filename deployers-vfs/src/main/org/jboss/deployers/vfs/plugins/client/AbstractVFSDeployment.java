@@ -42,6 +42,9 @@ public class AbstractVFSDeployment extends AbstractDeployment implements VFSDepl
    /** The serialVersionUID */
    private static final long serialVersionUID = 2L;
 
+   /** The flag to do direct VF serialization */
+   private boolean directRootSerialization;
+
    /** The root */
    private transient VirtualFile root;
 
@@ -102,16 +105,38 @@ public class AbstractVFSDeployment extends AbstractDeployment implements VFSDepl
       return "AbstractVFSDeployment(" + getSimpleName() + ")";
    }
 
+   /**
+    * Should we serialize root directly.
+    * e.g. the root is memory virtual file instance
+    * @see org.jboss.virtual.plugins.context.memory.MemoryContextHandler 
+    *
+    * @param directRootSerialization the direct root serialization flag
+    */
+   public void setDirectRootSerialization(boolean directRootSerialization)
+   {
+      this.directRootSerialization = directRootSerialization;
+   }
+
    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException
    {
       super.readExternal(in);
-      VirtualFileSerializator serializator = (VirtualFileSerializator)in.readObject();
-      root = serializator.getFile();
+      directRootSerialization = in.readBoolean();
+      if (directRootSerialization)
+         root = (VirtualFile)in.readObject();
+      else
+      {
+         VirtualFileSerializator serializator = (VirtualFileSerializator)in.readObject();
+         root = serializator.getFile();
+      }
    }
 
    public void writeExternal(ObjectOutput out) throws IOException
    {
       super.writeExternal(out);
-      out.writeObject(new VirtualFileSerializator(root));
+      out.writeBoolean(directRootSerialization);
+      if (directRootSerialization)
+         out.writeObject(root);
+      else
+         out.writeObject(new VirtualFileSerializator(root));
    }
 }
