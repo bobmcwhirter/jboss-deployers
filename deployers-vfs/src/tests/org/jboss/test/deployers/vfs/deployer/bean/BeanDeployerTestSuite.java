@@ -21,19 +21,19 @@
 */
 package org.jboss.test.deployers.vfs.deployer.bean;
 
-import org.jboss.test.deployers.vfs.deployer.bean.test.BeanDeployerClassLoaderUnitTestCase;
-import org.jboss.test.deployers.vfs.deployer.bean.test.BeanDeployerUnitTestCase;
-import org.jboss.test.deployers.vfs.deployer.bean.test.KernelDeployerUnitTestCase;
-import org.jboss.test.deployers.vfs.deployer.bean.test.AliasDeployerUnitTestCase;
-import org.jboss.test.deployers.vfs.deployer.bean.test.BeanScanningUnitTestCase;
-import org.jboss.test.deployers.vfs.deployer.bean.test.BeanManagedDeploymentUnitTestCase;
-import org.jboss.test.deployers.vfs.deployer.bean.test.BeanMetaDataFactoryDeployerUnitTestCase;
-import org.jboss.test.deployers.vfs.deployer.bean.test.KernelScopeUnitTestCase;
-import org.jboss.test.deployers.vfs.deployer.bean.test.AnnotatedBeansUnitTestCase;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
+import org.jboss.test.deployers.vfs.deployer.bean.test.AliasDeployerUnitTestCase;
+import org.jboss.test.deployers.vfs.deployer.bean.test.AnnotatedBeansUnitTestCase;
+import org.jboss.test.deployers.vfs.deployer.bean.test.BeanDeployerClassLoaderUnitTestCase;
+import org.jboss.test.deployers.vfs.deployer.bean.test.BeanDeployerUnitTestCase;
+import org.jboss.test.deployers.vfs.deployer.bean.test.BeanManagedDeploymentUnitTestCase;
+import org.jboss.test.deployers.vfs.deployer.bean.test.BeanMetaDataFactoryDeployerUnitTestCase;
+import org.jboss.test.deployers.vfs.deployer.bean.test.BeanScanningUnitTestCase;
+import org.jboss.test.deployers.vfs.deployer.bean.test.BuilderBeansUnitTestCase;
+import org.jboss.test.deployers.vfs.deployer.bean.test.KernelDeployerUnitTestCase;
+import org.jboss.test.deployers.vfs.deployer.bean.test.KernelScopeUnitTestCase;
 
 /**
  * BeanDeployerTestSuite.
@@ -62,6 +62,7 @@ public class BeanDeployerTestSuite extends TestSuite
       suite.addTest(BeanMetaDataFactoryDeployerUnitTestCase.suite());
       suite.addTest(KernelScopeUnitTestCase.suite());
       suite.addTest(AnnotatedBeansUnitTestCase.suite());
+      suite.addTest(BuilderBeansUnitTestCase.suite());
 
       return suite;
    }
