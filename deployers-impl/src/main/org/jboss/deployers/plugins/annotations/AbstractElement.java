@@ -103,11 +103,9 @@ public abstract class AbstractElement<A extends Annotation, M extends AnnotatedE
       return hash;
    }
 
-   @SuppressWarnings({"EqualsWhichDoesntCheckParameterClass"})
    public boolean equals(Object obj)
    {
-      Class<?> clazz = getClass();
-      if (clazz.isInstance(obj) == false)
+      if (obj == null || getClass().equals(obj.getClass()) == false)
          return false;
 
       AbstractElement ae = AbstractElement.class.cast(obj);
