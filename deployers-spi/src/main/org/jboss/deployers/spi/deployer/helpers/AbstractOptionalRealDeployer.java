@@ -31,13 +31,16 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
  * 
  * @param <T> the deployment type 
  * @author <a href="mailto:carlo.dewolf@jboss.com">Carlo de Wolf</a>
- * @author adrian@jboss.org
- * @version $Revision: 63991 $
+ * @author <a href="mailto:adrian@jboss.org">Adrian Brock</a>
+ * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public abstract class AbstractOptionalRealDeployer<T> extends AbstractRealDeployer
 {
    /** The optional input */
    private Class<T> optionalInput;
+
+   /** The disable optional flag */
+   private boolean disableOptional;
 
    /**
     * Create a new AbstractOptionalRealDeployer.
@@ -53,9 +56,22 @@ public abstract class AbstractOptionalRealDeployer<T> extends AbstractRealDeploy
       setInputs(optionalInput);
    }
 
+   /**
+    * Should we disable optional flag.
+    * Falling back to similar behavior as AbstractSimpleRealDeployer.
+    *
+    * @param disableOptional the disable optional flag
+    */
+   public void setDisableOptional(boolean disableOptional)
+   {
+      this.disableOptional = disableOptional;
+   }
+
    public void internalDeploy(DeploymentUnit unit) throws DeploymentException
    {
-      deploy(unit, unit.getAttachment(optionalInput));
+      T deployment = unit.getAttachment(optionalInput);
+      if (disableOptional == false || deployment != null)
+         deploy(unit, deployment);
    }
 
    /**
@@ -67,11 +83,12 @@ public abstract class AbstractOptionalRealDeployer<T> extends AbstractRealDeploy
     */
    public abstract void deploy(DeploymentUnit unit, T deployment) throws DeploymentException;
 
-
    @Override
    public void internalUndeploy(DeploymentUnit unit)
    {
-      undeploy(unit, unit.getAttachment(optionalInput));
+      T deployment = unit.getAttachment(optionalInput);
+      if (disableOptional == false || deployment != null)
+         undeploy(unit, deployment);
    }
 
    /**

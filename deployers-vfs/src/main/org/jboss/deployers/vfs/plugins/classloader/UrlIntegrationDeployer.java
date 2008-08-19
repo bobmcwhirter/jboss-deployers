@@ -21,12 +21,12 @@
 */
 package org.jboss.deployers.vfs.plugins.classloader;
 
-import java.net.URL;
 import java.io.IOException;
+import java.net.URL;
 
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
-import org.jboss.deployers.vfs.spi.deployer.AbstractSimpleVFSRealDeployer;
+import org.jboss.deployers.vfs.spi.deployer.AbstractOptionalVFSRealDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.virtual.VFS;
 import org.jboss.virtual.VirtualFile;
@@ -39,7 +39,7 @@ import org.jboss.virtual.VirtualFile;
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  */
-public abstract class UrlIntegrationDeployer<T> extends AbstractSimpleVFSRealDeployer<T>
+public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealDeployer<T>
 {
    /** Location of integration jar */
    private URL integrationURL;

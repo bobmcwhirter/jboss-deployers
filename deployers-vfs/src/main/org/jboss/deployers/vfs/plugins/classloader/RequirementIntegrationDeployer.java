@@ -28,7 +28,7 @@ import org.jboss.classloading.spi.metadata.RequirementsMetaData;
 import org.jboss.classloading.spi.metadata.helpers.AbstractRequirement;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
-import org.jboss.deployers.vfs.spi.deployer.AbstractSimpleVFSRealDeployer;
+import org.jboss.deployers.vfs.spi.deployer.AbstractOptionalVFSRealDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 
 /**
@@ -39,7 +39,7 @@ import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  */
-public abstract class RequirementIntegrationDeployer<T> extends AbstractSimpleVFSRealDeployer<T>
+public abstract class RequirementIntegrationDeployer<T> extends AbstractOptionalVFSRealDeployer<T>
 {
    /** The jboss integration module name */
    private String integrationModuleName;
