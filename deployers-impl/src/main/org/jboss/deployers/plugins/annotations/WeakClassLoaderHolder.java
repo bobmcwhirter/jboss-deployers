@@ -23,12 +23,14 @@ package org.jboss.deployers.plugins.annotations;
 
 import java.lang.ref.WeakReference;
 
+import org.jboss.util.JBossObject;
+
 /**
  * ClassLoader holder helper.
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-abstract class WeakClassLoaderHolder
+abstract class WeakClassLoaderHolder extends JBossObject
 {
    private transient WeakReference<ClassLoader> clRef;
 

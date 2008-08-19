@@ -94,4 +94,27 @@ public class DefaultElement<A extends Annotation, M extends AnnotatedElement> ex
 
       return aoClass.cast(result);
    }
+
+   public int getHashCode()
+   {
+      int hash = super.getHashCode();
+      hash += 19 * signature.hashCode();
+      hash += 37 * aoClass.hashCode();
+      return hash;
+   }
+
+   @SuppressWarnings({"EqualsWhichDoesntCheckParameterClass"})
+   public boolean equals(Object obj)
+   {
+      if (super.equals(obj) == false)
+         return false;
+
+      DefaultElement de = DefaultElement.class.cast(obj);
+      if (aoClass.equals(de.aoClass) == false)
+         return false;
+      if (signature.equals(de.signature) == false)
+         return false;
+
+      return true;
+   }
 }

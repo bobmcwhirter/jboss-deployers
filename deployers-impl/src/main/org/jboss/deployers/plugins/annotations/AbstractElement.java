@@ -93,4 +93,33 @@ public abstract class AbstractElement<A extends Annotation, M extends AnnotatedE
       AnnotatedElement annotatedElement = getAnnotatedElement();
       return annotatedElement.getAnnotation(annClass);
    }
+
+   public int getHashCode()
+   {
+      int hash = className.hashCode();
+      hash += 7 * annClass.hashCode();
+      if (annotation != null)
+         hash += 11 * annotation.hashCode();
+      return hash;
+   }
+
+   @SuppressWarnings({"EqualsWhichDoesntCheckParameterClass"})
+   public boolean equals(Object obj)
+   {
+      Class<?> clazz = getClass();
+      if (clazz.isInstance(obj) == false)
+         return false;
+
+      AbstractElement ae = AbstractElement.class.cast(obj);
+      if (className.equals(ae.className) == false)
+         return false;
+      if (annClass.equals(ae.annClass) == false)
+         return false;
+
+      // we don't check annotation
+      // since I doubt classname + annClass + signature + aoClass is not enough
+      // the only way this could happen is probably if class was diff version - diff annotation values
+
+      return true;
+   }
 }
