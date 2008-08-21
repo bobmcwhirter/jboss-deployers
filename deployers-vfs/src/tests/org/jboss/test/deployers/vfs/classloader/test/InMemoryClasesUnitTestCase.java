@@ -81,18 +81,20 @@ public class InMemoryClasesUnitTestCase extends VFSClassLoaderDependenciesTest
 
       URL root = unit.getAttachment(InMemoryClassesDeployer.DYNAMIC_CLASS_URL_KEY, URL.class);
       assertNotNull(root);
-      URL classes = new URL(root, "classes");
       
       String aPackage = A.class.getPackage().getName();
       aPackage = aPackage.replace(".", "/");
       String resourceName = aPackage + "/TestInMemory";
-      URL testResource = new URL(classes + "/" + resourceName);
+      URL testResource = new URL(root, resourceName);
       ClassLoader cl = unit.getClassLoader();
       assertNull(cl.getResource(resourceName));
       
       byte[] bytes = new byte[0];
       MemoryFileFactory.putFile(testResource, bytes);
-      assertEquals(testResource, cl.getResource(resourceName));
+      URL resource = cl.getResource(resourceName);
+      assertNotNull(resource);
+      // dunno why direct URL equals fails?
+      assertEquals(testResource.toExternalForm(), resource.toExternalForm());
       
       mainDeployer.undeploy(ad);
       mainDeployer.checkComplete();

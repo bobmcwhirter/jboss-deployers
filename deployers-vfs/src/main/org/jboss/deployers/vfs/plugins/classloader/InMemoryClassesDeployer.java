@@ -63,10 +63,8 @@ public class InMemoryClassesDeployer extends AbstractVFSRealDeployer
    {
       try
       {
-         URL dynamicClassRoot = new URL("vfsmemory", new GUID().toString(), "");
-         MemoryFileFactory.createRoot(dynamicClassRoot);
-         URL classesURL = new URL(dynamicClassRoot, "classes");
-         VirtualFile classes = MemoryFileFactory.createDirectory(classesURL);
+         URL dynamicClassRoot = new URL("vfsmemory", GUID.asString() + "/classes", "");
+         VirtualFile classes = MemoryFileFactory.createRoot(dynamicClassRoot).getRoot();
          unit.addAttachment(DYNAMIC_CLASS_URL_KEY, dynamicClassRoot);
          unit.addAttachment(DYNAMIC_CLASS_KEY, classes);
          unit.prependClassPath(classes);
