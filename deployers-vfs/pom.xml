@@ -10,12 +10,8 @@
   <name>JBoss Deployers VFS</name>
   <url>http://www.jboss.com/products/jbossmc</url>
   <description>JBoss Deployers VFS</description>
+  
   <build>
-    <testResources>
-      <testResource>
-        <directory>src/resources/tests</directory>
-      </testResource>
-    </testResources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -23,7 +19,8 @@
       </plugin>
     </plugins>
   </build>
-  <!-- Do not add version information here, use ../build/pom.xml instead -->
+  
+  <!-- Do not add version information here, use ../pom.xml instead -->
   <dependencies>
     <!-- Global dependencies -->
     <dependency>

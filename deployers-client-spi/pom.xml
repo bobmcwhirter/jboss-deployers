@@ -10,7 +10,8 @@
   <name>JBoss Deployers Client SPI</name>
   <url>http://www.jboss.com/products/jbossmc</url>
   <description>JBoss Deployers Client SPI</description>
-  <!-- Do not add version information here, use ../build/pom.xml instead -->
+  
+  <!-- Do not add version information here, use ../pom.xml instead -->
   <dependencies>
     <!-- Global dependencies -->
     <dependency>

@@ -10,7 +10,8 @@
   <name>JBoss Deployers Core SPI</name>
   <url>http://www.jboss.com/products/jbossmc</url>
   <description>JBoss Deployers Core SPI</description>
-  <!-- Do not add version information here, use ../build/pom.xml instead -->
+  
+  <!-- Do not add version information here, use ../pom.xml instead -->
   <!-- Global dependencies -->
   <dependencies>
     <dependency>

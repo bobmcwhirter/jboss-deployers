@@ -10,12 +10,9 @@
   <name>JBoss Deployers Impl</name>
   <url>http://www.jboss.com/products/jbossmc</url>
   <description>JBoss Deployers Impl</description>
+  
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
@@ -29,7 +26,8 @@
       </plugin>	   	   
     </plugins>
   </build>
-  <!-- Do not add version information here, use ../build/pom.xml instead -->
+  
+  <!-- Do not add version information here, use ../pom.xml instead -->
   <dependencies>
     <!-- Global dependencies -->
     <dependency>
