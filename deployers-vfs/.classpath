@@ -30,10 +30,10 @@
   <classpathentry kind="var" path="M2_REPO/org/jboss/logging/jboss-logging-log4j/2.0.5.GA/jboss-logging-log4j-2.0.5.GA.jar" sourcepath="M2_REPO/org/jboss/logging/jboss-logging-log4j/2.0.5.GA/jboss-logging-log4j-2.0.5.GA-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/logging/jboss-logging-spi/2.0.5.GA/jboss-logging-spi-2.0.5.GA.jar" sourcepath="M2_REPO/org/jboss/logging/jboss-logging-spi/2.0.5.GA/jboss-logging-spi-2.0.5.GA-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/man/jboss-managed/2.0.0-SNAPSHOT/jboss-managed-2.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/jboss/man/jboss-managed/2.0.0-SNAPSHOT/jboss-managed-2.0.0-SNAPSHOT-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-mdr/2.0.0-SNAPSHOT/jboss-mdr-2.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/jboss/jboss-mdr/2.0.0-SNAPSHOT/jboss-mdr-2.0.0-SNAPSHOT-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-mdr/2.0.0.CR1/jboss-mdr-2.0.0.CR1.jar" sourcepath="M2_REPO/org/jboss/jboss-mdr/2.0.0.CR1/jboss-mdr-2.0.0.CR1-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/man/jboss-metatype/2.0.0-SNAPSHOT/jboss-metatype-2.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/jboss/man/jboss-metatype/2.0.0-SNAPSHOT/jboss-metatype-2.0.0-SNAPSHOT-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/jboss/profiler/jvmti/jboss-profiler-jvmti/1.0.0.CR5/jboss-profiler-jvmti-1.0.0.CR5.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-reflect/2.0.0-SNAPSHOT/jboss-reflect-2.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/jboss/jboss-reflect/2.0.0-SNAPSHOT/jboss-reflect-2.0.0-SNAPSHOT-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-reflect/2.0.0.CR1/jboss-reflect-2.0.0.CR1.jar" sourcepath="M2_REPO/org/jboss/jboss-reflect/2.0.0.CR1/jboss-reflect-2.0.0.CR1-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/jbossas/jboss-server-manager/0.1.1.GA/jboss-server-manager-0.1.1.GA.jar" sourcepath="M2_REPO/org/jboss/jbossas/jboss-server-manager/0.1.1.GA/jboss-server-manager-0.1.1.GA-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/test/jboss-test/1.1.1.GA/jboss-test-1.1.1.GA.jar" sourcepath="M2_REPO/org/jboss/test/jboss-test/1.1.1.GA/jboss-test-1.1.1.GA-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-vfs/2.0.0.Beta22/jboss-vfs-2.0.0.Beta22.jar" sourcepath="M2_REPO/org/jboss/jboss-vfs/2.0.0.Beta22/jboss-vfs-2.0.0.Beta22-sources.jar"/>
