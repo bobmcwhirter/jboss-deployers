@@ -21,7 +21,7 @@
   </scm>
 
   <properties>
-    <version.jboss.man>2.0.0-SNAPSHOT</version.jboss.man>
+    <version.jboss.man>2.0.0.CR1</version.jboss.man>
     <version.jboss.mdr>2.0.0.CR1</version.jboss.mdr>
     <version.jboss.microcontainer>2.0.0-SNAPSHOT</version.jboss.microcontainer>
     <version.jboss.classloader>2.0.0-SNAPSHOT</version.jboss.classloader>
