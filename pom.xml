@@ -21,17 +21,17 @@
   </scm>
 
   <properties>
-    <version.jboss.man>2.0.0.Beta16</version.jboss.man>
-    <version.jboss.mdr>2.0.0.Beta16</version.jboss.mdr>
-    <version.jboss.microcontainer>2.0.0.Beta17</version.jboss.microcontainer>
-    <version.jboss.classloader>2.0.0.Beta13</version.jboss.classloader>
-    <version.jboss.common.core>2.2.7.GA</version.jboss.common.core>
+    <version.jboss.man>2.0.0-SNAPSHOT</version.jboss.man>
+    <version.jboss.mdr>2.0.0-SNAPSHOT</version.jboss.mdr>
+    <version.jboss.microcontainer>2.0.0-SNAPSHOT</version.jboss.microcontainer>
+    <version.jboss.classloader>2.0.0-SNAPSHOT</version.jboss.classloader>
+    <version.jboss.common.core>2.2.8.GA</version.jboss.common.core>
     <version.jboss.logging.spi>2.0.5.GA</version.jboss.logging.spi>
     <version.jboss.logging.log4j>2.0.5.GA</version.jboss.logging.log4j>
     <version.jbossxb>2.0.0.CR12</version.jbossxb>
     <version.jboss.aop>2.0.0.CR15</version.jboss.aop>
     <version.jboss.vfs>2.0.0.Beta22</version.jboss.vfs>
-    <version.org.jboss.test>1.0.5.GA</version.org.jboss.test>
+    <version.org.jboss.test>1.1.1.GA</version.org.jboss.test>
     <version.junit>4.4</version.junit>
     <version.javassist>3.8.1.GA</version.javassist>
   </properties>
@@ -321,7 +321,7 @@
       </dependency>
       <!-- test dependencies -->
       <dependency>
-        <groupId>org.jboss</groupId>
+        <groupId>org.jboss.test</groupId>
         <artifactId>jboss-test</artifactId>
         <version>${version.org.jboss.test}</version>
         <scope>test</scope>
