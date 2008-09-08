@@ -108,7 +108,7 @@ public abstract class AbstractElement<A extends Annotation, M extends AnnotatedE
       if (obj == null || getClass().equals(obj.getClass()) == false)
          return false;
 
-      AbstractElement ae = AbstractElement.class.cast(obj);
+      AbstractElement<?, ?> ae = AbstractElement.class.cast(obj);
       if (className.equals(ae.className) == false)
          return false;
       if (annClass.equals(ae.annClass) == false)

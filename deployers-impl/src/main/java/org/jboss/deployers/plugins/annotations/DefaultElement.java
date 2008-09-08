@@ -109,7 +109,7 @@ public class DefaultElement<A extends Annotation, M extends AnnotatedElement> ex
       if (super.equals(obj) == false)
          return false;
 
-      DefaultElement de = DefaultElement.class.cast(obj);
+      DefaultElement<?, ?> de = DefaultElement.class.cast(obj);
       if (aoClass.equals(de.aoClass) == false)
          return false;
       if (signature.equals(de.signature) == false)
