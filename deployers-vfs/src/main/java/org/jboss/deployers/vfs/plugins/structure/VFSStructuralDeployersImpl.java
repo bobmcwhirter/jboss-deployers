@@ -135,38 +135,6 @@ public class VFSStructuralDeployersImpl extends AbstractStructuralDeployers impl
       log.debug("Removed structure deployer " + deployer);
    }
    
-   @Deprecated // Remove this JBDEPLOY-66 
-   public boolean determineStructure(VirtualFile root, VirtualFile parent, VirtualFile file, StructureMetaData structureMetaData) throws DeploymentException
-   {
-      StructureMetaData structure = StructureMetaDataFactory.createStructureMetaData();
-      StructureContext context = new StructureContext(root, parent, file, structure, this, null);
-      boolean result = doDetermineStructure(context);
-      if (result)
-      {
-         String relativePath = AbstractStructureDeployer.getRelativePath(parent, file);
-         
-         // Something said it recognised it
-         ContextInfo recognised = structure.getContext("");
-         if (recognised == null)
-            throw new IllegalStateException("Something recognised the deployment, but there is no context? " + file);
-         
-         // Create the context in the parent structure
-         ContextInfo parentContext;
-         List<String> metaDataPath = recognised.getMetaDataPath();
-         if (metaDataPath == null || metaDataPath.isEmpty())
-            parentContext = StructureMetaDataFactory.createContextInfo(relativePath, recognised.getClassPath());
-         else
-            parentContext = StructureMetaDataFactory.createContextInfo(relativePath, metaDataPath, recognised.getClassPath());
-
-         // copy the modification type information
-         parentContext.setModificationType(recognised.getModificationType());
-         structureMetaData.addContext(parentContext);
-         MutableAttachments attachments = (MutableAttachments) parentContext.getPredeterminedManagedObjects();
-         attachments.addAttachment(StructureMetaData.class, structure);
-      }
-      return result;
-   }
-   
    public boolean determineStructure(VirtualFile file, StructureContext parentContext) throws DeploymentException
    {
       StructureMetaData structure = StructureMetaDataFactory.createStructureMetaData();
