@@ -69,7 +69,7 @@ import org.jboss.metadata.spi.repository.MutableMetaDataRepository;
  * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
-public class DeployersImpl implements Deployers, ControllerContextActions
+public class DeployersImpl implements Deployers, ControllerContextActions, DeployersImplMBean
 {
    /**
     * The log
@@ -81,6 +81,12 @@ public class DeployersImpl implements Deployers, ControllerContextActions
     */
    private AtomicBoolean shutdown = new AtomicBoolean(false);
 
+   /** Whether to record statistics */
+   private boolean collectStats = false;
+   
+   /** The deployment time stats */
+   private DeployerStatistics deploymentTimes;
+   
    /**
     * The dependency state machine
     */
@@ -164,6 +170,26 @@ public class DeployersImpl implements Deployers, ControllerContextActions
    {
       if (shutdown.get())
          throw new IllegalStateException("Deployers are shutdown");
+   }
+
+   /**
+    * Get the collectStats.
+    * 
+    * @return the collectStats.
+    */
+   public boolean isCollectStats()
+   {
+      return collectStats;
+   }
+
+   /**
+    * Set the collectStats.
+    * 
+    * @param collectStats the collectStats.
+    */
+   public void setCollectStats(boolean collectStats)
+   {
+      this.collectStats = collectStats;
    }
 
    /**
@@ -424,6 +450,13 @@ public class DeployersImpl implements Deployers, ControllerContextActions
       }
    }
 
+   public String listDeployerTimes(boolean details)
+   {
+      if (deploymentTimes == null)
+         return "No statistics available";
+      return deploymentTimes.listTimes(details);
+   }
+   
    public DeploymentStage getDeploymentStage(DeploymentContext context) throws DeploymentException
    {
       DeploymentControllerContext deploymentControllerContext = context.getTransientAttachments().getAttachment(ControllerContext.class.getName(), DeploymentControllerContext.class);
@@ -967,7 +1000,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
       {
          try
          {
-            deployer.deploy(unit);
+            doDeploy(deployer, unit);
          }
          catch (DeploymentException e)
          {
@@ -1109,7 +1142,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
       {
          try
          {
-            deployer.deploy(unit);
+            doDeploy(deployer, unit);
          }
          catch (DeploymentException e)
          {
@@ -1186,7 +1219,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
 
       DeploymentUnit unit = context.getDeploymentUnit();
       if (isRelevant(deployer, unit, context.isTopLevel(), context.isComponent()))
-         deployer.undeploy(unit);
+         doUndeploy(deployer, unit);
       else if (log.isTraceEnabled())
          log.trace("Deployer " + deployer + " not relevant for " + context.getName());
    }
@@ -1205,7 +1238,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions
       {
          DeploymentUnit unit = context.getDeploymentUnit();
          if (isRelevant(deployer, unit, context.isTopLevel(), context.isComponent()))
-            deployer.undeploy(unit);
+            doUndeploy(deployer, unit);
          else if (log.isTraceEnabled())
             log.trace("Deployer " + deployer + " not relevant for " + context.getName());
       }
@@ -1234,6 +1267,54 @@ public class DeployersImpl implements Deployers, ControllerContextActions
       }
    }
 
+   /**
+    * Do a deployment
+    * 
+    * @param deployer the deployer
+    * @param unit the deployment unit
+    * @throws DeploymentException for any error
+    */
+   protected void doDeploy(Deployer deployer, DeploymentUnit unit) throws DeploymentException
+   {
+      long time = 0;
+      boolean collectStats = this.collectStats;
+      if (collectStats)
+         time = System.currentTimeMillis();
+      try
+      {
+         deployer.deploy(unit);
+      }
+      finally
+      {
+         if (collectStats)
+         {
+            time = System.currentTimeMillis() - time;
+            if (time > 0)
+            {
+               synchronized (this)
+               {
+                  if (deploymentTimes == null)
+                     deploymentTimes = new DeployerStatistics();;
+                  String deployerName = deployer.toString();
+                  String deploymentName = unit.getName();
+                  deploymentTimes.addStatistic(deployerName, deploymentName, time);
+               }
+            }
+         }
+      }
+   }
+
+   /**
+    * Do an undeployment
+    * 
+    * @param deployer the deployer
+    * @param unit the deployment unit
+    */
+   protected void doUndeploy(Deployer deployer, DeploymentUnit unit)
+   {
+      deployer.undeploy(unit);
+   }
+   
    /**
     * Build a list of  deployers for this stage
     *
