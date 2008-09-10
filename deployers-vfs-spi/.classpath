@@ -4,7 +4,7 @@
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
   <classpathentry kind="var" path="M2_REPO/javax/activation/activation/1.0.2/activation-1.0.2.jar"/>
   <classpathentry kind="var" path="M2_REPO/wutka-dtdparser/dtdparser121/1.2.1/dtdparser121-1.2.1.jar"/>
-  <classpathentry kind="var" path="M2_REPO/javax/xml/bind/jaxb-api/2.1/jaxb-api-2.1.jar" sourcepath="M2_REPO/javax/xml/bind/jaxb-api/2.1/jaxb-api-2.1-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/sun-jaxb/jaxb-api/2.1.4/jaxb-api-2.1.4.jar" sourcepath="M2_REPO/sun-jaxb/jaxb-api/2.1.4/jaxb-api-2.1.4-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/cl/jboss-classloader/2.0.0-SNAPSHOT/jboss-classloader-2.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/jboss/cl/jboss-classloader/2.0.0-SNAPSHOT/jboss-classloader-2.0.0-SNAPSHOT-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/cl/jboss-classloading/2.0.0-SNAPSHOT/jboss-classloading-2.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/jboss/cl/jboss-classloading/2.0.0-SNAPSHOT/jboss-classloading-2.0.0-SNAPSHOT-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/integration/jboss-classloading-spi/5.0.0.CR2/jboss-classloading-spi-5.0.0.CR2.jar" sourcepath="M2_REPO/org/jboss/integration/jboss-classloading-spi/5.0.0.CR2/jboss-classloading-spi-5.0.0.CR2-sources.jar"/>
@@ -15,13 +15,13 @@
   <classpathentry kind="src" path="/jboss-deployers-spi"/>
   <classpathentry kind="src" path="/jboss-deployers-structure-spi"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/logging/jboss-logging-spi/2.0.5.GA/jboss-logging-spi-2.0.5.GA.jar" sourcepath="M2_REPO/org/jboss/logging/jboss-logging-spi/2.0.5.GA/jboss-logging-spi-2.0.5.GA-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/man/jboss-managed/2.0.0-SNAPSHOT/jboss-managed-2.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/jboss/man/jboss-managed/2.0.0-SNAPSHOT/jboss-managed-2.0.0-SNAPSHOT-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/man/jboss-managed/2.0.0.CR1/jboss-managed-2.0.0.CR1.jar" sourcepath="M2_REPO/org/jboss/man/jboss-managed/2.0.0.CR1/jboss-managed-2.0.0.CR1-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-mdr/2.0.0.CR1/jboss-mdr-2.0.0.CR1.jar" sourcepath="M2_REPO/org/jboss/jboss-mdr/2.0.0.CR1/jboss-mdr-2.0.0.CR1-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/man/jboss-metatype/2.0.0-SNAPSHOT/jboss-metatype-2.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/jboss/man/jboss-metatype/2.0.0-SNAPSHOT/jboss-metatype-2.0.0-SNAPSHOT-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/man/jboss-metatype/2.0.0.CR1/jboss-metatype-2.0.0.CR1.jar" sourcepath="M2_REPO/org/jboss/man/jboss-metatype/2.0.0.CR1/jboss-metatype-2.0.0.CR1-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-reflect/2.0.0.CR1/jboss-reflect-2.0.0.CR1.jar" sourcepath="M2_REPO/org/jboss/jboss-reflect/2.0.0.CR1/jboss-reflect-2.0.0.CR1-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-vfs/2.0.0.Beta22/jboss-vfs-2.0.0.Beta22.jar" sourcepath="M2_REPO/org/jboss/jboss-vfs/2.0.0.Beta22/jboss-vfs-2.0.0.Beta22-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/jbossxb/2.0.0.CR12/jbossxb-2.0.0.CR12.jar" sourcepath="M2_REPO/org/jboss/jbossxb/2.0.0.CR12/jbossxb-2.0.0.CR12-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/javax/xml/stream/stax-api/1.0-2/stax-api-1.0-2.jar" sourcepath="M2_REPO/javax/xml/stream/stax-api/1.0-2/stax-api-1.0-2-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-vfs/2.0.0.CR1/jboss-vfs-2.0.0.CR1.jar" sourcepath="M2_REPO/org/jboss/jboss-vfs/2.0.0.CR1/jboss-vfs-2.0.0.CR1-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/jbossxb/2.0.0.CR13/jbossxb-2.0.0.CR13.jar" sourcepath="M2_REPO/org/jboss/jbossxb/2.0.0.CR13/jbossxb-2.0.0.CR13-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/stax/stax-api/1.0/stax-api-1.0.jar"/>
   <classpathentry kind="var" path="M2_REPO/apache-xerces/xercesImpl/2.9.1/xercesImpl-2.9.1.jar"/>
   <classpathentry kind="var" path="M2_REPO/apache-xerces/xml-apis/2.9.1/xml-apis-2.9.1.jar"/>
 </classpath>

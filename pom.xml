@@ -28,12 +28,13 @@
     <version.jboss.common.core>2.2.8.GA</version.jboss.common.core>
     <version.jboss.logging.spi>2.0.5.GA</version.jboss.logging.spi>
     <version.jboss.logging.log4j>2.0.5.GA</version.jboss.logging.log4j>
-    <version.jbossxb>2.0.0.CR12</version.jbossxb>
-    <version.jboss.aop>2.0.0.CR17</version.jboss.aop>
-    <version.jboss.vfs>2.0.0.Beta22</version.jboss.vfs>
+    <version.jbossxb>2.0.0.CR13</version.jbossxb>
+    <version.jboss.aop>2.0.0.CR16</version.jboss.aop>
+    <version.jboss.vfs>2.0.0.CR1</version.jboss.vfs>
     <version.org.jboss.test>1.1.1.GA</version.org.jboss.test>
     <version.junit>4.4</version.junit>
     <version.javassist>3.8.1.GA</version.javassist>
+    <version.stax.staxapi>1.0</version.stax.staxapi>
   </properties>
 
   <modules>
@@ -318,6 +319,12 @@
         <groupId>javassist</groupId>
         <artifactId>javassist</artifactId>
         <version>${version.javassist}</version>
+      </dependency>
+      <dependency>
+        <groupId>stax</groupId>
+        <artifactId>stax-api</artifactId>
+        <version>${version.stax.staxapi}</version>
+        <optional>true</optional>
       </dependency>
       <!-- test dependencies -->
       <dependency>
