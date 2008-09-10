@@ -56,7 +56,7 @@ public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealD
     *
     * @return the integration url
     */
-   public URL getIntegarionURL()
+   public URL getIntegrationURL()
    {
       return integrationURL;
    }
