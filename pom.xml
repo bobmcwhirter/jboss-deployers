@@ -29,7 +29,7 @@
     <version.jboss.logging.spi>2.0.5.GA</version.jboss.logging.spi>
     <version.jboss.logging.log4j>2.0.5.GA</version.jboss.logging.log4j>
     <version.jbossxb>2.0.0.CR13</version.jbossxb>
-    <version.jboss.aop>2.0.0.CR16</version.jboss.aop>
+    <version.jboss.aop>2.0.0.CR17</version.jboss.aop>
     <version.jboss.vfs>2.0.0.CR1</version.jboss.vfs>
     <version.org.jboss.test>1.1.1.GA</version.org.jboss.test>
     <version.junit>4.4</version.junit>

@@ -10,7 +10,7 @@
   <classpathentry kind="var" path="M2_REPO/wutka-dtdparser/dtdparser121/1.2.1/dtdparser121-1.2.1.jar"/>
   <classpathentry kind="var" path="M2_REPO/javassist/javassist/3.8.1.GA/javassist-3.8.1.GA.jar" sourcepath="M2_REPO/javassist/javassist/3.8.1.GA/javassist-3.8.1.GA-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/sun-jaxb/jaxb-api/2.1.4/jaxb-api-2.1.4.jar" sourcepath="M2_REPO/sun-jaxb/jaxb-api/2.1.4/jaxb-api-2.1.4-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/aop/jboss-aop/2.0.0.CR16/jboss-aop-2.0.0.CR16.jar" sourcepath="M2_REPO/org/jboss/aop/jboss-aop/2.0.0.CR16/jboss-aop-2.0.0.CR16-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/aop/jboss-aop/2.0.0.CR17/jboss-aop-2.0.0.CR17.jar" sourcepath="M2_REPO/org/jboss/aop/jboss-aop/2.0.0.CR17/jboss-aop-2.0.0.CR17-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/cl/jboss-classloader/2.0.0-SNAPSHOT/jboss-classloader-2.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/jboss/cl/jboss-classloader/2.0.0-SNAPSHOT/jboss-classloader-2.0.0-SNAPSHOT-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/cl/jboss-classloading/2.0.0-SNAPSHOT/jboss-classloading-2.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/jboss/cl/jboss-classloading/2.0.0-SNAPSHOT/jboss-classloading-2.0.0-SNAPSHOT-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/integration/jboss-classloading-spi/5.0.0.CR2/jboss-classloading-spi-5.0.0.CR2.jar" sourcepath="M2_REPO/org/jboss/integration/jboss-classloading-spi/5.0.0.CR2/jboss-classloading-spi-5.0.0.CR2-sources.jar"/>
@@ -35,8 +35,6 @@
   <classpathentry kind="var" path="M2_REPO/org/jboss/jbossxb/2.0.0.CR13/jbossxb-2.0.0.CR13.jar" sourcepath="M2_REPO/org/jboss/jbossxb/2.0.0.CR13/jbossxb-2.0.0.CR13-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/junit/junit/4.4/junit-4.4.jar" sourcepath="M2_REPO/junit/junit/4.4/junit-4.4-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/apache-log4j/log4j/1.2.14/log4j-1.2.14.jar" sourcepath="M2_REPO/apache-log4j/log4j/1.2.14/log4j-1.2.14-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/qdox/qdox/1.6/qdox-1.6.jar" sourcepath="M2_REPO/qdox/qdox/1.6/qdox-1.6-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/trove/trove/2.1.1/trove-2.1.1.jar"/>
   <classpathentry kind="var" path="M2_REPO/apache-xerces/xercesImpl/2.9.1/xercesImpl-2.9.1.jar"/>
   <classpathentry kind="var" path="M2_REPO/apache-xerces/xml-apis/2.9.1/xml-apis-2.9.1.jar"/>
 </classpath>
