@@ -5,11 +5,11 @@
   <classpathentry kind="var" path="M2_REPO/javax/activation/activation/1.0.2/activation-1.0.2.jar"/>
   <classpathentry kind="var" path="M2_REPO/wutka-dtdparser/dtdparser121/1.2.1/dtdparser121-1.2.1.jar"/>
   <classpathentry kind="var" path="M2_REPO/sun-jaxb/jaxb-api/2.1.4/jaxb-api-2.1.4.jar" sourcepath="M2_REPO/sun-jaxb/jaxb-api/2.1.4/jaxb-api-2.1.4-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/cl/jboss-classloader/2.0.0-SNAPSHOT/jboss-classloader-2.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/jboss/cl/jboss-classloader/2.0.0-SNAPSHOT/jboss-classloader-2.0.0-SNAPSHOT-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/cl/jboss-classloading/2.0.0-SNAPSHOT/jboss-classloading-2.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/jboss/cl/jboss-classloading/2.0.0-SNAPSHOT/jboss-classloading-2.0.0-SNAPSHOT-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/cl/jboss-classloader/2.0.0.CR2/jboss-classloader-2.0.0.CR2.jar" sourcepath="M2_REPO/org/jboss/cl/jboss-classloader/2.0.0.CR2/jboss-classloader-2.0.0.CR2-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/cl/jboss-classloading/2.0.0.CR2/jboss-classloading-2.0.0.CR2.jar" sourcepath="M2_REPO/org/jboss/cl/jboss-classloading/2.0.0.CR2/jboss-classloading-2.0.0.CR2-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/integration/jboss-classloading-spi/5.0.0.CR2/jboss-classloading-spi-5.0.0.CR2.jar" sourcepath="M2_REPO/org/jboss/integration/jboss-classloading-spi/5.0.0.CR2/jboss-classloading-spi-5.0.0.CR2-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-common-core/2.2.8.GA/jboss-common-core-2.2.8.GA.jar" sourcepath="M2_REPO/org/jboss/jboss-common-core/2.2.8.GA/jboss-common-core-2.2.8.GA-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/microcontainer/jboss-dependency/2.0.0-SNAPSHOT/jboss-dependency-2.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/jboss/microcontainer/jboss-dependency/2.0.0-SNAPSHOT/jboss-dependency-2.0.0-SNAPSHOT-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/microcontainer/jboss-dependency/2.0.0.CR1/jboss-dependency-2.0.0.CR1.jar" sourcepath="M2_REPO/org/jboss/microcontainer/jboss-dependency/2.0.0.CR1/jboss-dependency-2.0.0.CR1-sources.jar"/>
   <classpathentry kind="src" path="/jboss-deployers-client-spi"/>
   <classpathentry kind="src" path="/jboss-deployers-core-spi"/>
   <classpathentry kind="src" path="/jboss-deployers-spi"/>
