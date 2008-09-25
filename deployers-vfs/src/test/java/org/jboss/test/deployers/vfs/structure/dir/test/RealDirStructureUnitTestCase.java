@@ -59,7 +59,7 @@ public class RealDirStructureUnitTestCase extends BootstrapDeployersTest
          KernelControllerContext dirContext = deploy(dirStructureBMD);
          try
          {
-         VFSDeploymentUnit unit = assertDeploy("/structure/dir", file);
+            VFSDeploymentUnit unit = assertDeploy("/structure/dir", file);
             try
             {
                assertNotNull(getBean("test:service=TestMessage"));
