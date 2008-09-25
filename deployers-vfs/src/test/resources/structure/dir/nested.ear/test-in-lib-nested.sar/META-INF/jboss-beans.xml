@@ -1,0 +1,7 @@
+<deployment xmlns="urn:jboss:bean-deployer:2.0">
+
+   <bean name="test:service=TestMessage" class="test.TestMessage">
+      <property name="message">Hello World</property>
+   </bean>
+
+</deployment>
