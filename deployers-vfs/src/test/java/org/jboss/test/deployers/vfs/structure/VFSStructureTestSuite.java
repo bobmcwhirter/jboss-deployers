@@ -24,16 +24,17 @@ package org.jboss.test.deployers.vfs.structure;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
-
-import org.jboss.test.deployers.vfs.structure.ear.test.EARStructureUnitTestCase;
+import org.jboss.test.deployers.vfs.structure.dir.test.DirStructureUnitTestCase;
+import org.jboss.test.deployers.vfs.structure.dir.test.RealDirStructureUnitTestCase;
 import org.jboss.test.deployers.vfs.structure.ear.test.EARStructureRecognizeTestCase;
+import org.jboss.test.deployers.vfs.structure.ear.test.EARStructureUnitTestCase;
 import org.jboss.test.deployers.vfs.structure.ear.test.InnerModificationUnitTestCase;
 import org.jboss.test.deployers.vfs.structure.explicit.test.DeclaredStructureUnitTestCase;
 import org.jboss.test.deployers.vfs.structure.explicit.test.ModificationTypeUnitTestCase;
 import org.jboss.test.deployers.vfs.structure.file.test.CombinedFileStructureUnitTestCase;
 import org.jboss.test.deployers.vfs.structure.file.test.ConfiguredSuffixFileStructureUnitTestCase;
-import org.jboss.test.deployers.vfs.structure.file.test.FileStructureUnitTestCase;
 import org.jboss.test.deployers.vfs.structure.file.test.FileMatcherTestCase;
+import org.jboss.test.deployers.vfs.structure.file.test.FileStructureUnitTestCase;
 import org.jboss.test.deployers.vfs.structure.jar.test.CombinedJARStructureUnitTestCase;
 import org.jboss.test.deployers.vfs.structure.jar.test.ConfiguredSuffixJARStructureUnitTestCase;
 import org.jboss.test.deployers.vfs.structure.jar.test.JARStructureUnitTestCase;
@@ -78,6 +79,8 @@ public class VFSStructureTestSuite extends TestSuite
       suite.addTest(WARUnpackUnitTestCase.suite());
       suite.addTest(ModificationTypeUnitTestCase.suite());
       suite.addTest(InnerModificationUnitTestCase.suite());
+      suite.addTest(DirStructureUnitTestCase.suite());
+      suite.addTest(RealDirStructureUnitTestCase.suite());
 
       return suite;
    }
