@@ -42,6 +42,12 @@ public class FilteredAnnotationEnvironmentDeployer extends ScopedAnnotationEnvir
    private ResourceFilter resourceFilter;
    private ResourceFilter recurseFilter;
 
+   public FilteredAnnotationEnvironmentDeployer()
+   {
+      addInput(ResourceFilter.class.getName() + ".resource");
+      addInput(ResourceFilter.class.getName() + ".recurse");
+   }
+
    /**
     * Get filter.
     * Try attachment first, then deployer's filter.
