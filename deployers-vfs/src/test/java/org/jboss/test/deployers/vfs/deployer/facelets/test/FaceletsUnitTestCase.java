@@ -49,7 +49,7 @@ import org.jboss.test.deployers.vfs.deployer.facelets.support.SearchDeployer;
  */
 public class FaceletsUnitTestCase extends AbstractDeployerUnitTest
 {
-   private SearchDeployer deployer = new SearchDeployer();
+   private SearchDeployer deployer = new SearchDeployer("META-INF/", ".taglib.xml");
 
    public static Test suite()
    {

@@ -25,19 +25,34 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.jboss.deployers.spi.DeploymentException;
-import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.spi.deployer.helpers.AbstractDeployer;
+import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 
 /**
+ * This deployer's purpose is to trigger
+ * mock impl of Facelets's Classpath class.
+ *
+ * Better deployer examples could be found elsewhere. ;-)
+ *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
 public class SearchDeployer extends AbstractDeployer
 {
+   private String prefix;
+   private String suffix;
+
    private URL[] urls;
 
-   public SearchDeployer()
+   public SearchDeployer(String prefix, String suffix)
    {
+      if (prefix == null)
+         throw new IllegalArgumentException("Null prefix.");
+      if (suffix == null)
+         throw new IllegalArgumentException("Null suffix.");
+
+      this.prefix = prefix;
+      this.suffix = suffix;
       setStage(DeploymentStages.REAL);
    }
 
@@ -45,11 +60,11 @@ public class SearchDeployer extends AbstractDeployer
    {
       try
       {
-         urls = Classpath.search(unit.getClassLoader(), "META-INF/", ".taglib.xml");
+         urls = Classpath.search(unit.getClassLoader(), prefix, suffix);
       }
       catch (IOException e)
       {
-         DeploymentException.rethrowAsDeploymentException("Error doing facelets search", e);
+         DeploymentException.rethrowAsDeploymentException("Error doing facelets search, prefix=" + prefix + ", suffix=" + suffix, e);
       }
    }
 
