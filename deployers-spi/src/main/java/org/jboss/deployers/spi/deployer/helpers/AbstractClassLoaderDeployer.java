@@ -41,6 +41,7 @@ public abstract class AbstractClassLoaderDeployer extends AbstractDeployer imple
    {
       setStage(DeploymentStages.CLASSLOADER);
       setInput(ClassLoaderFactory.class);
+      setOutput(java.lang.ClassLoader.class);
       setAllInputs(true);
    }
 
