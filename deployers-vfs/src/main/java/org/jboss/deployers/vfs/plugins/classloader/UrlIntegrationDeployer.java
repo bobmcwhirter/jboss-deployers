@@ -21,9 +21,13 @@
 */
 package org.jboss.deployers.vfs.plugins.classloader;
 
-import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
+import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.vfs.spi.deployer.AbstractOptionalVFSRealDeployer;
@@ -42,13 +46,15 @@ import org.jboss.virtual.VirtualFile;
 public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealDeployer<T>
 {
    /** Location of integration jar */
-   private URL integrationURL;
+   private Set<URL> integrationURLs;
 
    public UrlIntegrationDeployer(Class<T> input)
    {
       super(input);
       // We have to run before the classloading is setup
-      setStage(DeploymentStages.POST_PARSE);
+      setStage(DeploymentStages.DESCRIBE);
+      // Keep things simple having one attachment to control the classloader processing order
+      setOutput(ClassLoadingMetaData.class);
    }
 
    /**
@@ -58,7 +64,10 @@ public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealD
     */
    public URL getIntegrationURL()
    {
-      return integrationURL;
+      if (integrationURLs == null || integrationURLs.isEmpty())
+         return null;
+      else
+         return integrationURLs.iterator().next();
    }
 
    /**
@@ -68,7 +77,39 @@ public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealD
     */
    public void setIntegrationURL(URL url)
    {
-      this.integrationURL = url;
+      if (integrationURLs == null)
+         integrationURLs = Collections.singleton(url);
+      else
+         integrationURLs.add(url);
+   }
+
+   /**
+    * Get integration urls.
+    *
+    * @return the integration urls
+    */
+   public Set<URL> getIntegrationURLs()
+   {
+      return integrationURLs;
+   }
+
+   /**
+    * Set integration urls.
+    *
+    * @param integrationURLs the integration urls
+    */
+   public void setIntegrationURLs(Set<URL> integrationURLs)
+   {
+      this.integrationURLs = integrationURLs;
+   }
+
+   /**
+    * Check if integration urls exist.
+    */
+   public void start()
+   {
+      if (integrationURLs == null || integrationURLs.isEmpty())
+         throw new IllegalArgumentException("No integration urls.");
    }
 
    @Override
@@ -76,14 +117,45 @@ public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealD
    {
       if (isIntegrationDeployment(unit))
       {
+         List<VirtualFile> added = new ArrayList<VirtualFile>();
          try
          {
-            VirtualFile integration = VFS.getRoot(integrationURL);
-            unit.addClassPath(integration);
+            for (URL integrationURL : integrationURLs)
+            {
+               VirtualFile integration = VFS.getRoot(integrationURL);
+               unit.addClassPath(integration);
+               added.add(integration);
+            }
          }
-         catch (IOException e)
+         catch (Throwable t)
          {
-            throw DeploymentException.rethrowAsDeploymentException("Error adding integration path.", e);
+            List<VirtualFile> classPath = unit.getClassPath();
+            for (int i = added.size() - 1; i >=0; i--)
+            {
+               classPath.remove(added.get(i));
+            }
+            throw DeploymentException.rethrowAsDeploymentException("Error adding integration path.", t);
+         }
+      }
+   }
+
+   @Override
+   public void undeploy(VFSDeploymentUnit unit, T deployment)
+   {
+      if (isIntegrationDeployment(unit))
+      {
+         List<VirtualFile> classPath = unit.getClassPath();
+         for (URL integrationURL : integrationURLs)
+         {
+            try
+            {
+               VirtualFile integration = VFS.getRoot(integrationURL);
+               classPath.remove(integration);
+            }
+            catch (Throwable t)
+            {
+               log.warn("Error removing integration from classpath: " + integrationURL, t);
+            }
          }
       }
    }

@@ -46,6 +46,9 @@ public class PackageRequirementIntegrationDeployer<T> extends RequirementIntegra
 
    protected AbstractRequirement hasIntegrationModuleRequirement(RequirementsMetaData metadata)
    {
+      if (metadata == null)
+         return null;
+
       List<Requirement> requirements = metadata.getRequirements();
       if (requirements != null && requirements.isEmpty() == false && packages != null && packages.isEmpty() == false)
       {
