@@ -115,7 +115,7 @@ public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealD
    @Override
    public void deploy(VFSDeploymentUnit unit, T metaData) throws DeploymentException
    {
-      if (isIntegrationDeployment(unit))
+      if (isIntegrationDeployment(unit, metaData))
       {
          List<VirtualFile> added = new ArrayList<VirtualFile>();
          try
@@ -140,9 +140,9 @@ public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealD
    }
 
    @Override
-   public void undeploy(VFSDeploymentUnit unit, T deployment)
+   public void undeploy(VFSDeploymentUnit unit, T metaData)
    {
-      if (isIntegrationDeployment(unit))
+      if (isIntegrationDeployment(unit, metaData))
       {
          List<VirtualFile> classPath = unit.getClassPath();
          for (URL integrationURL : integrationURLs)
@@ -158,6 +158,18 @@ public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealD
             }
          }
       }
+   }
+
+   /**
+    * Is unit integration deployment unit?
+    *
+    * @param unit the deployment unit
+    * @param metaData the meta data
+    * @return true if the unit is integration deployment
+    */
+   protected boolean isIntegrationDeployment(VFSDeploymentUnit unit, T metaData)
+   {
+      return isIntegrationDeployment(unit);
    }
 
    /**
