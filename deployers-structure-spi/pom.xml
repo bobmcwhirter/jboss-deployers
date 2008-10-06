@@ -104,6 +104,16 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.jboss.integration</groupId>
+      <artifactId>jboss-classloading-spi</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss</groupId>
+          <artifactId>jboss-common-core</artifactId>
+        </exclusion>
+      </exclusions>
+     </dependency>
+    <dependency>
       <groupId>org.jboss.logging</groupId>
       <artifactId>jboss-logging-log4j</artifactId>
       <scope>test</scope>

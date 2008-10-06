@@ -34,6 +34,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.management.MBeanRegistration;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+
 import org.jboss.dependency.spi.Controller;
 import org.jboss.dependency.spi.ControllerContext;
 import org.jboss.dependency.spi.ControllerContextActions;
@@ -55,6 +59,7 @@ import org.jboss.deployers.spi.deployer.DeploymentStage;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.spi.deployer.managed.ManagedObjectCreator;
 import org.jboss.deployers.structure.spi.DeploymentContext;
+import org.jboss.deployers.structure.spi.DeploymentMBean;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.structure.spi.scope.ScopeBuilder;
 import org.jboss.kernel.spi.dependency.KernelController;
@@ -69,7 +74,7 @@ import org.jboss.metadata.spi.repository.MutableMetaDataRepository;
  * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
-public class DeployersImpl implements Deployers, ControllerContextActions, DeployersImplMBean
+public class DeployersImpl implements Deployers, ControllerContextActions, DeployersImplMBean, MBeanRegistration
 {
    /**
     * The log
@@ -92,6 +97,12 @@ public class DeployersImpl implements Deployers, ControllerContextActions, Deplo
     */
    private Controller controller;
 
+   /** The mbean server */
+   private MBeanServer server;
+   
+   /** Whether to register deployments as mbeans */
+   private boolean registerMBeans = true;
+   
    /**
     * The repository
     */
@@ -385,6 +396,26 @@ public class DeployersImpl implements Deployers, ControllerContextActions, Deplo
       this.repository = repository;
    }
 
+   /**
+    * Get whether to register mbeans
+    * 
+    * @return true to register mbeans
+    */
+   public boolean isRegisterMBeans()
+   {
+      return registerMBeans;
+   }
+
+   /**
+    * Set whether to register mbeans
+    * 
+    * @param registerMBeans true to register mbeans
+    */
+   public void setRegisterMBeans(boolean registerMBeans)
+   {
+      this.registerMBeans = registerMBeans;
+   }
+
    public void start()
    {
       // Bootstrap the repository
@@ -455,6 +486,97 @@ public class DeployersImpl implements Deployers, ControllerContextActions, Deplo
       if (deploymentTimes == null)
          return "No statistics available";
       return deploymentTimes.listTimes(details);
+   }
+   
+   public String listDeployers(String stageName)
+   {
+      StringBuilder result = new StringBuilder();
+      result.append("<table><tr><th>Stage/Deployer</th><th>top</th><th>component</th><th>parent last</th><th>input<th>output</th></tr>");
+      if (stageName == null || stageName.trim().length() == 0)
+      {
+         for (String stage : stages.keySet())
+            internalListDeployers(stage, null, result);
+      }
+      else
+      {
+         internalListDeployers(stageName, null, result);
+      }
+      result.append("</table>");
+      return result.toString();
+   }
+
+   public String listDeployersByAttachment(String attachment)
+   {
+      if (attachment == null || attachment.trim().length() == 0)
+         return "No attachment specified";
+      
+      StringBuilder result = new StringBuilder();
+      result.append("<table><tr><th>Stage/Deployer</th><th>top</th><th>component</th><th>parent last</th><th>input<th>output</th></tr>");
+      for (String stage : stages.keySet())
+         internalListDeployers(stage, attachment, result);
+      result.append("</table>");
+      return result.toString();
+   }
+
+   /**
+    * List the deployers for a stage
+    * 
+    * @param stageName the stage
+    * @param attachment the attachment
+    * @param builder the builder
+    */
+   protected void internalListDeployers(String stageName, String attachment, StringBuilder builder)
+   {
+      List<Deployer> deployers = getDeployersList(stageName);
+      if (deployers.isEmpty())
+         return;
+      
+      builder.append("<tr>").append("<td>").append(stageName).append("</td>").append("</tr>");
+      for (Deployer deployer : deployers)
+      {
+         int row = 0;
+         Set<String> deployerInputs = deployer.getInputs();
+         List<String> inputs = new ArrayList<String>();
+         for (String input : deployerInputs)
+         {
+            if (attachment == null || attachment.equals(input))
+               inputs.add(input);
+         }
+         Set<String> deployerOutputs = deployer.getOutputs();
+         List<String> outputs = new ArrayList<String>();
+         for (String output : deployerOutputs)
+         {
+            if (attachment == null || attachment.equals(output))
+               outputs.add(output);
+         }
+         if (attachment != null && inputs.isEmpty() &&  outputs.isEmpty())
+            continue;
+         while (row < 1 || row < outputs.size() || row < outputs.size())
+         {
+            builder.append("<tr>");
+            if (row == 0)
+            {
+               builder.append("<td>`--").append(deployer).append("</td>");
+               builder.append(deployer.isTopLevelOnly() ? "<td>X</td>" : "<td/>");
+               builder.append(deployer.isWantComponents() ? "<td>X</td>" : "<td/>");
+               builder.append(deployer.isParentFirst() == false ? "<td>X</td>" : "<td/>");
+            }
+            else
+            {
+               builder.append("<td/><td/><td/><td/>");
+            }
+            if (row < inputs.size())
+               builder.append("<td>").append(inputs.get(row)).append("</td>");
+            else
+               builder.append("<td/>");
+            if (row < outputs.size())
+               builder.append("<td>").append(outputs.get(row)).append("</td>");
+            else
+               builder.append("<td/>");
+            builder.append("</tr>");
+            ++row;
+         }
+      }
    }
    
    public DeploymentStage getDeploymentStage(DeploymentContext context) throws DeploymentException
@@ -568,6 +690,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions, Deplo
                setState(context, DeploymentState.UNDEPLOYED, null);
                // This is now in the abstract classloader deployer.undeploy,
                // but left here in case somebody isn't using that.
+               unregisterMBean(context);
                removeClassLoader(context);
                cleanup(context);
                log.debug("Fully Undeployed " + context.getName());
@@ -600,6 +723,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions, Deplo
                   context.getTransientAttachments().addAttachment(ScopeBuilder.class, scopeBuilder);
                if (repository != null)
                   context.getTransientAttachments().addAttachment(MutableMetaDataRepository.class, repository);
+               registerMBean(context);
             }
             catch (Throwable t)
             {
@@ -608,6 +732,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions, Deplo
                context.setProblem(t);
                // Set the children to not deployed
                setState(context, DeploymentState.UNDEPLOYED, DeploymentState.DEPLOYING);
+               unregisterMBean(context);
             }
          }
 
@@ -1431,5 +1556,65 @@ public class DeployersImpl implements Deployers, ControllerContextActions, Deplo
          for (DeploymentContext component : components)
             cleanup(component);
       }
+   }
+
+   /**
+    * Register a deployment context's mbean
+    * 
+    * @param context the context
+    */
+   protected void registerMBean(DeploymentContext context)
+   {
+      if (server != null && isRegisterMBeans() && context instanceof DeploymentMBean)
+      {
+         try
+         {
+            DeploymentMBean depMBean = (DeploymentMBean) context;
+            server.registerMBean(context, depMBean.getObjectName());
+         }
+         catch (Exception e)
+         {
+            log.warn("Unable to register deployment mbean " + context.getName(), e);
+         }
+      }
+   }
+
+   /**
+    * Unregister a deployment context's mbean
+    * 
+    * @param context the context
+    */
+   protected void unregisterMBean(DeploymentContext context)
+   {
+      if (server != null && isRegisterMBeans() && context instanceof DeploymentMBean )
+      {
+         try
+         {
+            DeploymentMBean depMBean = (DeploymentMBean) context;
+            server.unregisterMBean(depMBean.getObjectName());
+         }
+         catch (Exception e)
+         {
+            log.trace("Unable to unregister deployment mbean " + context.getName(), e);
+         }
+      }
+   }
+   
+   public ObjectName preRegister(MBeanServer server, ObjectName name) throws Exception
+   {
+      this.server = server;
+      return name;
+   }
+
+   public void postRegister(Boolean registrationDone)
+   {
+   }
+
+   public void preDeregister() throws Exception
+   {
+   }
+
+   public void postDeregister()
+   {
    }
 }

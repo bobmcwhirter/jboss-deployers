@@ -25,6 +25,7 @@
     <version.jboss.mdr>2.0.0.CR1</version.jboss.mdr>
     <version.jboss.microcontainer>2.0.0.CR1</version.jboss.microcontainer>
     <version.jboss.classloader>2.0.0.CR2</version.jboss.classloader>
+    <version.jboss.classloading.spi>5.0.0.CR2</version.jboss.classloading.spi>
     <version.jboss.common.core>2.2.8.GA</version.jboss.common.core>
     <version.jboss.logging.spi>2.0.5.GA</version.jboss.logging.spi>
     <version.jboss.logging.log4j>2.0.5.GA</version.jboss.logging.log4j>
@@ -269,6 +270,11 @@
         <groupId>org.jboss.cl</groupId>
         <artifactId>jboss-classloading-vfs</artifactId>
         <version>${version.jboss.classloader}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.integration</groupId>
+        <artifactId>jboss-classloading-spi</artifactId>
+        <version>${version.jboss.classloading.spi}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.man</groupId>

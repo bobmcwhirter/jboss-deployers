@@ -44,7 +44,7 @@ import org.jboss.virtual.VirtualFile;
  * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
-public class AbstractVFSDeploymentContext extends AbstractDeploymentContext implements VFSDeploymentContext
+public class AbstractVFSDeploymentContext extends AbstractDeploymentContext implements VFSDeploymentContext, AbstractVFSDeploymentContextMBean
 {
    /** The serialVersionUID */
    private static final long serialVersionUID = 4474515937180482776L;

@@ -1,8 +1,8 @@
 /*
 * JBoss, Home of Professional Open Source
-* Copyright 2008, JBoss Inc., and individual contributors as indicated
-* by the @authors tag. See the copyright.txt in the distribution for a
-* full listing of individual contributors.
+* Copyright 2008, Red Hat Middleware LLC, and individual contributors
+* as indicated by the @author tags. See the copyright.txt file in the
+* distribution for a full listing of individual contributors.
 *
 * This is free software; you can redistribute it and/or modify it
 * under the terms of the GNU Lesser General Public License as
@@ -19,37 +19,23 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.deployers.plugins.deployers;
+package org.jboss.deployers.structure.spi.helpers;
+
+import org.jboss.deployers.structure.spi.DeploymentMBean;
 
 /**
- * DeployersImplMBean.
+ * AbstractDeploymentContextMBean.
  * 
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
  * @version $Revision: 1.1 $
  */
-public interface DeployersImplMBean
+public interface AbstractDeploymentContextMBean extends DeploymentMBean
 {
    /**
-    * List the deployer times
+    * List the attachments as an html table
     * 
-    * @param details whether to show details
-    * @return the deployer times
+    * @param detail whether to show the attachment
+    * @return the html formatted string
     */
-   String listDeployerTimes(boolean details);
-
-   /**
-    * List the deployers for each stage in order
-    * 
-    * @param stageName the stage name or null for all stages
-    * @return an html formatted table
-    */
-   String listDeployers(String stageName);
-
-   /**
-    * List the deployers for a given attachment
-    * 
-    * @param attachment the attachment name
-    * @return an html formatted table
-    */
-   String listDeployersByAttachment(String attachment);
+   String listAttachments(boolean detail);
 }

@@ -30,6 +30,7 @@ import org.jboss.deployers.spi.deployer.Deployer;
 import org.jboss.deployers.spi.deployer.DeploymentStage;
 import org.jboss.deployers.spi.deployer.managed.ManagedObjectCreator;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.deployers.structure.spi.helpers.DeployerTracking;
 import org.jboss.logging.Logger;
 import org.jboss.managed.api.ManagedObject;
 
@@ -70,7 +71,7 @@ public class DeployerWrapper implements Deployer, ManagedObjectCreator
       this.log = Logger.getLogger(deployer.getClass());
       this.classLoader = SecurityActions.getContextClassLoader();
    }
-
+   
    /**
     * Get the managedObjectCreator.
     * 
@@ -162,6 +163,7 @@ public class DeployerWrapper implements Deployer, ManagedObjectCreator
       if (unit == null)
          throw new IllegalArgumentException("Null unit");
 
+      DeployerTracking.push(deployer.toString());
       ClassLoader previous = SecurityActions.setContextClassLoader(classLoader);
       try
       {
@@ -176,6 +178,7 @@ public class DeployerWrapper implements Deployer, ManagedObjectCreator
       }
       finally
       {
+         DeployerTracking.pop();
          SecurityActions.resetContextClassLoader(previous);
       }
    }
@@ -185,6 +188,7 @@ public class DeployerWrapper implements Deployer, ManagedObjectCreator
       if (unit == null)
          throw new IllegalArgumentException("Null unit");
 
+      DeployerTracking.push(deployer.toString());
       ClassLoader previous = SecurityActions.setContextClassLoader(classLoader);
       try
       {
@@ -198,6 +202,7 @@ public class DeployerWrapper implements Deployer, ManagedObjectCreator
       }
       finally
       {
+         DeployerTracking.pop();
          SecurityActions.resetContextClassLoader(previous);
       }
    }

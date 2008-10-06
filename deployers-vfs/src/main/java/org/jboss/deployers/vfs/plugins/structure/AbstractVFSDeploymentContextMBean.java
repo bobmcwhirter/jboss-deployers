@@ -1,8 +1,8 @@
 /*
 * JBoss, Home of Professional Open Source
-* Copyright 2008, JBoss Inc., and individual contributors as indicated
-* by the @authors tag. See the copyright.txt in the distribution for a
-* full listing of individual contributors.
+* Copyright 2008, Red Hat Middleware LLC, and individual contributors
+* as indicated by the @author tags. See the copyright.txt file in the
+* distribution for a full listing of individual contributors.
 *
 * This is free software; you can redistribute it and/or modify it
 * under the terms of the GNU Lesser General Public License as
@@ -19,37 +19,39 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.deployers.plugins.deployers;
+package org.jboss.deployers.vfs.plugins.structure;
+
+import java.util.List;
+
+import org.jboss.deployers.structure.spi.helpers.AbstractDeploymentContextMBean;
+import org.jboss.virtual.VirtualFile;
 
 /**
- * DeployersImplMBean.
+ * AbstractVFSDeploymentContextMBean.
  * 
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
  * @version $Revision: 1.1 $
  */
-public interface DeployersImplMBean
+public interface AbstractVFSDeploymentContextMBean extends AbstractDeploymentContextMBean
 {
    /**
-    * List the deployer times
+    * Get the root file
     * 
-    * @param details whether to show details
-    * @return the deployer times
+    * @return the root
     */
-   String listDeployerTimes(boolean details);
+   VirtualFile getRoot();
 
    /**
-    * List the deployers for each stage in order
+    * Get the meta data locations
     * 
-    * @param stageName the stage name or null for all stages
-    * @return an html formatted table
+    * @return the meta data locations
     */
-   String listDeployers(String stageName);
+   List<VirtualFile> getMetaDataLocations();
 
    /**
-    * List the deployers for a given attachment
+    * Get the class path
     * 
-    * @param attachment the attachment name
-    * @return an html formatted table
+    * @return the class path
     */
-   String listDeployersByAttachment(String attachment);
+   List<VirtualFile> getClassPath();
 }

@@ -27,23 +27,33 @@ import java.io.ObjectOutput;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.HashSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import javax.management.MBeanRegistration;
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+
+import org.jboss.classloading.spi.RealClassLoader;
 import org.jboss.dependency.spi.ControllerContext;
 import org.jboss.dependency.spi.DependencyInfo;
 import org.jboss.deployers.client.spi.Deployment;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.DeploymentState;
+import org.jboss.deployers.spi.attachments.Attachments;
+import org.jboss.deployers.spi.attachments.MutableAttachments;
 import org.jboss.deployers.spi.attachments.helpers.ManagedObjectsWithTransientAttachmentsImpl;
 import org.jboss.deployers.structure.spi.ClassLoaderFactory;
 import org.jboss.deployers.structure.spi.DeploymentContext;
 import org.jboss.deployers.structure.spi.DeploymentContextVisitor;
+import org.jboss.deployers.structure.spi.DeploymentMBean;
 import org.jboss.deployers.structure.spi.DeploymentResourceLoader;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.structure.spi.scope.ScopeBuilder;
@@ -64,7 +74,7 @@ import org.jboss.metadata.spi.scope.ScopeKey;
  * @author Scott.Stark@jboss.org
  * @version $Revision: 1.1 $
  */
-public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttachmentsImpl implements DeploymentContext
+public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttachmentsImpl implements DeploymentContext, AbstractDeploymentContextMBean, MBeanRegistration
 {
    /** The serialVersionUID */
    private static final long serialVersionUID = 7368360479461613969L;
@@ -74,7 +84,13 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
    
    /** The name */
    private String name;
+   
+   /** The ObjectName */
+   private ObjectName objectName;
 
+   /** The MBeanServer */
+   private MBeanServer server;
+   
    /** The controller context names - should be serializable */
    private Set<Object> controllerContextNames;
 
@@ -132,6 +148,12 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
    /** The mutable scope */
    private ScopeKey mutableScope;
 
+   /** The transient managed objects */
+   private transient TrackingMutableAttachments transientManagedObjects;
+   
+   /** The transient attachements */
+   private transient TrackingMutableAttachments transientAttachments;
+   
    /**
     * Get the scope builder for a deployment context
     * 
@@ -294,7 +316,7 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
    {
       if (deploymentContext == null)
          throw new IllegalArgumentException("Null deployment context");
-
+      
       ScopeBuilder builder = deploymentContext.getTransientAttachments().getAttachment(ScopeBuilder.class);
       if (builder == null)
          builder = DefaultScopeBuilder.INSTANCE;
@@ -306,6 +328,8 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
     */
    public AbstractDeploymentContext()
    {
+      transientManagedObjects = new TrackingMutableAttachments(super.getTransientManagedObjects());
+      transientAttachments = new TrackingMutableAttachments(super.getTransientAttachments());
    }
 
    /**
@@ -330,6 +354,7 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
     */
    public AbstractDeploymentContext(String name, String simpleName, String relativePath)
    {
+      this();
       if (name == null)
          throw new IllegalArgumentException("Null name");
       if (relativePath == null)
@@ -344,6 +369,30 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
    public String getName()
    {
       return name;
+   }
+
+   public ObjectName getObjectName()
+   {
+      if (objectName == null)
+      {
+         String type = "Deployment";
+         if (getParent() != null)
+            type = "SubDeployment";
+         if (isComponent())
+            type = "Component";
+         String name = getName();
+         name = name.replace("\"", "&quot;");
+         String temp = "jboss.deployment:id=\"" + name + "\",type=" + type;
+         try
+         {
+            objectName = new ObjectName(temp);
+         }
+         catch (MalformedObjectNameException e)
+         {
+            throw new RuntimeException("Error creating object name: " + temp, e);
+         }
+      }
+      return objectName;
    }
 
    public Set<Object> getControllerContextNames()
@@ -482,6 +531,15 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
    {
       return classLoader;
    }
+
+   public ObjectName getClassLoaderName()
+   {
+      ClassLoader classLoader = getClassLoader();
+      if (classLoader == null || classLoader instanceof RealClassLoader == false)
+         return null;
+      
+      return ((RealClassLoader) classLoader).getObjectName();
+   }
    
    public void setClassLoader(ClassLoader classLoader)
    {
@@ -558,10 +616,26 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
       }
       return result;
    }
-   
+
+   public ObjectName getTopLevelName()
+   {
+      DeploymentContext top = getTopLevel();
+      if (top == null || top instanceof DeploymentMBean == false)
+         return null;
+      return ((DeploymentMBean) top).getObjectName();
+   }
+
    public DeploymentContext getParent()
    {
       return parent;
+   }
+   
+   public ObjectName getParentName()
+   {
+      DeploymentContext parent = getParent();
+      if (parent == null || parent instanceof DeploymentMBean == false)
+         return null;
+      return ((DeploymentMBean) parent).getObjectName();
    }
 
    public void setParent(DeploymentContext parent)
@@ -579,6 +653,18 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
       return new ArrayList<DeploymentContext>(children);
    }
 
+   public List<ObjectName> getChildNames()
+   {
+      List<DeploymentContext> children = getChildren();
+      List<ObjectName> result = new ArrayList<ObjectName>();
+      for (DeploymentContext child : children)
+      {
+         if (child instanceof DeploymentMBean)
+            result.add(((DeploymentMBean) child).getObjectName());
+      }
+      return result;
+   }
+
    public void addChild(DeploymentContext child)
    {
       if (child == null)
@@ -586,6 +672,8 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
       if (children == null)
          children = new TreeSet<DeploymentContext>(comparator);
       children.add(child);
+      if (server != null)
+         registerMBeans(child, true);
    }
 
    public boolean removeChild(DeploymentContext child)
@@ -594,6 +682,8 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
          throw new IllegalArgumentException("Null child");
       if (children == null)
          return false;
+      if (server != null)
+         unregisterMBeans(child, true);
       return children.remove(child);
    }
 
@@ -607,12 +697,26 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
       return Collections.unmodifiableList(components);
    }
 
+   public List<ObjectName> getComponentNames()
+   {
+      List<DeploymentContext> components = getComponents();
+      List<ObjectName> result = new ArrayList<ObjectName>();
+      for (DeploymentContext component : components)
+      {
+         if (component instanceof DeploymentMBean)
+            result.add(((DeploymentMBean) component).getObjectName());
+      }
+      return result;
+   }
+
    public void addComponent(DeploymentContext component)
    {
       if (component == null)
          throw new IllegalArgumentException("Null component");
       deployed();
       components.add(component);
+      if (server != null)
+         registerMBeans(component, true);
       log.debug("Added component " + component.getName() + " to " + getName());
    }
 
@@ -621,6 +725,8 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
       if (component == null)
          throw new IllegalArgumentException("Null component");
 
+      if (server != null)
+         unregisterMBeans(component, true);
       List<DeploymentContext> componentComponents = component.getComponents();
       if (componentComponents.isEmpty() == false)
          log.warn("Removing component " + name + " which still has components " + componentComponents);
@@ -657,6 +763,80 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
          if (parent == null)
             throw new IllegalStateException("Deployment ControllerContext has not been set");
          return parent.getDependencyInfo();
+      }
+   }
+
+   public MutableAttachments getTransientAttachments()
+   {
+      return transientAttachments;
+   }
+
+   public MutableAttachments getTransientManagedObjects()
+   {
+      return transientManagedObjects;
+   }
+
+   public String listAttachments(boolean detail)
+   {
+      Set<String> processed = new HashSet<String>();
+      StringBuilder result = new StringBuilder();
+      result.append("<table>");
+      result.append("<tr><th>Attachment</th><th>Created</th><th>Referenced</th>");
+      if (detail)
+         result.append("<th>Contents</th>");
+
+      result.append("<tr><td>Predetermined</td></tr>");
+      listAttachments(result, getPredeterminedManagedObjects(), detail, processed);
+      result.append("<tr><td>Managed Objects</td></tr>");
+      listAttachments(result, getTransientManagedObjects(), detail, processed);
+      result.append("<tr><td>Transient</td></tr>");
+      listAttachments(result, getTransientAttachments(), detail, processed);
+      result.append("</table>");
+      return result.toString();
+   }
+   
+   protected static void listAttachments(StringBuilder builder, Attachments attachments, boolean detail, Set<String> processed)
+   {
+      TrackingMutableAttachments tracking = null;
+      if (attachments instanceof TrackingMutableAttachments)
+         tracking = (TrackingMutableAttachments) attachments;
+
+      for (Map.Entry<String, Object> attachment : attachments.getAttachments().entrySet())
+      {
+         String name = attachment.getKey();
+         List<String> referenced = Collections.emptyList();
+         if (tracking != null)
+         {
+            Set<String> deployers = tracking.getReferenced(name);
+            if (deployers != null)
+               referenced = new ArrayList<String>(tracking.getReferenced(name));
+         }
+         int row = 0;
+         while (row < 1 || row < referenced.size())
+         {
+            builder.append("<tr>");
+            if (row == 0)
+            {
+               builder.append("<td>`--").append(name).append("</td>");
+               if (tracking != null)
+                  builder.append("<td>").append(tracking.getCreated(name)).append("</td>");
+               else
+                  builder.append("<td/>");
+            }
+            else
+            {
+               builder.append("<td/><td/>");
+            }
+            if (tracking != null && row < referenced.size())
+               builder.append("<td>").append(referenced.get(row)).append("</td>");
+            else
+               builder.append("<td/>");
+            if (row == 0 && detail)
+               builder.append("<td>").append(attachment.getValue()).append("</td>");
+            builder.append("</tr>");
+            ++row;
+         }
+         builder.append("</tr>");
       }
    }
 
@@ -771,7 +951,84 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
    {
       cleanupRepository(this);
    }
+
+   public ObjectName preRegister(MBeanServer server, ObjectName name) throws Exception
+   {
+      this.server = server;
+      return name;
+   }
+
+   public void postRegister(Boolean registrationDone)
+   {
+      if (registrationDone)
+         registerMBeans(this, false);
+   }
    
+   public void preDeregister() throws Exception
+   {
+      unregisterMBeans(this, false);
+   }
+   
+   public void postDeregister()
+   {
+   }
+
+   /**
+    * Register mbeans
+    * 
+    * @param context the context
+    * @param registerContext whether to register the context or just its children and components
+    */
+   protected void registerMBeans(DeploymentContext context, boolean registerContext)
+   {
+      if (registerContext && context instanceof DeploymentMBean)
+      {
+         try
+         {
+            DeploymentMBean depMBean = (DeploymentMBean) context;
+            server.registerMBean(context, depMBean.getObjectName());
+         }
+         catch (Exception e)
+         {
+            log.warn("Unable to register deployment mbean " + context.getName(), e);
+         }
+      }
+      List<DeploymentContext> children = context.getChildren();
+      for (DeploymentContext child : children)
+         registerMBeans(child, true);
+      List<DeploymentContext> components = context.getComponents();
+      for (DeploymentContext component : components)
+         registerMBeans(component, false);
+   }
+
+   /**
+    * Unregister mbeans
+    * 
+    * @param context the context
+    * @param unregisterContext whether to unregister the context or just its children and components
+    */
+   protected void unregisterMBeans(DeploymentContext context, boolean unregisterContext)
+   {
+      if (unregisterContext && context instanceof DeploymentMBean)
+      {
+         try
+         {
+            DeploymentMBean depMBean = (DeploymentMBean) context;
+            server.unregisterMBean(depMBean.getObjectName());
+         }
+         catch (Exception e)
+         {
+            log.trace("Unable to unregister deployment mbean " + context.getName(), e);
+         }
+      }
+      List<DeploymentContext> children = context.getChildren();
+      for (DeploymentContext child : children)
+         unregisterMBeans(child, true);
+      List<DeploymentContext> components = context.getComponents();
+      for (DeploymentContext component : components)
+         unregisterMBeans(component, false);
+   }
+
    @Override
    public String toString()
    {
