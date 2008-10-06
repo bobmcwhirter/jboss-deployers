@@ -22,16 +22,23 @@
 package org.jboss.deployers.spi.deployer.helpers;
 
 import org.jboss.deployers.structure.spi.DeploymentUnit;
-import org.jboss.deployers.spi.DeploymentException;
 
 /**
- * Simple component visitor.
+ * Simple component adapter.
  *
  * @param <T> exact attachment type
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public abstract class AbstractComponentVisitor<T> extends ComponentAdapter<T> implements DeploymentVisitor<T>
+public abstract class ComponentAdapter<T>
 {
+   /**
+    * Get component name.
+    *
+    * @param attachment the attachment
+    * @return the component name
+    */
+   protected abstract String getComponentName(T attachment);
+
    /**
     * Get attachment name.
     * By default we return visitor type's name.
@@ -39,18 +46,28 @@ public abstract class AbstractComponentVisitor<T> extends ComponentAdapter<T> im
     * @param attachment the attachment
     * @return the attachment name
     */
-   protected String getAttachmentName(T attachment)
+   protected abstract String getAttachmentName(T attachment);
+
+   /**
+    * Add component.
+    *
+    * @param unit the deployment unit
+    * @param attachment the attachment
+    */
+   protected void addComponent(DeploymentUnit unit, T attachment)
    {
-      return getVisitorType().getName();
+      DeploymentUnit component = unit.addComponent(getComponentName(attachment));
+      component.addAttachment(getAttachmentName(attachment), attachment);
    }
 
-   public void deploy(DeploymentUnit unit, T attachment) throws DeploymentException
+   /**
+    * Remove component.
+    *
+    * @param unit the deployment unit
+    * @param attachment the attachment
+    */
+   protected void removeComponent(DeploymentUnit unit, T attachment)
    {
-      addComponent(unit, attachment);
-   }
-
-   public void undeploy(DeploymentUnit unit, T attachment)
-   {
-      removeComponent(unit, attachment);
+      unit.removeComponent(getComponentName(attachment));
    }
 }
