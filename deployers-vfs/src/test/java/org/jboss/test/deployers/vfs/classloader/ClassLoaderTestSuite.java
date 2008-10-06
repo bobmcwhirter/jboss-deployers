@@ -34,6 +34,7 @@ import org.jboss.test.deployers.vfs.classloader.test.SubDeploymentClassLoaderVis
 import org.jboss.test.deployers.vfs.classloader.test.VFSClassLoaderDependenciesUnitTestCase;
 import org.jboss.test.deployers.vfs.classloader.test.VFSUndeployOrderClassLoaderUnitTestCase;
 import org.jboss.test.deployers.vfs.classloader.test.IntegrationDeployerUnitTestCase;
+import org.jboss.test.deployers.vfs.classloader.test.RequirementsIntegrationUnitTestCase;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -69,6 +70,7 @@ public class ClassLoaderTestSuite extends TestSuite
       suite.addTest(NotVFSClassLoaderUnitTestCase.suite());
       suite.addTest(ManifestClassLoaderUnitTestCase.suite());
       suite.addTest(IntegrationDeployerUnitTestCase.suite());
+      suite.addTest(RequirementsIntegrationUnitTestCase.suite());
 
       return suite;
    }

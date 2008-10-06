@@ -188,17 +188,20 @@ public abstract class VFSClassLoaderDependenciesTest extends BaseDeployersVFSTes
       classLoadingMetaData.setName(name);
       classLoadingMetaData.setVersion(version);
 
-      StringBuffer included = new StringBuffer();
-      boolean first = true;
-      for (Class<?> pkg : packages)
+      if (packages != null)
       {
-         if (first)
-            first = false;
-         else
-            included.append(",");
-         included.append(pkg.getPackage().getName());
+         StringBuffer included = new StringBuffer();
+         boolean first = true;
+         for (Class<?> pkg : packages)
+         {
+            if (first)
+               first = false;
+            else
+               included.append(",");
+            included.append(pkg.getPackage().getName());
+         }
+         classLoadingMetaData.setIncludedPackages(included.toString());
       }
-      classLoadingMetaData.setIncludedPackages(included.toString());
       
       CapabilitiesMetaData capabilities = classLoadingMetaData.getCapabilities();
       Capability capability = classLoadingMetaDataFactory.createModule(name, version);

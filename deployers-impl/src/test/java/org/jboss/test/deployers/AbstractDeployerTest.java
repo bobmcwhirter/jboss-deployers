@@ -25,6 +25,8 @@ import java.util.Set;
 
 import org.jboss.dependency.plugins.AbstractController;
 import org.jboss.dependency.spi.Controller;
+import org.jboss.dependency.spi.ControllerContext;
+import org.jboss.dependency.spi.ControllerState;
 import org.jboss.deployers.client.plugins.deployment.AbstractDeployment;
 import org.jboss.deployers.client.spi.DeployerClient;
 import org.jboss.deployers.client.spi.Deployment;
@@ -36,6 +38,7 @@ import org.jboss.deployers.plugins.managed.DefaultManagedDeploymentCreator;
 import org.jboss.deployers.spi.attachments.PredeterminedManagedObjectAttachments;
 import org.jboss.deployers.spi.deployer.Deployer;
 import org.jboss.deployers.spi.deployer.Deployers;
+import org.jboss.deployers.spi.deployer.DeploymentStage;
 import org.jboss.deployers.spi.deployer.managed.ManagedDeploymentCreator;
 import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.deployers.structure.spi.DeploymentContext;
@@ -206,6 +209,20 @@ public abstract class AbstractDeployerTest extends BaseTestCase
    protected ContextInfo addChild(PredeterminedManagedObjectAttachments parent, String name)
    {
       return factory.addContext(parent, name);
+   }
+
+   /**
+    * This stage check is impl detail.
+    *
+    * @param unit the deployment unit
+    * @param stage expected deployment stage
+    */
+   protected void assertDeploymentStage(DeploymentUnit unit, DeploymentStage stage)
+   {
+      ControllerContext context = unit.getAttachment(ControllerContext.class);
+      assertNotNull("Expecting controller context attachment: " + unit, context);
+      ControllerState state = new ControllerState(stage.getName());
+      assertEquals(state, context.getState());
    }
 
    @Override

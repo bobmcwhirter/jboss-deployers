@@ -79,7 +79,7 @@ public abstract class RequirementIntegrationDeployer<T> extends AbstractOptional
     */
    public void setIntegrationModuleName(String integrationModuleName)
    {
-      if (integrationModuleName == null)
+      if (integrationModuleNames == null)
          this.integrationModuleNames = Collections.singleton(integrationModuleName);
       else
          this.integrationModuleNames.add(integrationModuleName);
