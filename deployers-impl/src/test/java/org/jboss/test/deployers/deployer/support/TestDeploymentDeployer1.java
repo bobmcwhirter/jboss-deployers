@@ -23,10 +23,9 @@ package org.jboss.test.deployers.deployer.support;
 
 import java.util.List;
 
-import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.helpers.AbstractComponentDeployer;
-import org.jboss.deployers.spi.deployer.helpers.DeploymentVisitor;
-import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.deployers.spi.deployer.helpers.AbstractComponentVisitor;
+import org.jboss.deployers.spi.deployer.helpers.AbstractDeploymentVisitor;
 
 /**
  * TestDeploymentDeployer.
@@ -42,75 +41,45 @@ public class TestDeploymentDeployer1 extends AbstractComponentDeployer<TestDeplo
       setComponentVisitor(new TestMetaDataVisitor());
    }
 
-   protected static void addTestComponent(DeploymentUnit unit, TestMetaData1 test)
-   {
-      DeploymentUnit component = unit.addComponent(test.getName());
-      component.addAttachment(TestMetaData1.class, test);
-   }
-
-   protected static void removeTestComponent(DeploymentUnit unit, TestMetaData1 test)
-   {
-      unit.removeComponent(test.getName());
-   }
-   
    /**
     * TestDeploymentVisitor.
     */
-   public class TestDeploymentVisitor implements DeploymentVisitor<TestDeployment1>
+   public class TestDeploymentVisitor extends AbstractDeploymentVisitor<TestMetaData1, TestDeployment1>
    {
       public Class<TestDeployment1> getVisitorType()
       {
          return TestDeployment1.class;
       }
 
-      public void deploy(DeploymentUnit unit, TestDeployment1 deployment) throws DeploymentException
+      protected List<? extends TestMetaData1> getComponents(TestDeployment1 deployment)
       {
-         try
-         {
-            List<TestMetaData1> tests = deployment.getBeans();
-            if (tests == null || tests.isEmpty())
-               return;
-            
-            for (TestMetaData1 test : tests)
-               addTestComponent(unit, test);
-         }
-         catch (Throwable t)
-         {
-            throw DeploymentException.rethrowAsDeploymentException("Error deploying: " + deployment, t);
-         }
+         return deployment.getBeans();
       }
 
-      public void undeploy(DeploymentUnit unit, TestDeployment1 deployment)
+      protected Class<TestMetaData1> getComponentType()
       {
-         List<TestMetaData1> tests = deployment.getBeans();
-         if (tests == null)
-            return;
-         
-         for (TestMetaData1 test : tests)
-         {
-            unit.removeComponent(test.getName());
-         }
+         return TestMetaData1.class;
+      }
+
+      protected String getComponentName(TestMetaData1 attachment)
+      {
+         return attachment.getName();
       }
    }
 
    /**
     * TestMetaDataVisitor.
     */
-   public static class TestMetaDataVisitor implements DeploymentVisitor<TestMetaData1>
+   public static class TestMetaDataVisitor extends AbstractComponentVisitor<TestMetaData1>
    {
       public Class<TestMetaData1> getVisitorType()
       {
          return TestMetaData1.class;
       }
 
-      public void deploy(DeploymentUnit unit, TestMetaData1 deployment) throws DeploymentException
+      protected String getComponentName(TestMetaData1 attachment)
       {
-         addTestComponent(unit, deployment);
-      }
-
-      public void undeploy(DeploymentUnit unit, TestMetaData1 deployment)
-      {
-         removeTestComponent(unit, deployment);
+         return attachment.getName();
       }
    }
 }

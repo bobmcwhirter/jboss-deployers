@@ -23,10 +23,9 @@ package org.jboss.test.deployers.main.support;
 
 import java.util.List;
 
-import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.helpers.AbstractComponentDeployer;
-import org.jboss.deployers.spi.deployer.helpers.DeploymentVisitor;
-import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.deployers.spi.deployer.helpers.AbstractComponentVisitor;
+import org.jboss.deployers.spi.deployer.helpers.AbstractDeploymentVisitor;
 
 /**
  * Test attachments deployer.
@@ -41,66 +40,45 @@ public class TestAttachmentsDeployer extends AbstractComponentDeployer<TestAttac
       setComponentVisitor(new TesAttachmentVisitor());
    }
 
-   protected static void addTestComponent(DeploymentUnit unit, TestAttachment bean)
-   {
-      DeploymentUnit component = unit.addComponent(bean.getName().toString());
-      component.addAttachment(TestAttachment.class.getName(), bean);
-   }
-
-   protected static void removeTestComponent(DeploymentUnit unit, TestAttachment bean)
-   {
-      unit.removeComponent(bean.getName().toString());
-   }
-
    /**
     * TestAttachmentsVisitor.
     */
-   public static class TestAttachmentsVisitor implements DeploymentVisitor<TestAttachments>
+   public static class TestAttachmentsVisitor extends AbstractDeploymentVisitor<TestAttachment, TestAttachments>
    {
       public Class<TestAttachments> getVisitorType()
       {
          return TestAttachments.class;
       }
 
-      public void deploy(DeploymentUnit unit, TestAttachments deployment) throws DeploymentException
+      protected List<? extends TestAttachment> getComponents(TestAttachments deployment)
       {
-         List<TestAttachment> beans = deployment.getAttachments();
-         if (beans != null && beans.isEmpty() == false)
-         {
-            for (TestAttachment bean : beans)
-               addTestComponent(unit, bean);
-         }
+         return deployment.getAttachments();
       }
 
-      public void undeploy(DeploymentUnit unit, TestAttachments deployment)
+      protected Class<TestAttachment> getComponentType()
       {
-         List<TestAttachment> beans = deployment.getAttachments();
-         if (beans != null && beans.isEmpty() == false)
-         {
-            for (TestAttachment bean : beans)
-               removeTestComponent(unit, bean);
-         }
+         return TestAttachment.class;
+      }
+
+      protected String getComponentName(TestAttachment attachment)
+      {
+         return attachment.getName().toString();
       }
    }
 
    /**
     * TestAttachmentVisitor.
     */
-   public static class TesAttachmentVisitor implements DeploymentVisitor<TestAttachment>
+   public static class TesAttachmentVisitor extends AbstractComponentVisitor<TestAttachment>
    {
       public Class<TestAttachment> getVisitorType()
       {
          return TestAttachment.class;
       }
 
-      public void deploy(DeploymentUnit unit, TestAttachment deployment) throws DeploymentException
+      protected String getComponentName(TestAttachment attachment)
       {
-         addTestComponent(unit, deployment);
-      }
-
-      public void undeploy(DeploymentUnit unit, TestAttachment deployment)
-      {
-         removeTestComponent(unit, deployment);
+         return attachment.getName().toString();
       }
    }
 }

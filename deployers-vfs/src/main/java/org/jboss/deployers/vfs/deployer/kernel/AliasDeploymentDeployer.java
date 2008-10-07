@@ -21,13 +21,14 @@
 */
 package org.jboss.deployers.vfs.deployer.kernel;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.jboss.beans.metadata.spi.NamedAliasMetaData;
-import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.helpers.AbstractComponentDeployer;
-import org.jboss.deployers.spi.deployer.helpers.DeploymentVisitor;
-import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.deployers.spi.deployer.helpers.AbstractComponentVisitor;
+import org.jboss.deployers.spi.deployer.helpers.AbstractDeploymentVisitor;
 import org.jboss.kernel.spi.deployment.KernelDeployment;
 
 /**
@@ -46,66 +47,49 @@ public class AliasDeploymentDeployer extends AbstractComponentDeployer<KernelDep
       setComponentVisitor(new AliasMetaDataVisitor());
    }
 
-   protected static void addAliasComponent(DeploymentUnit unit, NamedAliasMetaData alias)
-   {
-      DeploymentUnit component = unit.addComponent(alias.getAliasValue().toString());
-      component.addAttachment(NamedAliasMetaData.class.getName(), alias);
-   }
-
-   protected static void removeAliasComponent(DeploymentUnit unit, NamedAliasMetaData alias)
-   {
-      unit.removeComponent(alias.getAliasValue().toString());
-   }
-
    /**
     * KernelDeploymentVisitor.
     */
-   public static class KernelDeploymentVisitor implements DeploymentVisitor<KernelDeployment>
+   public static class KernelDeploymentVisitor extends AbstractDeploymentVisitor<NamedAliasMetaData, KernelDeployment>
    {
       public Class<KernelDeployment> getVisitorType()
       {
          return KernelDeployment.class;
       }
 
-      public void deploy(DeploymentUnit unit, KernelDeployment deployment) throws DeploymentException
+      protected List<? extends NamedAliasMetaData> getComponents(KernelDeployment deployment)
       {
          Set<NamedAliasMetaData> aliases = deployment.getAliases();
          if (aliases != null && aliases.isEmpty() == false)
-         {
-            for (NamedAliasMetaData alias : aliases)
-               addAliasComponent(unit, alias);
-         }
+            return new ArrayList<NamedAliasMetaData>(aliases);
+         else
+            return null;
       }
 
-      public void undeploy(DeploymentUnit unit, KernelDeployment deployment)
+      protected Class<NamedAliasMetaData> getComponentType()
       {
-         Set<NamedAliasMetaData> aliases = deployment.getAliases();
-         if (aliases != null && aliases.isEmpty() == false)
-         {
-            for (NamedAliasMetaData alias : aliases)
-               removeAliasComponent(unit, alias);
-         }
+         return NamedAliasMetaData.class;
+      }
+
+      protected String getComponentName(NamedAliasMetaData attachment)
+      {
+         return attachment.getAliasValue().toString();
       }
    }
 
    /**
     * AliasMetaDataVisitor.
     */
-   public static class AliasMetaDataVisitor implements DeploymentVisitor<NamedAliasMetaData>
+   public static class AliasMetaDataVisitor extends AbstractComponentVisitor<NamedAliasMetaData>
    {
+      protected String getComponentName(NamedAliasMetaData attachment)
+      {
+         return attachment.getAliasValue().toString();
+      }
+
       public Class<NamedAliasMetaData> getVisitorType()
       {
          return NamedAliasMetaData.class;
-      }
-
-      public void deploy(DeploymentUnit unit, NamedAliasMetaData deployment) throws DeploymentException
-      {
-         addAliasComponent(unit, deployment);
-      }
-
-      public void undeploy(DeploymentUnit unit, NamedAliasMetaData deployment)
-      {
-         removeAliasComponent(unit, deployment);
       }
    }
 }

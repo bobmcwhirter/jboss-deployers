@@ -23,10 +23,9 @@ package org.jboss.test.deployers.scope.support;
 
 import java.util.List;
 
-import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.helpers.AbstractComponentDeployer;
-import org.jboss.deployers.spi.deployer.helpers.DeploymentVisitor;
-import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.deployers.spi.deployer.helpers.AbstractComponentVisitor;
+import org.jboss.deployers.spi.deployer.helpers.AbstractDeploymentVisitor;
 
 /**
  * TestDeploymentDeployer.
@@ -42,69 +41,39 @@ public class TestComponentDeployer extends AbstractComponentDeployer<TestCompone
       setComponentVisitor(new TestComponentMetaDataVisitor());
    }
 
-   protected static void addTestComponent(DeploymentUnit unit, TestComponentMetaData test)
-   {
-      DeploymentUnit component = unit.addComponent(test.name);
-      component.addAttachment(TestComponentMetaData.class, test);
-   }
-
-   protected static void removeTestComponent(DeploymentUnit unit, TestComponentMetaData test)
-   {
-      unit.removeComponent(test.name);
-   }
-   
-   public class TestComponentMetaDataContainerVisitor implements DeploymentVisitor<TestComponentMetaDataContainer>
+   public class TestComponentMetaDataContainerVisitor extends AbstractDeploymentVisitor<TestComponentMetaData, TestComponentMetaDataContainer>
    {
       public Class<TestComponentMetaDataContainer> getVisitorType()
       {
          return TestComponentMetaDataContainer.class;
       }
 
-      public void deploy(DeploymentUnit unit, TestComponentMetaDataContainer deployment) throws DeploymentException
+      protected List<? extends TestComponentMetaData> getComponents(TestComponentMetaDataContainer deployment)
       {
-         try
-         {
-            List<TestComponentMetaData> tests = deployment.componentMetaData;
-            if (tests == null || tests.isEmpty())
-               return;
-            
-            for (TestComponentMetaData test : tests)
-               addTestComponent(unit, test);
-         }
-         catch (Throwable t)
-         {
-            throw DeploymentException.rethrowAsDeploymentException("Error deploying: " + deployment, t);
-         }
+         return deployment.componentMetaData;
       }
 
-      public void undeploy(DeploymentUnit unit, TestComponentMetaDataContainer deployment)
+      protected Class<TestComponentMetaData> getComponentType()
       {
-         List<TestComponentMetaData> tests = deployment.componentMetaData;
-         if (tests == null)
-            return;
-         
-         for (TestComponentMetaData test : tests)
-         {
-            unit.removeComponent(test.name);
-         }
+         return TestComponentMetaData.class;
+      }
+
+      protected String getComponentName(TestComponentMetaData attachment)
+      {
+         return attachment.name;
       }
    }
 
-   public static class TestComponentMetaDataVisitor implements DeploymentVisitor<TestComponentMetaData>
+   public static class TestComponentMetaDataVisitor extends AbstractComponentVisitor<TestComponentMetaData>
    {
       public Class<TestComponentMetaData> getVisitorType()
       {
          return TestComponentMetaData.class;
       }
 
-      public void deploy(DeploymentUnit unit, TestComponentMetaData deployment) throws DeploymentException
+      protected String getComponentName(TestComponentMetaData attachment)
       {
-         addTestComponent(unit, deployment);
-      }
-
-      public void undeploy(DeploymentUnit unit, TestComponentMetaData deployment)
-      {
-         removeTestComponent(unit, deployment);
+         return attachment.name;
       }
    }
 }
