@@ -68,8 +68,10 @@ public abstract class RequirementIntegrationDeployer<T> extends AbstractOptional
    {
       if (integrationModuleNames == null || integrationModuleNames.isEmpty())
          return null;
-      else
+      else if (integrationModuleNames.size() == 1)
          return integrationModuleNames.iterator().next();
+      else
+         throw new IllegalArgumentException("Multiple integration module names: " + integrationModuleNames);
    }
 
    /**
@@ -79,10 +81,7 @@ public abstract class RequirementIntegrationDeployer<T> extends AbstractOptional
     */
    public void setIntegrationModuleName(String integrationModuleName)
    {
-      if (integrationModuleNames == null)
-         this.integrationModuleNames = Collections.singleton(integrationModuleName);
-      else
-         this.integrationModuleNames.add(integrationModuleName);
+      this.integrationModuleNames = Collections.singleton(integrationModuleName);
    }
 
    /**

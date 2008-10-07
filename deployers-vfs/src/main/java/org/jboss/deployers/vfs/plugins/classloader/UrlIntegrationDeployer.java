@@ -66,8 +66,10 @@ public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealD
    {
       if (integrationURLs == null || integrationURLs.isEmpty())
          return null;
-      else
+      else if (integrationURLs.size() == 1)
          return integrationURLs.iterator().next();
+      else
+         throw new IllegalArgumentException("Multiple integration urls: " + integrationURLs);
    }
 
    /**
@@ -77,10 +79,7 @@ public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealD
     */
    public void setIntegrationURL(URL url)
    {
-      if (integrationURLs == null)
-         integrationURLs = Collections.singleton(url);
-      else
-         integrationURLs.add(url);
+      integrationURLs = Collections.singleton(url);
    }
 
    /**
