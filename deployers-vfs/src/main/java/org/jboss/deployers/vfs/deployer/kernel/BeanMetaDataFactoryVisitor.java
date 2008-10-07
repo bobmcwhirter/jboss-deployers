@@ -21,14 +21,8 @@
 */
 package org.jboss.deployers.vfs.deployer.kernel;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.jboss.beans.metadata.spi.BeanMetaData;
-import org.jboss.deployers.spi.DeploymentException;
-import org.jboss.deployers.spi.deployer.helpers.DeploymentVisitor;
-import org.jboss.deployers.structure.spi.DeploymentUnit;
-import org.jboss.logging.Logger;
+import org.jboss.deployers.spi.deployer.helpers.AbstractDeploymentVisitor;
 
 /**
  * BeanMetaDataVisitor.<p>
@@ -36,94 +30,15 @@ import org.jboss.logging.Logger;
  * @param <T> exact attachment type
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  */
-public abstract class BeanMetaDataFactoryVisitor<T> implements DeploymentVisitor<T>
+public abstract class BeanMetaDataFactoryVisitor<T> extends AbstractDeploymentVisitor<BeanMetaData, T>
 {
-   private Logger log = Logger.getLogger(getClass());
-
-   /**
-    * Add bean component.
-    *
-    * @param unit the deployment unit
-    * @param bean the bean metadata
-    */
-   protected static void addBeanComponent(DeploymentUnit unit, BeanMetaData bean)
+   protected Class<BeanMetaData> getComponentType()
    {
-      DeploymentUnit component = unit.addComponent(bean.getName());
-      component.addAttachment(BeanMetaData.class.getName(), bean);
+      return BeanMetaData.class;
    }
 
-   /**
-    * Remove bean component.
-    *
-    * @param unit the deployment unit
-    * @param bean the bean metadata
-    */
-
-   protected static void removeBeanComponent(DeploymentUnit unit, BeanMetaData bean)
+   protected String getComponentName(BeanMetaData attachment)
    {
-      unit.removeComponent(bean.getName());
-   }
-
-   /**
-    * Ignore all error during component removal.
-    *
-    * @param unit the deployment unit
-    * @param bean the bean metadata
-    */
-   protected void safeRemoveBeanComponent(DeploymentUnit unit, BeanMetaData bean)
-   {
-      try
-      {
-         removeBeanComponent(unit, bean);
-      }
-      catch (Throwable ignored)
-      {
-         log.warn("Error during component removal: " + unit.getName(), ignored);
-      }
-   }
-
-   /**
-    * Get beans from deployment.
-    *
-    * @param deployment the deployment
-    * @return list of beans
-    */
-   protected abstract List<BeanMetaData> getBeans(T deployment);
-
-   public void deploy(DeploymentUnit unit, T deployment) throws DeploymentException
-   {
-      List<BeanMetaData> beans = getBeans(deployment);
-      if (beans != null && beans.isEmpty() == false)
-      {
-         List<BeanMetaData> visited = new ArrayList<BeanMetaData>();
-         try
-         {
-            for (BeanMetaData bean : beans)
-            {
-               addBeanComponent(unit, bean);
-               visited.add(bean);
-            }
-         }
-         catch (Throwable t)
-         {
-            for (int i = visited.size()-1; i >= 0; --i)
-            {
-               safeRemoveBeanComponent(unit, visited.get(i));
-            }
-            throw DeploymentException.rethrowAsDeploymentException("Error deploying: " + unit.getName(), t);
-         }
-      }
-   }
-
-   public void undeploy(DeploymentUnit unit, T deployment)
-   {
-      List<BeanMetaData> beans = getBeans(deployment);
-      if (beans != null && beans.isEmpty() == false)
-      {
-         for (BeanMetaData bean : beans)
-         {
-            safeRemoveBeanComponent(unit, bean);
-         }
-      }
+      return attachment.getName();
    }
 }

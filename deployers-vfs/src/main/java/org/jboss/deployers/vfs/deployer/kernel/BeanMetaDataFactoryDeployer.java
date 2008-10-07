@@ -56,7 +56,7 @@ public class BeanMetaDataFactoryDeployer<T extends BeanMetaDataFactory> extends 
          return clazz;
       }
 
-      protected List<BeanMetaData> getBeans(T deployment)
+      protected List<? extends BeanMetaData> getComponents(T deployment)
       {
          return deployment.getBeans();
       }

@@ -49,7 +49,7 @@ public class KernelDeploymentDeployer extends AbstractComponentDeployer<KernelDe
          return KernelDeployment.class;
       }
 
-      protected List<BeanMetaData> getBeans(KernelDeployment deployment)
+      protected List<? extends BeanMetaData> getComponents(KernelDeployment deployment)
       {
          return deployment.getBeans();
       }
@@ -65,7 +65,7 @@ public class KernelDeploymentDeployer extends AbstractComponentDeployer<KernelDe
          return BeanMetaData.class;
       }
 
-      protected List<BeanMetaData> getBeans(BeanMetaData deployment)
+      protected List<? extends BeanMetaData> getComponents(BeanMetaData deployment)
       {
          return Collections.singletonList(deployment);
       }
