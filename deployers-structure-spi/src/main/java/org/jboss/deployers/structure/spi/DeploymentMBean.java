@@ -113,13 +113,6 @@ public interface DeploymentMBean
     * @return the mutable scope
     */
    ScopeKey getMutableScope();
-   
-   /**
-    * Set the mutable scope
-    * 
-    * @param key the mutable scope key
-    */
-   void setMutableScope(ScopeKey key);
 
    /**
     * Get the deployment state
