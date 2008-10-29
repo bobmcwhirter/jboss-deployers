@@ -23,6 +23,8 @@ package org.jboss.deployers.vfs.deployer.kernel;
 
 import org.jboss.beans.metadata.spi.BeanMetaData;
 import org.jboss.deployers.spi.deployer.helpers.AbstractDeploymentVisitor;
+import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.metadata.spi.scope.CommonLevels;
 
 /**
  * BeanMetaDataVisitor.<p>
@@ -35,6 +37,35 @@ public abstract class BeanMetaDataFactoryVisitor<T> extends AbstractDeploymentVi
    protected Class<BeanMetaData> getComponentType()
    {
       return BeanMetaData.class;
+   }
+
+   protected DeploymentUnit addComponent(DeploymentUnit unit, BeanMetaData attachment)
+   {
+      DeploymentUnit component = super.addComponent(unit, attachment);
+      String className = attachment.getBean();
+      if (className != null)
+      {
+         Object qualifier;
+         if (attachment.getClassLoader() == null)
+         {
+            ClassLoader cl = unit.getClassLoader();
+            try
+            {
+               qualifier = cl.loadClass(className);
+            }
+            catch (Exception e)
+            {
+               throw new IllegalArgumentException("Exception loading class for ScopeKey addition.", e);              
+            }
+         }
+         else
+         {
+            qualifier = className;
+         }
+         component.getScope().addScope(CommonLevels.CLASS, qualifier);
+      }
+
+      return component;
    }
 
    protected String getComponentName(BeanMetaData attachment)

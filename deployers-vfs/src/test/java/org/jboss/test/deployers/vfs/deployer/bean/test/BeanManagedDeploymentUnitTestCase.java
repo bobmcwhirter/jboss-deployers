@@ -35,6 +35,7 @@ import org.jboss.managed.api.factory.ManagedObjectFactory;
 import org.jboss.metatype.api.values.CollectionValue;
 import org.jboss.metatype.api.values.GenericValue;
 import org.jboss.test.deployers.vfs.deployer.AbstractDeployerUnitTest;
+import org.jboss.test.deployers.support.TCCLClassLoaderDeployer;
 
 /**
  * Tests of bean deployment ManagedObject/ManagedDeployment creation.
@@ -105,6 +106,7 @@ public class BeanManagedDeploymentUnitTestCase extends AbstractDeployerUnitTest
       BeanDeployer beanDeployer = new BeanDeployer();
       KernelDeploymentDeployer kernelDeploymentDeployer = new KernelDeploymentDeployer();
       BeanMetaDataDeployer beanMetaDataDeployer = new BeanMetaDataDeployer(kernel);
+      addDeployer(main, new TCCLClassLoaderDeployer());
       addDeployer(main, beanDeployer);
       addDeployer(main, kernelDeploymentDeployer);
       addDeployer(main, beanMetaDataDeployer);

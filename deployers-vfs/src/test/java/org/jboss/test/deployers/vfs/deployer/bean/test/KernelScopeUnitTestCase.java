@@ -46,6 +46,7 @@ import org.jboss.test.deployers.vfs.deployer.AbstractDeployerUnitTest;
 import org.jboss.test.deployers.vfs.deployer.bean.support.Simple;
 import org.jboss.test.deployers.vfs.deployer.bean.support.TestInstanceMetaDataBeanDeployer;
 import org.jboss.test.deployers.vfs.deployer.bean.support.TestMetaDataBeanDeployer;
+import org.jboss.test.deployers.support.TCCLClassLoaderDeployer;
 
 /**
  * BeanDeployerUnitTestCase.
@@ -76,6 +77,7 @@ public class KernelScopeUnitTestCase extends AbstractDeployerUnitTest
       testInstanceMetaDataDeployer = new TestInstanceMetaDataBeanDeployer();
       KernelDeploymentDeployer kernelDeploymentDeployer = new KernelDeploymentDeployer();
       BeanMetaDataDeployer beanMetaDataDeployer = new BeanMetaDataDeployer(kernel);
+      addDeployer(main, new TCCLClassLoaderDeployer());
       addDeployer(main, testMetaDataDeployer);
       addDeployer(main, testInstanceMetaDataDeployer);
       addDeployer(main, kernelDeploymentDeployer);

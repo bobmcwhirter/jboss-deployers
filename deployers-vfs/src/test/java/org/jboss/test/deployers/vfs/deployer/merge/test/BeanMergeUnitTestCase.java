@@ -29,6 +29,7 @@ import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.kernel.Kernel;
 import org.jboss.test.deployers.vfs.deployer.AbstractDeployerUnitTest;
 import org.jboss.test.deployers.vfs.deployer.merge.support.TestBeanMergeDeployer;
+import org.jboss.test.deployers.support.TCCLClassLoaderDeployer;
 
 /**
  * BeanMergeUnitTestCase.
@@ -52,6 +53,7 @@ public class BeanMergeUnitTestCase extends AbstractDeployerUnitTest
       TestBeanMergeDeployer beanDeployer = new TestBeanMergeDeployer();
       KernelDeploymentDeployer kernelDeploymentDeployer = new KernelDeploymentDeployer();
       BeanMetaDataDeployer beanMetaDataDeployer = new BeanMetaDataDeployer(kernel);
+      addDeployer(main, new TCCLClassLoaderDeployer());
       addDeployer(main, beanDeployer);
       addDeployer(main, kernelDeploymentDeployer);
       addDeployer(main, beanMetaDataDeployer);

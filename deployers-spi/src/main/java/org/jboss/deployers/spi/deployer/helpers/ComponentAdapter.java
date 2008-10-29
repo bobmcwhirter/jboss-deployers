@@ -53,11 +53,13 @@ public abstract class ComponentAdapter<T>
     *
     * @param unit the deployment unit
     * @param attachment the attachment
+    * @return newly created component deployment unit
     */
-   protected void addComponent(DeploymentUnit unit, T attachment)
+   protected DeploymentUnit addComponent(DeploymentUnit unit, T attachment)
    {
       DeploymentUnit component = unit.addComponent(getComponentName(attachment));
       component.addAttachment(getAttachmentName(attachment), attachment);
+      return component;
    }
 
    /**

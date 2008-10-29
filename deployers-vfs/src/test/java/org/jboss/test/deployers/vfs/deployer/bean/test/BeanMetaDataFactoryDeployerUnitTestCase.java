@@ -28,6 +28,7 @@ import org.jboss.deployers.vfs.deployer.kernel.BeanMetaDataFactoryDeployer;
 import org.jboss.kernel.Kernel;
 import org.jboss.test.deployers.vfs.deployer.bean.support.CustomBMDF;
 import org.jboss.test.deployers.vfs.deployer.bean.support.TestComponentCheckerDeployer;
+import org.jboss.test.deployers.support.TCCLClassLoaderDeployer;
 
 /**
  * BeanMetaDataFactoryDeployerUnitTestCase.
@@ -52,6 +53,7 @@ public class BeanMetaDataFactoryDeployerUnitTestCase extends AbstractBeanMetaDat
       BeanMetaDataFactoryDeployer<CustomBMDF> bmdfd = new BeanMetaDataFactoryDeployer<CustomBMDF>(CustomBMDF.class);
       BeanMetaDataDeployer beanMetaDataDeployer = new BeanMetaDataDeployer(kernel);
 
+      addDeployer(main, new TCCLClassLoaderDeployer());
       addDeployer(main, tccd);
       addDeployer(main, bmdfd);
       addDeployer(main, beanMetaDataDeployer);

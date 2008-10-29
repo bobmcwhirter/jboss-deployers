@@ -29,6 +29,7 @@ import org.jboss.kernel.Kernel;
 import org.jboss.test.deployers.vfs.deployer.AbstractDeployerUnitTest;
 import org.jboss.test.deployers.vfs.deployer.merge.support.MultiRarDeployer;
 import org.jboss.test.deployers.vfs.deployer.merge.support.RarDeploymentDeployer;
+import org.jboss.test.deployers.support.TCCLClassLoaderDeployer;
 import org.jboss.dependency.spi.ControllerContext;
 import org.jboss.beans.metadata.plugins.AbstractBeanMetaData;
 
@@ -60,6 +61,7 @@ public class MultiFilesUnitTestCase extends AbstractDeployerUnitTest
          throw new RuntimeException(t);
       }
       addDeployer(main, deployer);
+      addDeployer(main, new TCCLClassLoaderDeployer());
       addDeployer(main, new RarDeploymentDeployer());
       addDeployer(main, new KernelDeploymentDeployer());
       addDeployer(main, new BeanMetaDataDeployer(kernel));

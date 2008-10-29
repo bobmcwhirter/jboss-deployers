@@ -114,11 +114,8 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
       }
       KernelControllerContext context = new AbstractKernelControllerContext(null, deployment, null);
       ScopeInfo scopeInfo = context.getScopeInfo();
-      if (scopeInfo != null)
-      {
-         mergeScopes(scopeInfo.getScope(), unit.getScope());
-         mergeScopes(scopeInfo.getMutableScope(), unit.getMutableScope());
-      }
+      scopeInfo.setScope(unit.getScope());
+      scopeInfo.setMutableScope(unit.getMutableScope());
       try
       {
          controller.install(context);

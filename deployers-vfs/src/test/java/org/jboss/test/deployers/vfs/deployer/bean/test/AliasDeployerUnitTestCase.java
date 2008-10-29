@@ -32,6 +32,7 @@ import org.jboss.deployers.vfs.deployer.kernel.KernelDeploymentDeployer;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.kernel.Kernel;
 import org.jboss.test.deployers.vfs.deployer.AbstractDeployerUnitTest;
+import org.jboss.test.deployers.support.TCCLClassLoaderDeployer;
 
 /**
  * AliasDeployerUnitTestCase.
@@ -57,6 +58,7 @@ public class AliasDeployerUnitTestCase extends AbstractDeployerUnitTest
       AliasDeploymentDeployer aliasDeploymentDeployer = new AliasDeploymentDeployer();
       BeanMetaDataDeployer beanMetaDataDeployer = new BeanMetaDataDeployer(kernel);
       DeploymentAliasMetaDataDeployer aliasMetaDataDeployer = new DeploymentAliasMetaDataDeployer(kernel.getController());
+      addDeployer(main, new TCCLClassLoaderDeployer());
       addDeployer(main, beanDeployer);
       addDeployer(main, kernelDeploymentDeployer);
       addDeployer(main, aliasDeploymentDeployer);
