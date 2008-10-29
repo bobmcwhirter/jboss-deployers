@@ -44,6 +44,8 @@ public class DeploymentUnitClassPath implements ClassPath
 {
    private VFSDeploymentUnit unit;
    private Map<String, VirtualFile> cache;
+   /** By default exclude jdk classes */
+   private ClassFilter excludeFilter = ClassFilter.JAVA_ONLY;
 
    public DeploymentUnitClassPath(VFSDeploymentUnit unit)
    {
@@ -51,6 +53,16 @@ public class DeploymentUnitClassPath implements ClassPath
          throw new IllegalArgumentException("Null deployment unit.");
       this.unit = unit;
       this.cache = new HashMap<String, VirtualFile>();
+   }
+
+   /**
+    * Set exclude filter.
+    *
+    * @param excludeFilter the exclude filter
+    */
+   public void setExcludeFilter(ClassFilter excludeFilter)
+   {
+      this.excludeFilter = excludeFilter;
    }
 
    /**
@@ -62,8 +74,7 @@ public class DeploymentUnitClassPath implements ClassPath
     */
    protected VirtualFile findFile(String className) throws IOException
    {
-      // ignore jdk classes
-      if (ClassFilter.JAVA_ONLY.matchesClassName(className))
+      if (excludeFilter != null && excludeFilter.matchesClassName(className))
          return null;
 
       VirtualFile file = cache.get(className);
