@@ -21,12 +21,9 @@
 */
 package org.jboss.test.deployers.vfs.annotations.support.jar;
 
-import org.jboss.test.deployers.vfs.annotations.support.Marked;
-
 /**
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-@Marked
-public class JarMarkOnClass extends JarMarkOnClassSuper
+public class JarMarkOnClassSuper extends JarMarkOnClassSuperAnnotated
 {
 }

@@ -27,6 +27,6 @@ import org.jboss.test.deployers.vfs.annotations.support.Marked;
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
 @Marked
-public class WebMarkOnClass
+public class WebMarkOnClass extends WebMarkOnClassSuper
 {
 }

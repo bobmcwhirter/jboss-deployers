@@ -70,9 +70,9 @@ public class AnnotationsScanningUnitTestCase extends BootstrapDeployersTest
       try
       {
          DeploymentUnit jarUnit = assertChild(unit, "simple.jar");
-         assertAnnotations(jarUnit, 1, 1, 1);
+         assertAnnotations(jarUnit, 2, 1, 1);
          DeploymentUnit webUnit = assertChild(unit, "simple.war");
-         assertAnnotations(webUnit, 1, 1, 1);
+         assertAnnotations(webUnit, 2, 1, 1);
       }
       finally
       {

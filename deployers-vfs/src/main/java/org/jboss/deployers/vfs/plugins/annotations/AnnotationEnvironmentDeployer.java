@@ -113,11 +113,29 @@ public class AnnotationEnvironmentDeployer extends AbstractOptionalVFSRealDeploy
     * @param classLoader the class loader
     * @return javassist class pool
     */
+   @Deprecated
    protected ClassPool createClassPool(ClassLoader classLoader)
    {
       ClassPool pool = new ClassPool();
       ClassPath classPath = new LoaderClassPath(classLoader);
       pool.insertClassPath(classPath);
+      return pool;
+   }
+
+   /**
+    * Create class pool.
+    *
+    * @param unit the deployment unit
+    * @return javassist class pool
+    */
+   protected ClassPool createClassPool(VFSDeploymentUnit unit)
+   {
+      ClassPool pool = new ClassPool();
+      ClassPath deploymentPath = new DeploymentUnitClassPath(unit);
+      pool.appendClassPath(deploymentPath);
+      // fall back to classloader classpath
+      ClassPath classPath = new LoaderClassPath(unit.getClassLoader());
+      pool.appendClassPath(classPath);
       return pool;
    }
 
@@ -196,7 +214,7 @@ public class AnnotationEnvironmentDeployer extends AbstractOptionalVFSRealDeploy
          log.trace("Creating AnnotationEnvironment for " + unit.getName() + ", module: " + module + ", force annotations: " + forceAnnotations);
 
       ClassLoader classLoader = unit.getClassLoader();
-      ClassPool pool = createClassPool(classLoader);
+      ClassPool pool = createClassPool(unit);
       GenericAnnotationResourceVisitor visitor = createGenericAnnotationResourceVisitor(unit, pool, classLoader);
 
       // something in javassist uses TCL
