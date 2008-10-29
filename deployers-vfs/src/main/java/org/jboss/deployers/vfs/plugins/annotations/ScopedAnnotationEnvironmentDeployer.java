@@ -53,6 +53,7 @@ public class ScopedAnnotationEnvironmentDeployer extends AnnotationEnvironmentDe
       this.repository = repository;
    }
 
+   @Deprecated
    protected ClassPool createClassPool(ClassLoader classLoader)
    {
       if (repository != null)
