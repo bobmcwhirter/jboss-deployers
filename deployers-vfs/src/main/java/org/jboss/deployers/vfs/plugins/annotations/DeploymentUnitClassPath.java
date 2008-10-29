@@ -70,10 +70,10 @@ public class DeploymentUnitClassPath implements ClassPath
       if (file != null)
          return file;
 
-      String path = ClassLoaderUtils.classNameToPath(className);
       List<VirtualFile> classPath = unit.getClassPath();
       if (classPath != null && classPath.isEmpty() == false)
       {
+         String path = ClassLoaderUtils.classNameToPath(className);
          for (VirtualFile cp : classPath)
          {
             file = cp.getChild(path);
