@@ -24,15 +24,16 @@ package org.jboss.deployers.vfs.plugins.annotations;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 import javassist.ClassPath;
 import javassist.NotFoundException;
 import org.jboss.classloader.plugins.ClassLoaderUtils;
 import org.jboss.classloader.spi.filter.ClassFilter;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
+import org.jboss.util.collection.SoftValueHashMap;
 import org.jboss.virtual.VirtualFile;
 
 /**
@@ -43,7 +44,8 @@ import org.jboss.virtual.VirtualFile;
 public class DeploymentUnitClassPath implements ClassPath
 {
    private VFSDeploymentUnit unit;
-   private Map<String, VirtualFile> cache;
+   @SuppressWarnings("unchecked")
+   private Map<String, VirtualFile> cache = Collections.synchronizedMap(new SoftValueHashMap());
    /** By default exclude jdk classes */
    private ClassFilter excludeFilter = ClassFilter.JAVA_ONLY;
 
@@ -52,7 +54,6 @@ public class DeploymentUnitClassPath implements ClassPath
       if (unit == null)
          throw new IllegalArgumentException("Null deployment unit.");
       this.unit = unit;
-      this.cache = new HashMap<String, VirtualFile>();
    }
 
    /**
