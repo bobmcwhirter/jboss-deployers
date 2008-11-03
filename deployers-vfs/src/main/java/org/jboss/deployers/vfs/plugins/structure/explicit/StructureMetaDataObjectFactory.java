@@ -66,6 +66,9 @@ public class StructureMetaDataObjectFactory implements ObjectModelFactory
          String modificationType = attrs.getValue("modification");
          if (modificationType != null)
             child.setModificationType(ModificationType.getModificationType(modificationType));
+         String comparator = attrs.getValue("comparator");
+         if (comparator != null)
+            child.setComparatorClassName(comparator);
          return child;
       }
       return null;

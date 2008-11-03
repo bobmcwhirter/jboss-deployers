@@ -25,6 +25,7 @@ import java.util.Collections;
 
 import junit.framework.Test;
 import org.jboss.deployers.spi.deployer.Deployer;
+import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.deployers.spi.structure.StructureMetaData;
 import org.jboss.deployers.vfs.plugins.structure.AbstractVFSDeploymentContext;
 import org.jboss.deployers.vfs.plugins.structure.AbstractVFSDeploymentUnit;
@@ -69,5 +70,35 @@ public class ObjectMFDTestCase extends BaseDeployersVFSTest
       {
          deployer.undeploy(unit);
       }
+   }
+
+   public void testComparator() throws Exception
+   {
+      VirtualFile file = getVirtualFile("/structure/explicit", "comparator.jar");
+      VFSDeploymentContext deployment = new AbstractVFSDeploymentContext(file, "");
+      deployment.setMetaDataPath(Collections.singletonList("META-INF"));
+      VFSDeploymentUnit unit = new AbstractVFSDeploymentUnit(deployment);
+      Deployer deployer = new StructureOMFDeployer();
+
+      deployer.deploy(unit);
+      try
+      {
+         StructureMetaData metaData = unit.getAttachment(StructureMetaData.class);
+         assertNotNull(metaData);
+         assertComparator(metaData, "", "org.jboss.test.deployment.test.SomeDeploymentComparatorTop");
+         assertComparator(metaData, "sub.jar", "org.jboss.test.deployment.test.SomeDeploymentComparatorSub");
+         assertComparator(metaData, "x.war", "org.jboss.test.deployment.test.SomeDeploymentComparatorX");
+      }
+      finally
+      {
+         deployer.undeploy(unit);
+      }
+   }
+
+   protected void assertComparator(StructureMetaData metaData, String path, String comparator)
+   {
+      ContextInfo ci = metaData.getContext(path);
+      assertNotNull(ci);
+      assertEquals(comparator, ci.getComparatorClassName());
    }
 }
