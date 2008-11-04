@@ -25,6 +25,7 @@ import junit.framework.Test;
 import org.jboss.dependency.plugins.AbstractController;
 import org.jboss.deployers.plugins.deployers.DeployersImpl;
 import org.jboss.deployers.plugins.main.MainDeployerImpl;
+import org.jboss.deployers.spi.deployer.helpers.DefaultManagedObjectCreator;
 import org.jboss.deployers.vfs.plugins.structure.file.FileStructure;
 import org.jboss.deployers.vfs.plugins.structure.jar.JARStructure;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
@@ -66,6 +67,7 @@ public class MockBshDeployerTestCase extends BaseDeployersVFSTest
       fileStructure.addFileMatcher(bshDeployer);
       addStructureDeployer(main, fileStructure);
       DeployersImpl deployers = new DeployersImpl(new AbstractController());
+      deployers.setMgtObjectCreator(new DefaultManagedObjectCreator());
       deployers.addDeployer(bshDeployer);
       main.setDeployers(deployers);
       VFSDeployment deployment = createDeployment("/nonmetadata", "nmd.jar");

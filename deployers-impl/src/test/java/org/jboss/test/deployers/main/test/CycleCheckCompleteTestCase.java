@@ -37,6 +37,7 @@ import org.jboss.deployers.plugins.deployers.DeployersImpl;
 import org.jboss.deployers.plugins.main.MainDeployerImpl;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.attachments.MutableAttachments;
+import org.jboss.deployers.spi.deployer.helpers.DefaultManagedObjectCreator;
 import org.jboss.test.deployers.main.support.OrderedTestAttachmentDeployer;
 import org.jboss.test.deployers.main.support.TestAttachment;
 import org.jboss.test.deployers.main.support.TestAttachments;
@@ -116,6 +117,7 @@ public class CycleCheckCompleteTestCase extends AbstractMainDeployerTest
       main.setStructuralDeployers(createStructuralDeployers());
       AbstractController controller = new AbstractController();
       DeployersImpl deployers = new DeployersImpl(controller);
+      deployers.setMgtObjectCreator(new DefaultManagedObjectCreator());
       deployers.addDeployer(new TestAttachmentsDeployer());
       deployers.addDeployer(new OrderedTestAttachmentDeployer(controller));
       main.setDeployers(deployers);

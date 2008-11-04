@@ -142,7 +142,7 @@ public class DeployerManagedObjectUnitTestCase extends AbstractDeployerTest
    public void testDSMetaDataManagedObjectFactory()
    {
       ManagedObjectFactory mof = ManagedObjectFactory.getInstance();
-      ManagedObject mo = mof.createManagedObject(DSMetaData.class);
+      ManagedObject mo = mof.createManagedObject(DSMetaData.class, null);
 
       // Validate the expected properties
       Map<String, ManagedProperty> propsMap = mo.getProperties();

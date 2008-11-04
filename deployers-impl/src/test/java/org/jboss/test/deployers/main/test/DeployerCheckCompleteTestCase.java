@@ -30,6 +30,7 @@ import org.jboss.deployers.plugins.deployers.DeployersImpl;
 import org.jboss.deployers.plugins.main.MainDeployerImpl;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.attachments.MutableAttachments;
+import org.jboss.deployers.spi.deployer.helpers.DefaultManagedObjectCreator;
 import org.jboss.deployers.structure.spi.DeploymentContext;
 import org.jboss.deployers.structure.spi.StructuralDeployers;
 import org.jboss.test.deployers.main.support.DependencyDeployer;
@@ -214,6 +215,7 @@ public class DeployerCheckCompleteTestCase extends AbstractMainDeployerTest
       main.setStructuralDeployers(createStructuralDeployers());
       AbstractController controller = new AbstractController();
       DeployersImpl deployers = new DeployersImpl(controller);
+      deployers.setMgtObjectCreator(new DefaultManagedObjectCreator());
       deployers.addDeployer(new DependencyDeployer(controller));
       main.setDeployers(deployers);
       return main;
@@ -225,6 +227,7 @@ public class DeployerCheckCompleteTestCase extends AbstractMainDeployerTest
       main.setStructuralDeployers(createStructuralDeployers());
       AbstractController controller = new AbstractController();
       DeployersImpl deployers = new DeployersImpl(controller);
+      deployers.setMgtObjectCreator(new DefaultManagedObjectCreator());
       deployers.addDeployer(new TestAttachmentsDeployer());
       deployers.addDeployer(new TestAttachmentDeployer(controller));
       main.setDeployers(deployers);

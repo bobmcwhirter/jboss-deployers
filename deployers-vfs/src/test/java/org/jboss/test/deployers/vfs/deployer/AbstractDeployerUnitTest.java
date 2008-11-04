@@ -29,6 +29,7 @@ import org.jboss.kernel.Kernel;
 import org.jboss.kernel.plugins.bootstrap.basic.BasicBootstrap;
 import org.jboss.kernel.spi.dependency.KernelController;
 import org.jboss.metadata.spi.repository.MutableMetaDataRepository;
+import org.jboss.test.deployers.AbstractDeployerTest;
 
 /**
  * AbstractDeployerUnitTestCase.
@@ -73,6 +74,8 @@ public abstract class AbstractDeployerUnitTest extends DeployerClientTest
 
    protected Deployers createDeployers()
    {
+      System.err.println("AbstractDeployerUnitTest.CS: "+getClass().getProtectionDomain().getCodeSource());
+      System.err.println("AbstractDeployerTest.CS: "+AbstractDeployerTest.class.getProtectionDomain().getCodeSource());
       DeployersImpl deployers = (DeployersImpl) super.createDeployers();
       KernelController controller = getController();
       MutableMetaDataRepository repository = controller.getKernel().getMetaDataRepository().getMetaDataRepository();

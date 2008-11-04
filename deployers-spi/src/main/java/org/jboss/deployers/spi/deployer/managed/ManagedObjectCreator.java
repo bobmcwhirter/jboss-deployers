@@ -22,6 +22,7 @@
 package org.jboss.deployers.spi.deployer.managed;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
@@ -43,6 +44,7 @@ import org.jboss.managed.api.ManagedObject;
  *      - the real deployer will describe any runtime support, e.g. managed operations and statistics
  * 
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
+ * @author Scott.Stark@jboss.org
  * @version $Revision: 1.1 $
  */
 public interface ManagedObjectCreator
@@ -54,5 +56,6 @@ public interface ManagedObjectCreator
     * @param managedObjects the managed objects
     * @throws DeploymentException
     */
-   void build(DeploymentUnit unit, Map<String, ManagedObject> managedObjects) throws DeploymentException;
+   void build(DeploymentUnit unit, Set<String> attachmentNames,
+         Map<String, ManagedObject> managedObjects) throws DeploymentException;
 }

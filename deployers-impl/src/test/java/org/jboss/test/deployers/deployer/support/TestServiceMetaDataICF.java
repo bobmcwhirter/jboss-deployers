@@ -27,6 +27,7 @@ import org.jboss.beans.info.spi.BeanInfo;
 import org.jboss.beans.info.spi.PropertyInfo;
 import org.jboss.managed.api.ManagedProperty;
 import org.jboss.managed.spi.factory.InstanceClassFactory;
+import org.jboss.metadata.spi.MetaData;
 import org.jboss.metatype.api.values.MetaValue;
 import org.jboss.metatype.api.values.MetaValueFactory;
 
@@ -40,6 +41,12 @@ public class TestServiceMetaDataICF implements InstanceClassFactory<TestServiceM
 {
    /** The meta value factory */
    private MetaValueFactory metaValueFactory = MetaValueFactory.getInstance(); 
+
+   
+   public Class<TestServiceMetaData> getType()
+   {
+      return TestServiceMetaData.class;
+   }
 
    @SuppressWarnings("unchecked")
    public Class<? extends Serializable> getManagedObjectClass(TestServiceMetaData instance)
@@ -59,7 +66,9 @@ public class TestServiceMetaDataICF implements InstanceClassFactory<TestServiceM
       return name;
    }
 
-   public MetaValue getValue(BeanInfo beanInfo, ManagedProperty property, TestServiceMetaData instance)
+   public MetaValue getValue(BeanInfo beanInfo, ManagedProperty property,
+         MetaData metaData,
+         TestServiceMetaData instance)
    {
       String name = getPropertyName(property);
 

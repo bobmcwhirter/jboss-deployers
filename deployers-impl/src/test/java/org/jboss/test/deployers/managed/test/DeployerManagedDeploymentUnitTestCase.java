@@ -82,7 +82,7 @@ public class DeployerManagedDeploymentUnitTestCase extends AbstractDeployerTest
    public void testAnnotationScan() throws Exception
    {
       ManagedObjectFactory mof = ManagedObjectFactory.getInstance();
-      ManagedObject mo = mof.createManagedObject(DSMetaData.class);
+      ManagedObject mo = mof.createManagedObject(DSMetaData.class, null);
 
       Map<String, ManagedProperty> props = mo.getProperties();
       log.info("DSMetaData props: "+props);

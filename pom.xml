@@ -21,7 +21,7 @@
   </scm>
 
   <properties>
-    <version.jboss.man>2.0.0.CR2</version.jboss.man>
+    <version.jboss.man>2.0.0.CR4</version.jboss.man>
     <version.jboss.mdr>2.0.1.GA</version.jboss.mdr>
     <version.jboss.microcontainer>2.0.0.CR5</version.jboss.microcontainer>
     <version.jboss.classloader>2.0.0.CR5</version.jboss.classloader>

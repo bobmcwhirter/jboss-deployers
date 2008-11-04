@@ -22,6 +22,7 @@
 package org.jboss.test.deployers.managed.support;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.helpers.AbstractDeployer;
@@ -54,7 +55,8 @@ public class TestManagedObjectDeployer extends AbstractDeployer implements Manag
       }
    }
 
-   public void build(DeploymentUnit unit, Map<String, ManagedObject> managedObjects) throws DeploymentException
+   public void build(DeploymentUnit unit, Set<String> outputs,
+      Map<String, ManagedObject> managedObjects) throws DeploymentException
    {
       TestAttachment attachment = unit.getAttachment(TestAttachment.class);
       if (attachment != null)

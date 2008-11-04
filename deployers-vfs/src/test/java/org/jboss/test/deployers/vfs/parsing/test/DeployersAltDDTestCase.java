@@ -77,10 +77,6 @@ public class DeployersAltDDTestCase extends BaseTestCase
                pickedUpAltDD[0] = true;
             return null;
          }
-
-         public void build(DeploymentUnit unit, Map<String, ManagedObject> managedObjects) throws DeploymentException
-         {
-         }
       };
       
       deployer.setName("dd");

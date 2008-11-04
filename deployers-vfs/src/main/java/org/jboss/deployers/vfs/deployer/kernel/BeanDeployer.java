@@ -21,14 +21,9 @@
 */
 package org.jboss.deployers.vfs.deployer.kernel;
 
-import java.util.Map;
-
-import org.jboss.deployers.spi.DeploymentException;
-import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.vfs.spi.deployer.SchemaResolverDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.kernel.spi.deployment.KernelDeployment;
-import org.jboss.managed.api.ManagedObject;
 import org.jboss.virtual.VirtualFile;
 
 /**
@@ -62,14 +57,4 @@ public class BeanDeployer extends SchemaResolverDeployer<KernelDeployment>
       metaData.setName(name);
    }
 
-   /**
-    * TODO: the BeanDeployer needs to build up the ManagedObject from the mc metadata.
-    */
-   @Override
-   public void build(DeploymentUnit unit,
-         Map<String, ManagedObject> managedObjects) throws DeploymentException
-   {
-      super.build(unit, managedObjects);
-   }
-   
 }

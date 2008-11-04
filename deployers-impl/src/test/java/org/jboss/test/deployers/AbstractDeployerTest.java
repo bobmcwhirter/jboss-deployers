@@ -39,7 +39,9 @@ import org.jboss.deployers.spi.attachments.PredeterminedManagedObjectAttachments
 import org.jboss.deployers.spi.deployer.Deployer;
 import org.jboss.deployers.spi.deployer.Deployers;
 import org.jboss.deployers.spi.deployer.DeploymentStage;
+import org.jboss.deployers.spi.deployer.helpers.DefaultManagedObjectCreator;
 import org.jboss.deployers.spi.deployer.managed.ManagedDeploymentCreator;
+import org.jboss.deployers.spi.deployer.managed.ManagedObjectCreator;
 import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.deployers.structure.spi.DeploymentContext;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
@@ -71,6 +73,7 @@ public abstract class AbstractDeployerTest extends BaseTestCase
    
    protected DeployerClient createMainDeployer(Deployer... deployers)
    {
+      log.debug("createMainDeployer");
       MainDeployerImpl mainDeployer = new MainDeployerImpl();
       StructuralDeployers structure = createStructuralDeployers();
       mainDeployer.setStructuralDeployers(structure);
@@ -94,6 +97,10 @@ public abstract class AbstractDeployerTest extends BaseTestCase
    {
       return new DefaultManagedDeploymentCreator();
    }
+   protected ManagedObjectCreator createManagedObjectCreator()
+   {
+      return new DefaultManagedObjectCreator();
+   }
    protected StructuralDeployers createStructuralDeployers()
    {
       StructureBuilder builder = createStructureBuilder();
@@ -109,10 +116,15 @@ public abstract class AbstractDeployerTest extends BaseTestCase
 
    protected Deployers createDeployers()
    {
+      log.debug("createDeployers");
       Controller controller = getController();
-      return new DeployersImpl(controller);
+      ManagedObjectCreator moc = createManagedObjectCreator();
+      System.out.println("createDeployers, moc: "+moc);
+      DeployersImpl di = new DeployersImpl(controller);
+      di.setMgtObjectCreator(moc);
+      return di;
    }
-   
+
    protected void addDeployer(DeployerClient main, Deployer deployer)
    {
       MainDeployerImpl mainDeployerImpl = (MainDeployerImpl) main;
@@ -129,6 +141,7 @@ public abstract class AbstractDeployerTest extends BaseTestCase
    
    protected void setDeployers(DeployerClient main, Set<Deployer> deployers)
    {
+      log.debug("setDeployers");
       MainDeployerImpl mainDeployerImpl = (MainDeployerImpl) main;
       DeployersImpl deployersImpl = (DeployersImpl) mainDeployerImpl.getDeployers();
       deployersImpl.setDeployers(deployers);

@@ -9,7 +9,9 @@
 
    <!-- The ManagedDeploymentCreator implementation -->
    <bean name="ManagedDeploymentCreator" class="org.jboss.deployers.plugins.managed.DefaultManagedDeploymentCreator" />
-
+   <!-- The ManagedObjectCreator implementation -->
+   <bean name="ManagedObjectCreator" class="org.jboss.deployers.spi.deployer.helpers.DefaultManagedObjectCreator" />
+   
    <!-- The holder for deployers that determine structure -->
    <bean name="StructuralDeployers" class="org.jboss.deployers.vfs.plugins.structure.VFSStructuralDeployersImpl">
       <property name="structureBuilder">
@@ -27,6 +29,7 @@
       <!-- Accept any implementor of deployer -->
       <incallback method="addDeployer"/>
       <uncallback method="removeDeployer"/>
+      <property name="mgtObjectCreator"><inject bean="ManagedObjectCreator"/></property>
    </bean>
 
    <!-- A declared structure descriptor deployer -->

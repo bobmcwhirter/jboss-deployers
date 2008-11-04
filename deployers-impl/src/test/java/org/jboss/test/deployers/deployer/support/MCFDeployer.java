@@ -2,6 +2,7 @@ package org.jboss.test.deployers.deployer.support;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Set;
 
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.helpers.AbstractSimpleRealDeployer;
@@ -27,7 +28,8 @@ public class MCFDeployer
    {
    }
 
-   public void build(DeploymentUnit unit, Map<String, ManagedObject> managedObjects)
+   public void build(DeploymentUnit unit, Set<String> outputs,
+      Map<String, ManagedObject> managedObjects)
       throws DeploymentException
    {
       ManagedObjectFactory factory = ManagedObjectFactoryBuilder.create();

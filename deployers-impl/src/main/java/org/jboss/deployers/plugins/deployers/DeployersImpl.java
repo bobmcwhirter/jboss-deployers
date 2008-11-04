@@ -72,9 +72,10 @@ import org.jboss.metadata.spi.repository.MutableMetaDataRepository;
  *
  * @author <a href="adrian@jboss.org">Adrian Brock</a>
  * @author <a href="ales.justin@jboss.org">Ales Justin</a>
- * @version $Revision: 1.1 $
+ * @version $Revision$
  */
-public class DeployersImpl implements Deployers, ControllerContextActions, DeployersImplMBean, MBeanRegistration
+public class DeployersImpl implements Deployers, ControllerContextActions,
+   DeployersImplMBean, MBeanRegistration
 {
    /**
     * The log
@@ -127,6 +128,9 @@ public class DeployersImpl implements Deployers, ControllerContextActions, Deplo
     * The scope builder
     */
    private ScopeBuilder scopeBuilder;
+
+   /** The ManagedDeploymentCreator plugin */
+   private ManagedObjectCreator mgtObjectCreator = null;
 
    /**
     * Create a new DeployersImpl.
@@ -376,6 +380,16 @@ public class DeployersImpl implements Deployers, ControllerContextActions, Deplo
       this.scopeBuilder = scopeBuilder;
    }
 
+   public ManagedObjectCreator getMgtObjectCreator()
+   {
+      return mgtObjectCreator;
+   }
+   public void setMgtObjectCreator(ManagedObjectCreator mgtObjectCreator)
+   {
+      this.mgtObjectCreator = mgtObjectCreator;
+      log.debug("setMgtObjectCreator, "+mgtObjectCreator);
+   }
+
    /**
     * Get the repository.
     *
@@ -426,7 +440,8 @@ public class DeployersImpl implements Deployers, ControllerContextActions, Deplo
       }
    }
 
-   public Map<String, ManagedObject> getManagedObjects(DeploymentContext context) throws DeploymentException
+   public Map<String, ManagedObject> getManagedObjects(DeploymentContext context)
+      throws DeploymentException
    {
       if (context == null)
          throw new IllegalArgumentException("Null context");
@@ -434,8 +449,22 @@ public class DeployersImpl implements Deployers, ControllerContextActions, Deplo
       checkShutdown();
 
       Map<String, ManagedObject> managedObjects = new HashMap<String, ManagedObject>();
+      DeploymentUnit unit = context.getDeploymentUnit();
+      Set<ManagedObjectCreator> mocs = new HashSet<ManagedObjectCreator>();
+      Set<String> outputs = new HashSet<String>();
       for (DeployerWrapper deployer : deployers)
-         deployer.build(context.getDeploymentUnit(), managedObjects);
+      {
+         outputs.addAll(deployer.getOutputs());
+         // If the deployer supports ManagedObjectCreator let is augment/modify the managed objects
+         if(deployer.getManagedObjectCreator() != null)
+            mocs.add(deployer);
+      }
+      // 
+      mgtObjectCreator.build(unit, outputs, managedObjects);
+      for(ManagedObjectCreator moc : mocs)
+      {
+         moc.build(unit, outputs, managedObjects);
+      }
 
       return managedObjects;
    }

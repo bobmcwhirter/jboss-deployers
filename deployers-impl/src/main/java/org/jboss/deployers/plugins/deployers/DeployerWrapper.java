@@ -67,7 +67,7 @@ public class DeployerWrapper implements Deployer, ManagedObjectCreator
          throw new IllegalArgumentException("Null deployer");
       this.deployer = deployer;
       if (deployer instanceof ManagedObjectCreator)
-         managedObjectCreator = (ManagedObjectCreator) deployer;
+         this.managedObjectCreator = (ManagedObjectCreator) deployer;
       this.log = Logger.getLogger(deployer.getClass());
       this.classLoader = SecurityActions.getContextClassLoader();
    }
@@ -207,14 +207,18 @@ public class DeployerWrapper implements Deployer, ManagedObjectCreator
       }
    }
 
-   public void build(DeploymentUnit unit, Map<String, ManagedObject> managedObjects) throws DeploymentException
+   public void build(DeploymentUnit unit, Set<String> outputs,
+      Map<String, ManagedObject> managedObjects)
+      throws DeploymentException
    {
       ClassLoader previous = SecurityActions.setContextClassLoader(classLoader);
       try
       {
          ManagedObjectCreator creator = getManagedObjectCreator();
          if (creator != null)
-            creator.build(unit, managedObjects);
+         {
+            creator.build(unit, outputs, managedObjects);
+         }
       }
       catch (Throwable t)
       {

@@ -36,6 +36,7 @@ import org.jboss.beans.metadata.spi.ValueMetaData;
 import org.jboss.kernel.plugins.config.Configurator;
 import org.jboss.managed.api.ManagedProperty;
 import org.jboss.managed.spi.factory.InstanceClassFactory;
+import org.jboss.metadata.spi.MetaData;
 import org.jboss.metatype.api.values.MetaValue;
 import org.jboss.metatype.api.values.MetaValueFactory;
 
@@ -43,6 +44,8 @@ import org.jboss.metatype.api.values.MetaValueFactory;
  * The InstanceClassFactory implementation for BeanMetaData.
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
+ * @author Scott.Stark@jboss.org
+ * @version $Revision:$
  */
 public class BeanInstanceClassFactory implements InstanceClassFactory<AbstractBeanMetaData>
 {
@@ -66,6 +69,11 @@ public class BeanInstanceClassFactory implements InstanceClassFactory<AbstractBe
       {
          throw new UndeclaredThrowableException(t);
       }
+   }
+
+   public Class<AbstractBeanMetaData> getType()
+   {
+      return AbstractBeanMetaData.class;
    }
 
    @SuppressWarnings("unchecked")
@@ -115,7 +123,9 @@ public class BeanInstanceClassFactory implements InstanceClassFactory<AbstractBe
       return propertyMetaData;
    }
 
-   public MetaValue getValue(BeanInfo beanInfo, ManagedProperty property, AbstractBeanMetaData attachment)
+   public MetaValue getValue(BeanInfo beanInfo, ManagedProperty property,
+         MetaData metaData,
+         AbstractBeanMetaData attachment)
    {
       String name = property.getName();
       PropertyMetaData pmd = getExactPropertyMetaData(attachment, name);

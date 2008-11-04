@@ -21,18 +21,12 @@
  */
 package org.jboss.deployers.spi.deployer.helpers;
 
-import java.io.Serializable;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
 
 import org.jboss.deployers.spi.DeploymentException;
-import org.jboss.deployers.spi.deployer.managed.ManagedObjectCreator;
 import org.jboss.deployers.spi.deployer.matchers.JarExtensionProvider;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
-import org.jboss.managed.api.ManagedObject;
-import org.jboss.managed.api.factory.ManagedObjectFactory;
-import org.jboss.managed.plugins.factory.ManagedObjectFactoryBuilder;
 
 /**
  * AbstractParsingDeployerWithOutput. 
@@ -44,7 +38,7 @@ import org.jboss.managed.plugins.factory.ManagedObjectFactoryBuilder;
  * @version $Revision: 1.1 $
  */
 public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsingDeployer
-   implements ManagedObjectCreator, JarExtensionProvider
+   implements JarExtensionProvider
 {
    /** The metadata file names */
    private Set<String> names;
@@ -397,34 +391,5 @@ public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsi
     */
    protected abstract T parse(DeploymentUnit unit, Set<String> names, String suffix, T root) throws Exception;
 
-   /**
-    * Build managed object.
-    *
-    * @param unit the deployment unit
-    * @param managedObjects map of managed objects
-    * @throws DeploymentException for any deployment exception
-    */
-   public void build(DeploymentUnit unit, Map<String, ManagedObject> managedObjects) throws DeploymentException
-   {
-      if (buildManagedObject)
-      {
-         T deployment = unit.getAttachment(getOutput());
-         if (deployment != null)
-         {
-            // must be Serializable - see getAttachment method contract (expectedType.cast(result))
-            if ( (deployment instanceof Serializable) == false)
-            {
-               // Probably an error if the deployer enabled buildManagedObject?
-               log.debug("Skipping ManagedObject since T(" + deployment + ") is not Serializable");
-               return;
-            }
-            
-            Serializable instance = (Serializable) deployment;
-            ManagedObjectFactory factory = ManagedObjectFactoryBuilder.create();
-            ManagedObject mo = factory.initManagedObject(instance, null, null);
-            if (mo != null)
-               managedObjects.put(mo.getName(), mo);
-         }
-      }
-   }
+
 }

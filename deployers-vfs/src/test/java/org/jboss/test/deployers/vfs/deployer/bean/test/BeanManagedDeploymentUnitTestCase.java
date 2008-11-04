@@ -101,6 +101,7 @@ public class BeanManagedDeploymentUnitTestCase extends AbstractDeployerUnitTest
       assertNull(controller.getContext("Test", null));
    }
 
+   
    protected void addDeployers(Kernel kernel)
    {
       BeanDeployer beanDeployer = new BeanDeployer();

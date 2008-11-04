@@ -23,13 +23,22 @@ package org.jboss.deployers.vfs.deployer.kernel;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.jboss.beans.metadata.spi.BeanMetaData;
+import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.helpers.AbstractComponentDeployer;
+import org.jboss.deployers.spi.deployer.managed.ManagedObjectCreator;
+import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.kernel.spi.deployment.KernelDeployment;
+import org.jboss.managed.api.ManagedObject;
 
 public class KernelDeploymentDeployer extends AbstractComponentDeployer<KernelDeployment, BeanMetaData>
+   implements ManagedObjectCreator
 {
+   private ManagedObjectCreator mgtObjectCreator;
+
    /**
     * Create a new KernelDeploymentDeployer.
     */
@@ -69,5 +78,22 @@ public class KernelDeploymentDeployer extends AbstractComponentDeployer<KernelDe
       {
          return Collections.singletonList(deployment);
       }
+   }
+
+   public ManagedObjectCreator getMgtObjectCreator()
+   {
+      return mgtObjectCreator;
+   }
+
+   public void setMgtObjectCreator(ManagedObjectCreator mgtObjectCreator)
+   {
+      this.mgtObjectCreator = mgtObjectCreator;
+   }
+   
+   public void build(DeploymentUnit unit, Set<String> attachmentNames,
+         Map<String, ManagedObject> managedObjects) throws DeploymentException
+   {
+      if(mgtObjectCreator != null)
+         mgtObjectCreator.build(unit, attachmentNames, managedObjects);
    }
 }
