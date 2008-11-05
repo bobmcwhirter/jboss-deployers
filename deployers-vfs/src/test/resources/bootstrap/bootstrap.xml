@@ -1,5 +1,13 @@
 <deployment xmlns="urn:jboss:bean-deployer:2.0">
 
+   <!-- The ManagedObjectFactory -->
+   <bean name="ManagedObjectFactory">
+      <constructor factoryClass="org.jboss.managed.api.factory.ManagedObjectFactory" factoryMethod="getInstance"/>
+      <!-- Accept any implementor of InstanceClassFactory -->
+      <incallback method="addInstanceClassFactory"/>
+      <uncallback method="removeInstanceClassFactory"/>
+   </bean>
+
    <!-- The MainDeployer -->
    <bean name="MainDeployer" class="org.jboss.deployers.plugins.main.MainDeployerImpl">
       <property name="structuralDeployers"><inject bean="StructuralDeployers"/></property>
@@ -10,7 +18,9 @@
    <!-- The ManagedDeploymentCreator implementation -->
    <bean name="ManagedDeploymentCreator" class="org.jboss.deployers.plugins.managed.DefaultManagedDeploymentCreator" />
    <!-- The ManagedObjectCreator implementation -->
-   <bean name="ManagedObjectCreator" class="org.jboss.deployers.spi.deployer.helpers.DefaultManagedObjectCreator" />
+   <bean name="ManagedObjectCreator" class="org.jboss.deployers.spi.deployer.helpers.DefaultManagedObjectCreator">
+      <property name="mof"><inject bean="ManagedObjectFactory"/></property>
+   </bean>
    
    <!-- The holder for deployers that determine structure -->
    <bean name="StructuralDeployers" class="org.jboss.deployers.vfs.plugins.structure.VFSStructuralDeployersImpl">

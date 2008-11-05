@@ -30,6 +30,7 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.logging.Logger;
 import org.jboss.managed.api.ManagedObject;
 import org.jboss.managed.api.factory.ManagedObjectFactory;
+import org.jboss.managed.plugins.factory.ManagedObjectFactoryBuilder;
 import org.jboss.metadata.spi.MetaData;
 
 /**
@@ -70,13 +71,16 @@ public class DefaultManagedObjectCreator
       throws DeploymentException
    {
       MetaData metaData = unit.getMetaData();
+      ManagedObjectFactory factory = mof;
+      if(factory == null )
+         factory = ManagedObjectFactoryBuilder.create();
 
       for(String name : attachments)
       {
          Object instance = unit.getAttachment(name);
          if (instance != null)
          {
-            ManagedObject mo = mof.initManagedObject(instance, metaData);
+            ManagedObject mo = factory.initManagedObject(instance, metaData);
             if (mo != null)
                managedObjects.put(mo.getName(), mo);
          }
