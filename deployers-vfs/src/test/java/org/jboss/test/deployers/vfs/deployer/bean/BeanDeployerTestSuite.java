@@ -34,6 +34,7 @@ import org.jboss.test.deployers.vfs.deployer.bean.test.BeanScanningUnitTestCase;
 import org.jboss.test.deployers.vfs.deployer.bean.test.BuilderBeansUnitTestCase;
 import org.jboss.test.deployers.vfs.deployer.bean.test.KernelDeployerUnitTestCase;
 import org.jboss.test.deployers.vfs.deployer.bean.test.KernelScopeUnitTestCase;
+import org.jboss.test.deployers.vfs.deployer.bean.test.AutowireAnnotationBeansTestCase;
 
 /**
  * BeanDeployerTestSuite.
@@ -63,6 +64,7 @@ public class BeanDeployerTestSuite extends TestSuite
       suite.addTest(KernelScopeUnitTestCase.suite());
       suite.addTest(AnnotatedBeansUnitTestCase.suite());
       suite.addTest(BuilderBeansUnitTestCase.suite());
+      suite.addTest(AutowireAnnotationBeansTestCase.suite());
 
       return suite;
    }
