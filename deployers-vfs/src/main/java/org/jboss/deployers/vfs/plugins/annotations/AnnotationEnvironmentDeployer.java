@@ -36,6 +36,7 @@ import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.vfs.spi.deployer.AbstractOptionalVFSRealDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
+import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnitFilter;
 import org.jboss.virtual.VirtualFile;
 
 /**
@@ -48,6 +49,8 @@ public class AnnotationEnvironmentDeployer extends AbstractOptionalVFSRealDeploy
    private boolean forceAnnotations;
    private boolean keepAnnotations;
    private boolean checkInterfaces;
+
+   private VFSDeploymentUnitFilter filter;
 
    public AnnotationEnvironmentDeployer()
    {
@@ -85,6 +88,16 @@ public class AnnotationEnvironmentDeployer extends AbstractOptionalVFSRealDeploy
    public void setCheckInterfaces(boolean checkInterfaces)
    {
       this.checkInterfaces = checkInterfaces;
+   }
+
+   /**
+    * Set vfs deployment filter.
+    *
+    * @param filter the vfs deployment filter.
+    */
+   public void setFilter(VFSDeploymentUnitFilter filter)
+   {
+      this.filter = filter;
    }
 
    /**
@@ -198,6 +211,10 @@ public class AnnotationEnvironmentDeployer extends AbstractOptionalVFSRealDeploy
 
    public void deploy(VFSDeploymentUnit unit, Module module) throws DeploymentException
    {
+      // running this deployer is costly, check if it should be run
+      if (filter != null && filter.accepts(unit) == false)
+         return;
+
       if (module == null)
       {
          VFSDeploymentUnit parent = unit.getParent();
