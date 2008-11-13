@@ -79,8 +79,14 @@ public class ScanningMetaDataTestCase extends BaseDeployersVFSTest
             Set<PathEntryMetaData> includes = pmd.getIncludes();
             assertNotNull(includes);
             assertEquals(1, includes.size());
+            PathEntryMetaData pemd = includes.iterator().next();
+            assertNotNull(pemd);
+            assertEquals("com.acme.foo", pemd.getName());
             Set<PathEntryMetaData> excludes = pmd.getExcludes();
             assertNotNull(excludes);
+            pemd = excludes.iterator().next();
+            assertNotNull(pemd);
+            assertEquals("com.acme.foo.bar", pemd.getName());
             assertEquals(1, excludes.size());
 
             pmd = paths.get(1);
@@ -89,6 +95,9 @@ public class ScanningMetaDataTestCase extends BaseDeployersVFSTest
             includes = pmd.getIncludes();
             assertNotNull(includes);
             assertEquals(1, includes.size());
+            pemd = includes.iterator().next();
+            assertNotNull(pemd);
+            assertEquals("com.acme.foo", pemd.getName());
             assertNull(pmd.getExcludes());
          }
          finally
