@@ -39,6 +39,7 @@ public class ScanningMetaDataDeployer extends SchemaResolverDeployer<AbstractSca
       super(AbstractScanningMetaData.class);
       setName("jboss-scanning.xml");
       setRegisterWithJBossXB(true);
+      addOutput(ScanningMetaData.class);
    }
 
    @Override
