@@ -1,0 +1,14 @@
+<deployment xmlns="urn:jboss:bean-deployer:2.0">
+
+  <bean name="EarStructure" class="org.jboss.test.deployers.vfs.structure.ear.support.MockEarStructureDeployer"/>
+  <bean name="WarStructure" class="org.jboss.deployers.vfs.plugins.structure.war.WARStructure"/>
+
+  <bean name="ScanningMDDeployer" class="org.jboss.deployers.vfs.plugins.annotations.ScanningMetaDataDeployer"/>
+
+  <bean name="AnnEnvDeployer" class="org.jboss.deployers.vfs.plugins.annotations.FilteredAnnotationEnvironmentDeployer">
+    <property name="filter">
+      <bean class="org.jboss.deployers.vfs.plugins.annotations.ScanningDeploymentUnitFilter"/>
+    </property>
+  </bean>
+
+</deployment>

@@ -19,25 +19,21 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.deployers.vfs.spi.structure.helpers;
+package org.jboss.deployers.plugins.annotations;
 
-import org.jboss.deployers.structure.spi.DeploymentUnitFilter;
-import org.jboss.deployers.structure.spi.DeploymentUnit;
-import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnitFilter;
-import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
+import org.jboss.classloader.spi.filter.ClassFilter;
 
 /**
- * Bridge deployment unit filter.
- * 
- * It implements both, plain deployment unit and vfs deployment unit filters.
- * It delegates work to vfs du filter if du is vfs instance.
+ * FilterablePathEntry
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public abstract class BridgeDeploymentUnitFilter implements DeploymentUnitFilter, VFSDeploymentUnitFilter
+public interface FilterablePathEntry
 {
-   public boolean accepts(DeploymentUnit unit)
-   {
-      return (unit instanceof VFSDeploymentUnit) && accepts((VFSDeploymentUnit)unit);
-   }
+   /**
+    * Get class filter.
+    *
+    * @return the filter
+    */
+   ClassFilter getFilter();
 }

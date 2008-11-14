@@ -1,0 +1,5 @@
+<scanning xmlns="urn:jboss:scanning:1.0">
+  <path name="simple.jar">
+    <include name="org.jboss.test.deployers.vfs.annotations.support.jar.impl"/>
+  </path>
+</scanning>

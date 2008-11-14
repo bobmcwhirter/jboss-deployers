@@ -19,13 +19,25 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.test.deployers.vfs.annotations.support.jar;
+package org.jboss.deployers.vfs.spi.structure.helpers;
 
-import org.jboss.test.deployers.vfs.annotations.support.jar.JarMarkOnClassSuperAnnotated;
+import org.jboss.deployers.structure.spi.DeploymentUnitFilter;
+import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnitFilter;
+import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 
 /**
+ * Bridge deployment unit filter.
+ * 
+ * It implements both, plain deployment unit and vfs deployment unit filters.
+ * It delegates work to vfs du filter if du is vfs instance.
+ *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class JarMarkOnClassSuper extends JarMarkOnClassSuperAnnotated
+public abstract class Base2VFSBridgeDeploymentUnitFilter implements DeploymentUnitFilter, VFSDeploymentUnitFilter
 {
+   public boolean accepts(DeploymentUnit unit)
+   {
+      return (unit instanceof VFSDeploymentUnit) && accepts((VFSDeploymentUnit)unit);
+   }
 }

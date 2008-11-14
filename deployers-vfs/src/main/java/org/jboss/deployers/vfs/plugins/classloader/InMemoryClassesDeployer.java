@@ -37,6 +37,7 @@ import org.jboss.virtual.VirtualFile;
  * TempURLDeployer.
  * 
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public class InMemoryClassesDeployer extends AbstractVFSRealDeployer

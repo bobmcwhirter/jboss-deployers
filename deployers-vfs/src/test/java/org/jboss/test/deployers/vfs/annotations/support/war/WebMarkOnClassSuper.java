@@ -21,6 +21,8 @@
 */
 package org.jboss.test.deployers.vfs.annotations.support.war;
 
+import org.jboss.test.deployers.vfs.annotations.support.war.WebMarkOnClassSuperAnnotated;
+
 /**
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */

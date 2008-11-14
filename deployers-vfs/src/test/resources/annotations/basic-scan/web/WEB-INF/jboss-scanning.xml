@@ -1,0 +1,6 @@
+<scanning xmlns="urn:jboss:scanning:1.0">
+  <path name="simple.war">
+    <exclude name="org.jboss.test.deployers.vfs.annotations.support.war"/>
+    <exclude name="org.jboss.test.deployers.vfs.annotations.support.warlib"/>
+  </path>
+</scanning>

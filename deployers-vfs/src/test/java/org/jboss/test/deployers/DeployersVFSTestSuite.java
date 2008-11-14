@@ -39,11 +39,13 @@ import org.jboss.test.deployers.vfs.parsing.test.ParsingTestSuite;
 import org.jboss.test.deployers.vfs.structure.VFSStructureTestSuite;
 import org.jboss.test.deployers.vfs.structurebuilder.VFSStructureBuilderTestSuite;
 import org.jboss.test.deployers.vfs.xb.JBossXBDeployersTestSuite;
+import org.jboss.test.deployers.vfs.annotations.AnnotationScanningTestSuite;
 
 /**
  * Deployers VFS Test Suite.
  * 
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  * @version $Revision: 37459 $
  */
 public class DeployersVFSTestSuite extends TestSuite
@@ -72,6 +74,7 @@ public class DeployersVFSTestSuite extends TestSuite
       suite.addTest(MergeDeployerTestSuite.suite());
       suite.addTest(FaceletsTestSuite.suite());
       suite.addTest(ValidateDeployerTestSuite.suite());
+      suite.addTest(AnnotationScanningTestSuite.suite());
 
       return suite;
    }

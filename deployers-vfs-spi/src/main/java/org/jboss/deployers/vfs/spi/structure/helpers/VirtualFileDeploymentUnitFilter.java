@@ -32,7 +32,7 @@ import org.jboss.virtual.VirtualFileFilter;
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class VirtualFileDeploymentUnitFilter extends BridgeDeploymentUnitFilter
+public class VirtualFileDeploymentUnitFilter extends Base2VFSBridgeDeploymentUnitFilter
 {
    private VirtualFileFilter filter;
 

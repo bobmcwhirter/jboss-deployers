@@ -51,7 +51,7 @@ public class AbstractPathMetaData implements PathMetaData, Serializable
       return pathName;
    }
 
-   @XmlAttribute(name = "name")
+   @XmlAttribute(name = "name", required = true)
    public void setPathName(String pathName)
    {
       this.pathName = pathName;

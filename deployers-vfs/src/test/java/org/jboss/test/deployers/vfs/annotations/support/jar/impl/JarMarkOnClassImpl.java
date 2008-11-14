@@ -19,13 +19,14 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.test.deployers.vfs.annotations.support.jar;
+package org.jboss.test.deployers.vfs.annotations.support.jar.impl;
 
-import org.jboss.test.deployers.vfs.annotations.support.jar.JarMarkOnClassSuperAnnotated;
+import org.jboss.test.deployers.vfs.annotations.support.Marked;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class JarMarkOnClassSuper extends JarMarkOnClassSuperAnnotated
+@Marked
+public class JarMarkOnClassImpl
 {
 }

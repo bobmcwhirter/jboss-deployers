@@ -22,10 +22,12 @@
 package org.jboss.deployers.plugins.annotations;
 
 import java.io.Serializable;
-
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 
+import org.jboss.classloader.spi.filter.ClassFilter;
+import org.jboss.classloader.spi.filter.PackageClassFilter;
 import org.jboss.deployers.spi.annotations.PathEntryMetaData;
 
 /**
@@ -34,12 +36,23 @@ import org.jboss.deployers.spi.annotations.PathEntryMetaData;
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
 @XmlType(name="pathEntryType")
-public class AbstractPathEntryMetaData implements PathEntryMetaData, Serializable
+public class AbstractPathEntryMetaData implements PathEntryMetaData, FilterablePathEntry, Serializable
 {
    private static final long serialVersionUID = 1L;
 
    private String name;
+   private transient ClassFilter filter;
 
+   @XmlTransient
+   public ClassFilter getFilter()
+   {
+      if (filter == null)
+         filter = PackageClassFilter.createPackageClassFilter(getNameInternal());
+      
+      return filter;
+   }
+
+   @XmlTransient
    private String getNameInternal()
    {
       if (name == null)
@@ -53,7 +66,7 @@ public class AbstractPathEntryMetaData implements PathEntryMetaData, Serializabl
       return name;
    }
 
-   @XmlAttribute(name = "name")
+   @XmlAttribute(name = "name", required = true)
    public void setName(String name)
    {
       this.name = name;
