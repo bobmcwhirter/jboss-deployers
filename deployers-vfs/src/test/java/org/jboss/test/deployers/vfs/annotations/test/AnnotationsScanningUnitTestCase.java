@@ -46,11 +46,11 @@ public class AnnotationsScanningUnitTestCase extends AbstractAnnotationsScanning
 
    protected void assertJar(DeploymentUnit jar)
    {
-      assertAnnotations(jar, 3, 1, 1);
+      assertAnnotations(jar, 4, 1, 1);
    }
 
    protected void assertWar(DeploymentUnit war)
    {
-      assertAnnotations(war, 4, 1, 1);
+      assertAnnotations(war, 5, 1, 1);
    }
 }

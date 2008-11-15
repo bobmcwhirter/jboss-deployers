@@ -58,7 +58,8 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
    private ResourceFilter resourceFilter = ClassFilter.INSTANCE;
    private ClassPool pool;
    private boolean forceAnnotations;
-   private boolean checkInterfaces;
+   private boolean checkSuper;
+   private boolean checkInterfaces = true;
    private DefaultAnnotationEnvironment env;
    private CtClass objectCtClass;
 
@@ -77,7 +78,6 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
       this.pool = pool;
       this.env = new DefaultAnnotationEnvironment(classLoader);
       this.objectCtClass = pool.makeClass(Object.class.getName());
-      this.checkInterfaces = true;
    }
 
    public ResourceFilter getFilter()
@@ -159,14 +159,21 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
       if (ctClass == null || objectCtClass.equals(ctClass))
          return;
 
-      if (checkInterfaces == false && ctClass.isInterface())
+      String className = ctClass.getName();
+      if (env.isAlreadyChecked(className))
       {
          if (log.isTraceEnabled())
-            log.trace("Skipping interface: " + ctClass.getName());
+            log.trace("Skipping already checked class name: " + className);
          return;
       }
 
-      String className = ctClass.getName();
+      if (checkInterfaces == false && ctClass.isInterface())
+      {
+         if (log.isTraceEnabled())
+            log.trace("Skipping interface: " + className);
+         return;
+      }
+
       if (log.isTraceEnabled())
          log.trace("Scanning class " + className + " for annotations");
 
@@ -177,19 +184,21 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
       handleCtMembers(ElementType.METHOD, ctClass.getDeclaredMethods(), className, commit);
       handleCtMembers(ElementType.FIELD, ctClass.getDeclaredFields(), className, commit);
 
-      if (checkInterfaces)
+      if (checkSuper)
       {
-         // interfaces
-         CtClass[] interfaces = ctClass.getInterfaces();
-         if (interfaces != null && interfaces.length > 0)
+         if (checkInterfaces)
          {
-            for (CtClass intf : interfaces)
-               handleCtClass(intf, commit);
+            // interfaces
+            CtClass[] interfaces = ctClass.getInterfaces();
+            if (interfaces != null && interfaces.length > 0)
+            {
+               for (CtClass intf : interfaces)
+                  handleCtClass(intf, commit);
+            }
          }
+         // super class
+         handleCtClass(ctClass.getSuperclass(), commit);
       }
-
-      // super class
-      handleCtClass(ctClass.getSuperclass(), commit);
    }
 
    /**
@@ -313,6 +322,16 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
    public void setKeepAnnotations(boolean keepAnnotations)
    {
       env.setKeepAnnotations(keepAnnotations);
+   }
+
+   /**
+    * Should we check super class for annotations as well.
+    *
+    * @param checkSuper the check super flag
+    */
+   public void setCheckSuper(boolean checkSuper)
+   {
+      this.checkSuper = checkSuper;
    }
 
    /**

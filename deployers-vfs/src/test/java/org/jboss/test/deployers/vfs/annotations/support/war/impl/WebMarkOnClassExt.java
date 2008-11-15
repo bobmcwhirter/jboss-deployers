@@ -19,38 +19,15 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.test.deployers.vfs.annotations.test;
+package org.jboss.test.deployers.vfs.annotations.support.war.impl;
 
-import junit.framework.Test;
-import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.test.deployers.vfs.annotations.support.Marked;
+import org.jboss.test.deployers.vfs.annotations.support.war.WebMarkOnClassSuper;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class AnnotationsScanningWithMetaDataUnitTestCase extends AbstractAnnotationsScanningUnitTest
+@Marked
+public class WebMarkOnClassExt extends WebMarkOnClassSuper
 {
-   public AnnotationsScanningWithMetaDataUnitTestCase(String name)
-   {
-      super(name);
-   }
-
-   public static Test suite()
-   {
-      return suite(AnnotationsScanningWithMetaDataUnitTestCase.class);
-   }
-
-   protected void assertEar(DeploymentUnit ear)
-   {
-      assertAnnotations(ear, 1, 1, 1);
-   }
-
-   protected void assertJar(DeploymentUnit jar)
-   {
-      assertAnnotations(jar, 2, 0, 0);
-   }
-
-   protected void assertWar(DeploymentUnit war)
-   {
-      assertAnnotations(war, 2, 0, 0);
-   }
 }

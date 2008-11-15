@@ -53,6 +53,8 @@ public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implemen
    private static final Logger log = Logger.getLogger(DefaultAnnotationEnvironment.class);
    /** The info map */
    private transient Map<Class<? extends Annotation>, Map<ElementType, Set<ClassSignaturePair>>> env;
+   /** The checked class names */
+   private transient Set<String> checkedClassNames;
    /** Should we keep the annotation */
    private boolean keepAnnotations;
 
@@ -60,6 +62,7 @@ public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implemen
    {
       super(classLoader);
       env = new HashMap<Class<? extends Annotation>, Map<ElementType, Set<ClassSignaturePair>>>();
+      checkedClassNames = new HashSet<String>();
    }
 
    /**
@@ -86,6 +89,17 @@ public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implemen
    }
 
    /**
+    * Was class name already checked.
+    *
+    * @param className the class name
+    * @return true if already checked, false otherwise
+    */
+   boolean isAlreadyChecked(String className)
+   {
+      return checkedClassNames.contains(className);
+   }
+
+   /**
     * Put the annotation info.
     *
     * @param annotation the annotation
@@ -99,6 +113,9 @@ public class DefaultAnnotationEnvironment extends WeakClassLoaderHolder implemen
 
       if (log.isTraceEnabled())
          log.trace("Adding annotation @" + annClass.getSimpleName() + " for " + className + " at type " + type + ", signature: " + signature);
+
+      // add to checked
+      checkedClassNames.add(className);
 
       Map<Class<? extends Annotation>, Map<ElementType, Set<ClassSignaturePair>>> env = getEnv();
 
