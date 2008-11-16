@@ -32,6 +32,7 @@ import org.jboss.classloading.spi.dependency.Module;
 import org.jboss.deployers.plugins.annotations.GenericAnnotationResourceVisitor;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
+import org.jboss.deployers.spi.annotations.ScanningMetaData;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.vfs.spi.deployer.AbstractOptionalVFSRealDeployer;
@@ -56,6 +57,7 @@ public class AnnotationEnvironmentDeployer extends AbstractOptionalVFSRealDeploy
    {
       super(Module.class);
       setStage(DeploymentStages.POST_CLASSLOADER);
+      addInput(ScanningMetaData.class);
       setOutput(AnnotationEnvironment.class);
       checkInterfaces = true;
    }
