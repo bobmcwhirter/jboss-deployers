@@ -34,6 +34,8 @@ class EnvPutList extends AbstractList<CommitElement>
 
    EnvPutList(DefaultAnnotationEnvironment env)
    {
+      if (env == null)
+         throw new IllegalArgumentException("Null env.");
       this.env = env;
    }
 
