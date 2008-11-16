@@ -98,11 +98,14 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
             CtClass ctClass = pool.makeClass(stream);
             try
             {
-               List<CommitElement> commit = new ArrayList<CommitElement>();
+               List<CommitElement> commit = createCommitList();
                handleCtClass(ctClass, commit);
-               for (CommitElement ce : commit)
+               if (commit.isEmpty() == false)
                {
-                  env.putAnnotation(ce.getAnnotation(), ce.getType(), ce.getClassName(), ce.getSignature());
+                  for (CommitElement ce : commit)
+                  {
+                     env.putAnnotation(ce.getAnnotation(), ce.getType(), ce.getClassName(), ce.getSignature());
+                  }
                }
             }
             finally
@@ -132,6 +135,16 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
       {
          logThrowable(resource, t);
       }
+   }
+
+   /**
+    * Create commit list.
+    *
+    * @return the commit list
+    */
+   protected List<CommitElement> createCommitList()
+   {
+      return checkSuper ? new ArrayList<CommitElement>() : new EnvPutList(env);
    }
 
    /**
