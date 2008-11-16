@@ -144,7 +144,7 @@ public class GenericAnnotationResourceVisitor implements ResourceVisitor
     */
    protected List<CommitElement> createCommitList()
    {
-      return checkSuper ? new ArrayList<CommitElement>() : new EnvPutList(env);
+      return forceAnnotations ? new EnvPutList(env) : new ArrayList<CommitElement>();
    }
 
    /**
