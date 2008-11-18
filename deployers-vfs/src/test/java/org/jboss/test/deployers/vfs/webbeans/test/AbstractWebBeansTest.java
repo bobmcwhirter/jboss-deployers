@@ -54,6 +54,16 @@ public abstract class AbstractWebBeansTest extends BootstrapDeployersTest
       deployer.setSuffix("-jboss-beans.xml");
    }
 
+   @Override
+   protected void tearDown() throws Exception
+   {
+      // put the old suffix back
+      BeanDeployer deployer = assertBean("BeanDeployer", BeanDeployer.class);
+      deployer.setSuffix("-beans.xml");
+
+      super.tearDown();
+   }
+
    protected AssembledDirectory createBasicEar() throws Exception
    {
       AssembledDirectory ear = createTopLevelWithUtil();
