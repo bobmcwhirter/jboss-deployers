@@ -3,4 +3,7 @@
   <bean name="EarStructure" class="org.jboss.test.deployers.vfs.structure.ear.support.MockEarStructureDeployer"/>
   <bean name="WarStructure" class="org.jboss.deployers.vfs.plugins.structure.war.WARStructure"/>
 
+  <bean name="WBMDDeployer" class="org.jboss.test.deployers.vfs.webbeans.support.WebBeansMetaDataDeployer"/>
+  <bean name="WBDiscoveryDeployer" class="org.jboss.test.deployers.vfs.webbeans.support.WebBeanDiscoveryDeployer"/>
+
 </deployment>

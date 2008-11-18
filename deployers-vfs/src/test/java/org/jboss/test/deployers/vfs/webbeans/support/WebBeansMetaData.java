@@ -21,24 +21,31 @@
  */
 package org.jboss.test.deployers.vfs.webbeans.support;
 
+import java.io.Serializable;
 import java.net.URL;
 
+import org.jboss.virtual.VirtualFile;
+
 /**
- * A container should implement this interface to allow the Web Beans RI to
- * discover the Web Beans to deploy
+ * WBD deployer.
  *
- * @author Pete Muir
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public interface WebBeanDiscovery
+public class WebBeansMetaData implements Serializable
 {
-   /**
-    * @return A list of all classes in classpath archives with web-beans.xml files
-    */
-   public Iterable<Class<?>> discoverWebBeanClasses();
+   private static final long serialVersionUID = 1l;
 
-   /**
-    * @return A list of all web-beans.xml files in the app classpath
-    */
-   public Iterable<URL> discoverWebBeansXml();
+   private VirtualFile file;
+
+   public WebBeansMetaData(VirtualFile file)
+   {
+      if (file == null)
+         throw new IllegalArgumentException("Null file");
+      this.file = file;
+   }
+
+   public URL getURL() throws Exception
+   {
+      return file.toURL();
+   }
 }

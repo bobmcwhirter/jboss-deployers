@@ -22,23 +22,36 @@
 package org.jboss.test.deployers.vfs.webbeans.support;
 
 import java.net.URL;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
- * A container should implement this interface to allow the Web Beans RI to
- * discover the Web Beans to deploy
- *
- * @author Pete Muir
+ * WBD impl.
+ * 
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public interface WebBeanDiscovery
+public class WebBeanDiscoveryImpl implements WebBeanDiscovery
 {
-   /**
-    * @return A list of all classes in classpath archives with web-beans.xml files
-    */
-   public Iterable<Class<?>> discoverWebBeanClasses();
+   private Set<Class<?>> classes = new HashSet<Class<?>>();
+   private Set<URL> urls = new HashSet<URL>();
 
-   /**
-    * @return A list of all web-beans.xml files in the app classpath
-    */
-   public Iterable<URL> discoverWebBeansXml();
+   public void addWebBeanClass(Class<?> clazz)
+   {
+      classes.add(clazz);
+   }
+
+   public void addWebBeansXmlURL(URL url)
+   {
+      urls.add(url);      
+   }
+
+   public Iterable<Class<?>> discoverWebBeanClasses()
+   {
+      return classes;
+   }
+
+   public Iterable<URL> discoverWebBeansXml()
+   {
+      return urls;
+   }
 }

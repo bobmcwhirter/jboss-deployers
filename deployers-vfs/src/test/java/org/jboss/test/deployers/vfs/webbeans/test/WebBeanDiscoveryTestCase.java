@@ -22,8 +22,9 @@
 package org.jboss.test.deployers.vfs.webbeans.test;
 
 import junit.framework.Test;
-import org.jboss.virtual.VirtualFile;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
+import org.jboss.test.deployers.vfs.webbeans.support.WebBeanDiscovery;
+import org.jboss.virtual.VirtualFile;
 
 /**
  * WebBeanDiscoveryTestCase.
@@ -48,7 +49,8 @@ public class WebBeanDiscoveryTestCase extends AbstractWebBeansTest
       VFSDeploymentUnit topUnit = assertDeploy(ear);
       try
       {
-         getLog().debug(topUnit);
+         WebBeanDiscovery wbDiscovery = topUnit.getAttachment(WebBeanDiscovery.class);
+         assertNotNull(wbDiscovery);
       }
       finally
       {

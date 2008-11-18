@@ -21,24 +21,43 @@
  */
 package org.jboss.test.deployers.vfs.webbeans.support;
 
-import java.net.URL;
+import org.jboss.deployers.vfs.spi.deployer.AbstractOptionalVFSRealDeployer;
+import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
+import org.jboss.deployers.spi.DeploymentException;
 
 /**
- * A container should implement this interface to allow the Web Beans RI to
- * discover the Web Beans to deploy
+ * WBD deployer.
  *
- * @author Pete Muir
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public interface WebBeanDiscovery
+public class WebBeanDiscoveryDeployer extends AbstractOptionalVFSRealDeployer<WebBeansMetaData>
 {
-   /**
-    * @return A list of all classes in classpath archives with web-beans.xml files
-    */
-   public Iterable<Class<?>> discoverWebBeanClasses();
+   public WebBeanDiscoveryDeployer()
+   {
+      super(WebBeansMetaData.class);
+      addOutput(WebBeanDiscovery.class);
+   }
 
-   /**
-    * @return A list of all web-beans.xml files in the app classpath
-    */
-   public Iterable<URL> discoverWebBeansXml();
+   public void deploy(VFSDeploymentUnit unit, WebBeansMetaData deployment) throws DeploymentException
+   {
+      VFSDeploymentUnit topUnit = unit.getTopLevel();
+      WebBeanDiscoveryImpl wbdi = topUnit.getAttachment(WebBeanDiscovery.class.getName(), WebBeanDiscoveryImpl.class);
+      if (wbdi == null)
+      {
+         wbdi = new WebBeanDiscoveryImpl();
+         topUnit.addAttachment(WebBeanDiscovery.class.getName(), wbdi);
+      }
+
+      try
+      {
+         if (deployment != null)
+            wbdi.addWebBeansXmlURL(deployment.getURL());
+
+         // TODO - check classpath
+      }
+      catch (Exception e)
+      {
+         throw DeploymentException.rethrowAsDeploymentException("Cannot deploy WBD.", e);
+      }
+   }
 }
