@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Created-By: hand
+Class-Path: lib/util.jar, lib/ext.jar
