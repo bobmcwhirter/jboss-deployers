@@ -27,6 +27,7 @@ import java.util.Set;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.managed.ManagedObjectCreator;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.logging.Logger;
 import org.jboss.managed.api.ManagedObject;
 import org.jboss.managed.api.factory.ManagedObjectFactory;
 import org.jboss.managed.plugins.factory.ManagedObjectFactoryBuilder;
@@ -38,31 +39,25 @@ import org.jboss.metadata.spi.MetaData;
  * to build the attachment ManagedObject.
  * 
  * @author Scott.Stark@jboss.org
- * @version $Revision:$
+ * @version $Revision$
  */
-public class DefaultManagedObjectCreator implements ManagedObjectCreator
+public class DefaultManagedObjectCreator
+   implements ManagedObjectCreator
 {
+   private static Logger log = Logger.getLogger(DefaultManagedObjectCreator.class);
    private ManagedObjectFactory mof;
 
-   /**
-    * Get managed object factory.
-    *
-    * @return the managed object factory
-    */
+   
    public ManagedObjectFactory getMof()
    {
       return mof;
    }
 
-   /**
-    * Set managed object factory.
-    *
-    * @param mof return the managed object factory
-    */
    public void setMof(ManagedObjectFactory mof)
    {
       this.mof = mof;
    }
+
 
    /**
     * Build managed object.
@@ -71,7 +66,9 @@ public class DefaultManagedObjectCreator implements ManagedObjectCreator
     * @param managedObjects map of managed objects
     * @throws DeploymentException for any deployment exception
     */
-   public void build(DeploymentUnit unit, Set<String> attachments, Map<String, ManagedObject> managedObjects) throws DeploymentException
+   public void build(DeploymentUnit unit, Set<String> attachments,
+      Map<String, ManagedObject> managedObjects)
+      throws DeploymentException
    {
       MetaData metaData = unit.getMetaData();
       ManagedObjectFactory factory = mof;
@@ -83,7 +80,7 @@ public class DefaultManagedObjectCreator implements ManagedObjectCreator
          Object instance = unit.getAttachment(name);
          if (instance != null)
          {
-            ManagedObject mo = factory.initManagedObject(instance, metaData);
+            ManagedObject mo = factory.initManagedObject(instance, null, metaData, name, null);
             if (mo != null)
                managedObjects.put(mo.getName(), mo);
          }
