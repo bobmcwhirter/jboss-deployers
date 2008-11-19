@@ -59,12 +59,12 @@ public class WebBeanDiscoveryDeployer extends AbstractOptionalVFSRealDeployer<We
          topUnit.addAttachment(WebBeanDiscovery.class.getName(), wbdi);
       }
 
+      List<URL> urls = new ArrayList<URL>();
+
       try
       {
          if (deployment != null) // do some more stuff ...
             wbdi.addWebBeansXmlURL(deployment.getURL());
-
-         List<URL> urls = new ArrayList<URL>();
 
          Iterable<VirtualFile> classpaths = getClassPaths(unit);
          for (VirtualFile cp : classpaths)
@@ -87,29 +87,29 @@ public class WebBeanDiscoveryDeployer extends AbstractOptionalVFSRealDeployer<We
             if (classes != null)
                urls.add(classes.toURL());
          }
-
-         if (urls.isEmpty() == false)
-         {
-            Module module = unit.getAttachment(Module.class);
-            if (module == null)
-            {
-               VFSDeploymentUnit parent = unit.getParent();
-               while(parent != null && module == null)
-               {
-                  module = parent.getAttachment(Module.class);
-                  parent = parent.getParent();
-               }
-               if (module == null)
-                  throw new DeploymentException("No module in deployment unit's hierarchy: " + unit.getName());
-            }
-
-            WBDiscoveryVisitor visitor = new WBDiscoveryVisitor(wbdi, unit.getClassLoader());
-            module.visit(visitor, ClassFilter.INSTANCE, null, urls.toArray(new URL[urls.size()]));
-         }
       }
       catch (Exception e)
       {
          throw DeploymentException.rethrowAsDeploymentException("Cannot deploy WBD.", e);
+      }
+
+      if (urls.isEmpty() == false)
+      {
+         Module module = unit.getAttachment(Module.class);
+         if (module == null)
+         {
+            VFSDeploymentUnit parent = unit.getParent();
+            while (parent != null && module == null)
+            {
+               module = parent.getAttachment(Module.class);
+               parent = parent.getParent();
+            }
+            if (module == null)
+               throw new DeploymentException("No module in deployment unit's hierarchy: " + unit.getName());
+         }
+
+         WBDiscoveryVisitor visitor = new WBDiscoveryVisitor(wbdi, unit.getClassLoader());
+         module.visit(visitor, ClassFilter.INSTANCE, null, urls.toArray(new URL[urls.size()]));
       }
    }
 
@@ -127,10 +127,10 @@ public class WebBeanDiscoveryDeployer extends AbstractOptionalVFSRealDeployer<We
       {
          List<VirtualFile> matching = new ArrayList<VirtualFile>();
          VirtualFile root = unit.getRoot();
-         for (VirtualFile cp : classpath)                        
+         for (VirtualFile cp : classpath)
          {
             VirtualFile check = cp;
-            while(check != null && check.equals(root) == false)
+            while (check != null && check.equals(root) == false)
                check = check.getParent();
 
             if (check != null)
