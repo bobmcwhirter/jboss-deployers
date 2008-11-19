@@ -112,7 +112,7 @@ public class WebBeanDiscoveryDeployer extends AbstractOptionalVFSRealDeployer<JB
                throw new DeploymentException("No module in deployment unit's hierarchy: " + unit.getName());
          }
 
-         WBDiscoveryVisitor visitor = new WBDiscoveryVisitor(wbdi, unit.getClassLoader());
+         WBDiscoveryVisitor visitor = new WBDiscoveryVisitor(wbdi);
          module.visit(visitor, ClassFilter.INSTANCE, null, urls.toArray(new URL[urls.size()]));
       }
    }
@@ -148,12 +148,10 @@ public class WebBeanDiscoveryDeployer extends AbstractOptionalVFSRealDeployer<JB
    private class WBDiscoveryVisitor implements ResourceVisitor
    {
       private WebBeanDiscoveryImpl wbdi;
-      private ClassLoader cl;
 
-      private WBDiscoveryVisitor(WebBeanDiscoveryImpl wbdi, ClassLoader cl)
+      private WBDiscoveryVisitor(WebBeanDiscoveryImpl wbdi)
       {
          this.wbdi = wbdi;
-         this.cl = cl;
       }
 
       public ResourceFilter getFilter()
@@ -163,14 +161,7 @@ public class WebBeanDiscoveryDeployer extends AbstractOptionalVFSRealDeployer<JB
 
       public void visit(ResourceContext resource)
       {
-         try
-         {
-            wbdi.addWebBeanClass(cl.loadClass(resource.getClassName()));
-         }
-         catch (ClassNotFoundException e)
-         {
-            throw new RuntimeException(e);
-         }
+         wbdi.addWebBeanClass(resource.loadClass());
       }
    }
 }
