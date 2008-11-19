@@ -21,25 +21,31 @@
  */
 package org.jboss.test.deployers.vfs.webbeans.support;
 
-import org.jboss.deployers.vfs.spi.deployer.AbstractVFSParsingDeployer;
-import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
+import java.io.Serializable;
+import java.net.URL;
+
 import org.jboss.virtual.VirtualFile;
 
 /**
- * WBD deployer.
+ * JBoss WebBeans custom meta data
  *
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class WebBeansMetaDataDeployer extends AbstractVFSParsingDeployer<WebBeansMetaData>  
+public class JBossWebBeansMetaData implements Serializable
 {
-   public WebBeansMetaDataDeployer()
+   private static final long serialVersionUID = 1l;
+
+   private VirtualFile file;
+
+   public JBossWebBeansMetaData(VirtualFile file)
    {
-      super(WebBeansMetaData.class);
-      setName("web-beans.xml");
+      if (file == null)
+         throw new IllegalArgumentException("Null file");
+      this.file = file;
    }
 
-   protected WebBeansMetaData parse(VFSDeploymentUnit unit, VirtualFile file, WebBeansMetaData root) throws Exception
+   public URL getURL() throws Exception
    {
-      return new WebBeansMetaData(file);
+      return file.toURL();
    }
 }

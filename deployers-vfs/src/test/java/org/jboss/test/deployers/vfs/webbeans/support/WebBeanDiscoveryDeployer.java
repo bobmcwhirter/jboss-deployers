@@ -41,15 +41,15 @@ import org.jboss.virtual.VirtualFile;
  *
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class WebBeanDiscoveryDeployer extends AbstractOptionalVFSRealDeployer<WebBeansMetaData>
+public class WebBeanDiscoveryDeployer extends AbstractOptionalVFSRealDeployer<JBossWebBeansMetaData>
 {
    public WebBeanDiscoveryDeployer()
    {
-      super(WebBeansMetaData.class);
+      super(JBossWebBeansMetaData.class);
       addOutput(WebBeanDiscovery.class);
    }
 
-   public void deploy(VFSDeploymentUnit unit, WebBeansMetaData deployment) throws DeploymentException
+   public void deploy(VFSDeploymentUnit unit, JBossWebBeansMetaData deployment) throws DeploymentException
    {
       VFSDeploymentUnit topUnit = unit.getTopLevel();
       WebBeanDiscoveryImpl wbdi = topUnit.getAttachment(WebBeanDiscovery.class.getName(), WebBeanDiscoveryImpl.class);
@@ -63,8 +63,10 @@ public class WebBeanDiscoveryDeployer extends AbstractOptionalVFSRealDeployer<We
 
       try
       {
-         if (deployment != null) // do some more stuff ...
-            wbdi.addWebBeansXmlURL(deployment.getURL());
+         if (deployment != null)
+         {
+            // do some custom stuff
+         }
 
          Iterable<VirtualFile> classpaths = getClassPaths(unit);
          for (VirtualFile cp : classpaths)
@@ -83,6 +85,8 @@ public class WebBeanDiscoveryDeployer extends AbstractOptionalVFSRealDeployer<We
          VirtualFile warWbXml = unit.getFile("WEB-INF/web-beans.xml");
          if (warWbXml != null)
          {
+            wbdi.addWebBeansXmlURL(warWbXml.toURL());
+
             VirtualFile classes = unit.getFile("WEB-INF/classes");
             if (classes != null)
                urls.add(classes.toURL());

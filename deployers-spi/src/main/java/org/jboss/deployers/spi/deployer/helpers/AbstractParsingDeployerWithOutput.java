@@ -390,6 +390,4 @@ public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsi
     * @throws Exception for any error
     */
    protected abstract T parse(DeploymentUnit unit, Set<String> names, String suffix, T root) throws Exception;
-
-
 }
