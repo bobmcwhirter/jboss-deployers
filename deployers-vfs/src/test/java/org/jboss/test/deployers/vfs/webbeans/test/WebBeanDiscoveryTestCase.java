@@ -64,10 +64,6 @@ public class WebBeanDiscoveryTestCase extends AbstractWebBeansTest
          WebBeanDiscovery wbDiscovery = topUnit.getAttachment(WebBeanDiscovery.class);
          assertNotNull(wbDiscovery);
 
-         // TODO - remove this once WBDDeployer is done
-         if (wbDiscovery.discoverWebBeanClasses().iterator().hasNext() == false)
-            return;
-
          Set<String> expected = new HashSet<String>();
          expected.add("ejbs.jar/META-INF");
          expected.add("ext.jar/META-INF");

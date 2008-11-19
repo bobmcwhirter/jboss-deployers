@@ -21,9 +21,20 @@
  */
 package org.jboss.test.deployers.vfs.webbeans.support;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.jboss.classloading.spi.dependency.Module;
+import org.jboss.classloading.spi.visitor.ClassFilter;
+import org.jboss.classloading.spi.visitor.ResourceContext;
+import org.jboss.classloading.spi.visitor.ResourceFilter;
+import org.jboss.classloading.spi.visitor.ResourceVisitor;
+import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.vfs.spi.deployer.AbstractOptionalVFSRealDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
-import org.jboss.deployers.spi.DeploymentException;
+import org.jboss.virtual.VirtualFile;
 
 /**
  * WBD deployer.
@@ -50,14 +61,106 @@ public class WebBeanDiscoveryDeployer extends AbstractOptionalVFSRealDeployer<We
 
       try
       {
-         if (deployment != null)
+         Module module = unit.getAttachment(Module.class);
+         if (module == null)
+         {
+            VFSDeploymentUnit parent = unit.getParent();
+            while(parent != null && module == null)
+            {
+               module = parent.getAttachment(Module.class);
+               parent = parent.getParent();
+            }
+            if (module == null)
+               throw new IllegalArgumentException("No module in deployment unit's hierarchy: " + unit.getName());
+         }
+
+         if (deployment != null) // do some more
             wbdi.addWebBeansXmlURL(deployment.getURL());
 
-         // TODO - check classpath
+         WBDiscoveryVisitor visitor = new WBDiscoveryVisitor(wbdi, unit.getClassLoader());
+
+         Iterable<VirtualFile> classpaths = getClassPaths(unit);
+         for (VirtualFile cp : classpaths)
+         {
+            VirtualFile wbXml = cp.getChild("META-INF/web-beans.xml");
+            if (wbXml != null)
+            {
+               // add url
+               wbdi.addWebBeansXmlURL(wbXml.toURL());
+               // add classes
+               module.visit(visitor, ClassFilter.INSTANCE, null, cp.toURL());
+            }
+         }
+
+         // handle war slightly different
+         VirtualFile warWbXml = unit.getFile("WEB-INF/web-beans.xml");
+         if (warWbXml != null)
+         {
+            VirtualFile classes = unit.getFile("WEB-INF/classes");
+            if (classes != null)
+               module.visit(visitor, ClassFilter.INSTANCE, null, classes.toURL());
+         }
       }
       catch (Exception e)
       {
          throw DeploymentException.rethrowAsDeploymentException("Cannot deploy WBD.", e);
+      }
+   }
+
+   /**
+    * Get the matching class paths that belong to this deployment unit.
+    *
+    * @param unit the deployment unit
+    * @return matching class paths
+    * @throws Exception for any error
+    */
+   protected Iterable<VirtualFile> getClassPaths(VFSDeploymentUnit unit) throws Exception
+   {
+      List<VirtualFile> classpath = unit.getClassPath();
+      if (classpath != null && classpath.isEmpty() == false)
+      {
+         Set<VirtualFile> matching = new HashSet<VirtualFile>();
+         VirtualFile root = unit.getRoot();
+         for (VirtualFile cp : classpath)
+         {
+            VirtualFile check = cp;
+            while(check != null && check.equals(root) == false)
+               check = check.getParent();
+
+            if (check != null)
+               matching.add(cp);
+         }
+         return matching;
+      }
+      return Collections.emptySet();
+   }
+
+   private class WBDiscoveryVisitor implements ResourceVisitor
+   {
+      private WebBeanDiscoveryImpl wbdi;
+      private ClassLoader cl;
+
+      private WBDiscoveryVisitor(WebBeanDiscoveryImpl wbdi, ClassLoader cl)
+      {
+         this.wbdi = wbdi;
+         this.cl = cl;
+      }
+
+      public ResourceFilter getFilter()
+      {
+         return ClassFilter.INSTANCE;
+      }
+
+      public void visit(ResourceContext resource)
+      {
+         try
+         {
+            wbdi.addWebBeanClass(cl.loadClass(resource.getClassName()));
+         }
+         catch (ClassNotFoundException e)
+         {
+            throw new RuntimeException(e);
+         }
       }
    }
 }
