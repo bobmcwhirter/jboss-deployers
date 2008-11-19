@@ -21,6 +21,7 @@
  */
 package org.jboss.test.deployers.vfs.webbeans.support;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -76,7 +77,7 @@ public class WebBeanDiscoveryDeployer extends AbstractOptionalVFSRealDeployer<We
          if (deployment != null) // do some more
             wbdi.addWebBeansXmlURL(deployment.getURL());
 
-         WBDiscoveryVisitor visitor = new WBDiscoveryVisitor(wbdi, unit.getClassLoader());
+         List<URL> urls = new ArrayList<URL>();
 
          Iterable<VirtualFile> classpaths = getClassPaths(unit);
          for (VirtualFile cp : classpaths)
@@ -87,7 +88,7 @@ public class WebBeanDiscoveryDeployer extends AbstractOptionalVFSRealDeployer<We
                // add url
                wbdi.addWebBeansXmlURL(wbXml.toURL());
                // add classes
-               module.visit(visitor, ClassFilter.INSTANCE, null, cp.toURL());
+               urls.add(cp.toURL());
             }
          }
 
@@ -97,7 +98,13 @@ public class WebBeanDiscoveryDeployer extends AbstractOptionalVFSRealDeployer<We
          {
             VirtualFile classes = unit.getFile("WEB-INF/classes");
             if (classes != null)
-               module.visit(visitor, ClassFilter.INSTANCE, null, classes.toURL());
+               urls.add(classes.toURL());
+         }
+
+         if (urls.isEmpty() == false)
+         {
+            WBDiscoveryVisitor visitor = new WBDiscoveryVisitor(wbdi, unit.getClassLoader());
+            module.visit(visitor, ClassFilter.INSTANCE, null, urls.toArray(new URL[urls.size()]));
          }
       }
       catch (Exception e)
