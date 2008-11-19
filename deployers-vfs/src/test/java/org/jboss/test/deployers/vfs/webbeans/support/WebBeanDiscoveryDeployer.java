@@ -61,20 +61,7 @@ public class WebBeanDiscoveryDeployer extends AbstractOptionalVFSRealDeployer<We
 
       try
       {
-         Module module = unit.getAttachment(Module.class);
-         if (module == null)
-         {
-            VFSDeploymentUnit parent = unit.getParent();
-            while(parent != null && module == null)
-            {
-               module = parent.getAttachment(Module.class);
-               parent = parent.getParent();
-            }
-            if (module == null)
-               throw new IllegalArgumentException("No module in deployment unit's hierarchy: " + unit.getName());
-         }
-
-         if (deployment != null) // do some more
+         if (deployment != null) // do some more stuff ...
             wbdi.addWebBeansXmlURL(deployment.getURL());
 
          List<URL> urls = new ArrayList<URL>();
@@ -103,6 +90,19 @@ public class WebBeanDiscoveryDeployer extends AbstractOptionalVFSRealDeployer<We
 
          if (urls.isEmpty() == false)
          {
+            Module module = unit.getAttachment(Module.class);
+            if (module == null)
+            {
+               VFSDeploymentUnit parent = unit.getParent();
+               while(parent != null && module == null)
+               {
+                  module = parent.getAttachment(Module.class);
+                  parent = parent.getParent();
+               }
+               if (module == null)
+                  throw new DeploymentException("No module in deployment unit's hierarchy: " + unit.getName());
+            }
+
             WBDiscoveryVisitor visitor = new WBDiscoveryVisitor(wbdi, unit.getClassLoader());
             module.visit(visitor, ClassFilter.INSTANCE, null, urls.toArray(new URL[urls.size()]));
          }
