@@ -65,12 +65,12 @@ public class WebBeanDiscoveryTestCase extends AbstractWebBeansTest
          assertNotNull(wbDiscovery);
 
          Set<String> expected = new HashSet<String>();
-         expected.add("ejbs.jar/META-INF");
-         expected.add("ext.jar/META-INF");
-         expected.add("simple.jar/META-INF");
-         expected.add("ui.jar/META-INF");
-         expected.add("simple.war/WEB-INF");
-         expected.add("crm.jar/META-INF");
+         addExpectedClass(expected, "ejbs.jar");
+         addExpectedClass(expected, "ext.jar");
+         addExpectedClass(expected, "simple.jar");
+         addExpectedClass(expected, "ui.jar");
+         addExpectedClass(expected, "crm.jar");
+         addExpectedClass(expected, "simple.war", "/WEB-INF/web-beans.xml");
 
          for (URL url : wbDiscovery.discoverWebBeansXml())
          {
@@ -108,6 +108,16 @@ public class WebBeanDiscoveryTestCase extends AbstractWebBeansTest
       {
          undeploy(topUnit);
       }
+   }
+
+   private static void addExpectedClass(Set<String> expected, String unit)
+   {
+      addExpectedClass(expected, unit, "/META-INF/web-beans.xml");
+   }
+
+   private static void addExpectedClass(Set<String> expected, String unit, String suffix)
+   {
+      expected.add(unit + suffix);
    }
 
    private static void addExpectedClass(Set<String> expected, Class<?> clazz)

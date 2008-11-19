@@ -21,10 +21,9 @@
  */
 package org.jboss.test.deployers.vfs.webbeans.support;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.jboss.classloading.spi.dependency.Module;
 import org.jboss.classloading.spi.visitor.ClassFilter;
@@ -119,9 +118,9 @@ public class WebBeanDiscoveryDeployer extends AbstractOptionalVFSRealDeployer<We
       List<VirtualFile> classpath = unit.getClassPath();
       if (classpath != null && classpath.isEmpty() == false)
       {
-         Set<VirtualFile> matching = new HashSet<VirtualFile>();
+         List<VirtualFile> matching = new ArrayList<VirtualFile>();
          VirtualFile root = unit.getRoot();
-         for (VirtualFile cp : classpath)
+         for (VirtualFile cp : classpath)                        
          {
             VirtualFile check = cp;
             while(check != null && check.equals(root) == false)
