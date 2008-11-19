@@ -21,10 +21,10 @@
  */
 package org.jboss.test.deployers.vfs.webbeans.test;
 
-import java.net.URL;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
+import java.util.Iterator;
+import java.net.URL;
 
 import junit.framework.Test;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
@@ -69,19 +69,6 @@ public class WebBeanDiscoveryTestCase extends AbstractWebBeansTest
             return;
 
          Set<String> expected = new HashSet<String>();
-         addExpectedClass(expected, BusinessInterface.class);
-         addExpectedClass(expected, MySLSBean.class);
-         addExpectedClass(expected, ExternalWebBean.class);
-         addExpectedClass(expected, PlainJavaBean.class);
-         addExpectedClass(expected, UIWebBean.class);
-         addExpectedClass(expected, ServletWebBean.class);
-         addExpectedClass(expected, CrmWebBean.class);
-
-         for (Class<?> clazz : wbDiscovery.discoverWebBeanClasses())
-            assertTrue(expected.remove(clazz.getName()));
-
-         assertEmpty("Should be emtpy, missing " + expected, expected);
-
          expected.add("ejbs.jar/META-INF");
          expected.add("ext.jar/META-INF");
          expected.add("simple.jar/META-INF");
@@ -105,6 +92,19 @@ public class WebBeanDiscoveryTestCase extends AbstractWebBeansTest
             }
             assertTrue("Unexpected wb url: " + url, found);
          }
+
+         assertEmpty("Should be emtpy, missing " + expected, expected);
+
+         addExpectedClass(expected, BusinessInterface.class);
+         addExpectedClass(expected, MySLSBean.class);
+         addExpectedClass(expected, ExternalWebBean.class);
+         addExpectedClass(expected, PlainJavaBean.class);
+         addExpectedClass(expected, UIWebBean.class);
+         addExpectedClass(expected, ServletWebBean.class);
+         addExpectedClass(expected, CrmWebBean.class);
+
+         for (Class<?> clazz : wbDiscovery.discoverWebBeanClasses())
+            assertTrue(expected.remove(clazz.getName()));
 
          assertEmpty("Should be emtpy, missing " + expected, expected);
       }
