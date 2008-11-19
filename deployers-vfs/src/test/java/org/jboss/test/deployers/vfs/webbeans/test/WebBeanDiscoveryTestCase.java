@@ -21,9 +21,21 @@
  */
 package org.jboss.test.deployers.vfs.webbeans.test;
 
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 import junit.framework.Test;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.test.deployers.vfs.webbeans.support.WebBeanDiscovery;
+import org.jboss.test.deployers.vfs.webbeans.support.crm.CrmWebBean;
+import org.jboss.test.deployers.vfs.webbeans.support.ejb.BusinessInterface;
+import org.jboss.test.deployers.vfs.webbeans.support.ejb.MySLSBean;
+import org.jboss.test.deployers.vfs.webbeans.support.ext.ExternalWebBean;
+import org.jboss.test.deployers.vfs.webbeans.support.jar.PlainJavaBean;
+import org.jboss.test.deployers.vfs.webbeans.support.ui.UIWebBean;
+import org.jboss.test.deployers.vfs.webbeans.support.web.ServletWebBean;
 import org.jboss.virtual.VirtualFile;
 
 /**
@@ -51,10 +63,59 @@ public class WebBeanDiscoveryTestCase extends AbstractWebBeansTest
       {
          WebBeanDiscovery wbDiscovery = topUnit.getAttachment(WebBeanDiscovery.class);
          assertNotNull(wbDiscovery);
+
+         // TODO - remove this once WBDDeployer is done
+         if (wbDiscovery.discoverWebBeanClasses().iterator().hasNext() == false)
+            return;
+
+         Set<String> expected = new HashSet<String>();
+         addExpectedClass(expected, BusinessInterface.class);
+         addExpectedClass(expected, MySLSBean.class);
+         addExpectedClass(expected, ExternalWebBean.class);
+         addExpectedClass(expected, PlainJavaBean.class);
+         addExpectedClass(expected, UIWebBean.class);
+         addExpectedClass(expected, ServletWebBean.class);
+         addExpectedClass(expected, CrmWebBean.class);
+
+         for (Class<?> clazz : wbDiscovery.discoverWebBeanClasses())
+            assertTrue(expected.remove(clazz.getName()));
+
+         assertEmpty("Should be emtpy, missing " + expected, expected);
+
+         expected.add("ejbs.jar/META-INF");
+         expected.add("ext.jar/META-INF");
+         expected.add("simple.jar/META-INF");
+         expected.add("ui.jar/META-INF");
+         expected.add("simple.war/WEB-INF");
+         expected.add("crm.jar/META-INF");
+
+         for (URL url : wbDiscovery.discoverWebBeansXml())
+         {
+            boolean found = false;
+            Iterator<String> iter = expected.iterator();
+            while (iter.hasNext())
+            {
+               String expectedURL = iter.next();
+               if (url.toExternalForm().contains(expectedURL))
+               {
+                  iter.remove();
+                  found = true;
+                  break;
+               }
+            }
+            assertTrue("Unexpected wb url: " + url, found);
+         }
+
+         assertEmpty("Should be emtpy, missing " + expected, expected);
       }
       finally
       {
          undeploy(topUnit);
       }
+   }
+
+   private static void addExpectedClass(Set<String> expected, Class<?> clazz)
+   {
+      expected.add(clazz.getName());
    }
 }

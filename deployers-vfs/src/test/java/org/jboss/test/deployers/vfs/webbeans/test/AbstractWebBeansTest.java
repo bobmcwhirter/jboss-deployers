@@ -21,15 +21,17 @@
  */
 package org.jboss.test.deployers.vfs.webbeans.test;
 
+import org.jboss.deployers.vfs.deployer.kernel.BeanDeployer;
 import org.jboss.test.deployers.BootstrapDeployersTest;
 import org.jboss.test.deployers.vfs.webbeans.support.ejb.MySLSBean;
 import org.jboss.test.deployers.vfs.webbeans.support.ext.ExternalWebBean;
 import org.jboss.test.deployers.vfs.webbeans.support.jar.PlainJavaBean;
+import org.jboss.test.deployers.vfs.webbeans.support.jsf.NotWBJsfBean;
 import org.jboss.test.deployers.vfs.webbeans.support.ui.UIWebBean;
 import org.jboss.test.deployers.vfs.webbeans.support.util.SomeUtil;
 import org.jboss.test.deployers.vfs.webbeans.support.web.ServletWebBean;
+import org.jboss.test.deployers.vfs.webbeans.support.crm.CrmWebBean;
 import org.jboss.virtual.AssembledDirectory;
-import org.jboss.deployers.vfs.deployer.kernel.BeanDeployer;
 
 /**
  * AbstractWebBeansTest.
@@ -87,6 +89,19 @@ public abstract class AbstractWebBeansTest extends BootstrapDeployersTest
       AssembledDirectory uijar = lib.mkdir("ui.jar");
       addPackage(uijar, UIWebBean.class);
       addPath(uijar, "/webbeans/simple/ui", "META-INF");
+
+      // war w/o web-beans.xml
+
+      war = ear.mkdir("crm.war");
+      webinf = war.mkdir("WEB-INF");
+      classes = webinf.mkdir("classes");
+      addPackage(classes, NotWBJsfBean.class);
+
+      lib = webinf.mkdir("lib");
+
+      uijar = lib.mkdir("crm.jar");
+      addPackage(uijar, CrmWebBean.class);
+      addPath(uijar, "/webbeans/simple/crm", "META-INF");
 
       enableTrace("org.jboss.deployers");
 
