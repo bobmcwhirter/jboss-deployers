@@ -48,6 +48,9 @@ public class InMemoryClassesDeployer extends AbstractVFSRealDeployer
    /** The name of the dynamic class root */
    public static final String DYNAMIC_CLASS_KEY = "DYNAMIC_CLASS_KEY";
 
+   /** The host name creator */
+   private HostNameCreator hostNameCreator;
+
    /**
     * Create a new TempURLDeployer.
     */
@@ -58,13 +61,24 @@ public class InMemoryClassesDeployer extends AbstractVFSRealDeployer
       setOutput(ClassLoadingMetaData.class);
       setTopLevelOnly(true);
    }
-   
+
+   /**
+    * Create host name.
+    *
+    * @param unit the deployment unit
+    * @return the host name
+    */
+   protected String createHost(VFSDeploymentUnit unit)
+   {
+      return (hostNameCreator != null) ? hostNameCreator.createHostName(unit) : GUID.asString();
+   }
+
    @Override
    public void deploy(VFSDeploymentUnit unit) throws DeploymentException
    {
       try
       {
-         URL dynamicClassRoot = new URL("vfsmemory", GUID.asString(), "");
+         URL dynamicClassRoot = new URL("vfsmemory", createHost(unit), "");
          VirtualFile classes = MemoryFileFactory.createRoot(dynamicClassRoot).getRoot();
          unit.addAttachment(DYNAMIC_CLASS_URL_KEY, dynamicClassRoot);
          unit.addAttachment(DYNAMIC_CLASS_KEY, classes);
@@ -107,5 +121,15 @@ public class InMemoryClassesDeployer extends AbstractVFSRealDeployer
             log.warn("Error deleting dynamic class root for " + unit.getName(), e);
          }
       }
+   }
+
+   /**
+    * Set host name creator.
+    *
+    * @param hostNameCreator the host name creator
+    */
+   public void setHostNameCreator(HostNameCreator hostNameCreator)
+   {
+      this.hostNameCreator = hostNameCreator;
    }
 }

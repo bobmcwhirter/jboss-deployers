@@ -38,6 +38,7 @@ import org.jboss.deployers.structure.spi.main.MainDeployerStructure;
 import org.jboss.deployers.vfs.plugins.classloader.InMemoryClassesDeployer;
 import org.jboss.deployers.vfs.plugins.classloader.VFSClassLoaderClassPathDeployer;
 import org.jboss.deployers.vfs.plugins.classloader.VFSClassLoaderDescribeDeployer;
+import org.jboss.deployers.vfs.plugins.classloader.DeploymentHostNameCreator;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.test.deployers.vfs.classloader.support.TestLevelClassLoaderSystemDeployer;
 import org.jboss.test.deployers.vfs.classloader.support.a.A;
@@ -48,10 +49,13 @@ import org.jboss.virtual.VirtualFile;
  * InMemoryClasesUnitTestCase.
  * 
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public class InMemoryClasesUnitTestCase extends VFSClassLoaderDependenciesTest
 {
+   private InMemoryClassesDeployer inMemoryClassesDeployer = new InMemoryClassesDeployer();
+
    public InMemoryClasesUnitTestCase(String name)
    {
       super(name);
@@ -101,6 +105,32 @@ public class InMemoryClasesUnitTestCase extends VFSClassLoaderDependenciesTest
       assertFalse("dynamic classes should NOT be in the classpath", unit.getClassPath().contains(file));
    }
 
+   public void testHostNameCreator() throws Exception
+   {
+      DeployerClient mainDeployer = getMainDeployer();
+      MainDeployerStructure main = (MainDeployerStructure) mainDeployer;
+
+      Deployment ad = createDeployment("A");
+      Version v1 = Version.parseVersion("1");
+      ClassLoadingMetaData clmd = addClassLoadingMetaData(ad, v1, true, A.class);
+      clmd.setBlackListable(false);
+
+      inMemoryClassesDeployer.setHostNameCreator(new DeploymentHostNameCreator());
+      try
+      {
+         assertDeploy(mainDeployer, ad);
+
+         VFSDeploymentUnit unit = (VFSDeploymentUnit) main.getDeploymentUnit("A");
+         URL root = unit.getAttachment(InMemoryClassesDeployer.DYNAMIC_CLASS_URL_KEY, URL.class);
+         assertNotNull(root);
+         assertEquals("vfsmemory://in-memory-test-classes", root.toExternalForm());
+      }
+      finally
+      {
+         inMemoryClassesDeployer.setHostNameCreator(null);
+      }
+   }
+
    protected DeployerClient getMainDeployer()
    {
       AbstractJDKChecker.getExcluded().add(VFSClassLoaderDependenciesTest.class);
@@ -116,10 +146,8 @@ public class InMemoryClasesUnitTestCase extends VFSClassLoaderDependenciesTest
       deployer2.setClassLoading(classLoading);
       deployer2.setSystem(system);
       
-      Deployer deployer3 = new InMemoryClassesDeployer();
-
       Deployer deployer4 = new VFSClassLoaderClassPathDeployer();
       
-      return createMainDeployer(deployer1, deployer2, deployer3, deployer4);
+      return createMainDeployer(deployer1, deployer2, inMemoryClassesDeployer, deployer4);
    }
 }
