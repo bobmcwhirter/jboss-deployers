@@ -22,7 +22,9 @@
 package org.jboss.deployers.vfs.plugins.dependency;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.jboss.dependency.spi.Controller;
 import org.jboss.dependency.spi.ControllerContext;
@@ -78,7 +80,11 @@ public class DeploymentAliasesDeployer extends AbstractRealDeployerWithInput<Dep
 
       protected List<Object> getComponents(DeploymentAliases deployment)
       {
-         return new ArrayList<Object>(deployment.getAliases());
+         Set<Object> aliases = deployment.getAliases();
+         if (aliases != null && aliases.isEmpty() == false)
+            return new ArrayList<Object>(aliases);
+         else
+            return Collections.emptyList();
       }
 
       protected Class<Object> getComponentType()

@@ -22,7 +22,9 @@
 package org.jboss.deployers.vfs.plugins.dependency;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.jboss.dependency.spi.DependencyItem;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
@@ -60,7 +62,11 @@ public class DeploymentDependencyDeployer extends AbstractRealDeployerWithInput<
 
       protected List<? extends DependencyItem> getComponents(DeploymentDependencies deployment)
       {
-         return new ArrayList<DependencyItem>(deployment.getDependencies());
+         Set<DependencyItem> items = deployment.getDependencies();
+         if (items != null && items.isEmpty() == false)
+            return new ArrayList<DependencyItem>(items);
+         else
+            return Collections.emptyList();
       }
 
       protected Class<DependencyItem> getComponentType()
