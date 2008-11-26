@@ -50,6 +50,7 @@ public abstract class AbstractDeploymentVisitor<C, T> extends ComponentAdapter<C
     * @param deployment the deployment
     * @return list of components
     */
+   // TODO - change to Iterable   
    protected abstract List<? extends C> getComponents(T deployment);
 
    /**
