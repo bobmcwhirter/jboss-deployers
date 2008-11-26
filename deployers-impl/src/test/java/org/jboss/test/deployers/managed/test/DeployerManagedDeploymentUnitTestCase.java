@@ -41,12 +41,14 @@ import org.jboss.managed.api.ManagedProperty;
 import org.jboss.managed.api.factory.ManagedObjectFactory;
 import org.jboss.metatype.api.types.SimpleMetaType;
 import org.jboss.metatype.api.values.GenericValue;
-import org.jboss.test.deployers.AbstractDeployerTest;
+import org.jboss.metatype.api.values.MetaValue;
 import org.jboss.test.deployers.deployer.support.ConnMetaData;
+import org.jboss.test.deployers.deployer.support.CustomName;
 import org.jboss.test.deployers.deployer.support.DSMetaData;
 import org.jboss.test.deployers.deployer.support.DSService;
 import org.jboss.test.deployers.deployer.support.LocalDataSourceMetaData;
 import org.jboss.test.deployers.deployer.support.MCFDeployer;
+import org.jboss.test.deployers.deployer.support.RuntimeComponentMetaData;
 import org.jboss.test.deployers.deployer.support.SecMetaData;
 import org.jboss.test.deployers.deployer.support.SecurityDeployment;
 import org.jboss.test.deployers.deployer.support.SimpleMetaData;
@@ -54,8 +56,6 @@ import org.jboss.test.deployers.deployer.support.TestServiceAttributeMetaData;
 import org.jboss.test.deployers.deployer.support.TestServiceMetaData;
 import org.jboss.test.deployers.deployer.support.TestServiceMetaDataICF;
 import org.jboss.test.deployers.deployer.support.XADataSourceMetaData;
-import org.jboss.test.deployers.deployer.support.RuntimeComponentMetaData;
-import org.jboss.test.deployers.deployer.support.CustomName;
 import org.jboss.test.deployers.managed.support.MockProfileService;
 
 /**
@@ -65,7 +65,7 @@ import org.jboss.test.deployers.managed.support.MockProfileService;
  * @author Ales.Justin@jboss.org
  * @version $Revision$
  */
-public class DeployerManagedDeploymentUnitTestCase extends AbstractDeployerTest
+public class DeployerManagedDeploymentUnitTestCase extends AbstractManagedObjectUnitTest
 {
    private MCFDeployer deployer = new MCFDeployer();
    
@@ -163,12 +163,13 @@ public class DeployerManagedDeploymentUnitTestCase extends AbstractDeployerTest
       ManagedProperty prop = mc.getProperty("security-criteria");
       assertNotNull(prop);
       assertEquals(typeAttribute.getValue(), SimpleMetaData.SecurityDeploymentType.NONE);
-      prop.setValue(SimpleMetaData.SecurityDeploymentType.APPLICATION);
+      SimpleMetaData.SecurityDeploymentType value = SimpleMetaData.SecurityDeploymentType.APPLICATION;
+      prop.setValue(getMetaValueFactory().create(value));
       assertEquals(typeAttribute.getValue(), SimpleMetaData.SecurityDeploymentType.APPLICATION);
 
       ManagedProperty targetProp = mc.getProperty("jndi-name");
       assertNotNull(targetProp);
-      targetProp.setValue("java:DefaultDS2");
+      targetProp.setValue(getMetaValueFactory().create("java:DefaultDS2"));
       // test target runtime component invocation (if intendet here)      
    }
 
@@ -377,8 +378,8 @@ public class DeployerManagedDeploymentUnitTestCase extends AbstractDeployerTest
       assertEquals("param description", "The int to multiple", constrainedIntx10Params[0].getDescription());
       assertEquals("param type", SimpleMetaType.INTEGER, constrainedIntx10Params[0].getMetaType());
       Object min = constrainedIntx10Params[0].getMinimumValue();
-      assertEquals("param min is 0", new Integer(0), min);
-      assertEquals("param min is 100", new Integer(100), constrainedIntx10Params[0].getMaximumValue());
+      assertEquals("param min is 0", 0, (MetaValue)min);
+      assertEquals("param min is 100", 100, (MetaValue)constrainedIntx10Params[0].getMaximumValue());
       
       // Validate that the localDataMO includes the runtime properties
       ManagedProperty rtp1 = localDataProps.get("runtimeProp1");

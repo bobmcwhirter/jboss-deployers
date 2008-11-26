@@ -35,9 +35,7 @@ import org.jboss.metatype.api.values.SimpleValueSupport;
  * @author Scott.Stark@jboss.org
  * @version $Revision$
  */
-public class AllowedDsTypes
-   implements ManagedPropertyConstraintsPopulatorFactory,
-   ManagedPropertyConstraintsPopulator
+public class AllowedDsTypes implements ManagedPropertyConstraintsPopulatorFactory, ManagedPropertyConstraintsPopulator
 {
    public static HashSet<MetaValue> values = new HashSet<MetaValue>();
    static
@@ -60,4 +58,13 @@ public class AllowedDsTypes
       return this;
    }
 
+   public ManagedPropertyConstraintsPopulator newInstance(String min, String max, String[] legalValues)
+   {
+      return this;
+   }
+
+   public ManagedPropertyConstraintsPopulator newInstance(String min, String max, String[] legalValues, String... strings)
+   {
+      return this;
+   }
 }

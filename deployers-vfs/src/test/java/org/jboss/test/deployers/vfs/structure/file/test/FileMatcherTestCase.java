@@ -230,6 +230,11 @@ public class FileMatcherTestCase extends BaseTestCase
             {
                return false;
             }
+
+            public URL getRealURL() throws IOException, URISyntaxException
+            {
+               return null;
+            }
          };
       }
 

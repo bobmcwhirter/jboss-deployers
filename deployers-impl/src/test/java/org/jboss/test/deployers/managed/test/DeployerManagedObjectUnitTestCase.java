@@ -41,7 +41,6 @@ import org.jboss.metatype.api.types.SimpleMetaType;
 import org.jboss.metatype.api.values.CollectionValue;
 import org.jboss.metatype.api.values.GenericValue;
 import org.jboss.metatype.api.values.MetaValue;
-import org.jboss.test.deployers.AbstractDeployerTest;
 import org.jboss.test.deployers.deployer.support.AllowedDsTypes;
 import org.jboss.test.deployers.deployer.support.ConnMetaData;
 import org.jboss.test.deployers.deployer.support.DSMetaData;
@@ -57,7 +56,7 @@ import org.jboss.util.graph.Graph;
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
  * @version $Revision: 1.1 $
  */
-public class DeployerManagedObjectUnitTestCase extends AbstractDeployerTest
+public class DeployerManagedObjectUnitTestCase extends AbstractManagedObjectUnitTest
 {
    private TestManagedObjectDeployer deployer = new TestManagedObjectDeployer();
    
@@ -82,8 +81,8 @@ public class DeployerManagedObjectUnitTestCase extends AbstractDeployerTest
 
       // Check the default settings
       assertNotNull(deployer.lastAttachment);
-      assertEquals("initialString1", deployer.lastAttachment.getProperty("string1"));
-      assertEquals("initialString2", deployer.lastAttachment.getProperty("string2"));
+      assertEquals("initialString1", (MetaValue)deployer.lastAttachment.getProperty("string1"));
+      assertEquals("initialString2", (MetaValue)deployer.lastAttachment.getProperty("string2"));
       
       // Get the managed object
       Map<String, ManagedObject> mos = main.getManagedObjects(context.getName());
@@ -107,7 +106,7 @@ public class DeployerManagedObjectUnitTestCase extends AbstractDeployerTest
       assertEquals("initialString2", mo.getProperty("string2").getValue());
       
       // Change a value
-      mo.getProperty("string1").setValue("changedString1");
+      mo.getProperty("string1").setValue(getMetaValueFactory().create("changedString1"));
       
       // Get the changed attachment
       TestAttachment attachment = (TestAttachment) mo.getAttachment();
@@ -120,8 +119,8 @@ public class DeployerManagedObjectUnitTestCase extends AbstractDeployerTest
 
       // Check the changed settings as seen by the deployer
       assertNotNull(deployer.lastAttachment);
-      assertEquals("changedString1", deployer.lastAttachment.getProperty("string1"));
-      assertEquals("initialString2", deployer.lastAttachment.getProperty("string2"));
+      assertEquals("changedString1", (MetaValue)deployer.lastAttachment.getProperty("string1"));
+      assertEquals("initialString2", (MetaValue)deployer.lastAttachment.getProperty("string2"));
       
       // TODO JBMICROCONT-181 shouldn't have to reget the managed object handles across redeploys?
       mos = main.getManagedObjects(context.getName());
@@ -268,12 +267,12 @@ public class DeployerManagedObjectUnitTestCase extends AbstractDeployerTest
       assertNotNull(minSize);
 
       // Validate setting the properties
-      displayName.setValue("testDSMetaDataManagedObjectFactoryInit");
-      jndiName.setValue("java:TestDS");
-      password.setValue("password".toCharArray());
-      username.setValue("username");
-      minSize.setValue(new Integer(10));
-      maxSize.setValue(new Integer(100));
+      displayName.setValue(getMetaValueFactory().create("testDSMetaDataManagedObjectFactoryInit"));
+      jndiName.setValue(getMetaValueFactory().create("java:TestDS"));
+      password.setValue(getMetaValueFactory().create("password".toCharArray()));
+      username.setValue(getMetaValueFactory().create("username"));
+      minSize.setValue(getMetaValueFactory().create(10));
+      maxSize.setValue(getMetaValueFactory().create(100));
 
       Object attachment = xaConnMO.getAttachment();
       assertTrue("attachment is a XADataSourceMetaData("+attachment+")", attachment instanceof XADataSourceMetaData);

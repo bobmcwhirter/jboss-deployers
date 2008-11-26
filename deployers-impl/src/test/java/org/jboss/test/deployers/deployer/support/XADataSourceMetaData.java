@@ -24,6 +24,7 @@ package org.jboss.test.deployers.deployer.support;
 import org.jboss.managed.api.annotation.ManagementComponent;
 import org.jboss.managed.api.annotation.ManagementObject;
 import org.jboss.managed.api.annotation.ManagementProperty;
+import org.jboss.managed.api.annotation.ManagementPropertyFactory;
 import org.jboss.managed.plugins.WritethroughManagedPropertyImpl;
 
 /**
@@ -43,7 +44,8 @@ public class XADataSourceMetaData extends ConnMetaData
    {
    }
 
-   @ManagementProperty(propertyFactory=WritethroughManagedPropertyImpl.class)
+   @ManagementProperty
+   @ManagementPropertyFactory(WritethroughManagedPropertyImpl.class)
    public String getXaDataSourceClass()
    {
       return xaDataSourceClass;
@@ -54,7 +56,8 @@ public class XADataSourceMetaData extends ConnMetaData
       this.xaDataSourceClass = xaDataSourceClass;
    }
 
-   @ManagementProperty(propertyFactory=WritethroughManagedPropertyImpl.class)
+   @ManagementProperty
+   @ManagementPropertyFactory(WritethroughManagedPropertyImpl.class)
    public int getXaResourceTimeout()
    {
       return xaResourceTimeout;

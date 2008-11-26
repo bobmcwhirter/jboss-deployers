@@ -181,6 +181,11 @@ public class MyVirtualFile extends VirtualFile
          {
             return false;
          }
+
+         public URL getRealURL() throws IOException, URISyntaxException
+         {
+            return null;
+         }
       };
    }
 }

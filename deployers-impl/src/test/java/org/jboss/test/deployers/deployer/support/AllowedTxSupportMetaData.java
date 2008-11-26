@@ -36,9 +36,7 @@ import org.jboss.metatype.api.values.MetaValue;
  * @author Scott.Stark@jboss.org
  * @version $Revision$
  */
-public class AllowedTxSupportMetaData implements
-      ManagedPropertyConstraintsPopulator,
-      ManagedPropertyConstraintsPopulatorFactory
+public class AllowedTxSupportMetaData implements ManagedPropertyConstraintsPopulator, ManagedPropertyConstraintsPopulatorFactory
 {
    private static EnumMetaType TYPE = new EnumMetaType(TxSupportMetaData.values());
    private static HashSet<MetaValue> values = new HashSet<MetaValue>();
@@ -60,4 +58,13 @@ public class AllowedTxSupportMetaData implements
       return this;
    }
 
+   public ManagedPropertyConstraintsPopulator newInstance(String min, String max, String[] legalValues)
+   {
+      return this;
+   }
+
+   public ManagedPropertyConstraintsPopulator newInstance(String min, String max, String[] legalValues, String... strings)
+   {
+      return this;
+   }
 }

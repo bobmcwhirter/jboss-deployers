@@ -21,8 +21,6 @@
 */
 package org.jboss.test.deployers.managed.support;
 
-import java.io.Serializable;
-
 import org.jboss.managed.api.Fields;
 
 /**
@@ -46,7 +44,7 @@ public class TestFields implements Fields
       this.property = property;
    }
 
-   public Serializable getField(String name)
+   public Object getField(String name)
    {
       if (name == Fields.NAME)
          return property;
@@ -55,7 +53,7 @@ public class TestFields implements Fields
       return null;
    }
 
-   public void setField(String name, Serializable value)
+   public void setField(String name, Object value)
    {
       if (name == Fields.VALUE)
       {

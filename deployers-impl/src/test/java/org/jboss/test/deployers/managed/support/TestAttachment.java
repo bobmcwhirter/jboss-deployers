@@ -25,6 +25,10 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jboss.metatype.api.values.SimpleValueSupport;
+import org.jboss.metatype.api.values.MetaValue;
+import org.jboss.metatype.api.values.MetaValueFactory;
+
 /**
  * TestAttachment.
  * 
@@ -36,16 +40,24 @@ public class TestAttachment implements Cloneable, Serializable
    /** The serialVersionUID */
    private static final long serialVersionUID = 1L;
    
-   private Map<String, Serializable> fields = new HashMap<String, Serializable>();
+   private Map<String, Object> fields = new HashMap<String, Object>();
 
-   public Serializable getProperty(String name)
+   public Object getProperty(String name)
    {
       return fields.get(name);
    }
 
-   public void setProperty(String name, Serializable value)
+   public void setProperty(String name, Object value)
    {
-      fields.put(name, value);
+      MetaValue mv;
+      if (value instanceof MetaValue)
+         mv = (MetaValue)value;
+      else if (value instanceof Serializable)
+         mv = SimpleValueSupport.wrap((Serializable)value);
+      else
+         mv = MetaValueFactory.getInstance().create(value);
+
+      fields.put(name, mv);
    }
    
    public TestAttachment clone()
@@ -53,7 +65,7 @@ public class TestAttachment implements Cloneable, Serializable
       try
       {
          TestAttachment clone = (TestAttachment) super.clone();
-         clone.fields = new HashMap<String, Serializable>(clone.fields);
+         clone.fields = new HashMap<String, Object>(clone.fields);
          return clone;
       }
       catch (CloneNotSupportedException e)

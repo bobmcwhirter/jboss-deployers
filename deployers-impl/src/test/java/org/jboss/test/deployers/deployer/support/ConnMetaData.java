@@ -24,9 +24,11 @@ package org.jboss.test.deployers.deployer.support;
 import java.io.Serializable;
 import java.util.Properties;
 
+import org.jboss.managed.api.annotation.ConstraintsPopulatorFactory;
 import org.jboss.managed.api.annotation.ManagementObject;
 import org.jboss.managed.api.annotation.ManagementObjectID;
 import org.jboss.managed.api.annotation.ManagementProperty;
+import org.jboss.managed.api.annotation.ManagementPropertyFactory;
 import org.jboss.managed.plugins.WritethroughManagedPropertyImpl;
 
 /**
@@ -50,8 +52,9 @@ public class ConnMetaData implements Serializable
    private Properties connProperties;
    private SecMetaData securityMetaData;
 
-   @ManagementProperty(name="datasource-type", constraintsFactory=AllowedDsTypes.class,
-         propertyFactory=WritethroughManagedPropertyImpl.class)
+   @ManagementProperty(name="datasource-type")
+   @ConstraintsPopulatorFactory(AllowedDsTypes.class)
+   @ManagementPropertyFactory(WritethroughManagedPropertyImpl.class)
    public String getConnType()
    {
       return connType;
@@ -61,8 +64,9 @@ public class ConnMetaData implements Serializable
       this.connType = connType;
    }
 
-   @ManagementProperty(name="jndi-name", propertyFactory=WritethroughManagedPropertyImpl.class)
+   @ManagementProperty(name="jndi-name")
    @ManagementObjectID(type="DataSource")
+   @ManagementPropertyFactory(WritethroughManagedPropertyImpl.class)
    public String getJndiName()
    {
       return jndiName;
@@ -71,7 +75,8 @@ public class ConnMetaData implements Serializable
    {
       this.jndiName = jndiName;
    }
-   @ManagementProperty(name="max-size", propertyFactory=WritethroughManagedPropertyImpl.class)
+   @ManagementProperty(name="max-size")
+   @ManagementPropertyFactory(WritethroughManagedPropertyImpl.class)
    public int getMaxSize()
    {
       return maxSize;
@@ -80,7 +85,8 @@ public class ConnMetaData implements Serializable
    {
       this.maxSize = maxSize;
    }
-   @ManagementProperty(name="min-size", propertyFactory=WritethroughManagedPropertyImpl.class)
+   @ManagementProperty(name="min-size")
+   @ManagementPropertyFactory(WritethroughManagedPropertyImpl.class)
    public int getMinSize()
    {
       return minSize;
@@ -89,7 +95,8 @@ public class ConnMetaData implements Serializable
    {
       this.minSize = minSize;
    }
-   @ManagementProperty(propertyFactory=WritethroughManagedPropertyImpl.class)
+   @ManagementProperty
+   @ManagementPropertyFactory(WritethroughManagedPropertyImpl.class)
    public char[] getPassword()
    {
       return password;
@@ -98,7 +105,8 @@ public class ConnMetaData implements Serializable
    {
       this.password = password;
    }
-   @ManagementProperty(propertyFactory=WritethroughManagedPropertyImpl.class)
+   @ManagementProperty
+   @ManagementPropertyFactory(WritethroughManagedPropertyImpl.class)
    public String getUsername()
    {
       return username;
@@ -107,7 +115,8 @@ public class ConnMetaData implements Serializable
    {
       this.username = username;
    }
-   @ManagementProperty(name="connection-properties", propertyFactory=WritethroughManagedPropertyImpl.class)
+   @ManagementProperty(name="connection-properties")
+   @ManagementPropertyFactory(WritethroughManagedPropertyImpl.class)
    public Properties getConnProperties()
    {
       return connProperties;
@@ -128,8 +137,8 @@ public class ConnMetaData implements Serializable
       this.localTransactions = localTransactions;
    }
 
-   @ManagementProperty(name="tx-metadata",
-         constraintsFactory=AllowedTxSupportMetaData.class)
+   @ManagementProperty(name="tx-metadata")
+   @ConstraintsPopulatorFactory(AllowedTxSupportMetaData.class)
    public TxSupportMetaData getTransactionSupportMetaData()
    {
       return txSupportMetaData;

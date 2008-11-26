@@ -28,16 +28,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
-import java.util.Map;
 
 import junit.framework.Test;
-
-import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.vfs.plugins.structure.AbstractVFSDeploymentContext;
 import org.jboss.deployers.vfs.spi.deployer.AbstractVFSParsingDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
-import org.jboss.managed.api.ManagedObject;
 import org.jboss.test.BaseTestCase;
 import org.jboss.virtual.VirtualFile;
 import org.jboss.virtual.spi.VFSContext;
@@ -203,6 +199,11 @@ public class DeployersAltDDTestCase extends BaseTestCase
          public boolean delete(int gracePeriod) throws IOException
          {
             return false;
+         }
+
+         public URL getRealURL() throws IOException, URISyntaxException
+         {
+            return null;
          }
       });
       return altDD;

@@ -19,24 +19,36 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.test.deployers.vfs.deployer.bean.support;
+package org.jboss.test.deployers.managed.test;
 
-import org.jboss.dependency.spi.Controller;
+import org.jboss.metatype.api.values.MetaValue;
+import org.jboss.metatype.api.values.MetaValueFactory;
+import org.jboss.test.deployers.AbstractDeployerTest;
 
 /**
- * Simple constructor.
+ * AbstractManagedObjectUnitTest.
  *
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  */
-public class SimpleAliasTester extends SimpleAnnotated
+public abstract class AbstractManagedObjectUnitTest extends AbstractDeployerTest
 {
-   public static SimpleAliasTester factory()
+   protected AbstractManagedObjectUnitTest(String name)
    {
-      return new SimpleAliasTester();
+      super(name);
    }
 
-   public void setController(Controller controller)
+   protected MetaValueFactory getMetaValueFactory()
    {
-      this.controller = controller;
+      return MetaValueFactory.getInstance();
+   }
+
+   protected void assertEquals(Object object, MetaValue metaValue)
+   {
+      assertEquals(null, object, metaValue);      
+   }
+
+   protected void assertEquals(String msg, Object object, MetaValue metaValue)
+   {
+      assertEquals(msg, object, getMetaValueFactory().unwrap(metaValue));
    }
 }
