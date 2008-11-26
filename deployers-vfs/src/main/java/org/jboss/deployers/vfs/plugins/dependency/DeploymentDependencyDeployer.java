@@ -39,7 +39,6 @@ public class DeploymentDependencyDeployer extends AbstractRealDeployerWithInput<
 {
    public DeploymentDependencyDeployer()
    {
-      super(DeploymentDependencies.class);
       setStage(DeploymentStages.POST_PARSE);
       setDeploymentVisitor(new DependencyItemComponentVisitor());
    }

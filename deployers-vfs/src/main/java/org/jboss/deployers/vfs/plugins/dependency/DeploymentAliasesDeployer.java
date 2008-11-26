@@ -42,7 +42,6 @@ public class DeploymentAliasesDeployer extends AbstractRealDeployerWithInput<Dep
 
    public DeploymentAliasesDeployer(Controller controller)
    {
-      super(DeploymentAliases.class);
       if (controller == null)
          throw new IllegalArgumentException("Null controller");
       this.controller = controller;
