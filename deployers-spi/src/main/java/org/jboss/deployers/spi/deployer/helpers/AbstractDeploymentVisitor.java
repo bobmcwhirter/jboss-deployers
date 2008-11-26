@@ -50,7 +50,7 @@ public abstract class AbstractDeploymentVisitor<C, T> extends ComponentAdapter<C
     * @param deployment the deployment
     * @return list of components
     */
-   // TODO - change to Iterable   
+   // TODO - change to Iterable - JBDEPLOY-134  
    protected abstract List<? extends C> getComponents(T deployment);
 
    /**
