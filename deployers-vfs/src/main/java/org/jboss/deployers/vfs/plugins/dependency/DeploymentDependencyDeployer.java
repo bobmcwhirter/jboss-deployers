@@ -39,7 +39,6 @@ public class DeploymentDependencyDeployer extends AbstractSimpleRealDeployer<Dep
    public DeploymentDependencyDeployer()
    {
       super(DeploymentDependencies.class);
-      addInput(DeploymentAliases.class);
       setStage(DeploymentStages.POST_PARSE);
    }
 
