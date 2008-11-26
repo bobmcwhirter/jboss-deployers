@@ -21,12 +21,13 @@
  */
 package org.jboss.deployers.vfs.plugins.dependency;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.jboss.dependency.spi.DependencyItem;
-import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
-import org.jboss.deployers.spi.deployer.helpers.AbstractSimpleRealDeployer;
+import org.jboss.deployers.spi.deployer.helpers.AbstractDeploymentVisitor;
+import org.jboss.deployers.spi.deployer.helpers.AbstractRealDeployerWithInput;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 
 /**
@@ -34,42 +35,48 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
  * 
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class DeploymentDependencyDeployer extends AbstractSimpleRealDeployer<DeploymentDependencies>
+public class DeploymentDependencyDeployer extends AbstractRealDeployerWithInput<DeploymentDependencies>
 {
    public DeploymentDependencyDeployer()
    {
       super(DeploymentDependencies.class);
       setStage(DeploymentStages.POST_PARSE);
+      setDeploymentVisitor(new DependencyItemComponentVisitor());
    }
 
-   public void deploy(DeploymentUnit unit, DeploymentDependencies deployment) throws DeploymentException
+   private class DependencyItemComponentVisitor extends AbstractDeploymentVisitor<DependencyItem, DeploymentDependencies>
    {
-      Set<DependencyItem> dependencies = deployment.getDependencies();
-      if (dependencies != null && dependencies.isEmpty() == false)
+      @Override
+      protected DeploymentUnit addComponent(DeploymentUnit unit, DependencyItem attachment)
       {
-         for (DependencyItem di : dependencies)
-         {
-            unit.addIDependOn(di);
-         }
+         unit.addIDependOn(attachment);
+         return null;
       }
-   }
 
-   @Override
-   public void undeploy(DeploymentUnit unit, DeploymentDependencies deployment)
-   {
-      Set<DependencyItem> dependencies = deployment.getDependencies();
-      if (dependencies != null && dependencies.isEmpty() == false)
+      @Override
+      protected void removeComponent(DeploymentUnit unit, DependencyItem attachment)
       {
-         for (DependencyItem di : dependencies)
-         {
-            try
-            {
-               unit.removeIDependOn(di);
-            }
-            catch (Throwable ignored)
-            {
-            }
-         }
+         unit.removeIDependOn(attachment);
+      }
+
+      protected List<? extends DependencyItem> getComponents(DeploymentDependencies deployment)
+      {
+         return new ArrayList<DependencyItem>(deployment.getDependencies());
+      }
+
+      protected Class<DependencyItem> getComponentType()
+      {
+         return DependencyItem.class;
+      }
+
+      protected String getComponentName(DependencyItem attachment)
+      {
+         throw new UnsupportedOperationException("No component name.");
+      }
+
+      public Class<DeploymentDependencies> getVisitorType()
+      {
+         return DeploymentDependencies.class;
       }
    }
 }

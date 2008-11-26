@@ -21,13 +21,14 @@
  */
 package org.jboss.deployers.vfs.plugins.dependency;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.jboss.dependency.spi.Controller;
 import org.jboss.dependency.spi.ControllerContext;
-import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
-import org.jboss.deployers.spi.deployer.helpers.AbstractSimpleRealDeployer;
+import org.jboss.deployers.spi.deployer.helpers.AbstractDeploymentVisitor;
+import org.jboss.deployers.spi.deployer.helpers.AbstractRealDeployerWithInput;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 
 /**
@@ -35,7 +36,7 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
  *
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class DeploymentAliasesDeployer extends AbstractSimpleRealDeployer<DeploymentAliases>
+public class DeploymentAliasesDeployer extends AbstractRealDeployerWithInput<DeploymentAliases>
 {
    private Controller controller;
 
@@ -46,48 +47,54 @@ public class DeploymentAliasesDeployer extends AbstractSimpleRealDeployer<Deploy
          throw new IllegalArgumentException("Null controller");
       this.controller = controller;
       setStage(DeploymentStages.POST_PARSE);
+      setDeploymentVisitor(new DeploymentAliasDeploymentVisitor());
    }
 
-   public void deploy(DeploymentUnit unit, DeploymentAliases deployment) throws DeploymentException
+   private class DeploymentAliasDeploymentVisitor extends AbstractDeploymentVisitor<Object, DeploymentAliases>
    {
-      Set<Object> aliases = deployment.getAliases();
-      if (aliases != null && aliases.isEmpty() == false)
+      @Override
+      protected DeploymentUnit addComponent(DeploymentUnit unit, Object attachment)
       {
          ControllerContext context = unit.getAttachment(ControllerContext.class);
          if (context == null)
-            throw new DeploymentException("Missing deployment controller context: " + unit.getName());
-         
+            throw new IllegalArgumentException("Missing deployment controller context: " + unit.getName());
+
          Object contextName = context.getName();
          try
          {
-            for (Object alias : aliases)
-            {
-               controller.addAlias(alias, contextName);
-            }
+            controller.addAlias(attachment, contextName);
+            return null;
          }
          catch (Throwable t)
          {
-            throw DeploymentException.rethrowAsDeploymentException("Exception adding alias.", t);
+            throw new RuntimeException(t);
          }
       }
-   }
 
-   @Override
-   public void undeploy(DeploymentUnit unit, DeploymentAliases deployment)
-   {
-      Set<Object> aliases = deployment.getAliases();
-      if (aliases != null && aliases.isEmpty() == false)
+      @Override
+      protected void removeComponent(DeploymentUnit unit, Object attachment)
       {
-         for (Object alias : aliases)
-         {
-            try
-            {
-               controller.removeAlias(alias);
-            }
-            catch (Throwable ignored)
-            {
-            }
-         }
+         controller.removeAlias(attachment);
+      }
+
+      protected List<Object> getComponents(DeploymentAliases deployment)
+      {
+         return new ArrayList<Object>(deployment.getAliases());
+      }
+
+      protected Class<Object> getComponentType()
+      {
+         return Object.class;
+      }
+
+      protected String getComponentName(Object attachment)
+      {
+         throw new UnsupportedOperationException("No component name.");
+      }
+
+      public Class<DeploymentAliases> getVisitorType()
+      {
+         return DeploymentAliases.class;
       }
    }
 }
