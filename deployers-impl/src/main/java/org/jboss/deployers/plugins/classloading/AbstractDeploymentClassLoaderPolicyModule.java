@@ -27,6 +27,7 @@ import org.jboss.classloading.spi.dependency.policy.ClassLoaderPolicyModule;
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
 import org.jboss.dependency.spi.ControllerContext;
 import org.jboss.dependency.spi.ControllerState;
+import org.jboss.dependency.spi.Controller;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 
@@ -34,6 +35,7 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
  * AbstractDeploymentClassLoaderPolicyModule.
  * 
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public abstract class AbstractDeploymentClassLoaderPolicyModule extends ClassLoaderPolicyModule
@@ -64,12 +66,14 @@ public abstract class AbstractDeploymentClassLoaderPolicyModule extends ClassLoa
     * Determine the classloading metadata for the deployment unit 
     * 
     * @param unit the deployment unit
+    * @param addAlias should we add alias or remove
     * @return the classloading metadata
     */
-   private static String determineContextName(DeploymentUnit unit)
+   private static String determineContextName(DeploymentUnit unit, boolean addAlias)
    {
       if (unit == null)
          throw new IllegalArgumentException("Null unit");
+
       ControllerContext context = unit.getTopLevel().getAttachment(ControllerContext.class);
       if (context == null)
          throw new IllegalStateException("Deployment has no controller context");
@@ -81,15 +85,23 @@ public abstract class AbstractDeploymentClassLoaderPolicyModule extends ClassLoa
       if (contextName.equals(context.getName()) == false)
       {
          Set<Object> aliases = context.getAliases();
-         if (aliases != null && aliases.contains(contextName) == false)
+         if (aliases == null || (aliases != null && aliases.contains(contextName) == false))
          {
-            try
+            Controller controller = context.getController();
+            if (addAlias)
             {
-               context.getController().addAlias(contextName, context.getName());
+               try
+               {
+                  controller.addAlias(contextName, context.getName());
+               }
+               catch (Throwable t)
+               {
+                  throw new RuntimeException("Error adding deployment alias " + contextName + " to " + context, t);
+               }
             }
-            catch (Throwable t)
+            else
             {
-               throw new RuntimeException("Error adding deployment alias " + contextName + " to " + context, t);
+               controller.removeAlias(contextName);
             }
          }
       }
@@ -105,7 +117,7 @@ public abstract class AbstractDeploymentClassLoaderPolicyModule extends ClassLoa
     */
    public AbstractDeploymentClassLoaderPolicyModule(DeploymentUnit unit)
    {
-      super(determineClassLoadingMetaData(unit), determineContextName(unit));
+      super(determineClassLoadingMetaData(unit), determineContextName(unit, true));
       this.unit = unit;
       ControllerContext context = unit.getTopLevel().getAttachment(ControllerContext.class);
       setControllerContext(context);
@@ -125,5 +137,12 @@ public abstract class AbstractDeploymentClassLoaderPolicyModule extends ClassLoa
    public ControllerState getClassLoaderState()
    {
       return CLASSLOADER_STATE;
+   }
+
+   @Override
+   public void reset()
+   {
+      super.reset();
+      determineContextName(unit, false);
    }
 }
