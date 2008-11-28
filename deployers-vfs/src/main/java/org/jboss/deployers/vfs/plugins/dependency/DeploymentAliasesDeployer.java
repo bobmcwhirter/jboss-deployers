@@ -49,6 +49,7 @@ public class DeploymentAliasesDeployer extends AbstractRealDeployerWithInput<Dep
       this.controller = controller;
       setStage(DeploymentStages.POST_PARSE);
       setDeploymentVisitor(new DeploymentAliasDeploymentVisitor());
+      setTopLevelOnly(true);
    }
 
    private class DeploymentAliasDeploymentVisitor extends AbstractDeploymentVisitor<Object, DeploymentAliases>

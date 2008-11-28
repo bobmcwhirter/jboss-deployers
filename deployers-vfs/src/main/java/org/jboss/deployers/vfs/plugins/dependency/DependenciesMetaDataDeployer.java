@@ -45,7 +45,17 @@ public class DependenciesMetaDataDeployer extends AbstractSimpleRealDeployer<Dep
    {
       ControllerContext context = unit.getAttachment(ControllerContext.class);
       if (context == null)
-         throw new DeploymentException("Missing deployment controller context: " + unit.getName());
+      {
+         DeploymentUnit parent = unit.getParent();
+         while (context == null)
+         {
+            if (parent == null)
+               throw new DeploymentException("Missing deployment controller context: " + unit.getName());
+
+            context = parent.getAttachment(ControllerContext.class);
+            parent = parent.getParent();
+         }
+      }
 
       Object contextName = context.getName();
       unit.addAttachment(DeploymentDependencies.class, new DeploymentDependenciesImpl(contextName, deployment));

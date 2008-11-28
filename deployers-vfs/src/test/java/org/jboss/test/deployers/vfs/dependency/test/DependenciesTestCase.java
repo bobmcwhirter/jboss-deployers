@@ -95,4 +95,26 @@ public class DependenciesTestCase extends BootstrapDeployersTest
          undeploy(du);
       }
    }
+
+   public void testNestedDependency() throws Throwable
+   {
+      DeploymentUnit du = addDeployment("/dependency", "nested");
+      try
+      {
+         assertDeployment(du, new ControllerState("PreReal"));
+         DeploymentUnit tmDU = assertDeploy("/dependency", "support");
+         try
+         {
+            assertDeployment(du, ControllerState.INSTALLED);
+         }
+         finally
+         {
+            undeploy(tmDU);
+         }
+      }
+      finally
+      {
+         undeploy(du);
+      }
+   }
 }

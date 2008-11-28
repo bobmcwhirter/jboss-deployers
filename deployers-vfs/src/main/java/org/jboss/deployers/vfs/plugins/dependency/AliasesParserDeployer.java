@@ -43,6 +43,7 @@ public class AliasesParserDeployer extends AbstractVFSParsingDeployer<Deployment
    {
       super(DeploymentAliases.class);
       setName("aliases.txt");
+      setTopLevelOnly(true);
    }
 
    protected DeploymentAliases parse(VFSDeploymentUnit unit, VirtualFile file, DeploymentAliases root) throws Exception
