@@ -68,18 +68,14 @@ public class ModuleRemoveUnitTestCase extends ClassLoaderDependenciesTest
       Deployment ad = createSimpleDeployment("A");
       addClassLoadingMetaData(ad, ad.getName(), v1, true, A.class);
 
-      mainDeployer.addDeployment(ad);
-      mainDeployer.process();
-
+      mainDeployer.deploy(ad);
       try
       {
-         mainDeployer.checkComplete();
          assertAlias(true);
       }
       finally
       {
-         mainDeployer.removeDeployment(ad);
-         mainDeployer.process();
+         mainDeployer.undeploy(ad);        
          assertAlias(false);
       }
    }

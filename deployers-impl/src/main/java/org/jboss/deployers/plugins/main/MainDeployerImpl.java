@@ -409,8 +409,12 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
          {
             try
             {
-               addDeployment(deployments[i], false);
-               DeploymentContext context = getDeploymentContext(deployments[i].getName(), true);
+               Deployment deployment = deployments[i];
+               addDeployment(deployment, false);
+               DeploymentContext context = getTopLevelDeploymentContext(deployment.getName());
+               if (contexts == null)
+                  throw new DeploymentException("Deployment context not found: " + deployment.getName());
+
                deployers.process(Collections.singletonList(context), null);
                contexts[i] = context;
             }
@@ -454,7 +458,7 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
 
          for(Deployment deployment : deployments)
          {
-            DeploymentContext context = getDeploymentContext(deployment.getName());
+            DeploymentContext context = getTopLevelDeploymentContext(deployment.getName());
             if (context != null)
             {
                try
@@ -488,7 +492,7 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
       List<Deployment> deployments = new ArrayList<Deployment>();
       for(String name : names)
       {
-         DeploymentContext context = getDeploymentContext(name);
+         DeploymentContext context = getTopLevelDeploymentContext(name);
          if (context != null)
             deployments.add(context.getDeployment());
          else if (log.isTraceEnabled())
@@ -696,7 +700,11 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
 
       DeploymentContext[] contexts = new DeploymentContext[names.length];
       for(int i = 0; i < names.length; i++)
-         contexts[i] = getDeploymentContext(names[i], true);
+      {
+         contexts[i] = getTopLevelDeploymentContext(names[i]);
+         if (contexts[i] == null)
+            throw new DeploymentException("Deployment context not found: " + names[i]);
+      }
 
       return contexts;
    }
