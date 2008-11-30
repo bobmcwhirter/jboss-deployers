@@ -140,20 +140,15 @@ public abstract class AbstractDeploymentClassLoaderPolicyModule extends ClassLoa
    }
 
    @Override
-   public void reset()
+   public void release()
    {
-      super.reset();
-      // TODO - JBDEPLOY-137, not the best fix
-      if (unit != null)
+      try
       {
-         try
-         {
-            determineContextName(unit, false);
-         }
-         finally
-         {
-            unit = null;
-         }
+         super.release();
+      }
+      finally
+      {
+         determineContextName(unit, false);
       }
    }
 }
