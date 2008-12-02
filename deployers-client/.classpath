@@ -7,15 +7,15 @@
   <classpathentry kind="var" path="M2_REPO/org/apache/ant/ant-junit/1.7.0/ant-junit-1.7.0.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/apache/ant/ant-launcher/1.7.0/ant-launcher-1.7.0.jar"/>
   <classpathentry kind="var" path="M2_REPO/sun-jaxb/jaxb-api/2.1.4/jaxb-api-2.1.4.jar" sourcepath="M2_REPO/sun-jaxb/jaxb-api/2.1.4/jaxb-api-2.1.4-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-common-core/2.2.9.GA/jboss-common-core-2.2.9.GA.jar" sourcepath="M2_REPO/org/jboss/jboss-common-core/2.2.9.GA/jboss-common-core-2.2.9.GA-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-common-core/2.2.9.GA/jboss-common-core-2.2.9.GA.jar"/>
   <classpathentry kind="src" path="/jboss-deployers-client-spi"/>
   <classpathentry kind="src" path="/jboss-deployers-core"/>
   <classpathentry kind="src" path="/jboss-deployers-core-spi"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/logging/jboss-logging-log4j/2.0.5.GA/jboss-logging-log4j-2.0.5.GA.jar" sourcepath="M2_REPO/org/jboss/logging/jboss-logging-log4j/2.0.5.GA/jboss-logging-log4j-2.0.5.GA-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/logging/jboss-logging-spi/2.0.5.GA/jboss-logging-spi-2.0.5.GA.jar" sourcepath="M2_REPO/org/jboss/logging/jboss-logging-spi/2.0.5.GA/jboss-logging-spi-2.0.5.GA-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/man/jboss-managed/2.0.0.CR4/jboss-managed-2.0.0.CR4.jar" sourcepath="M2_REPO/org/jboss/man/jboss-managed/2.0.0.CR4/jboss-managed-2.0.0.CR4-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/man/jboss-managed/2.0.0.GA/jboss-managed-2.0.0.GA.jar" sourcepath="M2_REPO/org/jboss/man/jboss-managed/2.0.0.GA/jboss-managed-2.0.0.GA-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-mdr/2.0.1.GA/jboss-mdr-2.0.1.GA.jar" sourcepath="M2_REPO/org/jboss/jboss-mdr/2.0.1.GA/jboss-mdr-2.0.1.GA-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/man/jboss-metatype/2.0.0.CR4/jboss-metatype-2.0.0.CR4.jar" sourcepath="M2_REPO/org/jboss/man/jboss-metatype/2.0.0.CR4/jboss-metatype-2.0.0.CR4-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/man/jboss-metatype/2.0.0.GA/jboss-metatype-2.0.0.GA.jar" sourcepath="M2_REPO/org/jboss/man/jboss-metatype/2.0.0.GA/jboss-metatype-2.0.0.GA-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/jboss/profiler/jvmti/jboss-profiler-jvmti/1.0.0.CR5/jboss-profiler-jvmti-1.0.0.CR5.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/jbossas/jboss-server-manager/0.1.1.GA/jboss-server-manager-0.1.1.GA.jar" sourcepath="M2_REPO/org/jboss/jbossas/jboss-server-manager/0.1.1.GA/jboss-server-manager-0.1.1.GA-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/test/jboss-test/1.1.1.GA/jboss-test-1.1.1.GA.jar" sourcepath="M2_REPO/org/jboss/test/jboss-test/1.1.1.GA/jboss-test-1.1.1.GA-sources.jar"/>
