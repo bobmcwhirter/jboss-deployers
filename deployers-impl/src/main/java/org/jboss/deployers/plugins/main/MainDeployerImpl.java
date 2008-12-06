@@ -75,7 +75,7 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
    private StructuralDeployers structuralDeployers;
 
    /** The ManagedDeploymentCreator plugin */
-   private ManagedDeploymentCreator mgtDeploymentCreator = null;
+   private ManagedDeploymentCreator mgtDeploymentCreator;
 
    /** The deployments by name */
    private Map<String, DeploymentContext> topLevelDeployments = new ConcurrentHashMap<String, DeploymentContext>();
@@ -161,11 +161,21 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
       structuralDeployers = deployers;
    }
 
+   /**
+    * Get managed deployment creator.
+    *
+    * @return the managed deployment creator
+    */
    public ManagedDeploymentCreator getMgtDeploymentCreator()
    {
       return mgtDeploymentCreator;
    }
 
+   /**
+    * Set managed deployment creator.
+    *
+    * @param mgtDeploymentCreator the managed deployment creator
+    */
    public void setMgtDeploymentCreator(ManagedDeploymentCreator mgtDeploymentCreator)
    {
       this.mgtDeploymentCreator = mgtDeploymentCreator;
@@ -226,16 +236,33 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
       return topLevelDeployments.get(name);
    }
 
+   // TODO - introduce some interface or push to MDStructure
+
+   /**
+    * Get all deployments.
+    *
+    * @return all deployments
+    */
    public Collection<DeploymentContext> getAll()
    {
       return Collections.unmodifiableCollection(allDeployments.values());
    }
 
+   /**
+    * Get errors.
+    *
+    * @return the errors
+    */
    public Collection<DeploymentContext> getErrors()
    {
       return Collections.unmodifiableCollection(errorDeployments.values());
    }
 
+   /**
+    * Get missing deployers deployments.
+    *
+    * @return the missing deployer deployments
+    */
    public Collection<Deployment> getMissingDeployer()
    {
       return Collections.unmodifiableCollection(missingDeployers.values());
@@ -757,6 +784,9 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
 
    public ManagedDeployment getManagedDeployment(String name) throws DeploymentException
    {
+      if (mgtDeploymentCreator == null)
+         throw new IllegalArgumentException("Null managed deployment creator.");
+
       DeploymentContext context = getDeploymentContext(name, true);
       Map<String, ManagedObject> rootMOs = getManagedObjects(context);
       ManagedDeployment root = mgtDeploymentCreator.build(context.getDeploymentUnit(), rootMOs, null);
@@ -829,6 +859,9 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
    protected void processManagedDeployment(DeploymentContext context, ManagedDeployment parent)
       throws DeploymentException
    {
+      if (mgtDeploymentCreator == null)
+         throw new IllegalArgumentException("Null managed deployment creator.");
+
       DeploymentUnit unit = context.getDeploymentUnit();
       Map<String, ManagedObject> MOs = getManagedObjects(context);
       ManagedDeployment md = mgtDeploymentCreator.build(unit, MOs, parent);
