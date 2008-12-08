@@ -117,4 +117,63 @@ public class DependenciesTestCase extends BootstrapDeployersTest
          undeploy(du);
       }
    }
+
+   public void testBeanRedeploy() throws Throwable
+   {
+      DeploymentUnit du = addDeployment("/dependency", "bean");
+      try
+      {
+         assertDeployment(du, new ControllerState("PreReal"));
+         DeploymentUnit tmDU = assertDeploy("/dependency", "support");
+         try
+         {
+            assertDeployment(du, ControllerState.INSTALLED);
+
+            undeploy(tmDU);
+
+            assertDeployment(du, new ControllerState("PreReal"));
+
+            tmDU = assertDeploy("/dependency", "support");
+
+            assertDeployment(du, ControllerState.INSTALLED);
+         }
+         finally
+         {
+            undeploy(tmDU);
+         }
+      }
+      finally
+      {
+         undeploy(du);
+      }
+   }
+
+   public void testModuleAndAliasRedeploy() throws Throwable
+   {
+      DeploymentUnit du = addDeployment("/dependency", "module");
+      try
+      {
+         assertDeployment(du, ControllerState.PRE_INSTALL);
+         DeploymentUnit aliasDU = assertDeploy("/dependency", "alias");
+         try
+         {
+            assertDeployment(aliasDU, ControllerState.INSTALLED);
+            assertDeployment(du, ControllerState.INSTALLED);
+
+            undeploy(aliasDU);
+            assertDeployment(du, ControllerState.PRE_INSTALL);
+
+            aliasDU = assertDeploy("/dependency", "alias");
+            assertDeployment(du, ControllerState.INSTALLED);            
+         }
+         finally
+         {
+            undeploy(aliasDU);
+         }
+      }
+      finally
+      {
+         undeploy(du);
+      }
+   }
 }
