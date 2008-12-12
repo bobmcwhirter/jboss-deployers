@@ -162,7 +162,7 @@ public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealD
    }
 
    /**
-    * Get the deployers location.
+    * Get the deployer's location.
     * Might be useful for integration url creation.
     *
     * @return the deployer's location
@@ -172,7 +172,7 @@ public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealD
       ProtectionDomain pd = getClass().getProtectionDomain();
       CodeSource cs = pd.getCodeSource();
       URL location = cs.getLocation();
-      return location.toString();
+      return location.toExternalForm();
    }
 
    /**
