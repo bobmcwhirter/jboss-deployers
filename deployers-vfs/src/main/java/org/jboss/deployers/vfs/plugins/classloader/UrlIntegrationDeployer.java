@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.security.ProtectionDomain;
+import java.security.CodeSource;
 
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
 import org.jboss.deployers.spi.DeploymentException;
@@ -121,7 +123,7 @@ public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealD
          {
             for (URL integrationURL : integrationURLs)
             {
-               VirtualFile integration = VFS.getRoot(integrationURL);
+               VirtualFile integration = VFS.getCachedFile(integrationURL);
                unit.addClassPath(integration);
                added.add(integration);
             }
@@ -148,7 +150,7 @@ public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealD
          {
             try
             {
-               VirtualFile integration = VFS.getRoot(integrationURL);
+               VirtualFile integration = VFS.getCachedFile(integrationURL);
                classPath.remove(integration);
             }
             catch (Throwable t)
@@ -157,6 +159,20 @@ public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealD
             }
          }
       }
+   }
+
+   /**
+    * Get the deployers location.
+    * Might be useful for integration url creation.
+    *
+    * @return the deployer's location
+    */
+   protected String getDeployerLocation()
+   {
+      ProtectionDomain pd = getClass().getProtectionDomain();
+      CodeSource cs = pd.getCodeSource();
+      URL location = cs.getLocation();
+      return location.toString();
    }
 
    /**
