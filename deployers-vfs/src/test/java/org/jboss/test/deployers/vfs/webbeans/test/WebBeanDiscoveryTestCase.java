@@ -65,12 +65,12 @@ public class WebBeanDiscoveryTestCase extends AbstractWebBeansTest
          assertNotNull(wbDiscovery);
 
          Set<String> expected = new HashSet<String>();
-         addExpectedClass(expected, "ejbs.jar");
-         addExpectedClass(expected, "ext.jar");
-         addExpectedClass(expected, "simple.jar");
-         addExpectedClass(expected, "ui.jar");
-         addExpectedClass(expected, "crm.jar");
-         addExpectedClass(expected, "simple.war", "/WEB-INF/web-beans.xml");
+         addExpectedResouorce(expected, "ejbs.jar");
+         addExpectedResouorce(expected, "ext.jar");
+         addExpectedResouorce(expected, "simple.jar");
+         addExpectedResouorce(expected, "ui.jar");
+         addExpectedResouorce(expected, "crm.jar");
+         addExpectedResource(expected, "simple.war", "/WEB-INF/web-beans.xml");
 
          for (URL url : wbDiscovery.discoverWebBeansXml())
          {
@@ -110,12 +110,12 @@ public class WebBeanDiscoveryTestCase extends AbstractWebBeansTest
       }
    }
 
-   private static void addExpectedClass(Set<String> expected, String unit)
+   private static void addExpectedResouorce(Set<String> expected, String unit)
    {
-      addExpectedClass(expected, unit, "/META-INF/web-beans.xml");
+      addExpectedResource(expected, unit, "/META-INF/web-beans.xml");
    }
 
-   private static void addExpectedClass(Set<String> expected, String unit, String suffix)
+   private static void addExpectedResource(Set<String> expected, String unit, String suffix)
    {
       expected.add(unit + suffix);
    }
