@@ -44,11 +44,7 @@
   <dependencies>
     <dependency>
       <groupId>org.jboss.deployers</groupId>
-      <artifactId>jboss-deployers-core-spi</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.deployers</groupId>
-      <artifactId>jboss-deployers-core</artifactId>
+      <artifactId>jboss-deployers-client</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jboss.deployers</groupId>
@@ -56,15 +52,11 @@
     </dependency>
     <dependency>
       <groupId>org.jboss.deployers</groupId>
-      <artifactId>jboss-deployers-client</artifactId>
+      <artifactId>jboss-deployers-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jboss.deployers</groupId>
-      <artifactId>jboss-deployers-structure-spi</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.deployers</groupId>
-      <artifactId>jboss-deployers-spi</artifactId>
+      <artifactId>jboss-deployers-core-spi</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jboss.deployers</groupId>
@@ -72,11 +64,20 @@
     </dependency>
     <dependency>
       <groupId>org.jboss.deployers</groupId>
-      <artifactId>jboss-deployers-vfs-spi</artifactId>
+      <artifactId>jboss-deployers-spi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.deployers</groupId>
+      <artifactId>jboss-deployers-structure-spi</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jboss.deployers</groupId>
       <artifactId>jboss-deployers-vfs</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.jboss.deployers</groupId>
+      <artifactId>jboss-deployers-vfs-spi</artifactId>
+    </dependency>
   </dependencies>
+  
 </project>
