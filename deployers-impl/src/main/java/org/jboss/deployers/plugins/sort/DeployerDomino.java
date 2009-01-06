@@ -45,6 +45,11 @@ public class DeployerDomino implements Domino<Set<String>>
       this.tail = new SetDots<String>(deployer.getOutputs());
    }
 
+   /**
+    * Get the underlying deployer.
+    *
+    * @return the deployer
+    */
    public Deployer getDeployer()
    {
       return deployer;

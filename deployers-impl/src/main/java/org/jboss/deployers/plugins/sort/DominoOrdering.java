@@ -47,6 +47,12 @@ public class DominoOrdering<T extends Domino<?>>
       this.message = message;
    }
 
+   /**
+    * Initialize transitions.
+    *
+    * @param dominoes all dominoes
+    * @param cause the possible cycle cause
+    */
    @SuppressWarnings("unchecked")
    protected void init(List<T> dominoes, Object cause)
    {
@@ -90,6 +96,13 @@ public class DominoOrdering<T extends Domino<?>>
       }
    }
 
+   /**
+    * Order dominoes.
+    *
+    * @param dominoes all dominoes
+    * @param cause the possible cycle cause
+    * @return ordered dominoes list
+    */
    public List<T> orderDominoes(List<T> dominoes, Object cause)
    {
       // prepare initial transitions
@@ -158,6 +171,9 @@ public class DominoOrdering<T extends Domino<?>>
       return -1;
    }
 
+   /**
+    * Fill transitions with name compare.
+    */
    protected void fillCompareNames()
    {
       for (int i = 0; i < size - 1; i++)
@@ -182,6 +198,11 @@ public class DominoOrdering<T extends Domino<?>>
       }
    }
 
+   /**
+    * Throw the cycle exception.
+    *
+    * @param cause the cycle cause
+    */
    protected void throwCycleException(Object cause)
    {
       StringBuilder builder = new StringBuilder();
@@ -191,6 +212,9 @@ public class DominoOrdering<T extends Domino<?>>
       throw new IllegalStateException(builder.toString());
    }
 
+   /**
+    * The index comparator.
+    */
    protected class IndexComparator implements Comparator<Integer>
    {
       public int compare(Integer i1, Integer i2)

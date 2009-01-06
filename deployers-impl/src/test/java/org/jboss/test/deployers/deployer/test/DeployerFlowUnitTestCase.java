@@ -797,4 +797,49 @@ public class DeployerFlowUnitTestCase extends AbstractDeployerTest
       assertEquals(6, deployer3.getUndeployOrder());
       assertEquals(5, deployer4.getUndeployOrder());
    }
+
+   public void testWebBeansOrder() throws Exception
+   {
+      DeployerClient main = createMainDeployer();
+
+      TestFlowDeployer mcfcld = new TestFlowDeployer("ManagedConnectionFactory");
+      mcfcld.setInputs("ManagedConnectionFactoryDeploymentGroup");
+      mcfcld.setOutputs("CLMD");
+      addDeployer(main, mcfcld);
+
+      TestFlowDeployer postJBWMD = new TestFlowDeployer("PostJBossWebMetadataDeployer");
+      postJBWMD.setInputs("JBWMD", "CLMD");
+      postJBWMD.setOutputs("JBWMD", "CLMD");
+      addDeployer(main, postJBWMD);
+
+      TestFlowDeployer postEJB = new TestFlowDeployer("PostEjbJar");
+      postEJB.setInputs("EJB");
+      postEJB.setOutputs("EJB");
+      addDeployer(main, postEJB);
+
+      TestFlowDeployer warCL = new TestFlowDeployer("WarClassLoaderDeployer");
+      warCL.setInputs("JBWMD", "CLMD");
+      warCL.setOutputs("CLMD");
+      addDeployer(main, warCL);
+
+      TestFlowDeployer service = new TestFlowDeployer("ServiceCL");
+      service.setInputs("ServiceDeployment");
+      service.setOutputs("CLMD");
+      addDeployer(main, service);
+
+      TestFlowDeployer legacy = new TestFlowDeployer("Legacy");
+      legacy.setInputs("JBWMD", "WMD");
+      legacy.setOutputs("JBWMD");
+      addDeployer(main, legacy);
+
+      TestFlowDeployer cluster = new TestFlowDeployer("Cluster");
+      cluster.setInputs("JBWMD");
+      cluster.setOutputs("JBWMD");
+      addDeployer(main, cluster);
+
+      TestFlowDeployer postWMD = new TestFlowDeployer("PostWebMetadataDeployer");
+      postWMD.setInputs("JBWMD");
+      postWMD.setOutputs("JBWMD");
+      addDeployer(main, postWMD);
+   }
 }
