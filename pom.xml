@@ -6,7 +6,7 @@
     <version>4</version>
   </parent>
   <groupId>org.jboss.deployers</groupId>
-  <artifactId>jboss-deployers</artifactId>
+  <artifactId>jboss-deployers-parent</artifactId>
   <version>2.2.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>JBoss Deployers Parent POM</name>
@@ -82,28 +82,10 @@
     <pluginManagement>
       <plugins>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-assembly-plugin</artifactId>
-          <executions>
-            <execution>
-              <id>make-assembly</id>
-              <phase>package</phase>
-              <goals>
-                <goal>attached</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
           <artifactId>maven-idea-plugin</artifactId>
           <configuration>
             <downloadSources>true</downloadSources>
           </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>2.2</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
