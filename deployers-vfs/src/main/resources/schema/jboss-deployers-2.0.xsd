@@ -25,7 +25,7 @@
       <xsd:annotation>
          <xsd:documentation>
             <![CDATA[
-            The root classloader element
+            The root parser type element
             ]]>
          </xsd:documentation>
       </xsd:annotation>
