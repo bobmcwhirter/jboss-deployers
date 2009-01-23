@@ -33,6 +33,7 @@ import org.jboss.deployers.spi.structure.ClassPathEntry;
 import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.deployers.spi.structure.StructureMetaData;
 import org.jboss.deployers.spi.structure.StructureMetaDataFactory;
+import org.jboss.deployers.spi.structure.ModificationType;
 import org.jboss.deployers.vfs.spi.structure.CandidateAnnotationsCallback;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
 import org.jboss.deployers.vfs.spi.structure.StructureDeployer;
@@ -525,7 +526,14 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
     */
    protected void applyContextInfo(StructureContext context, ContextInfo result)
    {
-      if (result != null && contextInfoOrder != null)
-         result.setRelativeOrder(contextInfoOrder);
+      if (result != null)
+      {
+         if (contextInfoOrder != null)
+            result.setRelativeOrder(contextInfoOrder);
+
+         ModificationType modificationType = context.getModificationType();
+         if (modificationType != null && result.getModificationType() == null)
+            result.setModificationType(modificationType);
+      }
    }
 }
