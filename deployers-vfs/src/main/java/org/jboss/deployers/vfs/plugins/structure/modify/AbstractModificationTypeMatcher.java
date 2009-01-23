@@ -21,7 +21,9 @@
  */
 package org.jboss.deployers.vfs.plugins.structure.modify;
 
+import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.deployers.spi.structure.ModificationType;
+import org.jboss.deployers.spi.structure.StructureMetaData;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
 import org.jboss.logging.Logger;
 
@@ -42,11 +44,19 @@ public abstract class AbstractModificationTypeMatcher implements ModificationTyp
       boolean result = isModificationDetermined(structureContext);
       if (result)
       {
-         StructureContext context = structureContext;
          if (applyModificationToTop && structureContext.isTopLevel() == false)
-            context = getTopStructureContext(context);
-
-         context.setModificationType(modificationType);
+         {
+            // we need to modify an existing ContextInfo
+            StructureContext topSC = getTopStructureContext(structureContext);
+            StructureMetaData topSMD = topSC.getMetaData();
+            ContextInfo contextInfo = topSMD.getContext("");
+            contextInfo.setModificationType(modificationType);
+         }
+         else
+         {
+            // prepare the info for the actual creation
+            structureContext.setModificationType(modificationType);
+         }
       }
       return result;
    }
