@@ -235,6 +235,10 @@ public class FileMatcherTestCase extends BaseTestCase
             {
                return null;
             }
+
+            public void cleanup()
+            {
+            }
          };
       }
 

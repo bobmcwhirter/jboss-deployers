@@ -127,7 +127,7 @@ public class VFSStructureBuilderUnitTestCase extends StructureBuilderTest
       List<VirtualFile> classPath = context.getClassPath();
       
       if (classPathEntries == null)
-         assertNull(classPath);
+         assertEmpty(classPath);
       else
       {
          int cpeSize = classPathEntries.size();

@@ -30,6 +30,7 @@ import org.jboss.virtual.VirtualFile;
  * VFSDeploymentUnit.
  * 
  * @author <a href="adrian@jboss.org">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public interface VFSDeploymentUnit extends DeploymentUnit
@@ -54,6 +55,26 @@ public interface VFSDeploymentUnit extends DeploymentUnit
     */
    List<VirtualFile> getMetaDataFiles(String name, String suffix);
    
+   /**
+    * Prepend metadata file locations.
+    *
+    * @param files the files
+    */
+   void prependMetaDataFile(VirtualFile... files);
+
+   /**
+    * Append metadata file locations.
+    *
+    * @param files the files
+    */
+   void appendMetaDataFile(VirtualFile... files);
+
+   /**
+    * Remove metadata file locations.
+    * @param files the files
+    */
+   void removeMetaDataFile(VirtualFile... files);
+
    /**
     * Get a resource loader
     * 
@@ -87,7 +108,9 @@ public interface VFSDeploymentUnit extends DeploymentUnit
     * Set the classpath
     * 
     * @param classPath the classpath
+    * @deprecated user view should not have setters
     */
+   @Deprecated
    void setClassPath(List<VirtualFile> classPath);
    
    /**
@@ -131,7 +154,14 @@ public interface VFSDeploymentUnit extends DeploymentUnit
     * @param files a virtual file
     */
    void addClassPath(List<VirtualFile> files);
-   
+
+   /**
+    * Remove classpath files.
+    *
+    * @param files the files
+    */
+   void removeClassPath(VirtualFile... files);
+
    /**
     * Get the top leve deployment unit
     * 

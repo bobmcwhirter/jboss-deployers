@@ -205,6 +205,10 @@ public class DeployersAltDDTestCase extends BaseTestCase
          {
             return null;
          }
+
+         public void cleanup()
+         {
+         }
       });
       return altDD;
    }

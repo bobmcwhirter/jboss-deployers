@@ -186,6 +186,10 @@ public class MyVirtualFile extends VirtualFile
          {
             return null;
          }
+
+         public void cleanup()
+         {
+         }
       };
    }
 }

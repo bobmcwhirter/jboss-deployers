@@ -123,7 +123,7 @@ public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealD
          {
             for (URL integrationURL : integrationURLs)
             {
-               VirtualFile integration = VFS.getCachedFile(integrationURL);
+               VirtualFile integration = VFS.getRoot(integrationURL);
                unit.addClassPath(integration);
                added.add(integration);
             }
@@ -150,7 +150,7 @@ public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealD
          {
             try
             {
-               VirtualFile integration = VFS.getCachedFile(integrationURL);
+               VirtualFile integration = VFS.getRoot(integrationURL);
                classPath.remove(integration);
             }
             catch (Throwable t)

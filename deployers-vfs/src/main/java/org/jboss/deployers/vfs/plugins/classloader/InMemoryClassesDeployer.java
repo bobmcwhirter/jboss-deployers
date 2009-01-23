@@ -22,7 +22,6 @@
 package org.jboss.deployers.vfs.plugins.classloader;
 
 import java.net.URL;
-import java.util.List;
 
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
 import org.jboss.deployers.spi.DeploymentException;
@@ -100,12 +99,7 @@ public class InMemoryClassesDeployer extends AbstractVFSRealDeployer
          VirtualFile classes = unit.removeAttachment(DYNAMIC_CLASS_KEY, VirtualFile.class);
          if (classes != null)
          {
-            List<VirtualFile> classPath = unit.getClassPath();
-            if (classPath != null)
-            {
-               classPath.remove(classes);
-               unit.setClassPath(classPath);
-            }
+            unit.removeClassPath(classes);
          }
       }
       finally

@@ -33,6 +33,7 @@ import org.jboss.virtual.VirtualFile;
  * AbstractVFSDeploymentUnit.
  * 
  * @author <a href="adrian@jboss.org">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public class AbstractVFSDeploymentUnit extends AbstractDeploymentUnit implements VFSDeploymentUnit
@@ -66,6 +67,21 @@ public class AbstractVFSDeploymentUnit extends AbstractDeploymentUnit implements
    public List<VirtualFile> getMetaDataFiles(String name, String suffix)
    {
       return getDeploymentContext().getMetaDataFiles(name, suffix);
+   }
+
+   public void prependMetaDataFile(VirtualFile... files)
+   {
+      getDeploymentContext().prependMetaDataFile(files);
+   }
+
+   public void appendMetaDataFile(VirtualFile... files)
+   {
+      getDeploymentContext().appendMetaDataFile(files);
+   }
+
+   public void removeMetaDataFile(VirtualFile... files)
+   {
+      getDeploymentContext().removeMetaDataFile(files);
    }
 
    @Override
@@ -122,6 +138,11 @@ public class AbstractVFSDeploymentUnit extends AbstractDeploymentUnit implements
    public void addClassPath(VirtualFile... files)
    {
       getDeploymentContext().appendClassPath(files);
+   }
+
+   public void removeClassPath(VirtualFile... files)
+   {
+      getDeploymentContext().removeClassPath(files);
    }
 
    @Override

@@ -25,9 +25,9 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Arrays;
 
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.structure.spi.helpers.AbstractDeploymentContext;
@@ -152,12 +152,26 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
       }
    }
 
+   /**
+    * Get mutable metadata locations.
+    *
+    * @return the mutable metadata locations
+    */
+   protected List<VirtualFile> getMutableMetaDataLocations()
+   {
+      return metaDataLocations;
+   }
+
    public List<VirtualFile> getMetaDataLocations()
    {
-      if (metaDataLocations == null)
+      if (metaDataLocations == null || metaDataLocations.isEmpty())
+      {
          return Collections.emptyList();
-
-      return metaDataLocations;
+      }
+      else
+      {
+         return Collections.unmodifiableList(metaDataLocations);
+      }
    }
 
    public void setMetaDataLocations(List<VirtualFile> locations)
@@ -272,14 +286,79 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
       }
    }
 
+   public void prependMetaDataFile(VirtualFile... files)
+   {
+      if (files == null)
+         throw new IllegalArgumentException("Null files");
+
+      List<VirtualFile> metadataLocations = getMutableMetaDataLocations();
+      if (metadataLocations == null)
+         metadataLocations = new ArrayList<VirtualFile>();
+
+      for (int i = files.length-1; i >= 0; --i)
+      {
+         VirtualFile file = files[i];
+         if (file == null)
+            throw new IllegalArgumentException("Null virtual file in " + Arrays.toString(files));
+         metadataLocations.add(0, file);
+      }
+      setMetaDataLocations(metadataLocations);
+   }
+
+   public void appendMetaDataFile(VirtualFile... files)
+   {
+      if (files == null)
+         throw new IllegalArgumentException("Null files");
+
+      List<VirtualFile> metaDataLocations = getMutableMetaDataLocations();
+      if (metaDataLocations == null)
+         metaDataLocations = new ArrayList<VirtualFile>();
+
+      for (VirtualFile file : files)
+      {
+         if (file == null)
+            throw new IllegalArgumentException("Null virtual file in " + Arrays.toString(files));
+         metaDataLocations.add(file);
+      }
+      setMetaDataLocations(metaDataLocations);
+   }
+
+   public void removeMetaDataFile(VirtualFile... files)
+   {
+      if (files == null || files.length == 0)
+         return;
+
+      for (VirtualFile file : files)
+      {
+         metaDataLocations.remove(file);
+      }
+   }
+
    public VirtualFile getFile(String name)
    {
       return getResourceLoader().getFile(name);
    }
 
-   public List<VirtualFile> getClassPath()
+   /**
+    * Get mutable classpath.
+    *
+    * @return the mutable classpath
+    */
+   protected List<VirtualFile> getMutableClassPath()
    {
       return classPath;
+   }
+
+   public List<VirtualFile> getClassPath()
+   {
+      if (classPath == null || classPath.isEmpty())
+      {
+         return Collections.emptyList();
+      }
+      else
+      {
+         return Collections.unmodifiableList(classPath);
+      }
    }
 
    public void setClassPath(List<VirtualFile> paths)
@@ -294,7 +373,7 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
       if (files == null)
          throw new IllegalArgumentException("Null files");
 
-      List<VirtualFile> classPath = getClassPath();
+      List<VirtualFile> classPath = getMutableClassPath();
       if (classPath == null)
          classPath = new ArrayList<VirtualFile>();
 
@@ -312,7 +391,7 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
       if (files == null)
          throw new IllegalArgumentException("Null files");
 
-      List<VirtualFile> classPath = getClassPath();
+      List<VirtualFile> classPath = getMutableClassPath();
       if (classPath == null)
          classPath = new ArrayList<VirtualFile>();
 
@@ -331,7 +410,7 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
       if (files == null)
          throw new IllegalArgumentException("Null files");
 
-      List<VirtualFile> classPath = getClassPath();
+      List<VirtualFile> classPath = getMutableClassPath();
       if (classPath == null)
          classPath = new ArrayList<VirtualFile>();
 
@@ -350,7 +429,7 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
       if (files == null)
          throw new IllegalArgumentException("Null files");
 
-      List<VirtualFile> classPath = getClassPath();
+      List<VirtualFile> classPath = getMutableClassPath();
       if (classPath == null)
          classPath = new ArrayList<VirtualFile>();
 
@@ -361,6 +440,17 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
          classPath.add(file);
       }
       setClassPath(classPath);
+   }
+
+   public void removeClassPath(VirtualFile... files)
+   {
+      if (files == null || files.length == 0)
+         return;
+
+      for (VirtualFile file : files)
+      {
+         classPath.remove(file);
+      }
    }
 
    @Override
@@ -384,6 +474,19 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
       return new AbstractVFSDeploymentUnit(this);
    }
 
+   @Override
+   public void cleanup()
+   {
+      try
+      {
+         root.cleanup();
+      }
+      finally
+      {
+         super.cleanup();
+      }
+   }
+   
    @SuppressWarnings("unchecked")
    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException
    {

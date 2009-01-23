@@ -30,6 +30,7 @@ import org.jboss.virtual.VirtualFile;
  * VFSDeploymentContext.
  * 
  * @author <a href="adrian@jboss.org">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public interface VFSDeploymentContext extends DeploymentContext
@@ -82,6 +83,26 @@ public interface VFSDeploymentContext extends DeploymentContext
    List<VirtualFile> getMetaDataFiles(String name, String suffix);
 
    /**
+    * Prepend metadata file locations.
+    * 
+    * @param files the files
+    */
+   void prependMetaDataFile(VirtualFile... files);
+
+   /**
+    * Append metadata file locations.
+    *
+    * @param files the files
+    */
+   void appendMetaDataFile(VirtualFile... files);
+
+   /**
+    * Remove metadata file locations.
+    * @param files the files
+    */
+   void removeMetaDataFile(VirtualFile... files);
+
+   /**
     * Gets a file from this deployment
     * 
     * @param name the name to exactly match
@@ -131,6 +152,13 @@ public interface VFSDeploymentContext extends DeploymentContext
     * @param files a virtual file
     */
    void appendClassPath(List<VirtualFile> files);
+
+   /**
+    * Remove classpath files.
+    *
+    * @param files the files
+    */
+   void removeClassPath(VirtualFile... files);
 
    /**
     * Get the top level deployment context
