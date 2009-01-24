@@ -69,19 +69,19 @@ public class AbstractVFSDeploymentUnit extends AbstractDeploymentUnit implements
       return getDeploymentContext().getMetaDataFiles(name, suffix);
    }
 
-   public void prependMetaDataFile(VirtualFile... files)
+   public void prependMetaDataLocation(VirtualFile... locations)
    {
-      getDeploymentContext().prependMetaDataFile(files);
+      getDeploymentContext().prependMetaDataLocation(locations);
    }
 
-   public void appendMetaDataFile(VirtualFile... files)
+   public void appendMetaDataLocation(VirtualFile... locations)
    {
-      getDeploymentContext().appendMetaDataFile(files);
+      getDeploymentContext().appendMetaDataLocation(locations);
    }
 
-   public void removeMetaDataFile(VirtualFile... files)
+   public void removeMetaDataLocation(VirtualFile... locations)
    {
-      getDeploymentContext().removeMetaDataFile(files);
+      getDeploymentContext().removeMetaDataLocation(locations);
    }
 
    @Override

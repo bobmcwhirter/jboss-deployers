@@ -286,51 +286,51 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
       }
    }
 
-   public void prependMetaDataFile(VirtualFile... files)
+   public void prependMetaDataLocation(VirtualFile... locations)
    {
-      if (files == null)
-         throw new IllegalArgumentException("Null files");
+      if (locations == null)
+         throw new IllegalArgumentException("Null locations");
 
       List<VirtualFile> metadataLocations = getMutableMetaDataLocations();
       if (metadataLocations == null)
          metadataLocations = new ArrayList<VirtualFile>();
 
-      for (int i = files.length-1; i >= 0; --i)
+      for (int i = locations.length-1; i >= 0; --i)
       {
-         VirtualFile file = files[i];
-         if (file == null)
-            throw new IllegalArgumentException("Null virtual file in " + Arrays.toString(files));
-         metadataLocations.add(0, file);
+         VirtualFile location = locations[i];
+         if (location == null)
+            throw new IllegalArgumentException("Null virtual file in " + Arrays.toString(locations));
+         metadataLocations.add(0, location);
       }
       setMetaDataLocations(metadataLocations);
    }
 
-   public void appendMetaDataFile(VirtualFile... files)
+   public void appendMetaDataLocation(VirtualFile... locations)
    {
-      if (files == null)
-         throw new IllegalArgumentException("Null files");
+      if (locations == null)
+         throw new IllegalArgumentException("Null location");
 
       List<VirtualFile> metaDataLocations = getMutableMetaDataLocations();
       if (metaDataLocations == null)
          metaDataLocations = new ArrayList<VirtualFile>();
 
-      for (VirtualFile file : files)
+      for (VirtualFile location : locations)
       {
-         if (file == null)
-            throw new IllegalArgumentException("Null virtual file in " + Arrays.toString(files));
-         metaDataLocations.add(file);
+         if (location == null)
+            throw new IllegalArgumentException("Null virtual file in " + Arrays.toString(locations));
+         metaDataLocations.add(location);
       }
       setMetaDataLocations(metaDataLocations);
    }
 
-   public void removeMetaDataFile(VirtualFile... files)
+   public void removeMetaDataLocation(VirtualFile... locations)
    {
-      if (files == null || files.length == 0)
+      if (locations == null || locations.length == 0)
          return;
 
-      for (VirtualFile file : files)
+      for (VirtualFile location : locations)
       {
-         metaDataLocations.remove(file);
+         metaDataLocations.remove(location);
       }
    }
 

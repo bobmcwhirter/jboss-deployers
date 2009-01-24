@@ -58,22 +58,23 @@ public interface VFSDeploymentUnit extends DeploymentUnit
    /**
     * Prepend metadata file locations.
     *
-    * @param files the files
+    * @param locations the locations
     */
-   void prependMetaDataFile(VirtualFile... files);
+   void prependMetaDataLocation(VirtualFile... locations);
 
    /**
     * Append metadata file locations.
     *
-    * @param files the files
+    * @param locations the locations
     */
-   void appendMetaDataFile(VirtualFile... files);
+   void appendMetaDataLocation(VirtualFile... locations);
 
    /**
     * Remove metadata file locations.
-    * @param files the files
+    *
+    * @param locations the locations
     */
-   void removeMetaDataFile(VirtualFile... files);
+   void removeMetaDataLocation(VirtualFile... locations);
 
    /**
     * Get a resource loader
