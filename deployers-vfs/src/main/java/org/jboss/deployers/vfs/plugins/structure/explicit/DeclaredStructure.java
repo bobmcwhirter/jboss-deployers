@@ -64,7 +64,9 @@ public class DeclaredStructure extends AbstractVFSStructureDeployer
                VirtualFile jbossStructure = file.getChild("META-INF/jboss-structure.xml");
                if (jbossStructure != null)
                {
-                  log.trace("... context has a META-INF/jboss-structure.xml");
+                  if (trace)
+                     log.trace("... context has a META-INF/jboss-structure.xml");
+
                   URL url = jbossStructure.toURL();
                   UnmarshallerFactory factory = UnmarshallerFactory.newInstance();
                   Unmarshaller unmarshaller = factory.newUnmarshaller();
