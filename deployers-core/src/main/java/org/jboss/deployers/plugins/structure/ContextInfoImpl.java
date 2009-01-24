@@ -267,6 +267,8 @@ public class ContextInfoImpl extends PredeterminedManagedObjectAttachmentsImpl
          builder.append(" relativeOrder=").append(getRelativeOrder());
       if (comparatorClassName != null)
          builder.append(" comparator=").append(getComparatorClassName());
+      if (modificationType != null)
+         builder.append(" modification=").append(modificationType);
    }
    
    @Override

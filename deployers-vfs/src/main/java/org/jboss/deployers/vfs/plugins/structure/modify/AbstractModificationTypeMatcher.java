@@ -50,7 +50,14 @@ public abstract class AbstractModificationTypeMatcher implements ModificationTyp
             StructureContext topSC = getTopStructureContext(structureContext);
             StructureMetaData topSMD = topSC.getMetaData();
             ContextInfo contextInfo = topSMD.getContext("");
-            contextInfo.setModificationType(modificationType);
+            if (contextInfo.getModificationType() != null)
+            {
+               log.debug("Ignoring modification type change, already set: " + contextInfo);
+            }
+            else
+            {
+               contextInfo.setModificationType(modificationType);
+            }
          }
          else
          {

@@ -532,8 +532,17 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
             result.setRelativeOrder(contextInfoOrder);
 
          ModificationType modificationType = context.getModificationType();
-         if (modificationType != null && result.getModificationType() == null)
-            result.setModificationType(modificationType);
+         if (modificationType != null)
+         {
+            if (result.getModificationType() != null)
+            {
+               log.debug("Ignoring modification type change, already set: " + result);
+            }
+            else
+            {
+               result.setModificationType(modificationType);
+            }
+         }
       }
    }
 }
