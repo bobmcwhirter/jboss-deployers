@@ -78,7 +78,8 @@ public class ModificationTypeStructureProcessor implements StructureProcessor
     */
    protected void checkForModification(VirtualFile root, StructureMetaData structureMetaData)
    {
-      if (structureMetaData.getContext("") == null)
+      ContextInfo contex = structureMetaData.getContext("");
+      if (contex == null || contex.getModificationType() != null)
          return;
 
       if (matchers != null && matchers.isEmpty() == false)
@@ -101,7 +102,7 @@ public class ModificationTypeStructureProcessor implements StructureProcessor
     */
    protected void checkForModification(VirtualFile root, ContextInfo contextInfo)
    {
-      if (root == null)
+      if (root == null || contextInfo == null || contextInfo.getModificationType() != null)
          return;
 
       if (matchers != null && matchers.isEmpty() == false)

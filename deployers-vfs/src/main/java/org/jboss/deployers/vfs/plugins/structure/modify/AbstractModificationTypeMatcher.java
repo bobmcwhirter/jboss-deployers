@@ -44,9 +44,6 @@ public abstract class AbstractModificationTypeMatcher implements ModificationTyp
    public boolean determineModification(VirtualFile root, StructureMetaData structureMetaData)
    {
       ContextInfo contextInfo = structureMetaData.getContext("");
-      if (contextInfo.getModificationType() != null)
-         return true;
-
       boolean result = isModificationDetermined(root, contextInfo);
       if (result)
       {
@@ -87,9 +84,6 @@ public abstract class AbstractModificationTypeMatcher implements ModificationTyp
 
    public boolean determineModification(VirtualFile root, ContextInfo contextInfo)
    {
-      if (contextInfo.getModificationType() != null)
-         return true;
-
       boolean result = isModificationDetermined(root, contextInfo);
       if (result)
       {
