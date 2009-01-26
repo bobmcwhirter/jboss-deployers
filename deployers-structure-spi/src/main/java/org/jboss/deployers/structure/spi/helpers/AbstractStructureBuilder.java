@@ -290,11 +290,11 @@ public class AbstractStructureBuilder implements StructureBuilder
    }
 
    /**
-    * Set context info processor.
+    * Set structure processor.
     *
     * @param structureProcessor the context info processor
     */
-   public void setContextInfoProcessor(StructureProcessor structureProcessor)
+   public void setStructureProcessor(StructureProcessor structureProcessor)
    {
       this.structureProcessor = structureProcessor;
    }
@@ -302,9 +302,9 @@ public class AbstractStructureBuilder implements StructureBuilder
    /**
     * Get the context info processor.
     *
-    * @return the context info processor
+    * @return the structure processor
     */
-   protected StructureProcessor getContextInfoProcessor()
+   protected StructureProcessor getStructureProcessor()
    {
       return structureProcessor;
    }

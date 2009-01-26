@@ -39,16 +39,22 @@ public abstract class AbstractModificationTypeMatcher implements ModificationTyp
    protected Logger log = Logger.getLogger(getClass());
 
    private boolean checkChildren;
+   private boolean topLevelOnly;
+   private boolean childrenOnly;
+
    private ModificationType modificationType;
 
    public boolean determineModification(VirtualFile root, StructureMetaData structureMetaData)
    {
       ContextInfo contextInfo = structureMetaData.getContext("");
-      boolean result = isModificationDetermined(root, contextInfo);
-      if (result)
+      if (childrenOnly == false)
       {
-         contextInfo.setModificationType(modificationType);
-         return true;
+         boolean result = isModificationDetermined(root, contextInfo);
+         if (result)
+         {
+            contextInfo.setModificationType(modificationType);
+            return true;
+         }
       }
 
       if (checkChildren)
@@ -84,10 +90,14 @@ public abstract class AbstractModificationTypeMatcher implements ModificationTyp
 
    public boolean determineModification(VirtualFile root, ContextInfo contextInfo)
    {
-      boolean result = isModificationDetermined(root, contextInfo);
-      if (result)
+      boolean result = false;
+      if (topLevelOnly == false)
       {
-         contextInfo.setModificationType(modificationType);         
+         result = isModificationDetermined(root, contextInfo);
+         if (result)
+         {
+            contextInfo.setModificationType(modificationType);
+         }
       }
       return result;
    }
@@ -109,6 +119,26 @@ public abstract class AbstractModificationTypeMatcher implements ModificationTyp
    public void setCheckChildren(boolean checkChildren)
    {
       this.checkChildren = checkChildren;
+   }
+
+   /**
+    * Is this matcher top level only.
+    *
+    * @param topLevelOnly the top level only flag
+    */
+   public void setTopLevelOnly(boolean topLevelOnly)
+   {
+      this.topLevelOnly = topLevelOnly;
+   }
+
+   /**
+    * Is this matcher children only.
+    *
+    * @param childrenOnly the children only flag
+    */
+   public void setChildrenOnly(boolean childrenOnly)
+   {
+      this.childrenOnly = childrenOnly;
    }
 
    /**
