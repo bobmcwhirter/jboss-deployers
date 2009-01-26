@@ -35,5 +35,6 @@ public class TempTopModificationTypeMatcher extends FileModificationTypeMatcher
       super(paths);
       setCheckChildren(true);
       setModificationType(ModificationType.TEMP);
+      setTopLevelOnly(true);
    }
 }

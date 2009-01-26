@@ -31,11 +31,12 @@ import org.jboss.deployers.plugins.main.MainDeployerImpl;
 import org.jboss.deployers.structure.spi.DeploymentContext;
 import org.jboss.deployers.structure.spi.StructureProcessor;
 import org.jboss.deployers.vfs.plugins.structure.jar.JARStructure;
+import org.jboss.deployers.vfs.plugins.structure.modify.FileModificationTypeMatcher;
 import org.jboss.deployers.vfs.plugins.structure.modify.ModificationTypeMatcher;
 import org.jboss.deployers.vfs.plugins.structure.modify.ModificationTypeStructureProcessor;
-import org.jboss.deployers.vfs.plugins.structure.modify.TempTopModificationTypeMatcher;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
+import org.jboss.deployers.spi.structure.ModificationType;
 import org.jboss.virtual.VFSUtils;
 import org.jboss.virtual.VirtualFile;
 
@@ -75,7 +76,8 @@ public class VFSStructureProcessorUnitTestCase extends StructureProcessorUnitTes
          boolean childrenOnly,
          String... paths)
    {
-      TempTopModificationTypeMatcher matcher = new TempTopModificationTypeMatcher(paths);
+      FileModificationTypeMatcher matcher = new FileModificationTypeMatcher(paths);
+      matcher.setModificationType(ModificationType.TEMP);
       matcher.setMetadataOnly(metadataOnly);
       matcher.setCheckChildren(checkChildren);
       matcher.setTopLevelOnly(topLevelOnly);
