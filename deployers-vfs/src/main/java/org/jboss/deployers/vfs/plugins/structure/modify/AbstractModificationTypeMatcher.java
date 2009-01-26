@@ -21,11 +21,13 @@
  */
 package org.jboss.deployers.vfs.plugins.structure.modify;
 
+import java.util.List;
+
 import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.deployers.spi.structure.ModificationType;
 import org.jboss.deployers.spi.structure.StructureMetaData;
-import org.jboss.deployers.vfs.spi.structure.StructureContext;
 import org.jboss.logging.Logger;
+import org.jboss.virtual.VirtualFile;
 
 /**
  * Abstract modification type matcher.
@@ -35,69 +37,84 @@ import org.jboss.logging.Logger;
 public abstract class AbstractModificationTypeMatcher implements ModificationTypeMatcher
 {
    protected Logger log = Logger.getLogger(getClass());
-   
-   private boolean applyModificationToTop;
+
+   private boolean checkChildren;
    private ModificationType modificationType;
 
-   public boolean determineModification(StructureContext structureContext)
+   public boolean determineModification(VirtualFile root, StructureMetaData structureMetaData)
    {
-      boolean result = isModificationDetermined(structureContext);
+      ContextInfo contextInfo = structureMetaData.getContext("");
+      if (contextInfo.getModificationType() != null)
+         return true;
+
+      boolean result = isModificationDetermined(root, contextInfo);
       if (result)
       {
-         if (applyModificationToTop && structureContext.isTopLevel() == false)
+         contextInfo.setModificationType(modificationType);
+         return true;
+      }
+
+      if (checkChildren)
+      {
+         List<ContextInfo> contexts = structureMetaData.getContexts();
+         if (contexts != null && contexts.isEmpty() == false)
          {
-            // we need to modify an existing ContextInfo
-            StructureContext topSC = getTopStructureContext(structureContext);
-            StructureMetaData topSMD = topSC.getMetaData();
-            ContextInfo contextInfo = topSMD.getContext("");
-            if (contextInfo.getModificationType() != null)
+            for (ContextInfo child : contexts)
             {
-               log.debug("Ignoring modification type change, already set: " + contextInfo);
-            }
-            else
-            {
-               contextInfo.setModificationType(modificationType);
+               String path = child.getPath();
+               // Only process the child contexts
+               if ("".equals(path) == false)
+               {
+                  try
+                  {
+                     VirtualFile file = root.getChild(path);
+                     if (file != null && isModificationDetermined(file, child))
+                     {
+                        contextInfo.setModificationType(modificationType);
+                        return true;
+                     }
+                  }
+                  catch (Exception e)
+                  {
+                     log.debug("Exception checking child context (" + child + ") for modification, cause: " + e);
+                  }
+               }
             }
          }
-         else
-         {
-            // prepare the info for the actual creation
-            structureContext.setModificationType(modificationType);
-         }
+      }
+      return false;
+   }
+
+   public boolean determineModification(VirtualFile root, ContextInfo contextInfo)
+   {
+      if (contextInfo.getModificationType() != null)
+         return true;
+
+      boolean result = isModificationDetermined(root, contextInfo);
+      if (result)
+      {
+         contextInfo.setModificationType(modificationType);         
       }
       return result;
    }
 
    /**
-    * Do we have a modification match.
+    * Is modification determined.
     *
-    * @param structureContext the structure context
-    * @return true if we should apply the modification
+    * @param file the file
+    * @param contextInfo the context info
+    * @return true if we should apply modification type, false otherwise
     */
-   protected abstract boolean isModificationDetermined(StructureContext structureContext);
-
-   /**
-    * Get top structure context.
-    *
-    * @param context the current structure context
-    * @return the top structure context
-    */
-   protected StructureContext getTopStructureContext(StructureContext context)
-   {
-      while (context.getParentContext() != null)
-         context = context.getParentContext();
-
-      return context;
-   }
+   protected abstract boolean isModificationDetermined(VirtualFile file, ContextInfo contextInfo);
 
    /**
     * Do we apply modification to the top structure context.
     *
-    * @param applyModificationToTop the apply to top flag
+    * @param checkChildren the apply to top flag
     */
-   public void setApplyModificationToTop(boolean applyModificationToTop)
+   public void setCheckChildren(boolean checkChildren)
    {
-      this.applyModificationToTop = applyModificationToTop;
+      this.checkChildren = checkChildren;
    }
 
    /**

@@ -21,7 +21,11 @@
  */
 package org.jboss.deployers.vfs.plugins.structure.modify;
 
-import org.jboss.deployers.vfs.spi.structure.StructureContext;
+import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
+
+import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.virtual.VirtualFile;
 
 /**
@@ -32,6 +36,7 @@ import org.jboss.virtual.VirtualFile;
 public class FileModificationTypeMatcher extends AbstractModificationTypeMatcher
 {
    private String[] paths;
+   private boolean metadataOnly;
 
    public FileModificationTypeMatcher(String... paths)
    {
@@ -41,32 +46,73 @@ public class FileModificationTypeMatcher extends AbstractModificationTypeMatcher
       this.paths = paths;
    }
 
-   /**
-    * Get the starting file.
-    *
-    * @param structureContext the structure context
-    * @return the startting file; where do we start checking for paths
-    */
-   protected VirtualFile getStartingFile(StructureContext structureContext)
+   protected boolean isModificationDetermined(VirtualFile root, ContextInfo contextInfo)
    {
-      return structureContext.getFile();
-   }
-
-   protected boolean isModificationDetermined(StructureContext structureContext)
-   {
-      VirtualFile startingFile = getStartingFile(structureContext);
       for (String path : paths)
       {
-         try
+         for (VirtualFile file : getStartingFiles(root, contextInfo))
          {
-            if (startingFile.getChild(path) != null)
-               return true;
-         }
-         catch (Exception e)
-         {
-            log.debug("Cannot determine modification type, cause: " + e);
+            try
+            {
+               if (file.getChild(path) != null)
+                  return true;
+            }
+            catch (Exception e)
+            {
+               log.debug("Cannot determine modification type, cause: " + e);
+            }
          }
       }
       return false;
+   }
+
+   /**
+    * Get starting files for path check.
+    *
+    * @param file the current file
+    * @param contextInfo the context info
+    * @return list of starting files
+    */
+   protected List<VirtualFile> getStartingFiles(VirtualFile file, ContextInfo contextInfo)
+   {
+      if (metadataOnly)
+      {
+         List<String> metadataPaths = contextInfo.getMetaDataPath();
+         if (metadataPaths == null || metadataPaths.isEmpty())
+         {
+            return Collections.emptyList();
+         }
+         else
+         {
+            List<VirtualFile> result = new ArrayList<VirtualFile>(metadataPaths.size());
+            for (String metadataPath : metadataPaths)
+            {
+               try
+               {
+                  VirtualFile child = file.getChild(metadataPath);
+                  if (child != null)
+                     result.add(child);
+               }
+               catch (Exception ignored)
+               {
+               }
+            }
+            return result;
+         }
+      }
+      else
+      {
+         return Collections.singletonList(file);
+      }
+   }
+
+   /**
+    * Should we check metadata only.
+    *
+    * @param metadataOnly the metadata only flag
+    */
+   public void setMetadataOnly(boolean metadataOnly)
+   {
+      this.metadataOnly = metadataOnly;
    }
 }

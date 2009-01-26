@@ -33,7 +33,7 @@ public class TempTopModificationTypeMatcher extends FileModificationTypeMatcher
    public TempTopModificationTypeMatcher(String... paths)
    {
       super(paths);
-      setApplyModificationToTop(true);
+      setCheckChildren(true);
       setModificationType(ModificationType.TEMP);
    }
 }

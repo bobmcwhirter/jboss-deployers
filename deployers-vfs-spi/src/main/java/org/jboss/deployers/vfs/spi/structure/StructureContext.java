@@ -27,7 +27,6 @@ import java.util.Set;
 
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.structure.ContextInfo;
-import org.jboss.deployers.spi.structure.ModificationType;
 import org.jboss.deployers.spi.structure.StructureMetaData;
 import org.jboss.virtual.VirtualFile;
 
@@ -63,9 +62,6 @@ public class StructureContext
 
    /** The callbacks */
    private Set<Object> callbacks;
-
-   /** The modification type */
-   private ModificationType modificationType;
 
    /**
     * Helper method to check parent is not null before retrieving parameters
@@ -322,25 +318,5 @@ public class StructureContext
          throw new IllegalArgumentException("Null child");
       
       getMetaData().removeContext(child);
-   }
-
-   /**
-    * Get modification type.
-    *
-    * @return the modification type
-    */
-   public ModificationType getModificationType()
-   {
-      return modificationType;
-   }
-
-   /**
-    * Set modification type.
-    *
-    * @param modificationType the modification type
-    */
-   public void setModificationType(ModificationType modificationType)
-   {
-      this.modificationType = modificationType;
    }
 }

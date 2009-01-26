@@ -21,7 +21,9 @@
  */
 package org.jboss.deployers.vfs.plugins.structure.modify;
 
-import org.jboss.deployers.vfs.spi.structure.StructureContext;
+import org.jboss.deployers.spi.structure.ContextInfo;
+import org.jboss.deployers.spi.structure.StructureMetaData;
+import org.jboss.virtual.VirtualFile;
 
 /**
  * Determine if we need some modification.
@@ -33,8 +35,18 @@ public interface ModificationTypeMatcher
    /**
     * Should we modify the file.
     *
-    * @param structureContext the structure context
+    * @param root the deployment root
+    * @param structureMetaData the current structure metadata
     * @return true if we determined modification
     */
-   boolean determineModification(StructureContext structureContext);
+   boolean determineModification(VirtualFile root, StructureMetaData structureMetaData);
+
+   /**
+    * Should we modify the file.
+    *
+    * @param root the deployment root
+    * @param contextInfo the current context info
+    * @return true if we determined modification
+    */
+   boolean determineModification(VirtualFile root, ContextInfo contextInfo);
 }
