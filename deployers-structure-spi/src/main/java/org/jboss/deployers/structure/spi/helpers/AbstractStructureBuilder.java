@@ -41,6 +41,7 @@ import org.jboss.logging.Logger;
  * AbstractStructureBuilder.
  * 
  * @author <a href="adrian@jboss.org">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public class AbstractStructureBuilder implements StructureBuilder
