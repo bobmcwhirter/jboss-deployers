@@ -48,7 +48,7 @@ public class AbstractStructureBuilder implements StructureBuilder
    /** The log */
    private final Logger log = Logger.getLogger(getClass());
 
-   /** The context info processor */
+   /** The structure processor */
    private StructureProcessor structureProcessor;
 
    public DeploymentContext populateContext(Deployment deployment, StructureMetaData metaData) throws DeploymentException
