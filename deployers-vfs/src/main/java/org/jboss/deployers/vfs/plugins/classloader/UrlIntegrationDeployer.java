@@ -130,11 +130,8 @@ public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealD
          }
          catch (Throwable t)
          {
-            List<VirtualFile> classPath = unit.getClassPath();
-            for (int i = added.size() - 1; i >=0; i--)
-            {
-               classPath.remove(added.get(i));
-            }
+            Collections.reverse(added);
+            unit.removeClassPath(added.toArray(new VirtualFile[added.size()]));
             throw DeploymentException.rethrowAsDeploymentException("Error adding integration path.", t);
          }
       }
@@ -145,13 +142,12 @@ public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealD
    {
       if (isIntegrationDeployment(unit, metaData))
       {
-         List<VirtualFile> classPath = unit.getClassPath();
          for (URL integrationURL : integrationURLs)
          {
             try
             {
                VirtualFile integration = VFS.getRoot(integrationURL);
-               classPath.remove(integration);
+               unit.removeClassPath(integration);
             }
             catch (Throwable t)
             {
