@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Iterator;
 
 /**
  * IncompleteDeployments.
@@ -261,19 +262,18 @@ public class IncompleteDeployments implements Serializable
       // Display all the missing dependencies
       if (contextsMissingDependencies.isEmpty() == false)
       {
-         buffer.append("\n*** CONTEXTS MISSING DEPENDENCIES: Name -> Dependency{Required State:Actual State}\n\n");
+         buffer.append("\nDEPLOYMENTS MISSING DEPENDENCIES:\n");
          for (Map.Entry<String, Set<MissingDependency>> entry : contextsMissingDependencies.entrySet())
          {
             String name = entry.getKey();
-            buffer.append(name).append("\n");
+            buffer.append(String.format("  Deployment \"%s\" is missing the following dependencies:\n", name));
             for (MissingDependency dependency : entry.getValue())
             {
-               buffer.append(" -> ").append(dependency.getDependency());
-               buffer.append('{').append(dependency.getRequiredState());
-               buffer.append(':').append(dependency.getActualState()).append("}");
-               buffer.append("\n");
+               buffer.append(String.format("    Dependency \"%s\" (should be in state \"%s\", but is actually in state \"%s\")\n",
+                       dependency.getDependency(),
+                       dependency.getRequiredState(),
+                       dependency.getActualState()));
             }
-            buffer.append('\n');
 
             // It is not a root cause if it has missing dependencies
             rootCauses.remove(name);
@@ -286,22 +286,19 @@ public class IncompleteDeployments implements Serializable
 
       if (rootCauses.isEmpty() == false)
       {
-         buffer.append("\n*** CONTEXTS IN ERROR: Name -> Error\n\n");
+         buffer.append("\nDEPLOYMENTS IN ERROR:\n");
          for (String key : rootCauses.keySet())
          {
-            buffer.append(key).append(" -> ");
+            buffer.append(String.format("  Deployment \"%s\" is in error due to the following reason(s): ", key));
             Set<String> values = rootCauses.get(key);
-            boolean first = true;
-            for (String value : values)
+            Iterator<String> it = values.iterator();
+            while (it.hasNext())
             {
-               if (first == false)
-                  buffer.append(" | ");
-               else
-                  first = false;
-
-               buffer.append(value);
+               buffer.append(it.next());
+               if (it.hasNext())
+                  buffer.append(", ");
             }
-            buffer.append("\n\n");
+            buffer.append("\n");
          }
       }
       contextsInErrorInfo = buffer.toString();
