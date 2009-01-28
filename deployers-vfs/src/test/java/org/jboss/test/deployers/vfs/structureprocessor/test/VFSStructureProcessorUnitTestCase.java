@@ -61,15 +61,16 @@ public class VFSStructureProcessorUnitTestCase extends StructureProcessorUnitTes
    {
       ModificationTypeStructureProcessor mtsp = new ModificationTypeStructureProcessor();
 
-      ModificationTypeMatcher topAndChildren = createTempMatcher(true, true, false, true, "child.xml");
-      ModificationTypeMatcher directTop = createTempMatcher(true, false, true, false, "top.xml");
-      ModificationTypeMatcher justChildren = createTempMatcher(true, false, false, true, "sub.xml");
+      ModificationTypeMatcher topAndChildren = createTempMatcher(ModificationType.TEMP, true, true, true, false, "child.xml");
+      ModificationTypeMatcher directTop = createTempMatcher(ModificationType.TEMP, true, false, true, false, "top.xml");
+      ModificationTypeMatcher justChildren = createTempMatcher(ModificationType.UNPACK, true, false, false, true, "sub.xml");
 
-      mtsp.setMatchers(Arrays.asList(directTop, topAndChildren, justChildren));
+      mtsp.setMatchers(Arrays.asList(topAndChildren, directTop, justChildren));
       return mtsp;
    }
 
    protected ModificationTypeMatcher createTempMatcher(
+         ModificationType type,
          boolean metadataOnly,
          boolean checkChildren,
          boolean topLevelOnly,
@@ -77,7 +78,7 @@ public class VFSStructureProcessorUnitTestCase extends StructureProcessorUnitTes
          String... paths)
    {
       FileModificationTypeMatcher matcher = new FileModificationTypeMatcher(paths);
-      matcher.setModificationType(ModificationType.TEMP);
+      matcher.setModificationType(type);
       matcher.setMetadataOnly(metadataOnly);
       matcher.setCheckChildren(checkChildren);
       matcher.setTopLevelOnly(topLevelOnly);
@@ -131,13 +132,13 @@ public class VFSStructureProcessorUnitTestCase extends StructureProcessorUnitTes
       DeployerClient main = createMainDeployer();
       addStructureDeployer(main, new JARStructure());
 
-      VFSDeployment deployment = createDeployment("/structureprocessor", "childmod");
+      VFSDeployment deployment = createDeployment("/structureprocessor", "childmod.jar");
       main.deploy(deployment);
       try
       {
-         VFSDeploymentContext vdc = getTopDeploymentContext(main, "childmod");
+         VFSDeploymentContext vdc = getTopDeploymentContext(main, "childmod.jar");
          VirtualFile root = vdc.getRoot();
-         VirtualFile file = root.getChild("tempchild");
+         VirtualFile file = root.getChild("tempchild.jar");
          try
          {
             assertTrue("Should be temp", VFSUtils.isTemporaryFile(file));

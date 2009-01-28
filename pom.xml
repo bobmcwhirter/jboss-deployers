@@ -21,7 +21,7 @@
   </scm>
 
   <properties>
-    <version.jboss.vfs>2.0.1.GA</version.jboss.vfs>
+    <version.jboss.vfs>2.2.0-SNAPSHOT</version.jboss.vfs>
     <version.jboss.man>2.0.0.GA</version.jboss.man>
     <version.jboss.mdr>2.0.1.GA</version.jboss.mdr>
     <version.jboss.microcontainer>2.0.3.GA</version.jboss.microcontainer>
