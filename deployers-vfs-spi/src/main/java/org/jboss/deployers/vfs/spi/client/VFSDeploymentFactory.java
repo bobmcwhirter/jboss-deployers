@@ -28,6 +28,7 @@ import org.jboss.virtual.VirtualFile;
  * VFSDeploymentFactory.
  * 
  * @author <a href="adrian@jboss.org">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public abstract class VFSDeploymentFactory extends DeploymentFactory
@@ -41,7 +42,7 @@ public abstract class VFSDeploymentFactory extends DeploymentFactory
    {
       return VFSDeploymentBuilder.getInstance();
    }
-   
+
    /**
     * Create a new VFS deployment 
     * 
@@ -53,6 +54,13 @@ public abstract class VFSDeploymentFactory extends DeploymentFactory
    {
       return VFSDeploymentBuilder.getInstance().newVFSDeployment(root);
    }
+
+   /**
+    * Destroy the vfs deployment.
+    *
+    * @param deployment the deployment
+    */
+   public abstract void destroyVFSDeployment(VFSDeployment deployment);
 
    /**
     * Create a new VFS deployment 

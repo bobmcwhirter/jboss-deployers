@@ -23,19 +23,40 @@ package org.jboss.deployers.vfs.plugins.client;
 
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.client.VFSDeploymentFactory;
+import org.jboss.logging.Logger;
 import org.jboss.virtual.VirtualFile;
 
 /**
  * DefaultVFSDeploymentFactory.
  * 
  * @author <a href="adrian@jboss.org">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public class DefaultVFSDeploymentFactory extends VFSDeploymentFactory
 {
+   /** The log */
+   protected Logger log = Logger.getLogger(getClass());
+
    @Override
    protected VFSDeployment newVFSDeployment(VirtualFile root)
    {
       return new AbstractVFSDeployment(root);
+   }
+
+   public void destroyVFSDeployment(VFSDeployment deployment)
+   {
+      VirtualFile root = deployment.getRoot();
+      try
+      {
+         if (root != null && root.exists())
+         {
+            root.cleanup();
+         }
+      }
+      catch (Exception e)
+      {
+         log.warn("Exception destroying deployment (" + deployment +  "): " + e);         
+      }
    }
 }
