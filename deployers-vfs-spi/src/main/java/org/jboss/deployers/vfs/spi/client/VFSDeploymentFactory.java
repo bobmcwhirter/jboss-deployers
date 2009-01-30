@@ -56,13 +56,6 @@ public abstract class VFSDeploymentFactory extends DeploymentFactory
    }
 
    /**
-    * Destroy the vfs deployment.
-    *
-    * @param deployment the deployment
-    */
-   public abstract void destroyVFSDeployment(VFSDeployment deployment);
-
-   /**
     * Create a new VFS deployment 
     * 
     * @param root the root virtual file

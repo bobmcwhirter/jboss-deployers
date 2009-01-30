@@ -43,23 +43,4 @@ public class DefaultVFSDeploymentFactory extends VFSDeploymentFactory
    {
       return new AbstractVFSDeployment(root);
    }
-
-   public void destroyVFSDeployment(VFSDeployment deployment)
-   {
-      if (deployment == null)
-         throw new IllegalArgumentException("Null deployment");
-
-      VirtualFile root = deployment.getRoot();
-      try
-      {
-         if (root != null && root.exists())
-         {
-            root.cleanup();
-         }
-      }
-      catch (Exception e)
-      {
-         log.warn("Exception destroying deployment (" + deployment +  "): " + e);         
-      }
-   }
 }
