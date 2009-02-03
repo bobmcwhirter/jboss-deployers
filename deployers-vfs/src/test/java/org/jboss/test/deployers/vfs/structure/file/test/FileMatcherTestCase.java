@@ -166,6 +166,11 @@ public class FileMatcherTestCase extends BaseTestCase
                return false;
             }
 
+            public boolean isArchive() throws IOException
+            {
+               return false;
+            }
+
             public boolean isHidden() throws IOException
             {
                return false;

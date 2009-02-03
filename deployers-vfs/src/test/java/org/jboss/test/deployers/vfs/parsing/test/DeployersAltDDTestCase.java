@@ -156,6 +156,11 @@ public class DeployersAltDDTestCase extends BaseTestCase
             return false;
          }
 
+         public boolean isArchive() throws IOException
+         {
+            return false;
+         }
+
          public String getLocalPathName()
          {
             return null;

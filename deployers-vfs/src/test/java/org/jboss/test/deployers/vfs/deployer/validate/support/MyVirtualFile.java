@@ -117,6 +117,11 @@ public class MyVirtualFile extends VirtualFile
             return true;
          }
 
+         public boolean isArchive() throws IOException
+         {
+            return false;
+         }
+
          public boolean isHidden() throws IOException
          {
             return false;
