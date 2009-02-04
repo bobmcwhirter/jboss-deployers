@@ -300,6 +300,7 @@ public class MockEarStructureDeployer extends AbstractVFSStructureDeployer
          VirtualFile clientXml = getMetaDataFile(archive, "META-INF/application-client.xml");
          VirtualFile ejbXml = getMetaDataFile(archive, "META-INF/ejb-jar.xml");
          VirtualFile jbossXml = getMetaDataFile(archive, "META-INF/jboss.xml");
+         //VirtualFile seamXml = getMetaDataFile(archive, "META-INF/components.xml");
 
          if (clientXml != null)
          {
@@ -318,7 +319,7 @@ public class MockEarStructureDeployer extends AbstractVFSStructureDeployer
                determineType(context, archive);
             }
          }
-         else if (ejbXml != null || jbossXml != null)
+         else if (ejbXml != null || jbossXml != null) // || seamXml != null)
          {
             type = J2eeModuleMetaData.EJB;
          }

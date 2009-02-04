@@ -23,10 +23,13 @@ package org.jboss.test.deployers.vfs.deployer.facelets.support;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.jboss.deployers.spi.DeploymentException;
-import org.jboss.deployers.spi.deployer.helpers.AbstractDeployer;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
+import org.jboss.deployers.spi.deployer.helpers.AbstractDeployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 
 /**
@@ -42,7 +45,7 @@ public class SearchDeployer extends AbstractDeployer
    private String prefix;
    private String suffix;
 
-   private URL[] urls;
+   private Set<URL> urls = new HashSet<URL>();
 
    public SearchDeployer(String prefix, String suffix)
    {
@@ -60,7 +63,11 @@ public class SearchDeployer extends AbstractDeployer
    {
       try
       {
-         urls = Classpath.search(unit.getClassLoader(), prefix, suffix);
+         URL[] foundUrls = Classpath.search(unit.getClassLoader(), prefix, suffix);
+         if (foundUrls != null)
+         {
+            urls.addAll(Arrays.asList(foundUrls));
+         }
       }
       catch (IOException e)
       {
@@ -73,7 +80,7 @@ public class SearchDeployer extends AbstractDeployer
       urls = null;
    }
 
-   public URL[] getUrls()
+   public Set<URL> getUrls()
    {
       return urls;
    }

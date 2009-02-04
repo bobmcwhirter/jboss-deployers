@@ -24,8 +24,6 @@ package org.jboss.test.deployers.vfs.deployer.facelets.test;
 import java.net.URL;
 import java.util.Set;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
 import org.jboss.beans.metadata.spi.builder.BeanMetaDataBuilder;
 import org.jboss.classloader.plugins.system.DefaultClassLoaderSystem;
 import org.jboss.classloader.spi.ClassLoaderSystem;
@@ -34,30 +32,34 @@ import org.jboss.classloading.spi.dependency.ClassLoading;
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
 import org.jboss.deployers.plugins.classloading.AbstractLevelClassLoaderSystemDeployer;
 import org.jboss.deployers.plugins.classloading.ClassLoadingDefaultDeployer;
+import org.jboss.deployers.structure.spi.StructureBuilder;
 import org.jboss.deployers.vfs.plugins.classloader.VFSClassLoaderClassPathDeployer;
 import org.jboss.deployers.vfs.plugins.classloader.VFSClassLoaderDescribeDeployer;
+import org.jboss.deployers.vfs.plugins.structure.VFSStructureBuilder;
+import org.jboss.deployers.vfs.plugins.structure.modify.ModificationTypeStructureProcessor;
+import org.jboss.deployers.vfs.plugins.structure.modify.TempTopModificationTypeMatcher;
 import org.jboss.deployers.vfs.plugins.structure.war.WARStructure;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.kernel.Kernel;
 import org.jboss.kernel.spi.dependency.KernelController;
 import org.jboss.test.deployers.vfs.deployer.AbstractDeployerUnitTest;
 import org.jboss.test.deployers.vfs.deployer.facelets.support.SearchDeployer;
+import org.jboss.test.deployers.vfs.structure.ear.support.MockEarStructureDeployer;
+import org.jboss.virtual.VFSUtils;
+import org.jboss.virtual.plugins.cache.IterableTimedVFSCache;
+import org.jboss.virtual.spi.cache.VFSCache;
+import org.jboss.virtual.spi.cache.VFSCacheFactory;
 
 /**
- * FaceletsUnitTestCase.
+ * BookingUnitTestCase.
  *
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  */
-public class FaceletsUnitTestCase extends AbstractDeployerUnitTest
+public class BookingUnitTest extends AbstractDeployerUnitTest
 {
    private SearchDeployer deployer = new SearchDeployer("META-INF/", ".taglib.xml");
 
-   public static Test suite()
-   {
-      return new TestSuite(FaceletsUnitTestCase.class);
-   }
-
-   public FaceletsUnitTestCase(String name) throws Throwable
+   public BookingUnitTest(String name) throws Throwable
    {
       super(name);
    }
@@ -66,8 +68,21 @@ public class FaceletsUnitTestCase extends AbstractDeployerUnitTest
    {
       super.setUp();
       // Uncomment this to test VFS nested jar copy handling
-      //System.setProperty(VFSUtils.FORCE_COPY_KEY, "true");
+      System.setProperty(VFSUtils.FORCE_COPY_KEY, "true");
+
+      VFSCache cache = new IterableTimedVFSCache();
+      cache.start();
+      VFSCacheFactory.setInstance(cache);
+
       addStructureDeployer(main, new WARStructure());
+      addStructureDeployer(main, new MockEarStructureDeployer());
+   }
+
+   @Override
+   protected void tearDown() throws Exception
+   {
+      VFSCacheFactory.setInstance(null);
+      super.tearDown();
    }
 
    protected void addDeployers(Kernel kernel)
@@ -107,6 +122,16 @@ public class FaceletsUnitTestCase extends AbstractDeployerUnitTest
       addDeployer(main, deployer);
    }
 
+   @Override
+   protected StructureBuilder createStructureBuilder()
+   {
+      VFSStructureBuilder structureBuilder = (VFSStructureBuilder)super.createStructureBuilder();
+      ModificationTypeStructureProcessor sp = new ModificationTypeStructureProcessor();
+      sp.addMatcher(new TempTopModificationTypeMatcher("META-INF/components.xml"));
+      structureBuilder.setStructureProcessor(sp);
+      return structureBuilder;
+   }
+
    protected void testFacelets(String name, int size) throws Throwable
    {
       VFSDeployment context = createDeployment("/facelets", name);
@@ -123,18 +148,8 @@ public class FaceletsUnitTestCase extends AbstractDeployerUnitTest
       }
    }
 
-   public void testPackedFacelets() throws Throwable
+   public void testBooking() throws Throwable
    {
-      testFacelets("packed.jar", 3);
-   }
-
-   public void testExplodedFacelets() throws Throwable
-   {
-      testFacelets("exploded.jar", 3);
-   }
-
-   public void testNumberguess() throws Throwable
-   {
-      testFacelets("numberguess.war", 5);
+      testFacelets("booking.ear", 11);
    }
 }
