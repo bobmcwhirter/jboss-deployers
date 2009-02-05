@@ -33,7 +33,8 @@ public enum ModificationType
 {
    UNPACK,
    EXPLODE,
-   TEMP;
+   TEMP,
+   UNJAR;
 
    /**
     * Get the modification type.

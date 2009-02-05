@@ -21,37 +21,21 @@
 */
 package org.jboss.deployers.vfs.plugins.structure.modify;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
-import org.jboss.deployers.spi.structure.ModificationType;
+import org.jboss.virtual.VirtualFile;
+import org.jboss.virtual.VFSUtils;
 
 /**
- * Modification actions.
+ * Unjar modification action.
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class ModificationActions
+class UnjarModificationAction implements ModificationAction
 {
-   private static final Map<ModificationType, ModificationAction> actions;
-
-   static
+   public VirtualFile modify(VirtualFile original) throws IOException, URISyntaxException
    {
-      actions = new HashMap<ModificationType, ModificationAction>();
-      actions.put(ModificationType.UNPACK, new UnpackModificationAction());
-      actions.put(ModificationType.EXPLODE, new ExplodeModificationAction());
-      actions.put(ModificationType.TEMP, new TempModificationAction());
-      actions.put(ModificationType.UNJAR, new UnjarModificationAction());
-   }
-
-   /**
-    * Get the modification action.
-    *
-    * @param type the modification type
-    * @return modification action or null if it not supported
-    */
-   public static ModificationAction getAction(ModificationType type)
-   {
-      return actions.get(type);
+      return VFSUtils.unjar(original);
    }
 }
