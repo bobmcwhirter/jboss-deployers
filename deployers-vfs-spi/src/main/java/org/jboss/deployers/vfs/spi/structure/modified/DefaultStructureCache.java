@@ -49,6 +49,12 @@ public class DefaultStructureCache<T> implements StructureCache<T>
       return map.get(pathName);
    }
 
+   public Integer getLeavesCount(String pathName)
+   {
+      // TODO
+      return null;
+   }
+
    public void invalidateCache(String pathName)
    {
       removeCache(pathName);

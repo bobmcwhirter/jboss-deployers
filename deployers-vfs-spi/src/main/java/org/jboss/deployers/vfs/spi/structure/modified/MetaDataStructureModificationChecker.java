@@ -112,6 +112,13 @@ public class MetaDataStructureModificationChecker extends AbstractStructureModif
                   List<VirtualFile> children = mdpVF.getChildren(filter);
                   if (children != null && children.isEmpty() == false)
                   {
+                     Integer cachedSize = getCache().getLeavesCount(mdpVF.getPathName());
+                     // do we have some new files or some were deleted
+                     if (cachedSize != null && cachedSize != children.size())
+                     {
+                        return true;
+                     }
+
                      for (VirtualFile child : children)
                      {
                         String pathName = child.getPathName();

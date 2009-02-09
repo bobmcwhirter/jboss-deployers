@@ -54,6 +54,15 @@ public interface StructureCache<T>
    T getCacheValue(String pathName);
 
    /**
+    * Get leaves count for this path name parameter.
+    * Only exact sub path nodes count in.
+    *
+    * @param pathName the path name
+    * @return sub-paths node size or null if no such match yet
+    */
+   Integer getLeavesCount(String pathName);
+
+   /**
     * Invalidate cache for path name.
     *
     * @param pathName the path name
