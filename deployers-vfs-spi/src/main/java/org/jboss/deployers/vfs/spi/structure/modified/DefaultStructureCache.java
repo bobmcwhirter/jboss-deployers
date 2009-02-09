@@ -66,4 +66,9 @@ public class DefaultStructureCache<T> implements StructureCache<T>
          }
       }
    }
+
+   public void flush()
+   {
+      map.clear();
+   }
 }

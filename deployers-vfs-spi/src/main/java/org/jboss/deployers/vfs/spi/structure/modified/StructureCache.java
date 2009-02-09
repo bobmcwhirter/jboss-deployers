@@ -66,4 +66,9 @@ public interface StructureCache<T>
     * @param pathName the path name
     */
    void removeCache(String pathName);
+
+   /**
+    * Flush the cache.
+    */
+   void flush();
 }
