@@ -58,7 +58,8 @@ public abstract class AbstractStructureTest extends BaseTestCase
 
    protected void assertUnpacked(VirtualFile file) throws Exception
    {
-      assertSame(file, VFSUtils.unpack(file));
+      VirtualFile modified = VFSUtils.unpack(file);
+      assertTrue(VFSUtils.isTemporaryFile(modified));
    }
 
    protected void assertNoChildContexts(VFSDeploymentContext context)

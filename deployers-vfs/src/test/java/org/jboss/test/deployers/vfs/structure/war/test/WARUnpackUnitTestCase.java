@@ -27,6 +27,8 @@ import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.test.deployers.vfs.structure.AbstractStructureTest;
 import org.jboss.test.deployers.vfs.structure.support.WarUnpackStructure;
+import org.jboss.virtual.VFSUtils;
+import org.jboss.virtual.VirtualFile;
 
 /**
  * WARUnpackUnitTestCase.
@@ -53,6 +55,7 @@ public class WARUnpackUnitTestCase extends AbstractStructureTest
    public void testWarDeployerUnpack() throws Throwable
    {
       VFSDeploymentContext root = assertDeploy("/structure/war/simple", "simple.war");
-      assertUnpacked(root.getRoot());
+      VirtualFile file = root.getRoot();
+      assertSame(file, VFSUtils.unpack(file));
    }
 }
