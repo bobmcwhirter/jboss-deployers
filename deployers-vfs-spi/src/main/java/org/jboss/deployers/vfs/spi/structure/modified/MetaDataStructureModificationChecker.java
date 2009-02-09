@@ -80,8 +80,7 @@ public class MetaDataStructureModificationChecker extends AbstractStructureModif
       {
          for (ContextInfo contextInfo : contexts)
          {
-            boolean result = hasStructureBeenModifed(root, contextInfo);
-            if (result)
+            if (hasStructureBeenModifed(root, contextInfo))
                return true;
          }
       }
