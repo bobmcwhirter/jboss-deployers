@@ -55,7 +55,7 @@ public abstract class StructureModificationTest extends AbstractWebBeansTest
       VFSDeploymentUnit deploymentUnit = assertDeploy(ear);
       try
       {
-         testStructureModified(checker, deploymentUnit);
+         testStructureModified(ear, checker, deploymentUnit);
       }
       finally
       {
@@ -63,5 +63,5 @@ public abstract class StructureModificationTest extends AbstractWebBeansTest
       }
    }
 
-   protected abstract void testStructureModified(StructureModificationChecker checker, VFSDeploymentUnit deploymentUnit) throws Exception;
+   protected abstract void testStructureModified(AssembledDirectory ear, StructureModificationChecker checker, VFSDeploymentUnit deploymentUnit) throws Exception;
 }

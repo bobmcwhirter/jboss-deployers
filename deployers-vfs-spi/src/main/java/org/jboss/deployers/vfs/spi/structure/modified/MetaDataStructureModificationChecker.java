@@ -130,6 +130,8 @@ public class MetaDataStructureModificationChecker extends AbstractStructureModif
                   // do we have some new files or some were deleted
                   if (leaves != null && children != null && leaves.size() != children.size())
                   {
+                     if (log.isTraceEnabled())
+                        log.trace("Metadata files number changed, old: " + leaves + ", now: " + children);
                      return true;
                   }
 
@@ -171,6 +173,8 @@ public class MetaDataStructureModificationChecker extends AbstractStructureModif
                   // not all previous leaves were removed - we're missing some == modified
                   if (leaves != null && leaves.isEmpty() == false)
                   {
+                     if (log.isTraceEnabled())
+                        log.trace("Missing old files: " + leaves);
                      return true;
                   }
                }

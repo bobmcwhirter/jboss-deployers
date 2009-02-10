@@ -21,12 +21,18 @@
  */
 package org.jboss.test.deployers.vfs.structure.modified.test;
 
+import java.io.File;
+import java.net.URL;
+
 import junit.framework.Test;
 import org.jboss.deployers.structure.spi.main.MainDeployerStructure;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.deployers.vfs.spi.structure.modified.MetaDataStructureModificationChecker;
 import org.jboss.deployers.vfs.spi.structure.modified.StructureModificationChecker;
 import org.jboss.test.deployers.vfs.structure.modified.support.XmlIncludeVirtualFileFilter;
+import org.jboss.virtual.AssembledDirectory;
+import org.jboss.virtual.VFS;
+import org.jboss.virtual.VirtualFile;
 import org.jboss.virtual.VirtualFileFilter;
 
 /**
@@ -58,11 +64,44 @@ public class MetaDataStructureModificationTestCase extends StructureModification
       return new XmlIncludeVirtualFileFilter();
    }
 
-   protected void testStructureModified(StructureModificationChecker checker, VFSDeploymentUnit deploymentUnit) throws Exception
+   protected void testStructureModified(AssembledDirectory ear, StructureModificationChecker checker, VFSDeploymentUnit deploymentUnit) throws Exception
    {
+      VirtualFile root = deploymentUnit.getRoot();
       // initial run
-      assertFalse(checker.hasStructureBeenModified(deploymentUnit.getRoot()));
+      assertFalse(checker.hasStructureBeenModified(root));
       // already cached run 
-      assertFalse(checker.hasStructureBeenModified(deploymentUnit.getRoot()));
+      assertFalse(checker.hasStructureBeenModified(root));
+
+      AssembledDirectory jar = (AssembledDirectory)ear.getChild("simple.jar");
+      AssembledDirectory jarMD = (AssembledDirectory)jar.getChild("META-INF");
+
+      // 'update' web-beans.xml
+      URL url = getResource("/webbeans/simple/jar/META-INF/web-beans.xml");
+      assertNotNull(url);
+      File file = new File(url.toURI());
+      assertTrue(file.setLastModified(System.currentTimeMillis()));
+      assertTrue(checker.hasStructureBeenModified(root));
+      // should be the same
+      assertFalse(checker.hasStructureBeenModified(root));
+
+      // add new xml
+      url = getResource("/scanning/smoke/META-INF/jboss-scanning.xml");
+      assertNotNull(url);
+      jarMD.addChild(VFS.createNewRoot(url));
+      assertTrue(checker.hasStructureBeenModified(root));
+      // should be the same
+      assertFalse(checker.hasStructureBeenModified(root));
+
+      // 'remove' new xml
+      jarMD = jar.mkdir("META-INF");
+      url = getResource("/dependency/module/META-INF/jboss-dependency.xml");
+      assertNotNull(url);
+      jarMD.addChild(VFS.createNewRoot(url));
+      url = getResource("/webbeans/simple/ejb/META-INF/web-beans.xml");
+      assertNotNull(url);
+      jarMD.addChild(VFS.createNewRoot(url));
+      assertTrue(checker.hasStructureBeenModified(root));
+      // should be the same
+      assertFalse(checker.hasStructureBeenModified(root));
    }
 }
