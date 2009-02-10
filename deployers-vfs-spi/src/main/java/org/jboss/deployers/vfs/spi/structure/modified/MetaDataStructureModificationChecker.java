@@ -22,6 +22,7 @@
 package org.jboss.deployers.vfs.spi.structure.modified;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -39,6 +40,9 @@ import org.jboss.virtual.VirtualFileFilter;
  */
 public class MetaDataStructureModificationChecker extends AbstractStructureModificationChecker<Long>
 {
+   /** The current context path const */
+   private static final Set<String> CURRENT_PATH = Collections.singleton("");
+
    /** The metadata filter */
    private VirtualFileFilter filter;
 
@@ -60,7 +64,7 @@ public class MetaDataStructureModificationChecker extends AbstractStructureModif
    protected boolean hasStructureBeenModifed(VirtualFile root, VFSDeploymentContext deploymentContext) throws IOException
    {
       StructureMetaData structureMetaData = deploymentContext.getTransientManagedObjects().getAttachment(StructureMetaData.class);
-      return hasStructureBeenModified(root, structureMetaData);
+      return hasStructureBeenModified(root, structureMetaData, null);
    }
 
    /**
@@ -68,10 +72,11 @@ public class MetaDataStructureModificationChecker extends AbstractStructureModif
     *
     * @param root the root
     * @param structureMetaData the structure metadata
+    * @param excludedPaths the excluded paths
     * @return true if modifed, false otherwise
     * @throws IOException for any error
     */
-   protected boolean hasStructureBeenModified(VirtualFile root, StructureMetaData structureMetaData) throws IOException
+   protected boolean hasStructureBeenModified(VirtualFile root, StructureMetaData structureMetaData, Set<String> excludedPaths) throws IOException
    {
       if (structureMetaData == null)
          return false;
@@ -81,6 +86,15 @@ public class MetaDataStructureModificationChecker extends AbstractStructureModif
       {
          for (ContextInfo contextInfo : contexts)
          {
+            if (excludedPaths != null)
+            {
+               String path = contextInfo.getPath();
+               if (excludedPaths.contains(path))
+               {
+                  continue;
+               }
+            }
+
             if (hasStructureBeenModifed(root, contextInfo))
                return true;
          }
@@ -165,7 +179,7 @@ public class MetaDataStructureModificationChecker extends AbstractStructureModif
          if ("".equals(path) == false)
          {
             StructureMetaData structureMetaData = contextInfo.getPredeterminedManagedObjects().getAttachment(StructureMetaData.class);
-            return hasStructureBeenModified(contextRoot, structureMetaData);
+            return hasStructureBeenModified(contextRoot, structureMetaData, CURRENT_PATH);
          }
       }
       return false;

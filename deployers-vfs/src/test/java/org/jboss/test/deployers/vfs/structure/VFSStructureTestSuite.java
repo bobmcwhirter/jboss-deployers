@@ -43,6 +43,7 @@ import org.jboss.test.deployers.vfs.structure.test.TerminateStructureTestCase;
 import org.jboss.test.deployers.vfs.structure.war.test.CombinedWARStructureUnitTestCase;
 import org.jboss.test.deployers.vfs.structure.war.test.WARStructureUnitTestCase;
 import org.jboss.test.deployers.vfs.structure.war.test.WARUnpackUnitTestCase;
+import org.jboss.test.deployers.vfs.structure.modified.test.MetaDataStructureModificationTestCase;
 
 /**
  * VFSStructureTestSuite.
@@ -81,6 +82,7 @@ public class VFSStructureTestSuite extends TestSuite
       suite.addTest(InnerModificationUnitTestCase.suite());
       suite.addTest(DirStructureUnitTestCase.suite());
       suite.addTest(RealDirStructureUnitTestCase.suite());
+      suite.addTest(MetaDataStructureModificationTestCase.suite());
 
       return suite;
    }
