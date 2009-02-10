@@ -144,6 +144,8 @@ public class MetaDataStructureModificationChecker extends AbstractStructureModif
                         // we tried to remove non existing leaf - it's new == modified 
                         if (leaves != null && leaves.remove(pathName) == false)
                         {
+                           if (log.isTraceEnabled())
+                              log.trace("Found new metadata file: " + child);
                            return true;
                         }
 
