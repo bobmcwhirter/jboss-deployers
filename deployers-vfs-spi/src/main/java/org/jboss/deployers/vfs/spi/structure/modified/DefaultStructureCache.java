@@ -24,7 +24,10 @@ package org.jboss.deployers.vfs.spi.structure.modified;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.HashSet;
+import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 /**
  * Default structure cache.
@@ -52,8 +55,22 @@ public class DefaultStructureCache<T> implements StructureCache<T>
 
    public Set<String> getLeaves(String pathName)
    {
-      // TODO
-      return null;
+      Set<String> result = null;
+      Pattern pattern = Pattern.compile(pathName + "/[^/]+");
+      for (String key : map.keySet())
+      {
+         if (pattern.matcher(key).matches())
+         {
+            if (result == null)
+               result = new HashSet<String>();
+
+            result.add(key);
+         }
+      }
+      if (result != null)
+         return result;
+      else
+         return (map.containsKey(pathName) ? Collections.<String>emptySet() : null);
    }
 
    public void invalidateCache(String pathName)

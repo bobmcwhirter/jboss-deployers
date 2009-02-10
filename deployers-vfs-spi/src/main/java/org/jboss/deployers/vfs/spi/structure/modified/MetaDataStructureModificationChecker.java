@@ -111,7 +111,8 @@ public class MetaDataStructureModificationChecker extends AbstractStructureModif
                if (mdpVF != null)
                {
                   List<VirtualFile> children = mdpVF.getChildren(filter);
-                  Set<String> leaves = getCache().getLeaves(mdpVF.getPathName());
+                  String mdpPathName = mdpVF.getPathName();
+                  Set<String> leaves = getCache().getLeaves(mdpPathName);
                   // do we have some new files or some were deleted
                   if (leaves != null && children != null && leaves.size() != children.size())
                   {
@@ -132,14 +133,26 @@ public class MetaDataStructureModificationChecker extends AbstractStructureModif
 
                         Long timestamp = getCache().getCacheValue(pathName);
                         long lastModified = child.getLastModified();
-                        getCache().putCacheValue(pathName, lastModified);
-                        if (timestamp != null && timestamp < lastModified)
+                        if (timestamp != null)
                         {
-                           if (log.isTraceEnabled())
-                              log.trace("Metadata location modified: " + child);
-                           return true;
+                           if (timestamp < lastModified)
+                           {
+                              if (log.isTraceEnabled())
+                                 log.trace("Metadata location modified: " + child);
+                              return true;
+                           }
+                        }
+                        else
+                        {
+                           // only put if not modified
+                           getCache().putCacheValue(pathName, lastModified);
                         }
                      }
+                  }
+                  else
+                  {                     
+                     // mark empty metadata path
+                     getCache().putCacheValue(mdpPathName, System.currentTimeMillis());
                   }
                   // not all previous leaves were removed - we're missing some == modified
                   if (leaves != null && leaves.isEmpty() == false)
