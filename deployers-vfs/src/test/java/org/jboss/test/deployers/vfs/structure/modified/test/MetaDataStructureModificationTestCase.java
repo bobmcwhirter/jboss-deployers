@@ -108,4 +108,27 @@ public class MetaDataStructureModificationTestCase extends StructureModification
       jar.mkdir("META-INF");
       assertTrue(checker.hasStructureBeenModified(root));
    }
+
+   public void testInitialEmptyDir() throws Exception
+   {
+      AssembledDirectory top = createAssembledDirectory("top.jar", "top.jar");
+      AssembledDirectory metainf = top.mkdir("META-INF");
+      StructureModificationChecker checker = createStructureModificationChecker();
+
+      VFSDeploymentUnit vdu = assertDeploy(top);
+      try
+      {
+         VirtualFile root = vdu.getRoot();
+         assertFalse(checker.hasStructureBeenModified(root));
+
+         URL url = getResource("/scanning/smoke/META-INF/jboss-scanning.xml");
+         assertNotNull(url);
+         metainf.addChild(VFS.createNewRoot(url));
+         assertTrue(checker.hasStructureBeenModified(root));
+      }
+      finally
+      {
+         undeploy(vdu);
+      }
+   }
 }

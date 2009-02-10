@@ -40,6 +40,13 @@ public abstract class StructureModificationTest extends AbstractWebBeansTest
       super(name);
    }
 
+   protected StructureModificationChecker createStructureModificationChecker()
+   {
+      MainDeployerStructure mainDeployer = assertBean("MainDeployer", MainDeployerStructure.class);
+      VirtualFileFilter filter = createFilter();
+      return createStructureModificationChecker(mainDeployer, filter);
+   }
+
    protected abstract StructureModificationChecker createStructureModificationChecker(MainDeployerStructure mainDeployerStructure, VirtualFileFilter filter);
 
    protected abstract VirtualFileFilter createFilter();
@@ -47,10 +54,7 @@ public abstract class StructureModificationTest extends AbstractWebBeansTest
    public void testDoBasicTest() throws Exception
    {
       AssembledDirectory ear = createBasicEar();
-
-      MainDeployerStructure mainDeployer = assertBean("MainDeployer", MainDeployerStructure.class);
-      VirtualFileFilter filter = createFilter();      
-      StructureModificationChecker checker = createStructureModificationChecker(mainDeployer, filter);
+      StructureModificationChecker checker = createStructureModificationChecker();
 
       VFSDeploymentUnit deploymentUnit = assertDeploy(ear);
       try
