@@ -103,5 +103,9 @@ public class MetaDataStructureModificationTestCase extends StructureModification
       assertTrue(checker.hasStructureBeenModified(root));
       // should be the same
       assertFalse(checker.hasStructureBeenModified(root));
+
+      // 'remove' whole metadata dir
+      jar.mkdir("META-INF");
+      assertTrue(checker.hasStructureBeenModified(root));
    }
 }
