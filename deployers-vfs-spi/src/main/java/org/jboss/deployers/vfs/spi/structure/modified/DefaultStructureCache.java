@@ -23,6 +23,7 @@ package org.jboss.deployers.vfs.spi.structure.modified;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -49,7 +50,7 @@ public class DefaultStructureCache<T> implements StructureCache<T>
       return map.get(pathName);
    }
 
-   public Integer getLeavesCount(String pathName)
+   public Set<String> getLeaves(String pathName)
    {
       // TODO
       return null;

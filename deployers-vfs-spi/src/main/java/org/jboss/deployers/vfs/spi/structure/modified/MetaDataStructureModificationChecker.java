@@ -23,6 +23,7 @@ package org.jboss.deployers.vfs.spi.structure.modified;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.deployers.spi.structure.StructureMetaData;
@@ -110,18 +111,25 @@ public class MetaDataStructureModificationChecker extends AbstractStructureModif
                if (mdpVF != null)
                {
                   List<VirtualFile> children = mdpVF.getChildren(filter);
+                  Set<String> leaves = getCache().getLeaves(mdpVF.getPathName());
+                  // do we have some new files or some were deleted
+                  if (leaves != null && children != null && leaves.size() != children.size())
+                  {
+                     return true;
+                  }
+
                   if (children != null && children.isEmpty() == false)
                   {
-                     Integer cachedSize = getCache().getLeavesCount(mdpVF.getPathName());
-                     // do we have some new files or some were deleted
-                     if (cachedSize != null && cachedSize != children.size())
-                     {
-                        return true;
-                     }
-
                      for (VirtualFile child : children)
                      {
                         String pathName = child.getPathName();
+
+                        // we tried to remove non existing leaf - it's new == modified 
+                        if (leaves != null && leaves.remove(pathName) == false)
+                        {
+                           return true;
+                        }
+
                         Long timestamp = getCache().getCacheValue(pathName);
                         long lastModified = child.getLastModified();
                         getCache().putCacheValue(pathName, lastModified);
@@ -132,6 +140,11 @@ public class MetaDataStructureModificationChecker extends AbstractStructureModif
                            return true;
                         }
                      }
+                  }
+                  // not all previous leaves were removed - we're missing some == modified
+                  if (leaves != null && leaves.isEmpty() == false)
+                  {
+                     return true;
                   }
                }
             }

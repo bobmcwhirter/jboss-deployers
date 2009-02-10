@@ -21,6 +21,8 @@
  */
 package org.jboss.deployers.vfs.spi.structure.modified;
 
+import java.util.Set;
+
 /**
  * Simple structure cache.
  *
@@ -54,13 +56,16 @@ public interface StructureCache<T>
    T getCacheValue(String pathName);
 
    /**
-    * Get leaves count for this path name parameter.
+    * Get leaves for this path name parameter.
     * Only exact sub path nodes count in.
     *
+    * This method should return a mutable Set copy
+    * as we intend to modify it in checker processing.
+    *
     * @param pathName the path name
-    * @return sub-paths node size or null if no such match yet
+    * @return sub-paths nodes or null if no such match yet
     */
-   Integer getLeavesCount(String pathName);
+   Set<String> getLeaves(String pathName);
 
    /**
     * Invalidate cache for path name.
