@@ -1448,7 +1448,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
                synchronized (this)
                {
                   if (deploymentTimes == null)
-                     deploymentTimes = new DeployerStatistics();;
+                     deploymentTimes = new DeployerStatistics();
                   String deployerName = deployer.toString();
                   String deploymentName = unit.getName();
                   deploymentTimes.addStatistic(deployerName, deploymentName, time);
