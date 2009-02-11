@@ -131,4 +131,40 @@ public class MetaDataStructureModificationTestCase extends StructureModification
          undeploy(vdu);
       }
    }
+
+   public void testMultipleChanges() throws Exception
+   {
+      AssembledDirectory top = createAssembledDirectory("top.jar", "top.jar");
+      AssembledDirectory metainf = top.mkdir("META-INF");
+      StructureModificationChecker checker = createStructureModificationChecker();
+
+      VFSDeploymentUnit vdu = assertDeploy(top);
+      try
+      {
+         VirtualFile root = vdu.getRoot();
+         assertFalse(checker.hasStructureBeenModified(root));
+
+         URL url1 = getResource("/scanning/smoke/META-INF/jboss-scanning.xml");
+         assertNotNull(url1);
+         metainf.addChild(VFS.createNewRoot(url1));
+         URL url2 = getResource("/dependency/module/META-INF/jboss-dependency.xml");
+         assertNotNull(url2);
+         metainf.addChild(VFS.createNewRoot(url2));
+
+         assertTrue(checker.hasStructureBeenModified(root));
+         assertFalse(checker.hasStructureBeenModified(root));
+
+         File f1 = new File(url1.toURI());
+         assertTrue(f1.setLastModified(System.currentTimeMillis()));
+         File f2 = new File(url1.toURI());
+         assertTrue(f2.setLastModified(System.currentTimeMillis()));
+
+         assertTrue(checker.hasStructureBeenModified(root));
+         assertFalse(checker.hasStructureBeenModified(root));         
+      }
+      finally
+      {
+         undeploy(vdu);
+      }
+   }
 }
