@@ -156,7 +156,7 @@ public class MetaDataStructureModificationTestCase extends StructureModification
 
          File f1 = new File(url1.toURI());
          assertTrue(f1.setLastModified(System.currentTimeMillis()));
-         File f2 = new File(url1.toURI());
+         File f2 = new File(url2.toURI());
          assertTrue(f2.setLastModified(System.currentTimeMillis()));
 
          assertTrue(checker.hasStructureBeenModified(root));
