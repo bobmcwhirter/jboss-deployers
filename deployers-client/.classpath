@@ -7,7 +7,7 @@
   <classpathentry kind="var" path="M2_REPO/org/apache/ant/ant-junit/1.7.0/ant-junit-1.7.0.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/apache/ant/ant-launcher/1.7.0/ant-launcher-1.7.0.jar"/>
   <classpathentry kind="var" path="M2_REPO/sun-jaxb/jaxb-api/2.1.4/jaxb-api-2.1.4.jar" sourcepath="M2_REPO/sun-jaxb/jaxb-api/2.1.4/jaxb-api-2.1.4-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-common-core/2.2.9.GA/jboss-common-core-2.2.9.GA.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-common-core/2.2.10.GA/jboss-common-core-2.2.10.GA.jar" sourcepath="M2_REPO/org/jboss/jboss-common-core/2.2.10.GA/jboss-common-core-2.2.10.GA-sources.jar"/>
   <classpathentry kind="src" path="/jboss-deployers-client-spi"/>
   <classpathentry kind="src" path="/jboss-deployers-core"/>
   <classpathentry kind="src" path="/jboss-deployers-core-spi"/>

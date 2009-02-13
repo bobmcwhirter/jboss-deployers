@@ -53,6 +53,7 @@ public interface ManagedObjectCreator
     * Build managed objects for this deployment context
     * 
     * @param unit the deployment unit
+    * @param attachmentNames the attachment names
     * @param managedObjects the managed objects
     * @throws DeploymentException
     */

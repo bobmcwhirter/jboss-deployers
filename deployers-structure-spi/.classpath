@@ -9,9 +9,9 @@
   <classpathentry kind="var" path="M2_REPO/org/apache/ant/ant-launcher/1.7.0/ant-launcher-1.7.0.jar"/>
   <classpathentry kind="var" path="M2_REPO/wutka-dtdparser/dtdparser121/1.2.1/dtdparser121-1.2.1.jar"/>
   <classpathentry kind="var" path="M2_REPO/sun-jaxb/jaxb-api/2.1.4/jaxb-api-2.1.4.jar" sourcepath="M2_REPO/sun-jaxb/jaxb-api/2.1.4/jaxb-api-2.1.4-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/integration/jboss-classloading-spi/5.0.0.CR2/jboss-classloading-spi-5.0.0.CR2.jar" sourcepath="M2_REPO/org/jboss/integration/jboss-classloading-spi/5.0.0.CR2/jboss-classloading-spi-5.0.0.CR2-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-common-core/2.2.9.GA/jboss-common-core-2.2.9.GA.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/microcontainer/jboss-dependency/2.0.2.GA/jboss-dependency-2.0.2.GA.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/integration/jboss-classloading-spi/5.0.3.GA/jboss-classloading-spi-5.0.3.GA.jar" sourcepath="M2_REPO/org/jboss/integration/jboss-classloading-spi/5.0.3.GA/jboss-classloading-spi-5.0.3.GA-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-common-core/2.2.10.GA/jboss-common-core-2.2.10.GA.jar" sourcepath="M2_REPO/org/jboss/jboss-common-core/2.2.10.GA/jboss-common-core-2.2.10.GA-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/microcontainer/jboss-dependency/2.0.3.GA/jboss-dependency-2.0.3.GA.jar" sourcepath="M2_REPO/org/jboss/microcontainer/jboss-dependency/2.0.3.GA/jboss-dependency-2.0.3.GA-sources.jar"/>
   <classpathentry kind="src" path="/jboss-deployers-client"/>
   <classpathentry kind="src" path="/jboss-deployers-client-spi"/>
   <classpathentry kind="src" path="/jboss-deployers-core"/>

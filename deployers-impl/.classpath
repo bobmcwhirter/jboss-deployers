@@ -11,18 +11,18 @@
   <classpathentry kind="var" path="M2_REPO/javassist/javassist/3.9.0.GA/javassist-3.9.0.GA.jar" sourcepath="M2_REPO/javassist/javassist/3.9.0.GA/javassist-3.9.0.GA-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/sun-jaxb/jaxb-api/2.1.4/jaxb-api-2.1.4.jar" sourcepath="M2_REPO/sun-jaxb/jaxb-api/2.1.4/jaxb-api-2.1.4-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/aop/jboss-aop/2.0.0.SP1/jboss-aop-2.0.0.SP1.jar" sourcepath="M2_REPO/org/jboss/aop/jboss-aop/2.0.0.SP1/jboss-aop-2.0.0.SP1-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/cl/jboss-classloader/2.0.1.GA/jboss-classloader-2.0.1.GA.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/cl/jboss-classloading/2.0.1.GA/jboss-classloading-2.0.1.GA.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/integration/jboss-classloading-spi/5.0.0.CR2/jboss-classloading-spi-5.0.0.CR2.jar" sourcepath="M2_REPO/org/jboss/integration/jboss-classloading-spi/5.0.0.CR2/jboss-classloading-spi-5.0.0.CR2-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-common-core/2.2.9.GA/jboss-common-core-2.2.9.GA.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/microcontainer/jboss-dependency/2.0.2.GA/jboss-dependency-2.0.2.GA.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/cl/jboss-classloader/2.0.2.GA/jboss-classloader-2.0.2.GA.jar" sourcepath="M2_REPO/org/jboss/cl/jboss-classloader/2.0.2.GA/jboss-classloader-2.0.2.GA-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/cl/jboss-classloading/2.0.2.GA/jboss-classloading-2.0.2.GA.jar" sourcepath="M2_REPO/org/jboss/cl/jboss-classloading/2.0.2.GA/jboss-classloading-2.0.2.GA-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/integration/jboss-classloading-spi/5.0.3.GA/jboss-classloading-spi-5.0.3.GA.jar" sourcepath="M2_REPO/org/jboss/integration/jboss-classloading-spi/5.0.3.GA/jboss-classloading-spi-5.0.3.GA-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-common-core/2.2.10.GA/jboss-common-core-2.2.10.GA.jar" sourcepath="M2_REPO/org/jboss/jboss-common-core/2.2.10.GA/jboss-common-core-2.2.10.GA-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/microcontainer/jboss-dependency/2.0.3.GA/jboss-dependency-2.0.3.GA.jar" sourcepath="M2_REPO/org/jboss/microcontainer/jboss-dependency/2.0.3.GA/jboss-dependency-2.0.3.GA-sources.jar"/>
   <classpathentry kind="src" path="/jboss-deployers-client"/>
   <classpathentry kind="src" path="/jboss-deployers-client-spi"/>
   <classpathentry kind="src" path="/jboss-deployers-core"/>
   <classpathentry kind="src" path="/jboss-deployers-core-spi"/>
   <classpathentry kind="src" path="/jboss-deployers-spi"/>
   <classpathentry kind="src" path="/jboss-deployers-structure-spi"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/microcontainer/jboss-kernel/2.0.2.GA/jboss-kernel-2.0.2.GA.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/microcontainer/jboss-kernel/2.0.3.GA/jboss-kernel-2.0.3.GA.jar" sourcepath="M2_REPO/org/jboss/microcontainer/jboss-kernel/2.0.3.GA/jboss-kernel-2.0.3.GA-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/logging/jboss-logging-log4j/2.0.5.GA/jboss-logging-log4j-2.0.5.GA.jar" sourcepath="M2_REPO/org/jboss/logging/jboss-logging-log4j/2.0.5.GA/jboss-logging-log4j-2.0.5.GA-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/logging/jboss-logging-spi/2.0.5.GA/jboss-logging-spi-2.0.5.GA.jar" sourcepath="M2_REPO/org/jboss/logging/jboss-logging-spi/2.0.5.GA/jboss-logging-spi-2.0.5.GA-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/man/jboss-managed/2.0.0.GA/jboss-managed-2.0.0.GA.jar" sourcepath="M2_REPO/org/jboss/man/jboss-managed/2.0.0.GA/jboss-managed-2.0.0.GA-sources.jar"/>

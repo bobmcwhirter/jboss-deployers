@@ -27,7 +27,6 @@ import java.util.Set;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.managed.ManagedObjectCreator;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
-import org.jboss.logging.Logger;
 import org.jboss.managed.api.ManagedObject;
 import org.jboss.managed.api.factory.ManagedObjectFactory;
 import org.jboss.managed.plugins.factory.ManagedObjectFactoryBuilder;
@@ -44,7 +43,6 @@ import org.jboss.metadata.spi.MetaData;
 public class DefaultManagedObjectCreator
    implements ManagedObjectCreator
 {
-   private static Logger log = Logger.getLogger(DefaultManagedObjectCreator.class);
    private ManagedObjectFactory mof;
 
    
