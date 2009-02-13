@@ -673,7 +673,7 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
          children = new TreeSet<DeploymentContext>(comparator);
       children.add(child);
       if (server != null)
-         registerMBeans(child, true);
+         registerMBeans(child, true, true);
    }
 
    public boolean removeChild(DeploymentContext child)
@@ -683,7 +683,7 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
       if (children == null)
          return false;
       if (server != null)
-         unregisterMBeans(child, true);
+         unregisterMBeans(child, true, true);
       return children.remove(child);
    }
 
@@ -716,7 +716,7 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
       deployed();
       components.add(component);
       if (server != null)
-         registerMBeans(component, true);
+         registerMBeans(component, true, true);
       log.debug("Added component " + component.getName() + " to " + getName());
    }
 
@@ -726,7 +726,7 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
          throw new IllegalArgumentException("Null component");
 
       if (server != null)
-         unregisterMBeans(component, true);
+         unregisterMBeans(component, true, true);
       List<DeploymentContext> componentComponents = component.getComponents();
       if (componentComponents.isEmpty() == false)
          log.warn("Removing component " + name + " which still has components " + componentComponents);
@@ -961,12 +961,12 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
    public void postRegister(Boolean registrationDone)
    {
       if (registrationDone)
-         registerMBeans(this, false);
+         registerMBeans(this, false, true);
    }
    
    public void preDeregister() throws Exception
    {
-      unregisterMBeans(this, false);
+      unregisterMBeans(this, false, true);
    }
    
    public void postDeregister()
@@ -978,8 +978,9 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
     * 
     * @param context the context
     * @param registerContext whether to register the context or just its children and components
+    * @param registerSubDeployments whether to register subdeployments
     */
-   protected void registerMBeans(DeploymentContext context, boolean registerContext)
+   protected void registerMBeans(DeploymentContext context, boolean registerContext, boolean registerSubDeployments)
    {
       if (registerContext && context instanceof DeploymentMBean)
       {
@@ -993,12 +994,15 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
             log.warn("Unable to register deployment mbean " + context.getName(), e);
          }
       }
-      List<DeploymentContext> children = context.getChildren();
-      for (DeploymentContext child : children)
-         registerMBeans(child, true);
-      List<DeploymentContext> components = context.getComponents();
-      for (DeploymentContext component : components)
-         registerMBeans(component, false);
+      if (registerSubDeployments)
+      {
+         List<DeploymentContext> children = context.getChildren();
+         for (DeploymentContext child : children)
+            registerMBeans(child, true, false);
+         List<DeploymentContext> components = context.getComponents();
+         for (DeploymentContext component : components)
+            registerMBeans(component, false, false);
+      }
    }
 
    /**
@@ -1006,8 +1010,9 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
     * 
     * @param context the context
     * @param unregisterContext whether to unregister the context or just its children and components
+    * @param unregisterSubDeployments whether to unregister subdeployments
     */
-   protected void unregisterMBeans(DeploymentContext context, boolean unregisterContext)
+   protected void unregisterMBeans(DeploymentContext context, boolean unregisterContext, boolean unregisterSubDeployments)
    {
       if (unregisterContext && context instanceof DeploymentMBean)
       {
@@ -1021,12 +1026,15 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
             log.trace("Unable to unregister deployment mbean " + context.getName(), e);
          }
       }
-      List<DeploymentContext> children = context.getChildren();
-      for (DeploymentContext child : children)
-         unregisterMBeans(child, true);
-      List<DeploymentContext> components = context.getComponents();
-      for (DeploymentContext component : components)
-         unregisterMBeans(component, false);
+      if (unregisterSubDeployments)
+      {
+         List<DeploymentContext> children = context.getChildren();
+         for (DeploymentContext child : children)
+            unregisterMBeans(child, true, false);
+         List<DeploymentContext> components = context.getComponents();
+         for (DeploymentContext component : components)
+            unregisterMBeans(component, false, false);
+      }
    }
 
    @Override

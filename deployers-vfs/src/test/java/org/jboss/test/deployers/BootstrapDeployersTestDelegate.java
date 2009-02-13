@@ -23,6 +23,9 @@ package org.jboss.test.deployers;
 
 import java.net.URL;
 
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+
 import org.jboss.classloader.plugins.ClassLoaderUtils;
 import org.jboss.classloader.plugins.filter.PatternClassFilter;
 import org.jboss.classloader.spi.ClassLoaderDomain;
@@ -33,6 +36,7 @@ import org.jboss.classloading.spi.metadata.ClassLoadingMetaData10;
 import org.jboss.classloading.spi.vfs.metadata.VFSClassLoaderFactory10;
 import org.jboss.dependency.spi.ControllerState;
 import org.jboss.deployers.plugins.main.MainDeployerImpl;
+import org.jboss.deployers.spi.deployer.Deployers;
 import org.jboss.test.kernel.junit.MicrocontainerTestDelegate;
 import org.jboss.xb.binding.sunday.unmarshalling.DefaultSchemaResolver;
 import org.jboss.xb.binding.sunday.unmarshalling.SingletonSchemaResolverFactory;
@@ -49,6 +53,8 @@ public class BootstrapDeployersTestDelegate extends MicrocontainerTestDelegate
    
    private MainDeployerImpl mainDeployer;
 
+   private MBeanServer server = null;
+   
    static
    {
       DefaultSchemaResolver resolver = (DefaultSchemaResolver) SingletonSchemaResolverFactory.getInstance().getSchemaBindingResolver();
@@ -94,6 +100,16 @@ public class BootstrapDeployersTestDelegate extends MicrocontainerTestDelegate
       super(clazz);
    }
 
+   public MBeanServer getMBeanServer()
+   {
+      return server;
+   }
+
+   public void setMBeanServer(MBeanServer server)
+   {
+      this.server = server;
+   }
+
    protected void deploy() throws Exception
    {
       String common = "/bootstrap/bootstrap.xml";
@@ -105,6 +121,12 @@ public class BootstrapDeployersTestDelegate extends MicrocontainerTestDelegate
       ClassLoaderSystem system = getBean("ClassLoaderSystem", ControllerState.INSTALLED, ClassLoaderSystem.class);
       ClassLoaderDomain domain = system.getDefaultDomain();
       domain.setParentPolicy(parentPolicy);
+      
+      if (server != null)
+      {
+         Deployers deployers = getBean("Deployers", ControllerState.INSTALLED, Deployers.class);
+         server.registerMBean(deployers, new ObjectName("test:type=Deployers"));
+      }
       
       super.deploy();
    }

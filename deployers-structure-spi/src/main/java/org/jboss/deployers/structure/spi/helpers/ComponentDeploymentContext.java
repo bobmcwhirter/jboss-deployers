@@ -398,7 +398,7 @@ public class ComponentDeploymentContext implements DeploymentContext, ComponentD
          throw new IllegalArgumentException("Null component");
       components.add(component);
       if (server != null)
-         registerMBeans(component, true);
+         registerMBeans(component, true, true);
    }
 
    public boolean removeComponent(DeploymentContext component)
@@ -407,7 +407,7 @@ public class ComponentDeploymentContext implements DeploymentContext, ComponentD
          throw new IllegalArgumentException("Null component");
       boolean result = components.remove(component);
       if (server != null)
-         unregisterMBeans(component, true);
+         unregisterMBeans(component, true, true);
       component.cleanup();
       return result;
    }
@@ -632,12 +632,12 @@ public class ComponentDeploymentContext implements DeploymentContext, ComponentD
    public void postRegister(Boolean registrationDone)
    {
       if (registrationDone)
-         registerMBeans(this, false);
+         registerMBeans(this, false, true);
    }
    
    public void preDeregister() throws Exception
    {
-      unregisterMBeans(this, false);
+      unregisterMBeans(this, false, true);
    }
    
    public void postDeregister()
@@ -649,8 +649,9 @@ public class ComponentDeploymentContext implements DeploymentContext, ComponentD
     * 
     * @param context the context
     * @param registerContext whether to register the context or just its children and components
+    * @param registerSubDeployments whether to register subdeployments
     */
-   protected void registerMBeans(DeploymentContext context, boolean registerContext)
+   protected void registerMBeans(DeploymentContext context, boolean registerContext, boolean registerSubDeployments)
    {
       if (registerContext && context instanceof DeploymentMBean)
       {
@@ -664,9 +665,12 @@ public class ComponentDeploymentContext implements DeploymentContext, ComponentD
             log.warn("Unable to register deployment mbean " + context.getName(), e);
          }
       }
-      List<DeploymentContext> components = context.getComponents();
-      for (DeploymentContext component : components)
-         registerMBeans(component, false);
+      if (registerSubDeployments)
+      {
+         List<DeploymentContext> components = context.getComponents();
+         for (DeploymentContext component : components)
+            registerMBeans(component, false, false);
+      }
    }
 
    /**
@@ -674,8 +678,9 @@ public class ComponentDeploymentContext implements DeploymentContext, ComponentD
     * 
     * @param context the context
     * @param unregisterContext whether to unregister the context or just its children and components
+    * @param unregisterSubDeployments whether to unregister subdeployments
     */
-   protected void unregisterMBeans(DeploymentContext context, boolean unregisterContext)
+   protected void unregisterMBeans(DeploymentContext context, boolean unregisterContext, boolean unregisterSubDeployments)
    {
       if (unregisterContext && context instanceof DeploymentMBean)
       {
@@ -689,9 +694,12 @@ public class ComponentDeploymentContext implements DeploymentContext, ComponentD
             log.trace("Unable to unregister deployment mbean " + context.getName(), e);
          }
       }
-      List<DeploymentContext> components = context.getComponents();
-      for (DeploymentContext component : components)
-         unregisterMBeans(component, false);
+      if (unregisterSubDeployments)
+      {
+         List<DeploymentContext> components = context.getComponents();
+         for (DeploymentContext component : components)
+            unregisterMBeans(component, false, false);
+      }
    }
 
    public String toString()

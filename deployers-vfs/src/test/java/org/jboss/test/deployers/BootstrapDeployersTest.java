@@ -27,6 +27,7 @@ import java.security.ProtectionDomain;
 import java.util.List;
 
 import junit.framework.AssertionFailedError;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.jboss.classloader.plugins.ClassLoaderUtils;
@@ -39,7 +40,6 @@ import org.jboss.deployers.structure.spi.main.MainDeployerStructure;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.client.VFSDeploymentFactory;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
-import org.jboss.test.AbstractTestDelegate;
 import org.jboss.test.kernel.junit.MicrocontainerTest;
 import org.jboss.virtual.AssembledDirectory;
 import org.jboss.virtual.VFS;
@@ -56,7 +56,7 @@ import org.jboss.virtual.plugins.vfs.helpers.SuffixesExcludeFilter;
  */
 public abstract class BootstrapDeployersTest extends MicrocontainerTest
 {
-   public static AbstractTestDelegate getDelegate(Class<?> clazz) throws Exception
+   public static BootstrapDeployersTestDelegate getDelegate(Class<?> clazz) throws Exception
    {
       return new BootstrapDeployersTestDelegate(clazz);
    }
