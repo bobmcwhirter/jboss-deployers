@@ -100,11 +100,11 @@ public class DeployerCheckCompleteTestCase extends AbstractMainDeployerTest
       try
       {
          main.addDeployment(deployment);
+         main.process();
       }
-      catch (DeploymentException ignored)
+      catch (Throwable ignored)
       {
       }
-      main.process();
       try
       {
          main.checkComplete();

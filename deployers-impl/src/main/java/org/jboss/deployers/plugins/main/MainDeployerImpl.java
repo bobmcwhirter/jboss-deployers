@@ -28,6 +28,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.ListIterator;
+import java.util.LinkedHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -102,6 +104,9 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
    private Comparator<DeploymentContext> comparator;
    private Comparator<DeploymentContext> reverted;
 
+   /** The deployment waiting to be processed */
+   private Map<String, Deployment> toDeploy = Collections.synchronizedMap(new LinkedHashMap<String, Deployment>());
+
    /**
     * Set the top deployment context comparator.
     *
@@ -111,6 +116,7 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
    {
       if (comparator == null)
          throw new IllegalArgumentException("Null comparator");
+
       this.comparator = comparator;
       this.reverted = new RevertedDeploymentContextComparator(comparator);
    }
@@ -135,6 +141,7 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
    {
       if (deployers == null)
          throw new IllegalArgumentException("Null deployers");
+
       this.deployers = deployers;
    }
 
@@ -158,6 +165,7 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
    {
       if (deployers == null)
          throw new IllegalArgumentException("Null deployers");
+
       structuralDeployers = deployers;
    }
 
@@ -184,9 +192,10 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
    public Deployment getDeployment(String name)
    {
       DeploymentContext context = getTopLevelDeploymentContext(name);
-      if (context == null)
-         return null;
-      return context.getDeployment();
+      if (context != null)
+         return context.getDeployment();
+      else
+         return toDeploy.get(name);
    }
 
    @Deprecated
@@ -204,6 +213,7 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
       DeploymentContext context = getDeploymentContext(name);
       if (errorNotFound && context == null)
          throw new DeploymentException("Context " + name + " not found");
+
       return context;
    }
 
@@ -220,6 +230,7 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
       DeploymentUnit unit = getDeploymentUnit(name);
       if (errorNotFound && unit == null)
          throw new DeploymentException("Unit " + name + " not found");
+
       return unit;
    }
 
@@ -233,6 +244,7 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
    {
       if (name == null)
          throw new IllegalArgumentException("Null name");
+
       return topLevelDeployments.get(name);
    }
 
@@ -284,7 +296,58 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
 
    public void addDeployment(Deployment deployment) throws DeploymentException
    {
-      addDeployment(deployment, true);
+      if (deployment == null)
+         throw new DeploymentException("Null context");
+
+      String name = deployment.getName();
+      lockRead();
+      try
+      {
+         checkExistingTopLevelDeployment(name, true);
+         toDeploy.put(name, deployment);
+      }
+      finally
+      {
+         unlockRead();
+      }
+   }
+
+   /**
+    * Process added deployments.
+    *
+    * @throws DeploymentException for any error
+    */
+   protected void processToDeploy() throws DeploymentException
+   {
+      List<String> added = new ArrayList<String>();
+
+      try
+      {
+         for (Map.Entry<String, Deployment> entry : toDeploy.entrySet())
+         {
+            determineDeploymentContext(entry.getValue(), true);
+            added.add(entry.getKey());
+         }
+      }
+      catch (DeploymentException e)
+      {
+         ListIterator<String> iter = added.listIterator(added.size());
+         while (iter.hasPrevious())
+         {
+            try
+            {
+               removeDeployment(iter.previous(), true);
+            }
+            catch (Throwable  ignored)
+            {
+            }
+         }
+         throw e;
+      }
+      finally
+      {
+         toDeploy.clear();
+      }
    }
 
    /**
@@ -308,50 +371,74 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
          String name = deployment.getName();
          log.debug("Add deployment: " + name);
 
-         DeploymentContext previous = topLevelDeployments.get(name);
-         boolean topLevelFound = false;
-         if (previous != null)
-         {
-            log.debug("Removing previous deployment: " + previous.getName());
-            removeContext(previous, addToDeploy);
-            topLevelFound = true;
-         }
-
-         if (topLevelFound == false)
-         {
-            previous = allDeployments.get(name);
-            if (previous != null)
-               throw new IllegalStateException("Deployment already exists as a subdeployment: " + name);
-         }
-
-         DeploymentContext context = null;
-         try
-         {
-            context = determineStructure(deployment);
-            if (DeploymentState.ERROR.equals(context.getState()))
-               errorDeployments.put(name, context);
-
-            context.getTransientAttachments().addAttachment(MainDeployer.class, this);
-            topLevelDeployments.put(name, context);
-            addContext(context, addToDeploy);
-         }
-         catch (DeploymentException e)
-         {
-            missingDeployers.put(name, deployment);
-            throw e;
-         }
-         catch (Throwable t)
-         {
-            // was structure determined?
-            if (context == null)
-               missingDeployers.put(name, deployment);
-
-            throw DeploymentException.rethrowAsDeploymentException("Error determining deployment structure for " + name, t);
-         }
+         checkExistingTopLevelDeployment(name, addToDeploy);
+         determineDeploymentContext(deployment, addToDeploy);
       }
       finally
       {
          unlockRead();
+      }
+   }
+
+   /**
+    * Check for existing deployment context - redeploy.
+    * Method should take read lock.
+    *
+    * @param name the deployment name
+    * @param addToDeploy should we add this deployment to deploy collection
+    */
+   protected void checkExistingTopLevelDeployment(String name, boolean addToDeploy)
+   {
+      DeploymentContext previous = topLevelDeployments.get(name);
+      if (previous != null)
+      {
+         log.debug("Removing previous deployment: " + previous.getName());
+         removeContext(previous, addToDeploy);
+      }
+      else
+      {
+         previous = allDeployments.get(name);
+         if (previous != null)
+            throw new IllegalStateException("Deployment already exists as a subdeployment: " + name);
+      }
+   }
+
+   /**
+    * Determine deployment context.
+    * Method should take read lock.
+    *
+    * @param deployment the deployment
+    * @param addToDeploy should we add this deployment to deploy collection
+    * @throws DeploymentException for any error
+    */
+   protected void determineDeploymentContext(Deployment deployment, boolean addToDeploy) throws DeploymentException
+   {
+      String name = deployment.getName();
+      DeploymentContext context = null;
+      try
+      {
+         context = determineStructure(deployment);
+         if (DeploymentState.ERROR.equals(context.getState()))
+         {
+            errorDeployments.put(name, context);
+         }
+
+         context.getTransientAttachments().addAttachment(MainDeployer.class, this);
+         topLevelDeployments.put(name, context);
+         addContext(context, addToDeploy);
+      }
+      catch (DeploymentException e)
+      {
+         missingDeployers.put(name, deployment);
+         throw e;
+      }
+      catch (Throwable t)
+      {
+         // was structure determined?
+         if (context == null)
+            missingDeployers.put(name, deployment);
+
+         throw DeploymentException.rethrowAsDeploymentException("Error determining deployment structure for " + name, t);
       }
    }
 
@@ -534,15 +621,13 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
       if (deployers == null)
          throw new IllegalStateException("No deployers");
 
-      lockRead();
+      lockWrite();
       try
       {
          if (shutdown.get())
             throw new IllegalStateException("The main deployer is shutdown");
 
          List<DeploymentContext> undeployContexts = null;
-         List<DeploymentContext> deployContexts = null;
-
          if (undeploy.isEmpty() == false)
          {
             // Undeploy in reverse order (subdeployments first)
@@ -553,6 +638,21 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
                Collections.sort(undeployContexts, reverted);
             undeploy.clear();
          }
+         if (undeployContexts != null)
+         {
+            deployers.process(null, undeployContexts);
+         }
+
+         try
+         {
+            processToDeploy();
+         }
+         catch (DeploymentException e)
+         {
+            throw new RuntimeException("Error while processing new deployments", e);
+         }
+
+         List<DeploymentContext> deployContexts = null;
          if (deploy.isEmpty() == false)
          {
             deployContexts = new ArrayList<DeploymentContext>(deploy);
@@ -560,33 +660,14 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
                Collections.sort(deployContexts, comparator);
             deploy.clear();
          }
-
-         if (undeployContexts == null && deployContexts == null)
+         if (deployContexts != null)
          {
-            log.debug("Asked to process() when there is nothing to do.");
-            return;
-         }
-
-         try
-         {
-            deployers.process(deployContexts, undeployContexts);
-         }
-         catch (RuntimeException e)
-         {
-            throw e;
-         }
-         catch (Error e)
-         {
-            throw e;
-         }
-         catch (Throwable t)
-         {
-            throw new RuntimeException("Unexpected error in process()", t);
+            deployers.process(deployContexts, null);
          }
       }
       finally
       {
-         unlockRead();
+         unlockWrite();
       }
    }
 
