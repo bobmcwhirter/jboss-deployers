@@ -299,10 +299,13 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
       if (deployment == null)
          throw new DeploymentException("Null context");
 
-      String name = deployment.getName();
       lockRead();
       try
       {
+         if (shutdown.get())
+            throw new DeploymentException("The main deployer is shutdown");
+
+         String name = deployment.getName();
          checkExistingTopLevelDeployment(name, true);
          toDeploy.put(name, deployment);
       }
