@@ -323,7 +323,6 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
    protected void processToDeploy() throws DeploymentException
    {
       List<String> added = new ArrayList<String>();
-
       try
       {
          for (Map.Entry<String, Deployment> entry : toDeploy.entrySet())
