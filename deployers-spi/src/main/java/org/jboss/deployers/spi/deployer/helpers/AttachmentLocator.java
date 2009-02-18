@@ -21,6 +21,8 @@
  */
 package org.jboss.deployers.spi.deployer.helpers;
 
+import java.util.List;
+
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 
 /**
@@ -42,15 +44,10 @@ public class AttachmentLocator
     * @return the attachment or null if not present
     * @throws IllegalArgumentException for a null name
     */
+   @Deprecated
    public static Object search(DeploymentUnit unit, String name)
    {
-      Object attachment = null;
-      while (attachment == null && unit != null)
-      {
-         attachment = unit.getAttachment(name);
-         unit = unit.getParent();
-      }
-      return attachment;
+      return searchAncestors(unit, name);
    }
 
    /**
@@ -63,16 +60,10 @@ public class AttachmentLocator
     * @return the attachment or null if not present
     * @throws IllegalArgumentException for a null name or expectedType
     */
+   @Deprecated
    public static <T> T search(DeploymentUnit unit, String name, Class<T> expectedType)
    {
-      Object result = search(unit, name);
-      if (result == null)
-         return null;
-
-      if (expectedType == null)
-         throw new IllegalArgumentException("Null expected type.");
-
-      return expectedType.cast(result);
+      return searchAncestors(unit, name, expectedType);
    }
 
    /**
@@ -84,8 +75,148 @@ public class AttachmentLocator
     * @return the attachment or null if not present
     * @throws IllegalArgumentException for a null name or type
     */
+   @Deprecated
    public static <T> T search(DeploymentUnit unit, Class<T> type)
    {
-      return search(unit, type.getName(), type);
+      if (type == null)
+         throw new IllegalArgumentException("Null expected type.");
+
+      return searchAncestors(unit, type);
+   }
+
+   /**
+    * Get a named attachment, search ancestors
+    *
+    * @param unit the deployment unit
+    * @param name the name of the attachment
+    * @return the attachment or null if not present
+    * @throws IllegalArgumentException for a null name
+    */
+   public static Object searchAncestors(DeploymentUnit unit, String name)
+   {
+      Object attachment = null;
+      while (attachment == null && unit != null)
+      {
+         attachment = unit.getAttachment(name);
+         unit = unit.getParent();
+      }
+      return attachment;
+   }
+
+   /**
+    * Get named attachment of a given type, search ancestors
+    *
+    * @param <T> the expected type
+    * @param unit the deployment unit
+    * @param name the name of the attachment
+    * @param expectedType the expected type
+    * @return the attachment or null if not present
+    * @throws IllegalArgumentException for a null name or expectedType
+    */
+   public static <T> T searchAncestors(DeploymentUnit unit, String name, Class<T> expectedType)
+   {
+      Object result = searchAncestors(unit, name);
+      if (result == null)
+         return null;
+
+      if (expectedType == null)
+         throw new IllegalArgumentException("Null expected type.");
+
+      return expectedType.cast(result);
+   }
+
+   /**
+    * Get an attachment of the given type, search ancestors
+    *
+    * @param <T> the expected type
+    * @param type the type
+    * @param unit the deployment unit
+    * @return the attachment or null if not present
+    * @throws IllegalArgumentException for a null name or type
+    */
+   public static <T> T searchAncestors(DeploymentUnit unit, Class<T> type)
+   {
+      if (type == null)
+         throw new IllegalArgumentException("Null expected type.");
+
+      return searchAncestors(unit, type.getName(), type);
+   }
+
+   /**
+    * Get a named attachment, search in children
+    *
+    * @param unit the deployment unit
+    * @param name the name of the attachment
+    * @return the attachment or null if not present
+    * @throws IllegalArgumentException for a null name
+    */
+   public static Object searchChildren(DeploymentUnit unit, String name)
+   {
+      Object attachment = unit.getAttachment(name);
+      if (attachment != null)
+         return attachment;
+
+      List<DeploymentUnit> components = unit.getComponents();
+      if (components != null && components.isEmpty() == false)
+      {
+         for (DeploymentUnit component : components)
+         {
+            Object result = searchChildren(component, name);
+            if (result != null)
+               return result;
+         }
+      }
+
+      List<DeploymentUnit> children = unit.getChildren();
+      if (children != null && children.isEmpty() == false)
+      {
+         for (DeploymentUnit child : children)
+         {
+            Object result = searchChildren(child, name);
+            if (result != null)
+               return result;
+         }
+      }
+
+      return null;
+   }
+
+   /**
+    * Get named attachment of a given type, search in children
+    *
+    * @param <T> the expected type
+    * @param unit the deployment unit
+    * @param name the name of the attachment
+    * @param expectedType the expected type
+    * @return the attachment or null if not present
+    * @throws IllegalArgumentException for a null name or expectedType
+    */
+   public static <T> T searchChildren(DeploymentUnit unit, String name, Class<T> expectedType)
+   {
+      Object result = searchChildren(unit, name);
+      if (result == null)
+         return null;
+
+      if (expectedType == null)
+         throw new IllegalArgumentException("Null expected type.");
+
+      return expectedType.cast(result);
+   }
+
+   /**
+    * Get an attachment of the given type, search in children
+    *
+    * @param <T> the expected type
+    * @param type the type
+    * @param unit the deployment unit
+    * @return the attachment or null if not present
+    * @throws IllegalArgumentException for a null name or type
+    */
+   public static <T> T searchChildren(DeploymentUnit unit, Class<T> type)
+   {
+      if (type == null)
+         throw new IllegalArgumentException("Null expected type.");
+
+      return searchChildren(unit, type.getName(), type);
    }
 }
