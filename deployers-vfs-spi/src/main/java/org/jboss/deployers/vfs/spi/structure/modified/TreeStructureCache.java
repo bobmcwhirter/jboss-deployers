@@ -144,13 +144,24 @@ public class TreeStructureCache<T> implements StructureCache<T>
    {
       List<String> tokens = PathTokenizer.getTokens(pathName);
       Node<T> node = root;
+      boolean newNode = false;
       for (String token : tokens)
       {
-         Node<T> child = node.getChild(token);
-         if (child == null)
-            child = new Node<T>(token, getDefaultValue(), node);
+         if (newNode)
+         {
+            node = new Node<T>(token, getDefaultValue(), node);
+         }
+         else
+         {
+            Node<T> child = node.getChild(token);
+            if (child == null)
+            {
+               child = new Node<T>(token, getDefaultValue(), node);
+               newNode = true;
+            }
 
-         node = child;
+            node = child;
+         }
       }
    }
 
