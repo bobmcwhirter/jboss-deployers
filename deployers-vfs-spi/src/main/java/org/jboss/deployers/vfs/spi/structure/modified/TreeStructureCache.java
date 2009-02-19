@@ -163,9 +163,9 @@ public class TreeStructureCache<T> implements StructureCache<T>
    {
       private String name;
       private String fullName;
-      private U value;
-
       private Node<U> parent;
+
+      private U value;
       private Map<String, Node<U>> children;
       private Set<String> names;
 
