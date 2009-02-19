@@ -282,6 +282,7 @@ public class TreeStructureCache<T> implements StructureCache<T>
       {
          value = null;
          children = null;
+         names = null;
       }
 
       /**
