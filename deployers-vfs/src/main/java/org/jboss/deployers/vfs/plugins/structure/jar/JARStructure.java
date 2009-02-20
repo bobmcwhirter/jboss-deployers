@@ -142,7 +142,7 @@ public class JARStructure extends AbstractVFSStructureDeployer
             }
             else
             {
-               log.trace("... no - JarUtils.isArchive(" + file.getName() + ") == false");
+               log.trace("... ok - its an archive or at least pretending to be");
             }
          }
          else if (JarUtils.isArchive(file.getName()))
@@ -163,7 +163,10 @@ public class JARStructure extends AbstractVFSStructureDeployer
          {
             StructureContext parentContext = structureContext.getParentContext();
             if (parentContext != null && parentContext.isCandidateAnnotationScanning())
+            {
                valid = checkCandidateAnnotations(structureContext, file);
+               log.trace("... candidate annotations returned " + valid);
+            }
          }
 
          if (valid)
