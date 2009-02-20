@@ -84,6 +84,10 @@ public class DeployerSingleDeploymentTestCase extends AbstractMainDeployerTest
          String msg = cause.getMessage();
          assertEquals(failed, Integer.parseInt(msg));
       }
+      finally
+      {
+         mainDeployer.undeploy(deployments);   
+      }
       deployer.clear();
    }
 
@@ -113,6 +117,10 @@ public class DeployerSingleDeploymentTestCase extends AbstractMainDeployerTest
       {
          assertEquals(size, deployer.getUndeployedUnits().size() + deployer.getFailed().size());
          assertEquals(Collections.singletonList("deployment" + failed), deployer.getFailed());
+      }
+      finally
+      {
+         mainDeployer.undeploy(deployments);   
       }
       deployer.clear();
    }

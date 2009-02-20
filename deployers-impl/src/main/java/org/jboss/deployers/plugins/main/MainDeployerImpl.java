@@ -26,10 +26,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.ListIterator;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -104,8 +105,8 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
    private Comparator<DeploymentContext> comparator;
    private Comparator<DeploymentContext> reverted;
 
-   /** The deployment waiting to be processed */
-   private Map<String, Deployment> toDeploy = Collections.synchronizedMap(new LinkedHashMap<String, Deployment>());
+   /** The re-deployments */
+   private Map<String, Deployment> toRedeploy = Collections.synchronizedMap(new LinkedHashMap<String, Deployment>());
 
    /**
     * Set the top deployment context comparator.
@@ -195,7 +196,7 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
       if (context != null)
          return context.getDeployment();
       else
-         return toDeploy.get(name);
+         return toRedeploy.get(name);
    }
 
    @Deprecated
@@ -296,67 +297,69 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
 
    public void addDeployment(Deployment deployment) throws DeploymentException
    {
-      if (deployment == null)
-         throw new DeploymentException("Null context");
-
-      lockRead();
-      try
-      {
-         if (shutdown.get())
-            throw new DeploymentException("The main deployer is shutdown");
-
-         String name = deployment.getName();
-         checkExistingTopLevelDeployment(name, true);
-         toDeploy.put(name, deployment);
-      }
-      finally
-      {
-         unlockRead();
-      }
+      addDeployment(deployment, true);
    }
 
    /**
-    * Process added deployments.
-    *
+    * Remove added re-deployments.
+    * This method should take read lock.
+    *  
+    * @param names the deployment names to remove
     * @throws DeploymentException for any error
     */
-   protected void processToDeploy() throws DeploymentException
+   protected void processToUndeploy(Set<String> names) throws DeploymentException
    {
-      lockRead();
-      try
+      DeploymentException initialCause = null;
+      for(String name : names)
       {
-         List<String> added = new ArrayList<String>();
          try
          {
-            for (Map.Entry<String, Deployment> entry : toDeploy.entrySet())
-            {
-               determineDeploymentContext(entry.getValue(), true);
-               added.add(entry.getKey());
-            }
+            removeDeployment(name, true);
          }
          catch (DeploymentException e)
          {
-            ListIterator<String> iter = added.listIterator(added.size());
-            while (iter.hasPrevious())
-            {
-               try
-               {
-                  removeDeployment(iter.previous(), true);
-               }
-               catch (Throwable  ignored)
-               {
-               }
-            }
-            throw e;
-         }
-         finally
-         {
-            toDeploy.clear();
+            if (initialCause == null)
+               initialCause = e;
+            else
+               log.warn("More exceptions for deployment: " + name, e);
          }
       }
-      finally
+      if (initialCause != null)
+         throw initialCause;
+   }
+
+   /**
+    * Process added re-deployments.
+    * This method should take read lock.
+    *
+    * @param deployments the deployments to process
+    * @throws DeploymentException for any error
+    */
+   protected void processToDeploy(Collection<Deployment> deployments) throws DeploymentException
+   {
+      List<String> added = new ArrayList<String>();
+      try
       {
-         unlockRead();
+         for (Deployment deployment : deployments)
+         {
+            determineDeploymentContext(deployment, true);
+            added.add(deployment.getName());
+         }
+      }
+      catch (DeploymentException e)
+      {
+         ListIterator<String> iter = added.listIterator(added.size());
+         while (iter.hasPrevious())
+         {
+            try
+            {
+               removeDeployment(iter.previous(), true);
+            }
+            catch (Throwable ignored)
+            {
+            }
+         }
+         throw e;
       }
    }
 
@@ -381,8 +384,11 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
          String name = deployment.getName();
          log.debug("Add deployment: " + name);
 
-         checkExistingTopLevelDeployment(name, addToDeploy);
-         determineDeploymentContext(deployment, addToDeploy);
+         // only try to recognize non re-deployments
+         if (checkExistingTopLevelDeployment(deployment, addToDeploy) == false)
+         {
+            determineDeploymentContext(deployment, addToDeploy);
+         }
       }
       finally
       {
@@ -394,16 +400,19 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
     * Check for existing deployment context - redeploy.
     * Method should take read lock.
     *
-    * @param name the deployment name
+    * @param deployment the deployment
     * @param addToDeploy should we add this deployment to deploy collection
+    * @return true if deployment is a redeployment, false otherwise
     */
-   protected void checkExistingTopLevelDeployment(String name, boolean addToDeploy)
+   protected boolean checkExistingTopLevelDeployment(Deployment deployment, boolean addToDeploy)
    {
+      String name = deployment.getName();
       DeploymentContext previous = topLevelDeployments.get(name);
       if (previous != null)
       {
          log.debug("Removing previous deployment: " + previous.getName());
-         removeContext(previous, addToDeploy);
+         toRedeploy.put(name, deployment);
+         return true;
       }
       else
       {
@@ -411,6 +420,7 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
          if (previous != null)
             throw new IllegalStateException("Deployment already exists as a subdeployment: " + name);
       }
+      return false;
    }
 
    /**
@@ -631,66 +641,66 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
       if (deployers == null)
          throw new IllegalStateException("No deployers");
 
-      List<DeploymentContext> undeployContexts = null;
-      lockWrite();
+      lockRead();
       try
       {
          if (shutdown.get())
             throw new IllegalStateException("The main deployer is shutdown");
 
+         Map<String, Deployment> copy = new LinkedHashMap<String, Deployment>(toRedeploy);
+         toRedeploy.clear();
+
+         try
+         {
+            processToUndeploy(copy.keySet());   
+         }
+         catch (DeploymentException e)
+         {
+            throw new RuntimeException("Error while removing re-deployments", e);
+         }
+
+         List<DeploymentContext> undeployContexts = null;
          if (undeploy.isEmpty() == false)
          {
             // Undeploy in reverse order (subdeployments first)
-            undeployContexts = new ArrayList<DeploymentContext>(undeploy.size());
-            for (int i = undeploy.size() - 1; i >= 0; --i)
-               undeployContexts.add(undeploy.get(i));
+            undeployContexts = new ArrayList<DeploymentContext>(undeploy);
+            undeploy.clear();
+            Collections.reverse(undeployContexts);
             if (reverted != null)
                Collections.sort(undeployContexts, reverted);
-            undeploy.clear();
          }
-      }
-      finally
-      {
-         unlockWrite();
-      }
 
-      if (undeployContexts != null)
-      {
-         deployers.process(null, undeployContexts);
-      }
+         if (undeployContexts != null)
+         {
+            deployers.process(null, undeployContexts);
+         }
 
-      try
-      {
-         processToDeploy();
-      }
-      catch (DeploymentException e)
-      {
-         throw new RuntimeException("Error while processing new deployments", e);
-      }
+         try
+         {
+            processToDeploy(copy.values());
+         }
+         catch (DeploymentException e)
+         {
+            throw new RuntimeException("Error while adding re-deployments", e);
+         }
 
-      List<DeploymentContext> deployContexts = null;
-      lockWrite();
-      try
-      {
-         if (shutdown.get())
-            throw new IllegalStateException("The main deployer is shutdown");
-
+         List<DeploymentContext> deployContexts = null;
          if (deploy.isEmpty() == false)
          {
             deployContexts = new ArrayList<DeploymentContext>(deploy);
+            deploy.clear();
             if (comparator != null)
                Collections.sort(deployContexts, comparator);
-            deploy.clear();
+         }
+
+         if (deployContexts != null)
+         {
+            deployers.process(deployContexts, null);
          }
       }
       finally
       {
-         unlockWrite();
-      }
-
-      if (deployContexts != null)
-      {
-         deployers.process(deployContexts, null);
+         unlockRead();
       }
    }
 
