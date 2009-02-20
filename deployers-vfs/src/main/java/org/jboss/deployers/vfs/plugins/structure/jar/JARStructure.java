@@ -140,6 +140,10 @@ public class JARStructure extends AbstractVFSStructureDeployer
                   log.trace("... ok - doesn't look like a jar but it is a top level directory.");
                }
             }
+            else
+            {
+               log.trace("... no - JarUtils.isArchive(" + file.getName() + ") == false");
+            }
          }
          else if (JarUtils.isArchive(file.getName()))
          {
