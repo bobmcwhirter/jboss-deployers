@@ -165,7 +165,8 @@ public class JARStructure extends AbstractVFSStructureDeployer
             if (parentContext != null && parentContext.isCandidateAnnotationScanning())
             {
                valid = checkCandidateAnnotations(structureContext, file);
-               log.trace("... candidate annotations returned " + valid);
+               if (trace)
+                  log.trace("... candidate annotations for " + file + " returned " + valid);
             }
          }
 
