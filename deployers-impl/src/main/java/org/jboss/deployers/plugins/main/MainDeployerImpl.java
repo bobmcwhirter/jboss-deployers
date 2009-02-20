@@ -322,33 +322,41 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
     */
    protected void processToDeploy() throws DeploymentException
    {
-      List<String> added = new ArrayList<String>();
+      lockRead();
       try
       {
-         for (Map.Entry<String, Deployment> entry : toDeploy.entrySet())
+         List<String> added = new ArrayList<String>();
+         try
          {
-            determineDeploymentContext(entry.getValue(), true);
-            added.add(entry.getKey());
-         }
-      }
-      catch (DeploymentException e)
-      {
-         ListIterator<String> iter = added.listIterator(added.size());
-         while (iter.hasPrevious())
-         {
-            try
+            for (Map.Entry<String, Deployment> entry : toDeploy.entrySet())
             {
-               removeDeployment(iter.previous(), true);
-            }
-            catch (Throwable  ignored)
-            {
+               determineDeploymentContext(entry.getValue(), true);
+               added.add(entry.getKey());
             }
          }
-         throw e;
+         catch (DeploymentException e)
+         {
+            ListIterator<String> iter = added.listIterator(added.size());
+            while (iter.hasPrevious())
+            {
+               try
+               {
+                  removeDeployment(iter.previous(), true);
+               }
+               catch (Throwable  ignored)
+               {
+               }
+            }
+            throw e;
+         }
+         finally
+         {
+            toDeploy.clear();
+         }
       }
       finally
       {
-         toDeploy.clear();
+         unlockRead();
       }
    }
 
@@ -623,13 +631,13 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
       if (deployers == null)
          throw new IllegalStateException("No deployers");
 
+      List<DeploymentContext> undeployContexts = null;
       lockWrite();
       try
       {
          if (shutdown.get())
             throw new IllegalStateException("The main deployer is shutdown");
 
-         List<DeploymentContext> undeployContexts = null;
          if (undeploy.isEmpty() == false)
          {
             // Undeploy in reverse order (subdeployments first)
@@ -640,21 +648,33 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
                Collections.sort(undeployContexts, reverted);
             undeploy.clear();
          }
-         if (undeployContexts != null)
-         {
-            deployers.process(null, undeployContexts);
-         }
+      }
+      finally
+      {
+         unlockWrite();
+      }
 
-         try
-         {
-            processToDeploy();
-         }
-         catch (DeploymentException e)
-         {
-            throw new RuntimeException("Error while processing new deployments", e);
-         }
+      if (undeployContexts != null)
+      {
+         deployers.process(null, undeployContexts);
+      }
 
-         List<DeploymentContext> deployContexts = null;
+      try
+      {
+         processToDeploy();
+      }
+      catch (DeploymentException e)
+      {
+         throw new RuntimeException("Error while processing new deployments", e);
+      }
+
+      List<DeploymentContext> deployContexts = null;
+      lockWrite();
+      try
+      {
+         if (shutdown.get())
+            throw new IllegalStateException("The main deployer is shutdown");
+
          if (deploy.isEmpty() == false)
          {
             deployContexts = new ArrayList<DeploymentContext>(deploy);
@@ -662,14 +682,15 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
                Collections.sort(deployContexts, comparator);
             deploy.clear();
          }
-         if (deployContexts != null)
-         {
-            deployers.process(deployContexts, null);
-         }
       }
       finally
       {
          unlockWrite();
+      }
+
+      if (deployContexts != null)
+      {
+         deployers.process(deployContexts, null);
       }
    }
 
