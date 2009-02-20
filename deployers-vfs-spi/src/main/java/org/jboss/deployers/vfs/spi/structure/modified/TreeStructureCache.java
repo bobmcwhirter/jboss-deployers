@@ -40,7 +40,7 @@ import org.jboss.virtual.plugins.vfs.helpers.PathTokenizer;
 public class TreeStructureCache<T> implements StructureCache<T>
 {
    /** The tree root */
-   private Node<T> root = createRoot();
+   private final Node<T> root = createRoot();
 
    /**
     * Create new root.
@@ -104,13 +104,16 @@ public class TreeStructureCache<T> implements StructureCache<T>
          if (parent != null)
             parent.removeChild(node);
          else // clear root
-            node.clear();
+            flush();
       }
    }
 
-   public synchronized void flush()
+   public void flush()
    {
-      root = createRoot();
+      synchronized (root)
+      {
+         root.clear();
+      }
    }
 
    /**
@@ -122,14 +125,17 @@ public class TreeStructureCache<T> implements StructureCache<T>
    protected Node<T> getNode(String path)
    {
       List<String> tokens = PathTokenizer.getTokens(path);
-      Node<T> node = root;
-      for (String token : tokens)
+      synchronized (root)
       {
-         node = node.getChild(token);
-         if (node == null)
-            break;
+         Node<T> node = root;
+         for (String token : tokens)
+         {
+            node = node.getChild(token);
+            if (node == null)
+               break;
+         }
+         return node;
       }
-      return node;
    }
 
    /**
@@ -138,30 +144,33 @@ public class TreeStructureCache<T> implements StructureCache<T>
     * @param pathName the path name
     * @return initialized node
     */
-   protected synchronized Node<T> initializeNode(String pathName)
+   protected Node<T> initializeNode(String pathName)
    {
       List<String> tokens = PathTokenizer.getTokens(pathName);
-      Node<T> node = root;
-      boolean newNode = false;
-      for (String token : tokens)
+      synchronized (root)
       {
-         if (newNode)
+         Node<T> node = root;
+         boolean newNode = false;
+         for (String token : tokens)
          {
-            node = new Node<T>(token, getDefaultValue(), node);
-         }
-         else
-         {
-            Node<T> child = node.getChild(token);
-            if (child == null)
+            if (newNode)
             {
-               child = new Node<T>(token, getDefaultValue(), node);
-               newNode = true;
+               node = new Node<T>(token, getDefaultValue(), node);
             }
+            else
+            {
+               Node<T> child = node.getChild(token);
+               if (child == null)
+               {
+                  child = new Node<T>(token, getDefaultValue(), node);
+                  newNode = true;
+               }
 
-            node = child;
+               node = child;
+            }
          }
+         return node;
       }
-      return node;
    }
 
    /**
@@ -290,7 +299,7 @@ public class TreeStructureCache<T> implements StructureCache<T>
       /**
        * Clear node.
        */
-      public synchronized void clear()
+      void clear()
       {
          value = null;
          children = null;
