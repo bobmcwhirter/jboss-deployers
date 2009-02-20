@@ -71,10 +71,7 @@ public class TreeStructureCache<T> implements StructureCache<T>
    {
       Node<T> node = getNode(pathName);
       if (node == null)
-      {
-         initializeNode(pathName);
-         node = getNode(pathName);
-      }
+         node = initializeNode(pathName);
 
       T previous = node.getValue();
       node.setValue(value);
@@ -139,8 +136,9 @@ public class TreeStructureCache<T> implements StructureCache<T>
     * Initialize node for pathName param.
     *
     * @param pathName the path name
+    * @return initialized node
     */
-   protected synchronized void initializeNode(String pathName)
+   protected synchronized Node<T> initializeNode(String pathName)
    {
       List<String> tokens = PathTokenizer.getTokens(pathName);
       Node<T> node = root;
@@ -163,6 +161,7 @@ public class TreeStructureCache<T> implements StructureCache<T>
             node = child;
          }
       }
+      return node;
    }
 
    /**
@@ -256,15 +255,15 @@ public class TreeStructureCache<T> implements StructureCache<T>
        *
        * @param node the child node
        */
-      private synchronized void addChild(Node<U> node)
+      private void addChild(Node<U> node)
       {
          if (children == null)
             children = new HashMap<String, Node<U>>();
-         if (names == null)
-            names = new HashSet<String>();
 
          children.put(node.getName(), node);
-         names.add(node.getFullName());
+
+         if (names != null)
+            names.add(node.getFullName());
       }
 
       /**
@@ -274,15 +273,17 @@ public class TreeStructureCache<T> implements StructureCache<T>
        */
       public synchronized void removeChild(Node<U> node)
       {
-         if (children == null || names == null)
+         if (children == null)
             return;
          
          children.remove(node.getName());
-         names.remove(node.getFullName());
+
+         if (names != null)
+            names.remove(node.getFullName());
 
          if (children.isEmpty())
             children = null;
-         if (names.isEmpty())
+         if (names != null && names.isEmpty())
             names = null;
       }
 
@@ -312,9 +313,20 @@ public class TreeStructureCache<T> implements StructureCache<T>
        *
        * @return the children names
        */
-      public Set<String> getChildrenNames()
+      public synchronized Set<String> getChildrenNames()
       {
-         return (names != null) ? names : Collections.<String>emptySet();
+         if (children == null)
+            return Collections.emptySet();
+
+         if (names == null)
+         {
+            names = new HashSet<String>();
+            for (Node<U> child : children.values())
+            {
+               names.add(child.getFullName());
+            }
+         }
+         return names;
       }
 
       /**
