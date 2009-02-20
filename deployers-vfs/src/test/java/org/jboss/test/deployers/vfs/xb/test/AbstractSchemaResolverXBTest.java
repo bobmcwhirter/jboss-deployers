@@ -58,7 +58,7 @@ public abstract class AbstractSchemaResolverXBTest<T> extends XBDeployersTest
       assertEquals(getSuffix(), deployer.getSuffix());
       assertTrue(deployer.isRegisterWithJBossXB());
 
-      String common = "/org/jboss/test/deployers/vfs/xb/test";
+      String common = "/org/jboss/test/deployers/vfs/xb/test/deployment";
       URL url = getClass().getResource(common);
       assertNotNull(url);
       VirtualFile file = VFS.getRoot(url);
