@@ -21,7 +21,6 @@
  */
 package org.jboss.deployers.vfs.plugins.dependency;
 
-import org.jboss.dependency.spi.ControllerContext;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.spi.deployer.helpers.AbstractSimpleRealDeployer;
@@ -43,11 +42,7 @@ public class DependenciesMetaDataDeployer extends AbstractSimpleRealDeployer<Dep
 
    public void deploy(DeploymentUnit unit, DependenciesMetaData deployment) throws DeploymentException
    {
-      ControllerContext context = unit.getTopLevel().getAttachment(ControllerContext.class);
-      if (context == null)
-         throw new DeploymentException("Missing deployment controller context: " + unit.getName());
-
-      Object contextName = context.getName();
+      Object contextName = unit.getControllerContextName();
       unit.addAttachment(DeploymentDependencies.class, new DeploymentDependenciesImpl(contextName, deployment));
    }
 }

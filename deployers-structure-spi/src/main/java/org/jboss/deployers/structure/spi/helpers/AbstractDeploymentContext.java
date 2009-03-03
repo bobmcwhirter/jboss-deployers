@@ -72,6 +72,7 @@ import org.jboss.metadata.spi.scope.ScopeKey;
  * 
  * @author <a href="adrian@jboss.org">Adrian Brock</a>
  * @author Scott.Stark@jboss.org
+ * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttachmentsImpl implements DeploymentContext, AbstractDeploymentContextMBean, MBeanRegistration
@@ -752,16 +753,36 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
       return EmptyResourceLoader.INSTANCE;
    }
 
-   public DependencyInfo getDependencyInfo()
+   public Object getControllerContextName()
    {
       ControllerContext controllerContext = getTransientAttachments().getAttachment(ControllerContext.class);
       if (controllerContext != null)
-         return controllerContext.getDependencyInfo();
+      {
+         return controllerContext.getName();
+      }
       else
       {
          DeploymentContext parent = getParent();
          if (parent == null)
             throw new IllegalStateException("Deployment ControllerContext has not been set");
+
+         return parent.getControllerContextName();
+      }
+   }
+
+   public DependencyInfo getDependencyInfo()
+   {
+      ControllerContext controllerContext = getTransientAttachments().getAttachment(ControllerContext.class);
+      if (controllerContext != null)
+      {
+         return controllerContext.getDependencyInfo();
+      }
+      else
+      {
+         DeploymentContext parent = getParent();
+         if (parent == null)
+            throw new IllegalStateException("Deployment ControllerContext has not been set");
+
          return parent.getDependencyInfo();
       }
    }

@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.jboss.dependency.spi.Controller;
-import org.jboss.dependency.spi.ControllerContext;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.spi.deployer.helpers.AbstractDeploymentVisitor;
 import org.jboss.deployers.spi.deployer.helpers.AbstractRealDeployerWithInput;
@@ -57,11 +56,7 @@ public class DeploymentAliasesDeployer extends AbstractRealDeployerWithInput<Dep
       @Override
       protected DeploymentUnit addComponent(DeploymentUnit unit, Object attachment)
       {
-         ControllerContext context = unit.getAttachment(ControllerContext.class);
-         if (context == null)
-            throw new IllegalArgumentException("Missing deployment controller context: " + unit.getName());
-
-         Object contextName = context.getName();
+         Object contextName = unit.getControllerContextName();
          try
          {
             controller.addAlias(attachment, contextName);

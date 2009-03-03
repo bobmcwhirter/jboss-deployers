@@ -55,6 +55,7 @@ import org.jboss.metadata.spi.scope.ScopeKey;
  * 
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
  * @author Scott.Stark@jboss.org
+ * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public class AbstractDeploymentUnit extends AbstractMutableAttachments implements DeploymentUnit
@@ -459,6 +460,11 @@ public class AbstractDeploymentUnit extends AbstractMutableAttachments implement
    {
       UnitVisitorToContextVisitor contextVisitor = new UnitVisitorToContextVisitor(visitor); 
       getDeploymentContext().visit(contextVisitor);
+   }
+
+   public Object getControllerContextName()
+   {
+      return getDeploymentContext().getControllerContextName();
    }
 
    public DependencyInfo getDependencyInfo()

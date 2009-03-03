@@ -41,6 +41,7 @@ import org.jboss.metadata.spi.scope.ScopeKey;
  * 
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
  * @author Scott.Stark@jboss.org
+ * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public interface DeploymentUnit extends MutableAttachments
@@ -259,7 +260,14 @@ public interface DeploymentUnit extends MutableAttachments
     * @return the deployer or null if not associated with a main deployer
     */
    MainDeployer getMainDeployer();
-   
+
+   /**
+    * Get underlying controller context name.
+    *
+    * @return the controller context name
+    */
+   Object getControllerContextName();
+
    /**
     * Get the dependency info
     * 
