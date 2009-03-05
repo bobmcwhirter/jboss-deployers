@@ -77,6 +77,7 @@ public class ServiceMetaDataICF implements InstanceClassFactory<ServiceMetaData>
       return ServiceMetaData.class;
    }
 
+   @SuppressWarnings("unchecked")
    public Class<? extends Serializable> getManagedObjectClass(ServiceMetaData md)
       throws ClassNotFoundException
    {

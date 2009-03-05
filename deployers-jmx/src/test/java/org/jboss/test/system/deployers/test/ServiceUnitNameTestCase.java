@@ -195,9 +195,8 @@ public class ServiceUnitNameTestCase extends AbstractSystemTest
       System.setProperty(ServerConstants.MBEAN_SERVER_BUILDER_CLASS_PROPERTY, builder);
 
       ClassLoader cl = Thread.currentThread().getContextClassLoader();
-      Class clazz = cl.loadClass("java.lang.management.ManagementFactory");
-      Class[] sig = null;
-      Method method = clazz.getMethod("getPlatformMBeanServer", sig);
+      Class<?> clazz = cl.loadClass("java.lang.management.ManagementFactory");
+      Method method = clazz.getMethod("getPlatformMBeanServer");
       Object[] args = null;
       server = (MBeanServer)method.invoke(null, args);
       // Tell the MBeanServerLocator to point to this mbeanServer

@@ -21,6 +21,7 @@
  */
 package org.jboss.system.deployers.managed;
 
+import java.io.Serializable;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -30,7 +31,7 @@ import java.lang.annotation.Target;
  * ManagementObjectClass annotation for describing the actual class
  * annotated with org.jboss.managed.api.annotation.ManagementObject.
  * 
- * @see {@linkplain org.jboss.managed.api.annotation.ManagementObject}
+ * @see org.jboss.managed.api.annotation.ManagementObject
  * 
  * @author <a href="dimitris@jboss.org">Dimitris Andreadis</a>
  * @version $Revision$
@@ -40,5 +41,5 @@ import java.lang.annotation.Target;
 public @interface ManagementObjectClass
 {
    /** The class annotated with ManagementObject */
-   Class code();
+   Class<? extends Serializable> code();
 }
