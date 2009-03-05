@@ -25,7 +25,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jboss.bootstrap.spi.ServerConfig;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.vfs.spi.deployer.JAXPDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
@@ -34,7 +33,6 @@ import org.jboss.system.metadata.ServiceDeploymentClassPath;
 import org.jboss.system.metadata.ServiceDeploymentParser;
 import org.jboss.system.metadata.ServiceMetaData;
 import org.jboss.system.metadata.ServiceMetaDataParser;
-import org.jboss.system.server.ServerConfigLocator;
 import org.jboss.util.xml.DOMWriter;
 import org.jboss.virtual.VFS;
 import org.jboss.virtual.VirtualFile;
@@ -57,6 +55,9 @@ import org.w3c.dom.Element;
  */
 public class SARDeployer extends JAXPDeployer<ServiceDeployment>
 {
+   /** The default codebase root */
+   private URL defaultCodeBaseRoot;
+   
    /**
     * Create a new SARDeployer.
     * 
@@ -69,6 +70,26 @@ public class SARDeployer extends JAXPDeployer<ServiceDeployment>
       // Enable the super class ManagedObjectCreator implementation
       setBuildManagedObject(true);
       setAllowMultipleFiles(true);
+   }
+
+   /**
+    * Get the defaultCodeBaseRoot.
+    * 
+    * @return the defaultCodeBaseRoot.
+    */
+   public URL getDefaultCodeBaseRoot()
+   {
+      return defaultCodeBaseRoot;
+   }
+
+   /**
+    * Set the defaultCodeBaseRoot.
+    * 
+    * @param defaultCodeBaseRoot the defaultCodeBaseRoot.
+    */
+   public void setDefaultCodeBaseRoot(URL defaultCodeBaseRoot)
+   {
+      this.defaultCodeBaseRoot = defaultCodeBaseRoot;
    }
 
    /**
@@ -135,8 +156,9 @@ public class SARDeployer extends JAXPDeployer<ServiceDeployment>
          VirtualFile codebaseFile = unit.getRoot();
          if (".".equals(codebase) == false)
          {
-            ServerConfig config = ServerConfigLocator.locate();
-            URL codeBaseURL = new URL(config.getServerHomeURL(), codebase);
+            if (defaultCodeBaseRoot == null)
+               throw new DeploymentException("No default codebase root for " + codebase + " in " + unit.getName());
+            URL codeBaseURL = new URL(defaultCodeBaseRoot, codebase);
             codebaseFile = VFS.getRoot(codeBaseURL);
          }
 

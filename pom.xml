@@ -48,6 +48,7 @@
     <module>deployers-impl</module>
     <module>deployers-vfs-spi</module>
     <module>deployers-vfs</module>
+    <module>deployers-jmx</module>
     <module>build</module>
   </modules>
   
@@ -229,6 +230,11 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.jboss.deployers</groupId>
+        <artifactId>jboss-deployers-jmx</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.jboss.microcontainer</groupId>
         <artifactId>jboss-dependency</artifactId>
         <version>${version.jboss.microcontainer}</version>
@@ -236,6 +242,11 @@
       <dependency>
         <groupId>org.jboss.microcontainer</groupId>
         <artifactId>jboss-kernel</artifactId>
+        <version>${version.jboss.microcontainer}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.microcontainer</groupId>
+        <artifactId>jmx-mc-int</artifactId>
         <version>${version.jboss.microcontainer}</version>
       </dependency>
       <dependency>

@@ -21,14 +21,16 @@
  */
 package org.jboss.test.system.deployers.test;
 
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Set;
-import java.lang.reflect.Method;
+
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
 
 import junit.framework.Test;
+
 import org.jboss.dependency.plugins.AbstractController;
 import org.jboss.deployers.client.plugins.deployment.AbstractDeployment;
 import org.jboss.deployers.client.spi.Deployment;
@@ -43,20 +45,19 @@ import org.jboss.deployers.structure.spi.StructuralDeployers;
 import org.jboss.deployers.structure.spi.helpers.AbstractDeploymentContext;
 import org.jboss.kernel.Kernel;
 import org.jboss.kernel.plugins.bootstrap.basic.BasicBootstrap;
-import org.jboss.system.ServiceController;
-import org.jboss.system.server.jmx.LazyMBeanServer;
-import org.jboss.system.deployers.ServiceDeployer;
-import org.jboss.system.deployers.ServiceDeploymentDeployer;
-import org.jboss.system.metadata.ServiceDeployment;
-import org.jboss.system.metadata.ServiceMetaData;
-import org.jboss.system.metadata.ServiceConstructorMetaData;
-import org.jboss.system.metadata.ServiceDependencyMetaData;
-import org.jboss.test.AbstractSystemTest;
-import org.jboss.test.system.deployers.support.CLDeployer;
-import org.jboss.test.system.deployers.support.Tester;
-import org.jboss.test.system.deployers.support.JmxCL;
 import org.jboss.mx.server.ServerConstants;
 import org.jboss.mx.util.MBeanServerLocator;
+import org.jboss.system.ServiceController;
+import org.jboss.system.deployers.ServiceDeployer;
+import org.jboss.system.deployers.ServiceDeploymentDeployer;
+import org.jboss.system.metadata.ServiceConstructorMetaData;
+import org.jboss.system.metadata.ServiceDependencyMetaData;
+import org.jboss.system.metadata.ServiceDeployment;
+import org.jboss.system.metadata.ServiceMetaData;
+import org.jboss.test.AbstractSystemTest;
+import org.jboss.test.system.deployers.support.CLDeployer;
+import org.jboss.test.system.deployers.support.JmxCL;
+import org.jboss.test.system.deployers.support.Tester;
 
 /**
  * Test component name usage.
@@ -201,9 +202,6 @@ public class ServiceUnitNameTestCase extends AbstractSystemTest
       server = (MBeanServer)method.invoke(null, args);
       // Tell the MBeanServerLocator to point to this mbeanServer
       MBeanServerLocator.setJBoss(server);
-      /* If the LazyMBeanServer was used, we need to reset to the jboss
-      MBeanServer to use our implementation for the jboss services.
-      */
-      return LazyMBeanServer.resetToJBossServer(server);
+      return server;
    }
 }
