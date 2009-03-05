@@ -9,7 +9,7 @@
   <classpathentry kind="var" path="M2_REPO/org/jboss/cl/jboss-classloading/2.0.3.GA/jboss-classloading-2.0.3.GA.jar" sourcepath="M2_REPO/org/jboss/cl/jboss-classloading/2.0.3.GA/jboss-classloading-2.0.3.GA-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/integration/jboss-classloading-spi/5.0.3.GA/jboss-classloading-spi-5.0.3.GA.jar" sourcepath="M2_REPO/org/jboss/integration/jboss-classloading-spi/5.0.3.GA/jboss-classloading-spi-5.0.3.GA-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-common-core/2.2.10.GA/jboss-common-core-2.2.10.GA.jar" sourcepath="M2_REPO/org/jboss/jboss-common-core/2.2.10.GA/jboss-common-core-2.2.10.GA-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/microcontainer/jboss-dependency/2.0.4.GA/jboss-dependency-2.0.4.GA.jar" sourcepath="M2_REPO/org/jboss/microcontainer/jboss-dependency/2.0.4.GA/jboss-dependency-2.0.4.GA-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/microcontainer/jboss-dependency/2.2.0-SNAPSHOT/jboss-dependency-2.2.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/jboss/microcontainer/jboss-dependency/2.2.0-SNAPSHOT/jboss-dependency-2.2.0-SNAPSHOT-sources.jar"/>
   <classpathentry kind="src" path="/jboss-deployers-client-spi"/>
   <classpathentry kind="src" path="/jboss-deployers-core-spi"/>
   <classpathentry kind="src" path="/jboss-deployers-spi"/>
