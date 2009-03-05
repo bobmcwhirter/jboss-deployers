@@ -29,6 +29,7 @@ import org.jboss.dependency.spi.DependencyInfo;
 import org.jboss.deployers.client.spi.Deployment;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.DeploymentState;
+import org.jboss.deployers.spi.deployer.DeploymentStage;
 import org.jboss.deployers.spi.attachments.ManagedObjectsWithTransientAttachments;
 import org.jboss.metadata.spi.MetaData;
 import org.jboss.metadata.spi.MutableMetaData;
@@ -345,6 +346,13 @@ public interface DeploymentContext extends ManagedObjectsWithTransientAttachment
     * @return the controller context name
     */
    Object getControllerContextName();
+
+   /**
+    * Set the required stage.
+    *
+    * @param stage the required stage
+    */
+   void setRequiredStage(DeploymentStage stage);
 
    /**
     * Get the dependency info

@@ -29,6 +29,7 @@ import org.jboss.dependency.spi.DependencyItem;
 import org.jboss.deployers.client.spi.main.MainDeployer;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.attachments.MutableAttachments;
+import org.jboss.deployers.spi.deployer.DeploymentStage;
 import org.jboss.metadata.spi.MetaData;
 import org.jboss.metadata.spi.MutableMetaData;
 import org.jboss.metadata.spi.scope.ScopeKey;
@@ -267,6 +268,13 @@ public interface DeploymentUnit extends MutableAttachments
     * @return the controller context name
     */
    Object getControllerContextName();
+
+   /**
+    * Set the required stage.
+    *
+    * @param stage the required stage
+    */
+   void setRequiredStage(DeploymentStage stage);
 
    /**
     * Get the dependency info

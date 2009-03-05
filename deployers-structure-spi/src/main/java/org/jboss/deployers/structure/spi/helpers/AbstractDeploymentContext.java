@@ -44,9 +44,11 @@ import javax.management.ObjectName;
 import org.jboss.classloading.spi.RealClassLoader;
 import org.jboss.dependency.spi.ControllerContext;
 import org.jboss.dependency.spi.DependencyInfo;
+import org.jboss.dependency.spi.ControllerState;
 import org.jboss.deployers.client.spi.Deployment;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.DeploymentState;
+import org.jboss.deployers.spi.deployer.DeploymentStage;
 import org.jboss.deployers.spi.attachments.Attachments;
 import org.jboss.deployers.spi.attachments.MutableAttachments;
 import org.jboss.deployers.spi.attachments.helpers.ManagedObjectsWithTransientAttachmentsImpl;
@@ -767,6 +769,23 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
             throw new IllegalStateException("Deployment ControllerContext has not been set");
 
          return parent.getControllerContextName();
+      }
+   }
+
+   public void setRequiredStage(DeploymentStage stage)
+   {
+      ControllerContext controllerContext = getTransientAttachments().getAttachment(ControllerContext.class);
+      if (controllerContext != null)
+      {
+         controllerContext.setRequiredState(new ControllerState(stage.getName()));
+      }
+      else
+      {
+         DeploymentContext parent = getParent();
+         if (parent == null)
+            throw new IllegalStateException("Deployment ControllerContext has not been set");
+
+         parent.setRequiredStage(stage);
       }
    }
 
