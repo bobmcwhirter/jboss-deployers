@@ -37,6 +37,7 @@ import org.xml.sax.InputSource;
 
 /**
  * JBossXB deployer helper.
+ * TODO - remove this once we have new XB anf VFS.
  *
  * @param <T> the expected type
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
