@@ -24,7 +24,9 @@ package org.jboss.deployers.vfs.spi.deployer;
 import java.util.Map;
 
 import org.jboss.virtual.VirtualFile;
+import org.jboss.virtual.VFSInputSource;
 import org.jboss.xb.binding.ObjectModelFactory;
+import org.xml.sax.InputSource;
 
 /**
  * MultipleObjectModelFactoryDeployer.
@@ -55,8 +57,9 @@ public abstract class MultipleObjectModelFactoryDeployer<T> extends MultipleJBos
       ObjectModelFactory objectModelFactory = getObjectModelFactory(expectedType, file, tRoot);
       if (objectModelFactory == null)
          log.warn("ObjectModelFactory factory is null, expectedType=" + expectedType + ", file=" + file);
-      
-      return getHelper().parse(expectedType, file, tRoot, objectModelFactory);
+
+      InputSource source = new VFSInputSource(file);
+      return getHelper().parse(expectedType, source, tRoot, objectModelFactory);
    }
 
    /**

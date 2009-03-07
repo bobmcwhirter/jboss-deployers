@@ -23,6 +23,8 @@ package org.jboss.deployers.vfs.spi.deployer;
 
 import java.util.Map;
 
+import org.jboss.xb.binding.JBossXBDeployerHelper;
+
 /**
  * MultipleJBossXBDeployer.
  *

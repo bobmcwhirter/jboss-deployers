@@ -53,6 +53,7 @@ public abstract class UnmarshallerFactoryDeployer<T, U> extends AbstractVFSParsi
 
    /**
     * Create unmarshaller factory wrapper.
+    *
     * @return the unmarshaller factory
     */
    protected abstract UnmarshallerFactory<U> createUnmarshallerFactory();

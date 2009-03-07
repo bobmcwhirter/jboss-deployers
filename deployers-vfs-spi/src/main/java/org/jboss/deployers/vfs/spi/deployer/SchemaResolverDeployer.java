@@ -23,15 +23,18 @@ package org.jboss.deployers.vfs.spi.deployer;
 
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.virtual.VirtualFile;
+import org.jboss.virtual.VFSInputSource;
 import org.jboss.xb.annotations.JBossXmlConstants;
+import org.jboss.xb.binding.JBossXBDeployerHelper;
+import org.xml.sax.InputSource;
 
 /**
  * SchemaResolverDeployer.
  * 
  * @param <T> the expected type 
- * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
  * @author Scott.Stark@jboss.org
+ * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  * @version $Revision 1.1 $
  */
 public class SchemaResolverDeployer<T> extends JBossXBDeployer<T>
@@ -129,6 +132,8 @@ public class SchemaResolverDeployer<T> extends JBossXBDeployer<T>
    {
       if (file == null)
          throw new IllegalArgumentException("Null file");
-      return getHelper().parse(file);
+
+      InputSource source = new VFSInputSource(file);
+      return getHelper().parse(source);
    }
 }

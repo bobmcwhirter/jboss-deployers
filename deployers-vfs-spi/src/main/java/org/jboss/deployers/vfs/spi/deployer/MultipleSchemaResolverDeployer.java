@@ -26,8 +26,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.jboss.xb.annotations.JBossXmlConstants;
 import org.jboss.virtual.VirtualFile;
+import org.jboss.virtual.VFSInputSource;
+import org.jboss.xb.annotations.JBossXmlConstants;
+import org.jboss.xb.binding.JBossXBDeployerHelper;
+import org.xml.sax.InputSource;
 
 /**
  * MultipleSchemaResolverDeployer.
@@ -106,6 +109,7 @@ public abstract class MultipleSchemaResolverDeployer<T> extends MultipleJBossXBD
 
    protected <U> U parse(Class<U> expectedType, VirtualFile file, Object root) throws Exception
    {
-      return getHelper().parse(expectedType, file);
+      InputSource source = new VFSInputSource(file);
+      return getHelper().parse(expectedType, source);
    }
 }

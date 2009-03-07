@@ -21,6 +21,8 @@
 */
 package org.jboss.deployers.vfs.spi.deployer;
 
+import org.jboss.xb.binding.JBossXBDeployerHelper;
+
 /**
  * JBoss XB deployer.
  *
@@ -56,7 +58,13 @@ public abstract class JBossXBDeployer<T> extends UnmarshallerFactoryDeployer<T, 
 
    protected UnmarshallerFactory<Boolean> createUnmarshallerFactory()
    {
-      return getHelper();
+      return new UnmarshallerFactory<Boolean>()
+      {
+         public void setFeature(String featureName, Boolean flag) throws Exception
+         {
+            getHelper().setFeature(featureName, flag);
+         }
+      };
    }
 
    protected Boolean fromString(String value)

@@ -22,7 +22,6 @@
 package org.jboss.test.deployers;
 
 import java.net.URL;
-
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
@@ -38,7 +37,7 @@ import org.jboss.dependency.spi.ControllerState;
 import org.jboss.deployers.plugins.main.MainDeployerImpl;
 import org.jboss.deployers.spi.deployer.Deployers;
 import org.jboss.test.kernel.junit.MicrocontainerTestDelegate;
-import org.jboss.xb.binding.sunday.unmarshalling.DefaultSchemaResolver;
+import org.jboss.xb.binding.resolver.MutableSchemaResolver;
 import org.jboss.xb.binding.sunday.unmarshalling.SingletonSchemaResolverFactory;
 
 /**
@@ -57,9 +56,9 @@ public class BootstrapDeployersTestDelegate extends MicrocontainerTestDelegate
    
    static
    {
-      DefaultSchemaResolver resolver = (DefaultSchemaResolver) SingletonSchemaResolverFactory.getInstance().getSchemaBindingResolver();
-      resolver.addClassBinding("urn:jboss:classloader:1.0", VFSClassLoaderFactory10.class);
-      resolver.addClassBinding("urn:jboss:classloading:1.0", ClassLoadingMetaData10.class);
+      MutableSchemaResolver resolver = SingletonSchemaResolverFactory.getInstance().getSchemaBindingResolver();
+      resolver.mapURIToClass("urn:jboss:classloader:1.0", VFSClassLoaderFactory10.class);
+      resolver.mapURIToClass("urn:jboss:classloading:1.0", ClassLoadingMetaData10.class);
 
       // TODO add a negating class filter to jboss-classloader
       ClassFilter classFilter = new ClassFilter()

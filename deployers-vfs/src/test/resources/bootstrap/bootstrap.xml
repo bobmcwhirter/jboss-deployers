@@ -36,10 +36,10 @@
    <!-- The holder for deployers that do real deployment -->
    <bean name="Deployers" class="org.jboss.deployers.plugins.deployers.DeployersImpl">
       <constructor><parameter><inject bean="jboss.kernel:service=KernelController"/></parameter></constructor>
+      <property name="mgtObjectCreator"><inject bean="ManagedObjectCreator"/></property>
       <!-- Accept any implementor of deployer -->
       <incallback method="addDeployer"/>
       <uncallback method="removeDeployer"/>
-      <property name="mgtObjectCreator"><inject bean="ManagedObjectCreator"/></property>
    </bean>
 
    <!-- A declared structure descriptor deployer -->

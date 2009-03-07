@@ -36,6 +36,7 @@ import org.jboss.test.deployers.vfs.deployer.validate.support.MyVFSDeploymentCon
 import org.jboss.test.deployers.vfs.deployer.validate.support.MyVirtualFile;
 import org.jboss.test.deployers.vfs.deployer.validate.support.TestXmlDeployer;
 import org.jboss.virtual.VirtualFile;
+import org.jboss.xb.binding.JBossXBException;
 
 /**
  * Validate deployers.
@@ -85,7 +86,9 @@ public class DeployersValidateInputTestCase extends BaseTestCase
          catch(Exception e)
          {
             assertInstanceOf(e, DeploymentException.class);
-            assertInstanceOf(e.getCause(), IOException.class);
+            Throwable cause = e.getCause();
+            if (IOException.class.isInstance(cause) == false && JBossXBException.class.isInstance(cause) == false)
+               fail("Illegal exception cause: " + cause);
          }
       }
    }

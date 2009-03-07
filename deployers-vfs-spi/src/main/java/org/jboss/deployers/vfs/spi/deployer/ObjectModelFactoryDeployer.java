@@ -23,7 +23,9 @@ package org.jboss.deployers.vfs.spi.deployer;
 
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.virtual.VirtualFile;
+import org.jboss.virtual.VFSInputSource;
 import org.jboss.xb.binding.ObjectModelFactory;
+import org.xml.sax.InputSource;
 
 /**
  * ObjectModelFactoryDeployer extends the AbstractParsingDeployer to add an
@@ -53,7 +55,8 @@ public abstract class ObjectModelFactoryDeployer<T> extends JBossXBDeployer<T>
    @Override
    protected T parse(VFSDeploymentUnit unit, VirtualFile file, T root) throws Exception
    {
-      return getHelper().parse(file, root, getObjectModelFactory(root));
+      InputSource source = new VFSInputSource(file);
+      return getHelper().parse(source, root, getObjectModelFactory(root));
    }
 
    /**
