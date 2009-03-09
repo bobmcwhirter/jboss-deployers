@@ -23,7 +23,7 @@ package org.jboss.deployers.vfs.spi.deployer;
 
 import java.util.Map;
 
-import org.jboss.xb.binding.JBossXBDeployerHelper;
+import org.jboss.xb.util.JBossXBHelper;
 
 /**
  * MultipleJBossXBDeployer.
@@ -34,7 +34,7 @@ import org.jboss.xb.binding.JBossXBDeployerHelper;
 public abstract class MultipleJBossXBDeployer<T> extends MultipleVFSParsingDeployer<T>
 {
    /** The helper */
-   private JBossXBDeployerHelper<T> helper;
+   private JBossXBHelper<T> helper;
 
    /** The features */
    private Map<String, Boolean> features;
@@ -47,7 +47,7 @@ public abstract class MultipleJBossXBDeployer<T> extends MultipleVFSParsingDeplo
    public MultipleJBossXBDeployer(Class<T> output, Map<String, Class<?>> mappings, String suffix, Class<?> suffixClass)
    {
       super(output, mappings, suffix, suffixClass);
-      this.helper = new JBossXBDeployerHelper<T>(output);
+      this.helper = new JBossXBHelper<T>(output);
    }
 
    /**
@@ -55,7 +55,7 @@ public abstract class MultipleJBossXBDeployer<T> extends MultipleVFSParsingDeplo
     *
     * @return the helper
     */
-   protected JBossXBDeployerHelper<T> getHelper()
+   protected JBossXBHelper<T> getHelper()
    {
       return helper;
    }

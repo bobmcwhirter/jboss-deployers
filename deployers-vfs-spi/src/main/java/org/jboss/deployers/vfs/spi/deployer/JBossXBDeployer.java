@@ -21,7 +21,7 @@
 */
 package org.jboss.deployers.vfs.spi.deployer;
 
-import org.jboss.xb.binding.JBossXBDeployerHelper;
+import org.jboss.xb.util.JBossXBHelper;
 
 /**
  * JBoss XB deployer.
@@ -32,7 +32,7 @@ import org.jboss.xb.binding.JBossXBDeployerHelper;
 public abstract class JBossXBDeployer<T> extends UnmarshallerFactoryDeployer<T, Boolean>
 {
    /** The helper */
-   private JBossXBDeployerHelper<T> helper;
+   private JBossXBHelper<T> helper;
 
    /**
     * Create a new SchemaResolverDeployer.
@@ -43,7 +43,7 @@ public abstract class JBossXBDeployer<T> extends UnmarshallerFactoryDeployer<T, 
    public JBossXBDeployer(Class<T> output)
    {
       super(output);
-      this.helper = new JBossXBDeployerHelper<T>(output);
+      this.helper = new JBossXBHelper<T>(output);
    }
 
    /**
@@ -51,7 +51,7 @@ public abstract class JBossXBDeployer<T> extends UnmarshallerFactoryDeployer<T, 
     *
     * @return the helper
     */
-   protected JBossXBDeployerHelper<T> getHelper()
+   protected JBossXBHelper<T> getHelper()
    {
       return helper;
    }

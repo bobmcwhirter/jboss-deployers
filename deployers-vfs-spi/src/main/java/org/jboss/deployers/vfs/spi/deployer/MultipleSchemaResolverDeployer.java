@@ -29,7 +29,7 @@ import java.util.Set;
 import org.jboss.virtual.VirtualFile;
 import org.jboss.virtual.VFSInputSource;
 import org.jboss.xb.annotations.JBossXmlConstants;
-import org.jboss.xb.binding.JBossXBDeployerHelper;
+import org.jboss.xb.util.JBossXBHelper;
 import org.xml.sax.InputSource;
 
 /**
@@ -85,14 +85,14 @@ public abstract class MultipleSchemaResolverDeployer<T> extends MultipleJBossXBD
    {
       if (excluded.contains(metadata) == false)
       {
-         String namespace = JBossXBDeployerHelper.findNamespace(metadata);
+         String namespace = JBossXBHelper.findNamespace(metadata);
          if (namespace == null || JBossXmlConstants.DEFAULT.equals(namespace))
             throw new IllegalArgumentException(
                   "Registering schema with JBossXB is enabled, but cannot find namespace on class or package: " + metadata +
                   ", perhaps missing @JBossXmlSchema or using default namespace attribute."
             );
 
-         JBossXBDeployerHelper.addClassBinding(namespace, metadata);
+         JBossXBHelper.addClassBinding(namespace, metadata);
          namespaces.add(namespace);
       }
    }
@@ -103,7 +103,7 @@ public abstract class MultipleSchemaResolverDeployer<T> extends MultipleJBossXBD
    public void destroy()
    {
       for (String namespace : namespaces)
-         JBossXBDeployerHelper.removeClassBinding(namespace);
+         JBossXBHelper.removeClassBinding(namespace);
       namespaces.clear();
    }
 

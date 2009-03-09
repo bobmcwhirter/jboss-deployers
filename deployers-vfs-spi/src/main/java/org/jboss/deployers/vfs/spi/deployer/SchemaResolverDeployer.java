@@ -25,7 +25,7 @@ import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.virtual.VirtualFile;
 import org.jboss.virtual.VFSInputSource;
 import org.jboss.xb.annotations.JBossXmlConstants;
-import org.jboss.xb.binding.JBossXBDeployerHelper;
+import org.jboss.xb.util.JBossXBHelper;
 import org.xml.sax.InputSource;
 
 /**
@@ -93,14 +93,14 @@ public class SchemaResolverDeployer<T> extends JBossXBDeployer<T>
    {
       if (isRegisterWithJBossXB())
       {
-         namespace = JBossXBDeployerHelper.findNamespace(getOutput());
+         namespace = JBossXBHelper.findNamespace(getOutput());
          if (namespace == null || JBossXmlConstants.DEFAULT.equals(namespace))
             throw new IllegalArgumentException(
                   "RegisterWithJBossXB is enabled, but cannot find namespace on class or package: " + getOutput() +
                   ", perhaps missing @JBossXmlSchema or using default namespace attribute."
             );
 
-         JBossXBDeployerHelper.addClassBinding(namespace, getOutput());
+         JBossXBHelper.addClassBinding(namespace, getOutput());
       }
    }
 
@@ -112,7 +112,7 @@ public class SchemaResolverDeployer<T> extends JBossXBDeployer<T>
       if (isRegisterWithJBossXB())
       {
          // namespace should exist, since we got past create
-         JBossXBDeployerHelper.removeClassBinding(namespace);
+         JBossXBHelper.removeClassBinding(namespace);
       }
    }
 
