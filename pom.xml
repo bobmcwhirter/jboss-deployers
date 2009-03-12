@@ -30,7 +30,7 @@
     <version.jboss.common.core>2.2.10.GA</version.jboss.common.core>
     <version.jboss.logging.spi>2.0.5.GA</version.jboss.logging.spi>
     <version.jboss.logging.log4j>2.0.5.GA</version.jboss.logging.log4j>
-    <version.jbossxb>2.0.1-SNAPSHOT</version.jbossxb>
+    <version.jbossxb>2.0.1.Beta3</version.jbossxb>
     <version.jboss.aop>2.0.0.SP1</version.jboss.aop>
     <version.org.jboss.test>1.1.1.GA</version.org.jboss.test>
     <version.junit>4.4</version.junit>
