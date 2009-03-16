@@ -59,7 +59,7 @@ public abstract class AbstractAllInputDeployer extends AbstractDeployer
       return true;
    }
 
-   public void deploy(DeploymentUnit unit) throws DeploymentException
+   public final void deploy(DeploymentUnit unit) throws DeploymentException
    {
       if (hasAllRequiredInputs(unit))
       {
