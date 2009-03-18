@@ -26,6 +26,7 @@ import java.util.Set;
 import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.test.deployers.BootstrapDeployersTest;
+import org.jboss.test.deployers.vfs.annotations.support.NoExtRecurseFilter;
 import org.jboss.test.deployers.vfs.annotations.support.ext.External;
 import org.jboss.test.deployers.vfs.annotations.support.jar.JarMarkOnClass;
 import org.jboss.test.deployers.vfs.annotations.support.jar.impl.JarMarkOnClassImpl;
@@ -70,6 +71,12 @@ public abstract class AbstractAnnotationsScanningUnitTest extends BootstrapDeplo
       assertEar(unit);
       try
       {
+         AnnotationEnvironment env = unit.getAttachment(AnnotationEnvironment.class);
+         assertNotNull(env);
+         Set annotations = env.classIsAnnotatedWith("org.jboss.test.deployers.vfs.annotations.support.MarkedAnnotation");
+         assertNotNull(annotations);
+         assertEquals(1, annotations.size());
+
          DeploymentUnit jarUnit = assertChild(unit, "simple.jar");
          assertJar(jarUnit);
          DeploymentUnit webUnit = assertChild(unit, "simple.war");
@@ -113,6 +120,8 @@ public abstract class AbstractAnnotationsScanningUnitTest extends BootstrapDeplo
       addPackage(util, Util.class);
       AssembledDirectory ext = earLib.mkdir("ext.jar");
       addPackage(ext, External.class);
+      AssembledDirectory ann = earLib.mkdir("ann.jar");
+      addPackage(ann, NoExtRecurseFilter.class);
       return topLevel;
    }
 }

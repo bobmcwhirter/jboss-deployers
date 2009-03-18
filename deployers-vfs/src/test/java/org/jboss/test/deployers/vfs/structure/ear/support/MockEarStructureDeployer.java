@@ -126,7 +126,7 @@ public class MockEarStructureDeployer extends AbstractVFSStructureDeployer
             {
                List<VirtualFile> archives = lib.getChildren(earLibFilter);
                for (VirtualFile archive : archives)
-                  super.addClassPath(structureContext, archive, true, true, context);
+                  addClassPath(structureContext, archive, true, true, context);
             }
          }
          catch (IOException ignored)

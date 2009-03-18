@@ -29,9 +29,8 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-@Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD})
+@Target({ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@MarkedAnnotation
-public @interface Marked
+public @interface MarkedAnnotation
 {
 }
