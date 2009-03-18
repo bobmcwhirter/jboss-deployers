@@ -21,34 +21,43 @@
 */
 package org.jboss.deployers.vfs.spi.deployer;
 
-import java.io.InputStream;
 import java.util.Map;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.ValidationEventHandler;
+import javax.xml.bind.helpers.DefaultValidationEventHandler;
+import javax.xml.validation.Schema;
 
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
+import org.jboss.virtual.VFSInputSource;
 import org.jboss.virtual.VirtualFile;
 import org.xml.sax.InputSource;
 
 /**
  * JAXBDeployer.
- * 
- * @param <T> the expected type 
+ *
+ * @param <T> the expected type
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public abstract class JAXBDeployer<T> extends AbstractVFSParsingDeployer<T>
 {
-   /** The JAXBContext */ 
+   /** The JAXBContext */
    private JAXBContext context;
 
    /** The properties */
    private Map<String, Object> properties;
-   
+
+   /** The schema location */
+   private String schemaLocation;
+
+   /** The validation event handler */
+   private ValidationEventHandler validationEventHandler = new DefaultValidationEventHandler();
+
    /**
     * Create a new JAXBDeployer.
-    * 
+    *
     * @param output the output
     * @throws IllegalArgumentException for a null output
     */
@@ -59,7 +68,7 @@ public abstract class JAXBDeployer<T> extends AbstractVFSParsingDeployer<T>
 
    /**
     * Get the properties.
-    * 
+    *
     * @return the properties.
     */
    public Map<String, Object> getProperties()
@@ -69,7 +78,7 @@ public abstract class JAXBDeployer<T> extends AbstractVFSParsingDeployer<T>
 
    /**
     * Set the properties.
-    * 
+    *
     * @param properties the properties.
     */
    public void setProperties(Map<String, Object> properties)
@@ -78,16 +87,57 @@ public abstract class JAXBDeployer<T> extends AbstractVFSParsingDeployer<T>
    }
 
    /**
+    * Set schema location.
+    *
+    * @param schemaLocation the schema location
+    */
+   public void setSchemaLocation(String schemaLocation)
+   {
+      this.schemaLocation = schemaLocation;
+   }
+
+   /**
+    * Set the validation event handler.
+    *
+    * @param validationEventHandler the validation event handler
+    */
+   public void setValidationEventHandler(ValidationEventHandler validationEventHandler)
+   {
+      this.validationEventHandler = validationEventHandler;
+   }
+
+   /**
     * Create lifecycle
-    * 
+    *
     * @throws Exception for any problem
     */
    public void create() throws Exception
    {
+      context = createContext();
+   }
+
+   /**
+    * Create context.
+    *
+    * @return new context instance
+    * @throws Exception for any error
+    */
+   protected JAXBContext createContext() throws Exception
+   {
       if (properties != null)
-         context = JAXBContext.newInstance(new Class[] { getOutput() }, properties);
+         return JAXBContext.newInstance(classesToBeBound(), properties);
       else
-         context = JAXBContext.newInstance(getOutput());
+         return JAXBContext.newInstance(classesToBeBound());
+   }
+
+   /**
+    * Get classes to be bound.
+    *
+    * @return the classes to be bound
+    */
+   protected Class<?>[] classesToBeBound()
+   {
+      return new Class<?>[]{getOutput()};
    }
 
    /**
@@ -97,28 +147,23 @@ public abstract class JAXBDeployer<T> extends AbstractVFSParsingDeployer<T>
    {
       context = null;
    }
-   
+
    @Override
    protected T parse(VFSDeploymentUnit unit, VirtualFile file, T root) throws Exception
    {
+      if (file == null)
+         throw new IllegalArgumentException("Null file");
+
+      log.debug("Parsing: " + file.getName());
+
       Unmarshaller unmarshaller = context.createUnmarshaller();
-      InputStream is = openStreamAndValidate(file);
-      try
-      {
-         InputSource source = new InputSource(is);
-         source.setSystemId(file.toURI().toString());
-         Object o = unmarshaller.unmarshal(source);
-         return getOutput().cast(o);
-      }
-      finally
-      {
-         try
-         {
-            is.close();
-         }
-         catch (Exception ignored)
-         {
-         }
-      }
+      unmarshaller.setEventHandler(validationEventHandler);
+      Schema schema = SchemaHelper.getSchema(schemaLocation);
+      if (schema != null)
+         unmarshaller.setSchema(schema);
+
+      InputSource source = new VFSInputSource(file);
+      Object result = unmarshaller.unmarshal(source);
+      return getOutput().cast(result);
    }
 }

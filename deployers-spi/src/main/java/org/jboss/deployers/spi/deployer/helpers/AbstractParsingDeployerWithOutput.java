@@ -49,6 +49,9 @@ public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsi
    /** The jar extension */
    private String jarExtension;
 
+   /** The attachment key */
+   private String attachmentKey;
+
    /** Include the deployment file */
    private boolean includeDeploymentFile = false;
 
@@ -66,6 +69,7 @@ public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsi
       if (output == null)
          throw new IllegalArgumentException("Null output");
       setOutput(output);
+      setAttachmentKey(output.getName());
    }
    
    @SuppressWarnings("unchecked")
@@ -98,10 +102,10 @@ public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsi
     */
    public void setName(String name)
    {
-      if (names != null)
-         throw new IllegalArgumentException("Names already set.");
-
-      this.names = Collections.singleton(name);
+      if (name != null)
+         names = Collections.singleton(name);
+      else
+         names = null;
    }
 
    /**
@@ -255,7 +259,28 @@ public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsi
    {
       return unit.getAttachment(key, getOutput());
    }
-   
+
+   /**
+    * Get attachment key.
+    * By default it's output's fqn classname.
+    *
+    * @return the attachment key.
+    */
+   protected String getAttachmentKey()
+   {
+      return attachmentKey;
+   }
+
+   /**
+    * Set attachment key.
+    *
+    * @param attachmentKey the attachment key
+    */
+   public void setAttachmentKey(String attachmentKey)
+   {
+      this.attachmentKey = attachmentKey;
+   }
+
    /**
     * Create some meta data. Calls createMetaData(unit, name, suffix, getDeploymentType().getName()).
     * 
@@ -266,7 +291,7 @@ public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsi
     */
    protected void createMetaData(DeploymentUnit unit, String name, String suffix) throws DeploymentException
    {
-      createMetaData(unit, name, suffix, getOutput().getName());
+      createMetaData(unit, name, suffix, getAttachmentKey());
    }
    
    /**
@@ -279,7 +304,7 @@ public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsi
     */
    protected void createMetaData(DeploymentUnit unit, Set<String> names, String suffix) throws DeploymentException
    {
-      createMetaData(unit, names, suffix, getOutput().getName());
+      createMetaData(unit, names, suffix, getAttachmentKey());
    }
 
    /**

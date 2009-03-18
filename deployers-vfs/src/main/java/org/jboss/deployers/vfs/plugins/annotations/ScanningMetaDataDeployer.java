@@ -22,9 +22,7 @@
 package org.jboss.deployers.vfs.plugins.annotations;
 
 import org.jboss.deployers.plugins.annotations.AbstractScanningMetaData;
-import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.annotations.ScanningMetaData;
-import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.vfs.spi.deployer.SchemaResolverDeployer;
 
 /**
@@ -40,11 +38,6 @@ public class ScanningMetaDataDeployer extends SchemaResolverDeployer<AbstractSca
       setName("jboss-scanning.xml");
       setRegisterWithJBossXB(true);
       addOutput(ScanningMetaData.class);
-   }
-
-   @Override
-   protected void createMetaData(DeploymentUnit unit, String name, String suffix) throws DeploymentException
-   {
-      createMetaData(unit, name, suffix, ScanningMetaData.class.getName());
+      setAttachmentKey(ScanningMetaData.class.getName());
    }
 }

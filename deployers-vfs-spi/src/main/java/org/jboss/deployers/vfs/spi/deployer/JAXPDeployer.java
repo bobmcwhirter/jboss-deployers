@@ -21,13 +21,13 @@
 */
 package org.jboss.deployers.vfs.spi.deployer;
 
-import java.io.InputStream;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.validation.Schema;
 
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.util.xml.JBossEntityResolver;
+import org.jboss.virtual.VFSInputSource;
 import org.jboss.virtual.VirtualFile;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -55,7 +55,10 @@ public abstract class JAXPDeployer<T> extends UnmarshallerFactoryDeployer<T, Boo
    
    /** The document builder factory */
    private DocumentBuilderFactory documentBuilderFactory;
-   
+
+   /** The schema location */
+   private String schemaLocation;
+
    /**
     * Create a new JAXPDeployer.
     * 
@@ -108,6 +111,16 @@ public abstract class JAXPDeployer<T> extends UnmarshallerFactoryDeployer<T, Boo
    }
 
    /**
+    * Set schema location.
+    *
+    * @param schemaLocation the schema location
+    */
+   public void setSchemaLocation(String schemaLocation)
+   {
+      this.schemaLocation = schemaLocation;
+   }
+
+   /**
     * Get the documentBuilderFactory.
     * 
     * @return the documentBuilderFactory.
@@ -117,6 +130,7 @@ public abstract class JAXPDeployer<T> extends UnmarshallerFactoryDeployer<T, Boo
    {
       if (documentBuilderFactory == null)
          throw new IllegalStateException("Document builder factory has not been constructed");
+
       return documentBuilderFactory;
    }
 
@@ -130,6 +144,11 @@ public abstract class JAXPDeployer<T> extends UnmarshallerFactoryDeployer<T, Boo
       documentBuilderFactory = DocumentBuilderFactory.newInstance();
       documentBuilderFactory.setNamespaceAware(useNamespaceAwareParser);
       documentBuilderFactory.setValidating(validateDTDs);
+      Schema schema = SchemaHelper.getSchema(schemaLocation);
+      if (schema != null)
+      {
+         documentBuilderFactory.setSchema(schema);
+      }
    }
 
    /**
@@ -186,25 +205,11 @@ public abstract class JAXPDeployer<T> extends UnmarshallerFactoryDeployer<T, Boo
 
       log.debug("Parsing: " + file.getName());
       
-      DocumentBuilder parser = getDocumentBuilderFactory().newDocumentBuilder();
-      InputStream is = openStreamAndValidate(file);
-      try
-      {
-         InputSource source = new InputSource(is);
-         source.setSystemId(file.toURI().toString());
-         parser.setEntityResolver(new JBossEntityResolver());
-         return parser.parse(source);
-      }
-      finally
-      {
-         try
-         {
-            is.close();
-         }
-         catch (Exception ignored)
-         {
-         }
-      }
+      InputSource source = new VFSInputSource(file);
+      DocumentBuilderFactory factory = getDocumentBuilderFactory();
+      DocumentBuilder parser = factory.newDocumentBuilder();
+      parser.setEntityResolver(new JBossEntityResolver());
+      return parser.parse(source);
    }
 
    /**

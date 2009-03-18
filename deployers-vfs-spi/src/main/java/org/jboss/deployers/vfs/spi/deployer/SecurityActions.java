@@ -27,11 +27,13 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
+import java.security.PrivilegedAction;
 
 import org.jboss.virtual.VirtualFile;
 
 /**
  * @author Scott.Stark@jboss.org
+ * @author Ales.Justin@jboss.org
  * @version $Revision: 60921 $
  */
 public class SecurityActions
@@ -86,5 +88,27 @@ public class SecurityActions
          return FileActions.PRIVILEGED.openStream(f);
       else
          return FileActions.NON_PRIVILEGED.openStream(f);
+   }
+
+   static ClassLoader getContextClassLoader()
+   {
+      if (System.getSecurityManager() == null)
+      {
+         return Thread.currentThread().getContextClassLoader();
+      }
+      else
+      {
+         return AccessController.doPrivileged(GetContextClassLoader.INSTANCE);
+      }
+   }
+
+   static class GetContextClassLoader implements PrivilegedAction<ClassLoader>
+   {
+      static GetContextClassLoader INSTANCE = new GetContextClassLoader();
+
+      public ClassLoader run()
+      {
+         return Thread.currentThread().getContextClassLoader();
+      }
    }
 }
