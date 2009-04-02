@@ -49,6 +49,9 @@ public abstract class JAXBDeployer<T> extends AbstractVFSParsingDeployer<T>
    /** The properties */
    private Map<String, Object> properties;
 
+   /** The classes to be bound */
+   private Class<?>[] classesToBeBound;
+
    /** The schema location */
    private String schemaLocation;
 
@@ -64,6 +67,7 @@ public abstract class JAXBDeployer<T> extends AbstractVFSParsingDeployer<T>
    public JAXBDeployer(Class<T> output)
    {
       super(output);
+      classesToBeBound = new Class<?>[]{output};
    }
 
    /**
@@ -84,6 +88,16 @@ public abstract class JAXBDeployer<T> extends AbstractVFSParsingDeployer<T>
    public void setProperties(Map<String, Object> properties)
    {
       this.properties = properties;
+   }
+
+   /**
+    * Set the classes to be bound.
+    *
+    * @param classesToBeBound the classes to be bouond
+    */
+   public void setClassesToBeBound(Class<?>... classesToBeBound)
+   {
+      this.classesToBeBound = classesToBeBound;
    }
 
    /**
@@ -137,7 +151,7 @@ public abstract class JAXBDeployer<T> extends AbstractVFSParsingDeployer<T>
     */
    protected Class<?>[] classesToBeBound()
    {
-      return new Class<?>[]{getOutput()};
+      return classesToBeBound;
    }
 
    /**
