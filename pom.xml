@@ -21,11 +21,11 @@
   </scm>
 
   <properties>
-    <version.jboss.vfs>2.2.0-SNAPSHOT</version.jboss.vfs>
+    <version.jboss.vfs>2.2.0.M1</version.jboss.vfs>
     <version.jboss.man>2.0.0.GA</version.jboss.man>
     <version.jboss.mdr>2.0.1.GA</version.jboss.mdr>
-    <version.jboss.microcontainer>2.2.0-SNAPSHOT</version.jboss.microcontainer>
-    <version.jboss.classloader>2.0.3.GA</version.jboss.classloader>
+    <version.jboss.microcontainer>2.2.0.M1</version.jboss.microcontainer>
+    <version.jboss.classloader>2.2.0.M1</version.jboss.classloader>
     <version.jboss.classloading.spi>5.0.3.GA</version.jboss.classloading.spi>
     <version.jboss.common.core>2.2.10.GA</version.jboss.common.core>
     <version.jboss.logging.spi>2.0.5.GA</version.jboss.logging.spi>
@@ -34,7 +34,7 @@
     <version.jboss.aop>2.0.0.SP1</version.jboss.aop>
     <version.org.jboss.test>1.1.1.GA</version.org.jboss.test>
     <version.junit>4.4</version.junit>
-    <version.javassist>3.9.0.GA</version.javassist>
+    <version.javassist>3.10.0.GA</version.javassist>
     <version.stax.staxapi>1.0</version.stax.staxapi>
   </properties>
 
@@ -72,7 +72,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <version>2.0-beta-7</version>
+        <version>2.0-beta-9</version>
         <configuration>
           <generateReleasePoms>false</generateReleasePoms>
           <tagBase>https://svn.jboss.org/repos/jbossas/projects/jboss-deployers/tags</tagBase>
@@ -91,7 +91,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.4.1</version>
+          <version>2.4.3</version>
           <configuration>
             <redirectTestOutputToFile>true</redirectTestOutputToFile>
             <includes>
@@ -246,7 +246,7 @@
       </dependency>
       <dependency>
         <groupId>org.jboss.microcontainer</groupId>
-        <artifactId>jmx-mc-int</artifactId>
+        <artifactId>jboss-jmx-mc-int</artifactId>
         <version>${version.jboss.microcontainer}</version>
       </dependency>
       <dependency>
