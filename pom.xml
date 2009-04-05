@@ -25,7 +25,7 @@
     <version.jboss.man>2.0.0.GA</version.jboss.man>
     <version.jboss.mdr>2.0.1.GA</version.jboss.mdr>
     <version.jboss.microcontainer>2.2.0.M1</version.jboss.microcontainer>
-    <version.jboss.classloader>2.2.0.M1</version.jboss.classloader>
+    <version.jboss.classloader>2.2.0.M2</version.jboss.classloader>
     <version.jboss.classloading.spi>5.0.3.GA</version.jboss.classloading.spi>
     <version.jboss.common.core>2.2.10.GA</version.jboss.common.core>
     <version.jboss.logging.spi>2.0.5.GA</version.jboss.logging.spi>
