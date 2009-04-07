@@ -49,6 +49,10 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
    /** The structure cache */
    private StructureCache<T> cache;
 
+   protected AbstractStructureModificationChecker()
+   {
+   }
+
    protected AbstractStructureModificationChecker(MainDeployerStructure mainDeployer)
    {
       if (mainDeployer == null)
@@ -81,6 +85,19 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
    }
 
    /**
+    * Get main deployer structure.
+    *
+    * @return the main deployer structure
+    */
+   protected MainDeployerStructure getMainDeployerStructure()
+   {
+      if (mainDeployer == null)
+         throw new IllegalArgumentException("Null main deployer structure");
+
+      return mainDeployer;
+   }
+
+   /**
     * Get deployment context.
     *
     * @param name the deployment context name
@@ -89,7 +106,7 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
    @SuppressWarnings("deprecation")
    protected VFSDeploymentContext getDeploymentContext(String name)
    {
-      DeploymentContext deploymentContext = mainDeployer.getDeploymentContext(name);
+      DeploymentContext deploymentContext = getMainDeployerStructure().getDeploymentContext(name);
       if (deploymentContext == null || deploymentContext instanceof VFSDeploymentContext == false)
          return null;
 
