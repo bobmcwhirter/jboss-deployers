@@ -26,6 +26,7 @@ import java.io.IOException;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.deployers.structure.spi.main.MainDeployerStructure;
 import org.jboss.virtual.VirtualFile;
+import org.jboss.virtual.VisitorAttributes;
 
 /**
  * Synch wrapper modification checker.
@@ -34,24 +35,32 @@ import org.jboss.virtual.VirtualFile;
  * only then checking if we need to update some resource.
  * e.g. some .jsp or .xhtml file for JBossWeb to pick up the change
  *
- * @param <T> exact checker type
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class SynchWrapperModificationChecker<T> extends AbstractStructureModificationChecker<T>
+public class SynchWrapperModificationChecker extends AbstractStructureModificationChecker<Long>
 {
    /** The true checker delegate */
-   private AbstractStructureModificationChecker<T> delegate;
+   private AbstractStructureModificationChecker<Long> delegate;
 
-   public SynchWrapperModificationChecker(AbstractStructureModificationChecker<T> delegate)
+   /** The synch adapter */
+   private SynchAdapter synchAdapter;
+
+   /** the visitor attributes */
+   private VisitorAttributes attributes;
+
+   public SynchWrapperModificationChecker(AbstractStructureModificationChecker<Long> delegate, SynchAdapter synchAdapter)
    {
       if (delegate == null)
          throw new IllegalArgumentException("Null delegate");
+      if (synchAdapter == null)
+         throw new IllegalArgumentException("Null synch adapter");
 
       this.delegate = delegate;
+      this.synchAdapter = synchAdapter;
    }
 
    @Override
-   protected StructureCache<T> getCache()
+   protected StructureCache<Long> getCache()
    {
       return delegate.getCache();
    }
@@ -68,7 +77,13 @@ public class SynchWrapperModificationChecker<T> extends AbstractStructureModific
       // it was not modifed & we're actually temped
       if (modified == false && root != deploymentContext.getRoot())
       {
-         // TODO - synch
+         // check for update or delete
+         UpdateDeleteVisitor udVisitor = new UpdateDeleteVisitor(attributes, getCache(), synchAdapter, root);
+         VirtualFile tempRoot = deploymentContext.getRoot();
+         tempRoot.visit(udVisitor);
+         // check for addition
+         AddVisitor addVisitor = new AddVisitor(attributes, getCache(), synchAdapter, tempRoot, root.getPathName().length());
+         root.visit(addVisitor);
       }
       return modified;
    }
@@ -81,5 +96,15 @@ public class SynchWrapperModificationChecker<T> extends AbstractStructureModific
    public void removeStructureRoot(VirtualFile root)
    {
       delegate.removeStructureRoot(root);
+   }
+
+   /**
+    * Set visitor attributes.
+    *
+    * @param attributes the attributes
+    */
+   public void setAttributes(VisitorAttributes attributes)
+   {
+      this.attributes = attributes;
    }
 }
