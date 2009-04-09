@@ -26,39 +26,28 @@ import java.io.IOException;
 import org.jboss.virtual.VirtualFile;
 
 /**
- * Synch adapter.
+ * Merge synch adapter.
  *
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public interface SynchAdapter
+public class MergeSynchAdapter extends AbstractSynchAdapter
 {
-   /**
-    * Add new file to temp.
-    *
-    * @param fileToAdd file to add
-    * @param tempRoot temp root
-    * @param pathToFile the path to file
-    * @return addition timestamp
-    * @throws IOException for any error
-    */
-   long add(VirtualFile fileToAdd, VirtualFile tempRoot, String pathToFile) throws IOException;
+   public long update(VirtualFile fileToUpdate, VirtualFile modifiedFile) throws IOException
+   {
+      return merge(fileToUpdate, modifiedFile);
+   }
 
    /**
-    * Update file.
+    * Do merge changes.
     *
-    * @param fileToUpdate file to update
-    * @param modifiedFile the modified file
-    * @return the update timestamp
-    * @throws IOException for any error
+    * @param fileToOverride the file to override
+    * @param modifiedFile the modifed file
+    * @return new timestamp
+    * @throws MergeException for possible merge conflict
+    * @throws java.io.IOException for any error
     */
-   long update(VirtualFile fileToUpdate, VirtualFile modifiedFile) throws IOException;
-
-   /**
-    * Add new file to temp.
-    *
-    * @param fileToDelete file to delete
-    * @throws IOException for any error
-    * @return true if deleted, false otherwise
-    */
-   boolean delete(VirtualFile fileToDelete) throws IOException;
+   static long merge(VirtualFile fileToOverride, VirtualFile modifiedFile) throws IOException
+   {
+      return 0; // TODO
+   }
 }

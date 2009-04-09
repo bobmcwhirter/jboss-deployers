@@ -21,50 +21,54 @@
  */
 package org.jboss.deployers.vfs.spi.structure.modified;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VisitorAttributes;
 
 /**
- * Synch on update and delete file visitor.
+ * Override synch adapter.
  *
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class UpdateDeleteVisitor extends SynchVisitor
+public class OverrideSynchAdapter extends AbstractSynchAdapter
 {
-   private VirtualFile originalRoot;
-   private String initialPath;
-
-   public UpdateDeleteVisitor(VisitorAttributes attributes, StructureCache<Long> cache, SynchAdapter synchAdapter, VirtualFile originalRoot)
+   public long update(VirtualFile fileToUpdate, VirtualFile modifiedFile) throws IOException
    {
-      super(attributes, cache, synchAdapter);
-      if (originalRoot == null)
-         throw new IllegalArgumentException("Null original root");
-
-      this.originalRoot = originalRoot;
-      this.initialPath = originalRoot.getPathName();
+      return override(fileToUpdate, modifiedFile);
    }
 
-   protected void doVisit(VirtualFile file) throws Exception
+   /**
+    * Do override.
+    *
+    * @param fileToOverride the file to override
+    * @param modifiedFile the modifed file
+    * @return new timestamp
+    * @throws IOException for any error
+    */
+   static long override(VirtualFile fileToOverride, VirtualFile modifiedFile) throws IOException
    {
-      String pathName = initialPath + file.getPathName();
-      VirtualFile child = originalRoot.getChild(pathName);
-      if (child == null)
+      try
       {
-         // original was deleted, try deleting the temp
-         if (getSynchAdapter().delete(file))
+         URI uri = fileToOverride.toURI();
+         if (fileToOverride.delete())
          {
-            getCache().removeCache(pathName);
+            File newFile = new File(uri);
+            return copy(modifiedFile, newFile);
+         }
+         else
+         {
+            log.warn("Could not delete previous file: " + fileToOverride + ", no change applied: " + modifiedFile);
+            return fileToOverride.getLastModified();
          }
       }
-      else
+      catch (URISyntaxException e)
       {
-         Long previous = getCache().getCacheValue(pathName);
-         long lastModified = child.getLastModified();
-         if (previous != null && lastModified > previous)
-         {
-            lastModified = getSynchAdapter().update(file, child);
-         }
-         getCache().putCacheValue(pathName, lastModified);
+         IOException ioe = new IOException();
+         ioe.initCause(e);
+         throw ioe;
       }
    }
 }
