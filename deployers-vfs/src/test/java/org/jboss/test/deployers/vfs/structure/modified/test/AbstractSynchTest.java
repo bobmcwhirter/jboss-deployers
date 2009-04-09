@@ -22,50 +22,48 @@
 package org.jboss.test.deployers.vfs.structure.modified.test;
 
 import org.jboss.deployers.structure.spi.main.MainDeployerStructure;
+import org.jboss.deployers.vfs.spi.structure.modified.MetaDataStructureModificationChecker;
 import org.jboss.deployers.vfs.spi.structure.modified.StructureModificationChecker;
-import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
-import org.jboss.test.deployers.vfs.webbeans.test.AbstractWebBeansTest;
-import org.jboss.virtual.AssembledDirectory;
+import org.jboss.deployers.vfs.spi.structure.modified.SynchAdapter;
+import org.jboss.deployers.vfs.spi.structure.modified.SynchWrapperModificationChecker;
+import org.jboss.test.deployers.BootstrapDeployersTest;
 import org.jboss.virtual.VirtualFileFilter;
+import org.jboss.virtual.VisitorAttributes;
 
 /**
- * Test StructureModificationChecker.
+ * AbstractSynchTest.
  *
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public abstract class StructureModificationTest extends AbstractWebBeansTest
+public abstract class AbstractSynchTest extends BootstrapDeployersTest
 {
-   protected StructureModificationTest(String name)
+   protected AbstractSynchTest(String name)
    {
       super(name);
    }
 
    protected StructureModificationChecker createStructureModificationChecker()
    {
-      MainDeployerStructure mainDeployer = getMainDeployerStructure();
+      MainDeployerStructure mainDeployerStructure = getMainDeployerStructure();
       VirtualFileFilter filter = createFilter();
-      return createStructureModificationChecker(mainDeployer, filter);
-   }
+      VirtualFileFilter recurseFilter = createRecurseFilter();
+      SynchAdapter synchAdapter = createSynchAdapter();
 
-   protected abstract StructureModificationChecker createStructureModificationChecker(MainDeployerStructure mainDeployerStructure, VirtualFileFilter filter);
+      MetaDataStructureModificationChecker mdsmc = new MetaDataStructureModificationChecker(mainDeployerStructure);
+      mdsmc.setFilter(filter);
+      SynchWrapperModificationChecker synch = new SynchWrapperModificationChecker(mdsmc, synchAdapter);
+
+      VisitorAttributes attributes = new VisitorAttributes();
+      attributes.setLeavesOnly(true);
+      attributes.setRecurseFilter(recurseFilter);
+      synch.setAttributes(attributes);
+
+      return synch;
+   }
 
    protected abstract VirtualFileFilter createFilter();
 
-   public void testDoBasicTest() throws Exception
-   {
-      AssembledDirectory ear = createBasicEar();
-      StructureModificationChecker checker = createStructureModificationChecker();
+   protected abstract VirtualFileFilter createRecurseFilter();
 
-      VFSDeploymentUnit deploymentUnit = assertDeploy(ear);
-      try
-      {
-         testStructureModified(ear, checker, deploymentUnit);
-      }
-      finally
-      {
-         undeploy(deploymentUnit);
-      }
-   }
-
-   protected abstract void testStructureModified(AssembledDirectory ear, StructureModificationChecker checker, VFSDeploymentUnit deploymentUnit) throws Exception;
+   protected abstract SynchAdapter createSynchAdapter();
 }

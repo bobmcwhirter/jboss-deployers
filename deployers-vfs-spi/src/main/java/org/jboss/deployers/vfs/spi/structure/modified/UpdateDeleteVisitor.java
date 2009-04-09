@@ -41,30 +41,33 @@ public class UpdateDeleteVisitor extends SynchVisitor
          throw new IllegalArgumentException("Null original root");
 
       this.originalRoot = originalRoot;
-      this.initialPath = originalRoot.getPathName();
+      initialPath = originalRoot.getPathName();
+      if (initialPath.endsWith("/") == false)
+         initialPath += "/";
    }
 
    protected void doVisit(VirtualFile file) throws Exception
    {
-      String pathName = initialPath + file.getPathName();
+      String pathName = file.getPathName();
+      String originalPathName = initialPath + pathName;
       VirtualFile child = originalRoot.getChild(pathName);
       if (child == null)
       {
          // original was deleted, try deleting the temp
          if (getSynchAdapter().delete(file))
          {
-            getCache().removeCache(pathName);
+            getCache().removeCache(originalPathName);
          }
       }
       else
       {
-         Long previous = getCache().getCacheValue(pathName);
+         Long previous = getCache().getCacheValue(originalPathName);
          long lastModified = child.getLastModified();
          if (previous != null && lastModified > previous)
          {
             lastModified = getSynchAdapter().update(file, child);
          }
-         getCache().putCacheValue(pathName, lastModified);
+         getCache().putCacheValue(originalPathName, lastModified);
       }
    }
 }
