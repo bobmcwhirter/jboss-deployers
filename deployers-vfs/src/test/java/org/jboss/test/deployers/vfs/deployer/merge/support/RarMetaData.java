@@ -23,6 +23,7 @@ package org.jboss.test.deployers.vfs.deployer.merge.support;
 
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 import org.jboss.xb.annotations.JBossXmlSchema;
 
@@ -31,6 +32,7 @@ import org.jboss.xb.annotations.JBossXmlSchema;
  */
 @JBossXmlSchema(namespace="http://java.sun.com/xml/ns/j2ee", elementFormDefault=XmlNsForm.QUALIFIED)
 @XmlRootElement(name="connector")
+@XmlType(propOrder = {"description", "elt"})
 public class RarMetaData extends ConnectorMetaData
 {
    public static final long serialVersionUID = 1l;
