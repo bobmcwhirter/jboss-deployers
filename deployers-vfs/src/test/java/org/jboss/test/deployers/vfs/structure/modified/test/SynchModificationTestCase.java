@@ -117,7 +117,9 @@ public class SynchModificationTestCase extends AbstractSynchTest
          VirtualFile testJsp = tempRoot.findChild("test.jsp");
          long tempTimestamp = testJsp.getLastModified();
          assertFalse(checker.hasStructureBeenModified(originalRoot));
-         assertTrue(tempTimestamp < testJsp.getLastModified());
+         long lastModified = testJsp.getLastModified();
+         long diff = lastModified - tempTimestamp;
+         assertTrue(diff > 0);
 
          // update something outside recurse filter
          VirtualFile someProps = originalRoot.getChild("WEB-INF/classes/some.properties");
