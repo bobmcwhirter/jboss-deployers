@@ -32,7 +32,7 @@ import org.jboss.xb.annotations.JBossXmlSchema;
  */
 @JBossXmlSchema(namespace="http://jboss.org/xml/ns/j2ee", elementFormDefault=XmlNsForm.QUALIFIED)
 @XmlRootElement(name="jboss-connector")
-@XmlType(propOrder = {"description", "elt"})
+@XmlType(propOrder = {"description", "element"})
 public class JBossRarMetaData extends ConnectorMetaData
 {
    public static final long serialVersionUID = 1l;
