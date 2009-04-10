@@ -100,7 +100,7 @@ public class SynchWrapperModificationChecker extends AbstractStructureModificati
    }
 
    /**
-    * Set orignal visitor attributes.
+    * Set original visitor attributes.
     *
     * @param attributes the attributes
     */
@@ -110,7 +110,7 @@ public class SynchWrapperModificationChecker extends AbstractStructureModificati
    }
 
    /**
-    * Set orignal visitor attributes.
+    * Set temp visitor attributes.
     *
     * @param attributes the attributes
     */
