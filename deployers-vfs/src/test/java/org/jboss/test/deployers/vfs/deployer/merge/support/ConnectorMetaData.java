@@ -24,10 +24,12 @@ package org.jboss.test.deployers.vfs.deployer.merge.support;
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
+@XmlType(propOrder = {"description", "elt"})
 public class ConnectorMetaData implements Serializable
 {
    public static final long serialVersionUID = 1l;
