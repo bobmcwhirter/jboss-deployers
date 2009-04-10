@@ -56,7 +56,9 @@ public abstract class AbstractSynchTest extends BootstrapDeployersTest
       VisitorAttributes attributes = new VisitorAttributes();
       attributes.setLeavesOnly(true);
       attributes.setRecurseFilter(recurseFilter);
-      synch.setAttributes(attributes);
+
+      synch.setOriginalAttributes(attributes);
+      synch.setTempAttributes(attributes);
 
       return synch;
    }

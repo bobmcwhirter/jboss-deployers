@@ -46,7 +46,8 @@ public class SynchWrapperModificationChecker extends AbstractStructureModificati
    private SynchAdapter synchAdapter;
 
    /** the visitor attributes */
-   private VisitorAttributes attributes;
+   private VisitorAttributes originalAttributes;
+   private VisitorAttributes tempAttributes;
 
    public SynchWrapperModificationChecker(AbstractStructureModificationChecker<Long> delegate, SynchAdapter synchAdapter)
    {
@@ -78,11 +79,11 @@ public class SynchWrapperModificationChecker extends AbstractStructureModificati
       if (modified == false && root != deploymentContext.getRoot())
       {
          // check for update or delete
-         UpdateDeleteVisitor udVisitor = new UpdateDeleteVisitor(attributes, getCache(), synchAdapter, root);
+         UpdateDeleteVisitor udVisitor = new UpdateDeleteVisitor(tempAttributes, getCache(), synchAdapter, root);
          VirtualFile tempRoot = deploymentContext.getRoot();
          tempRoot.visit(udVisitor);
          // check for addition
-         AddVisitor addVisitor = new AddVisitor(attributes, getCache(), synchAdapter, tempRoot, root.getPathName().length());
+         AddVisitor addVisitor = new AddVisitor(originalAttributes, getCache(), synchAdapter, tempRoot, root.getPathName().length());
          root.visit(addVisitor);
       }
       return modified;
@@ -99,12 +100,22 @@ public class SynchWrapperModificationChecker extends AbstractStructureModificati
    }
 
    /**
-    * Set visitor attributes.
+    * Set orignal visitor attributes.
     *
     * @param attributes the attributes
     */
-   public void setAttributes(VisitorAttributes attributes)
+   public void setOriginalAttributes(VisitorAttributes attributes)
    {
-      this.attributes = attributes;
+      this.originalAttributes = attributes;
+   }
+
+   /**
+    * Set orignal visitor attributes.
+    *
+    * @param attributes the attributes
+    */
+   public void setTempAttributes(VisitorAttributes attributes)
+   {
+      this.tempAttributes = attributes;
    }
 }
