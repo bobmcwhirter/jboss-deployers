@@ -27,6 +27,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.jboss.virtual.VirtualFile;
+import org.jboss.virtual.VFSUtils;
 
 /**
  * Override synch adapter.
@@ -52,7 +53,8 @@ public class OverrideSynchAdapter extends AbstractSynchAdapter
    {
       try
       {
-         URI uri = fileToOverride.toURI();
+         // get uri before we delete the file
+         URI uri = VFSUtils.getRealURL(fileToOverride).toURI();
          if (fileToOverride.delete())
          {
             File newFile = new File(uri);

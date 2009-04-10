@@ -63,11 +63,22 @@ public class UpdateDeleteVisitor extends SynchVisitor
       {
          Long previous = getCache().getCacheValue(originalPathName);
          long lastModified = child.getLastModified();
-         if (previous != null && lastModified > previous)
+
+         boolean updateCache = false;
+         if (previous == null)
+         {
+            updateCache = true;
+         }
+         else if (lastModified > previous)
          {
             lastModified = getSynchAdapter().update(file, child);
+            updateCache = true;
          }
-         getCache().putCacheValue(originalPathName, lastModified);
+
+         if (updateCache)
+         {
+            getCache().putCacheValue(originalPathName, lastModified);
+         }
       }
    }
 }

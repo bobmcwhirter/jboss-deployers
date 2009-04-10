@@ -21,6 +21,13 @@
  */
 package org.jboss.test.deployers.vfs.structure.modified.test;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.FileOutputStream;
+import java.io.BufferedWriter;
+import java.io.OutputStreamWriter;
+import java.net.URI;
+
 import junit.framework.Test;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.deployers.vfs.spi.structure.modified.OverrideSynchAdapter;
@@ -29,6 +36,7 @@ import org.jboss.deployers.vfs.spi.structure.modified.SynchAdapter;
 import org.jboss.test.deployers.vfs.structure.modified.support.XmlIncludeVirtualFileFilter;
 import org.jboss.virtual.VirtualFile;
 import org.jboss.virtual.VirtualFileFilter;
+import org.jboss.virtual.VFSUtils;
 
 /**
  * Test file synch.
@@ -72,12 +80,64 @@ public class SynchModificationTestCase extends AbstractSynchTest
 
    public void testWAR() throws Exception
    {
-      VFSDeploymentUnit deploymentUnit = assertDeploy("/synch/war", "simple.war");
+      VirtualFile originalRoot = createDeploymentRoot("/synch/war", "simple.war");
+      VFSDeploymentUnit deploymentUnit = assertDeploy(originalRoot);
       try
       {
-         VirtualFile root = deploymentUnit.getRoot();
+         VirtualFile tempRoot = deploymentUnit.getRoot();
          StructureModificationChecker checker = createStructureModificationChecker();
-         assertFalse(checker.hasStructureBeenModified(root));
+         assertFalse(checker.hasStructureBeenModified(originalRoot));
+
+         // add new file
+         URI rootURI = VFSUtils.getRealURL(originalRoot).toURI();
+         File rootFile = new File(rootURI);
+         File newFile = newFile(rootFile, "newfile.txt");
+         try
+         {
+            assertNull(tempRoot.getChild("newfile.txt"));                        
+            assertFalse(checker.hasStructureBeenModified(originalRoot));
+            assertNotNull(tempRoot.getChild("newfile.txt"));
+
+            // try deleting this one now
+            assertTrue(newFile.delete());
+            assertFalse(checker.hasStructureBeenModified(originalRoot));
+            assertNull(tempRoot.getChild("newfile.txt"));
+         }
+         finally
+         {
+            if (newFile.exists())
+               assertTrue(newFile.delete());
+         }
+
+         // update some file
+         File updateFile = new File(rootFile, "test.jsp");
+         assertTrue(updateFile.exists());
+         assertTrue(updateFile.setLastModified(System.currentTimeMillis()));
+         @SuppressWarnings("deprecation")
+         VirtualFile testJsp = tempRoot.findChild("test.jsp");
+         long tempTimestamp = testJsp.getLastModified();
+         assertFalse(checker.hasStructureBeenModified(originalRoot));
+         assertTrue(tempTimestamp < testJsp.getLastModified());
+
+         // update something outside recurse filter
+         VirtualFile someProps = originalRoot.getChild("WEB-INF/classes/some.properties");
+         assertNotNull(someProps);
+         updateFile = new File(VFSUtils.getRealURL(someProps).toURI());
+         assertTrue(updateFile.exists());
+         assertTrue(updateFile.setLastModified(System.currentTimeMillis()));
+         @SuppressWarnings("deprecation")
+         VirtualFile tempProps = tempRoot.findChild("WEB-INF/classes/some.properties");
+         tempTimestamp = tempProps.getLastModified();
+         assertFalse(checker.hasStructureBeenModified(originalRoot));
+         assertEquals(tempTimestamp, tempProps.getLastModified());
+
+         // check we don't update for nothing
+         @SuppressWarnings("deprecation")
+         VirtualFile xhtml = tempRoot.findChild("test.xhtml");
+         long xhtmlTimestamp = xhtml.getLastModified();
+         assertFalse(checker.hasStructureBeenModified(originalRoot));
+         assertEquals(xhtmlTimestamp, xhtml.getLastModified());
+
       }
       finally
       {
@@ -97,6 +157,22 @@ public class SynchModificationTestCase extends AbstractSynchTest
       finally
       {
          undeploy(deploymentUnit);
+      }
+   }
+
+   protected File newFile(File parent, String name) throws IOException
+   {
+      File newFile = new File(parent, name);
+      FileOutputStream fos = new FileOutputStream(newFile);
+      BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fos));
+      try
+      {
+         writer.write("sometext");
+         return newFile;
+      }
+      finally
+      {
+         writer.close();
       }
    }
 }

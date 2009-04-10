@@ -25,6 +25,7 @@ import java.net.URL;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.List;
+import java.io.IOException;
 
 import junit.framework.AssertionFailedError;
 
@@ -89,7 +90,7 @@ public abstract class BootstrapDeployersTest extends MicrocontainerTest
       return (BootstrapDeployersTestDelegate) super.getDelegate();
    }
    
-   protected VFSDeployment createVFSDeployment(String root, String child) throws Exception
+   protected VirtualFile createDeploymentRoot(String root, String child) throws IOException
    {
       URL resourceRoot = getClass().getResource(root);
       if (resourceRoot == null)
@@ -97,9 +98,15 @@ public abstract class BootstrapDeployersTest extends MicrocontainerTest
       VirtualFile deployment = VFS.getVirtualFile(resourceRoot, child);
       if (deployment == null)
          fail("Child not found " + child + " from " + resourceRoot);
+      return deployment;
+   }
+
+   protected VFSDeployment createVFSDeployment(String root, String child) throws Exception
+   {
+      VirtualFile deployment = createDeploymentRoot(root, child);
       return createVFSDeployment(deployment);
    }
-   
+
    protected VFSDeployment createVFSDeployment(VirtualFile root) throws Exception
    {
       VFSDeploymentFactory factory = VFSDeploymentFactory.getInstance();
