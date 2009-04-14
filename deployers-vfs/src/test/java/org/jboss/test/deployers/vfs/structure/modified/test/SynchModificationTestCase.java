@@ -141,6 +141,8 @@ public class SynchModificationTestCase extends AbstractSynchTest
          @SuppressWarnings("deprecation")
          VirtualFile xhtml = tempRoot.findChild("test.xhtml");
          long xhtmlTimestamp = xhtml.getLastModified();
+         // Platform dependent precision for last modified, let's wait a minimum of 1 sec
+         Thread.sleep(1500l);
          assertFalse(checker.hasStructureBeenModified(originalRoot));
          assertEquals(xhtmlTimestamp, xhtml.getLastModified());
 
