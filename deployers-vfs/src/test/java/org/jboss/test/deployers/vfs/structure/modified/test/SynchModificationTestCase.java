@@ -116,6 +116,8 @@ public class SynchModificationTestCase extends AbstractSynchTest
          @SuppressWarnings("deprecation")
          VirtualFile testJsp = tempRoot.findChild("test.jsp");
          long tempTimestamp = testJsp.getLastModified();
+         // Platform dependent precision for last modified, let's wait a minimum of 1 sec
+         Thread.sleep(1500l);
          assertFalse(checker.hasStructureBeenModified(originalRoot));
          long lastModified = testJsp.getLastModified();
          long diff = lastModified - tempTimestamp;
@@ -130,6 +132,8 @@ public class SynchModificationTestCase extends AbstractSynchTest
          @SuppressWarnings("deprecation")
          VirtualFile tempProps = tempRoot.findChild("WEB-INF/classes/some.properties");
          tempTimestamp = tempProps.getLastModified();
+         // Platform dependent precision for last modified, let's wait a minimum of 1 sec
+         Thread.sleep(1500l);
          assertFalse(checker.hasStructureBeenModified(originalRoot));
          assertEquals(tempTimestamp, tempProps.getLastModified());
 
