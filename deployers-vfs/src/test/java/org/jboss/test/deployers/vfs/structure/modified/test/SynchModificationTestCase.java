@@ -112,7 +112,7 @@ public class SynchModificationTestCase extends AbstractSynchTest
          // update some file
          File updateFile = new File(rootFile, "test.jsp");
          assertTrue(updateFile.exists());
-         assertTrue(updateFile.setLastModified(System.currentTimeMillis()));
+         assertTrue(updateFile.setLastModified(System.currentTimeMillis() + 1500l));
          @SuppressWarnings("deprecation")
          VirtualFile testJsp = tempRoot.findChild("test.jsp");
          long tempTimestamp = testJsp.getLastModified();
@@ -126,7 +126,7 @@ public class SynchModificationTestCase extends AbstractSynchTest
          assertNotNull(someProps);
          updateFile = new File(VFSUtils.getRealURL(someProps).toURI());
          assertTrue(updateFile.exists());
-         assertTrue(updateFile.setLastModified(System.currentTimeMillis()));
+         assertTrue(updateFile.setLastModified(System.currentTimeMillis() + 1500l));
          @SuppressWarnings("deprecation")
          VirtualFile tempProps = tempRoot.findChild("WEB-INF/classes/some.properties");
          tempTimestamp = tempProps.getLastModified();
