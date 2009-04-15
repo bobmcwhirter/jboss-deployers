@@ -87,6 +87,7 @@ public class VFSStructureBuilder extends AbstractStructureBuilder
          try
          {
             VirtualFile parentFile = vfsParent.getRoot();
+            @SuppressWarnings("deprecation")
             VirtualFile file = parentFile.findChild(path); // leaving the findChild usage
             return new AbstractVFSDeploymentContext(applyModification(file, child), path);
          }
@@ -141,6 +142,7 @@ public class VFSStructureBuilder extends AbstractStructureBuilder
       return modified;
    }
 
+   @SuppressWarnings("deprecation")
    protected void applyContextInfo(DeploymentContext context, ContextInfo contextInfo) throws Exception
    {
       super.applyContextInfo(context, contextInfo);
@@ -172,7 +174,9 @@ public class VFSStructureBuilder extends AbstractStructureBuilder
                String suffixes = entry.getSuffixes();
                VirtualFile child;
                if (entry.getPath().length() == 0)
+               {
                   child = root;
+               }
                else
                {
                   try

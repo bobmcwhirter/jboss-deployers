@@ -106,7 +106,7 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
    private Comparator<DeploymentContext> reverted;
 
    /** The re-deployments */
-   private Map<String, Deployment> toRedeploy = Collections.synchronizedMap(new LinkedHashMap<String, Deployment>());
+   private final Map<String, Deployment> toRedeploy = Collections.synchronizedMap(new LinkedHashMap<String, Deployment>());
 
    /**
     * Set the top deployment context comparator.
@@ -647,8 +647,12 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
          if (shutdown.get())
             throw new IllegalStateException("The main deployer is shutdown");
 
-         Map<String, Deployment> copy = new LinkedHashMap<String, Deployment>(toRedeploy);
-         toRedeploy.clear();
+         Map<String, Deployment> copy = new LinkedHashMap<String, Deployment>();         
+         synchronized (toRedeploy)
+         {
+            copy.putAll(toRedeploy);
+            toRedeploy.clear();
+         }
 
          try
          {
