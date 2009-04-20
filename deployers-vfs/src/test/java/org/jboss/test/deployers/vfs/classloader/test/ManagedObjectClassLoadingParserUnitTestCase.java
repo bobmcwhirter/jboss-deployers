@@ -114,8 +114,8 @@ public class ManagedObjectClassLoadingParserUnitTestCase extends BootstrapDeploy
          assertManagedProperty(mo, "included", String.class, null);
          assertManagedProperty(mo, "excluded", String.class, null);
          assertManagedProperty(mo, "excludedExport", String.class, null);
-         assertManagedProperty(mo, "importAll", Boolean.class, false);
-         assertManagedProperty(mo, "parentFirst", Boolean.class, true);
+         assertManagedProperty(mo, "importAll", boolean.class, false);
+         assertManagedProperty(mo, "parentFirst", boolean.class, true);
          assertManagedProperty(mo, "capabilities", CapabilitiesMetaData.class, new CapabilitiesMetaData());
          assertManagedProperty(mo, "requirements", RequirementsMetaData.class, new RequirementsMetaData());
          

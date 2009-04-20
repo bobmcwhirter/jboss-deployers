@@ -371,12 +371,12 @@ public class DeployerManagedDeploymentUnitTestCase extends AbstractManagedObject
       assertEquals("constrainedIntx10", constrainedIntx10.getName());
       assertEquals("Takes an int and multiples by 10", constrainedIntx10.getDescription());
       assertEquals(ManagedOperation.Impact.ReadOnly, constrainedIntx10.getImpact());
-      assertEquals(SimpleMetaType.INTEGER, constrainedIntx10.getReturnType());
+      assertEquals(SimpleMetaType.INTEGER_PRIMITIVE, constrainedIntx10.getReturnType());
       ManagedParameter[] constrainedIntx10Params = constrainedIntx10.getParameters();
       assertEquals("one params", 1, constrainedIntx10Params.length);
       assertEquals("param name", "input", constrainedIntx10Params[0].getName());
       assertEquals("param description", "The int to multiple", constrainedIntx10Params[0].getDescription());
-      assertEquals("param type", SimpleMetaType.INTEGER, constrainedIntx10Params[0].getMetaType());
+      assertEquals("param type", SimpleMetaType.INTEGER_PRIMITIVE, constrainedIntx10Params[0].getMetaType());
       Object min = constrainedIntx10Params[0].getMinimumValue();
       assertEquals("param min is 0", 0, (MetaValue)min);
       assertEquals("param min is 100", 100, (MetaValue)constrainedIntx10Params[0].getMaximumValue());

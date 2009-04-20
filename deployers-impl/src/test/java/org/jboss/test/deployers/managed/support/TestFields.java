@@ -60,6 +60,14 @@ public class TestFields implements Fields
          attachment.setProperty(property, value);
          return;
       }
-      throw new UnsupportedOperationException("setField: " + name);
+      else if (name != Fields.MODIFIED)
+      {
+         throw new UnsupportedOperationException("setField: " + name);
+      }
+   }
+
+   public Fields copy()
+   {
+      return new TestFields(attachment.clone(), property);
    }
 }
