@@ -120,7 +120,14 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
 
       // skip vfs deployment context lookup if archive or file
       if (root.isArchive() || root.isLeaf())
-         return root.hasBeenModified();
+      {
+         boolean result = hasRootBeenModified(root);
+         if (result)
+         {
+            getCache().invalidateCache(root.getPathName());
+         }
+         return result;
+      }
 
       VFSDeploymentContext deploymentContext;
       try
@@ -175,16 +182,38 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
 
       VFSDeployment vfsDeployment = VFSDeployment.class.cast(deployment);
       VirtualFile root = vfsDeployment.getRoot();
-      if (checkRoot && (root.isArchive() || root.isLeaf()))
-         return root.hasBeenModified();
 
-      boolean result = hasStructureBeenModifed(root, deploymentContext);
+      boolean result = false;
+
+      if (checkRoot && (root.isArchive() || root.isLeaf()))
+      {
+         result = hasRootBeenModified(root);
+      }
+
+      if (result == false)
+      {
+         result = hasStructureBeenModifed(root, deploymentContext);
+      }
+
       if (result)
       {
          String pathName = root.getPathName();
          getCache().invalidateCache(pathName);
       }
       return result;
+   }
+
+   /**
+    * Check the root for modification.
+    *
+    * @param root the root to check
+    * @return true if modified, false otherwise
+    * @throws IOException for any error
+    */
+   protected boolean hasRootBeenModified(VirtualFile root) throws IOException
+   {
+      // for back compatibility
+      return root.hasBeenModified();
    }
 
    /**

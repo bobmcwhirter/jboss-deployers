@@ -61,6 +61,23 @@ public class MetaDataStructureModificationChecker extends AbstractStructureModif
       this.filter = filter;
    }
 
+   @Override
+   protected boolean hasRootBeenModified(VirtualFile root) throws IOException
+   {
+      String pathName = root.getPathName();
+      Long cachedValue = getCache().getCacheValue(pathName);
+      long lastModified = root.getLastModified();
+      if (cachedValue != null)
+      {
+         return (cachedValue < lastModified);            
+      }
+      else
+      {
+         getCache().putCacheValue(pathName, lastModified);
+         return false;
+      }
+   }
+
    protected boolean hasStructureBeenModifed(VirtualFile root, VFSDeploymentContext deploymentContext) throws IOException
    {
       StructureMetaData structureMetaData = deploymentContext.getTransientManagedObjects().getAttachment(StructureMetaData.class);

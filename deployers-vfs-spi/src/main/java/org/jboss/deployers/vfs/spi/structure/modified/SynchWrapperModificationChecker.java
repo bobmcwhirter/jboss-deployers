@@ -72,6 +72,12 @@ public class SynchWrapperModificationChecker extends AbstractStructureModificati
       return delegate.getMainDeployerStructure();
    }
 
+   @Override
+   protected boolean hasRootBeenModified(VirtualFile root) throws IOException
+   {
+      return delegate.hasRootBeenModified(root);
+   }
+
    protected boolean hasStructureBeenModifed(VirtualFile root, VFSDeploymentContext deploymentContext) throws IOException
    {
       boolean modified = delegate.hasStructureBeenModifed(root, deploymentContext);
