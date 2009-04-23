@@ -86,7 +86,9 @@ public class VFSRedeployTestCase extends AbstractDeployerUnitTest
             throw new RuntimeException(e);
          }
 
-         assertSame(getHandler(deploymentRoot), getHandler(registryRoot));
+         VirtualFileHandler deploymentHandler = getHandler(deploymentRoot);
+         VirtualFileHandler registryHandler = getHandler(registryRoot);
+         assertSame(deploymentHandler, registryHandler);
       }
 
       public VirtualFileHandler getHandler(VirtualFile file)
@@ -115,7 +117,7 @@ public class VFSRedeployTestCase extends AbstractDeployerUnitTest
    {
       BeanDeployer beanDeployer = new BeanDeployer();
       KernelDeploymentDeployer kernelDeploymentDeployer = new KernelDeploymentDeployer();
-      BeanMetaDataDeployer beanMetaDataDeployer = new BeanMetaDataDeployer(kernel);
+      BeanMetaDataDeployer beanMetaDataDeployer = new BeanMetaDataDeployer(kernel.getController());
       addDeployer(main, new TCCLClassLoaderDeployer());
       addDeployer(main, beanDeployer);
       addDeployer(main, kernelDeploymentDeployer);
