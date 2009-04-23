@@ -21,13 +21,13 @@
   </scm>
 
   <properties>
-    <version.jboss.vfs>2.2.0.M2</version.jboss.vfs>
+    <version.jboss.vfs>2.2.0-SNAPSHOT</version.jboss.vfs>
     <version.jboss.man>2.1.0.CR8</version.jboss.man>
     <version.jboss.mdr>2.0.1.GA</version.jboss.mdr>
     <version.jboss.microcontainer>2.2.0-SNAPSHOT</version.jboss.microcontainer>
     <version.jboss.classloader>2.2.0-SNAPSHOT</version.jboss.classloader>
     <version.jboss.classloading.spi>5.0.3.GA</version.jboss.classloading.spi>
-    <version.jboss.common.core>2.2.12.GA</version.jboss.common.core>
+    <version.jboss.common.core>2.2.13-SNAPSHOT</version.jboss.common.core>
     <version.jboss.logging.spi>2.0.5.GA</version.jboss.logging.spi>
     <version.jboss.logging.log4j>2.0.5.GA</version.jboss.logging.log4j>
     <version.jbossxb>2.0.1.GA</version.jbossxb>

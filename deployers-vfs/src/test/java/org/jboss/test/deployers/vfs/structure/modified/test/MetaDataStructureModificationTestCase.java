@@ -28,6 +28,7 @@ import junit.framework.Test;
 import org.jboss.deployers.structure.spi.main.MainDeployerStructure;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.deployers.vfs.spi.structure.modified.MetaDataStructureModificationChecker;
+import org.jboss.deployers.vfs.spi.structure.modified.StructureCache;
 import org.jboss.deployers.vfs.spi.structure.modified.StructureModificationChecker;
 import org.jboss.test.deployers.vfs.structure.modified.support.XmlIncludeVirtualFileFilter;
 import org.jboss.virtual.AssembledDirectory;
@@ -55,8 +56,14 @@ public class MetaDataStructureModificationTestCase extends StructureModification
    protected StructureModificationChecker createStructureModificationChecker(MainDeployerStructure mainDeployerStructure, VirtualFileFilter filter)
    {
       MetaDataStructureModificationChecker structureModificationChecker = new MetaDataStructureModificationChecker(mainDeployerStructure);
+      structureModificationChecker.setCache(createStructureCache());
       structureModificationChecker.setFilter(filter);
       return structureModificationChecker;
+   }
+
+   protected StructureCache<Long> createStructureCache()
+   {
+      return null; // use default
    }
 
    protected VirtualFileFilter createFilter()

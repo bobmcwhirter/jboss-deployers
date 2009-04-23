@@ -38,13 +38,14 @@ import org.jboss.test.deployers.vfs.structure.file.test.FileStructureUnitTestCas
 import org.jboss.test.deployers.vfs.structure.jar.test.CombinedJARStructureUnitTestCase;
 import org.jboss.test.deployers.vfs.structure.jar.test.ConfiguredSuffixJARStructureUnitTestCase;
 import org.jboss.test.deployers.vfs.structure.jar.test.JARStructureUnitTestCase;
+import org.jboss.test.deployers.vfs.structure.modified.test.MetaDataStructureModificationTestCase;
+import org.jboss.test.deployers.vfs.structure.modified.test.MetaDataStructureModificationTreeCacheTestCase;
+import org.jboss.test.deployers.vfs.structure.modified.test.SynchModificationTestCase;
 import org.jboss.test.deployers.vfs.structure.test.StructureDeployerContextClassLoaderTestCase;
 import org.jboss.test.deployers.vfs.structure.test.TerminateStructureTestCase;
 import org.jboss.test.deployers.vfs.structure.war.test.CombinedWARStructureUnitTestCase;
 import org.jboss.test.deployers.vfs.structure.war.test.WARStructureUnitTestCase;
 import org.jboss.test.deployers.vfs.structure.war.test.WARUnpackUnitTestCase;
-import org.jboss.test.deployers.vfs.structure.modified.test.MetaDataStructureModificationTestCase;
-import org.jboss.test.deployers.vfs.structure.modified.test.SynchModificationTestCase;
 
 /**
  * VFSStructureTestSuite.
@@ -84,6 +85,7 @@ public class VFSStructureTestSuite extends TestSuite
       suite.addTest(DirStructureUnitTestCase.suite());
       suite.addTest(RealDirStructureUnitTestCase.suite());
       suite.addTest(MetaDataStructureModificationTestCase.suite());
+      suite.addTest(MetaDataStructureModificationTreeCacheTestCase.suite());
       suite.addTest(SynchModificationTestCase.suite());
 
       return suite;
