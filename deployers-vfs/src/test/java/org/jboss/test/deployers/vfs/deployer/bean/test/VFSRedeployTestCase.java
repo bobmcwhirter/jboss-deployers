@@ -24,7 +24,6 @@ package org.jboss.test.deployers.vfs.deployer.bean.test;
 import java.lang.reflect.Method;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.vfs.deployer.kernel.BeanDeployer;
 import org.jboss.deployers.vfs.deployer.kernel.BeanMetaDataDeployer;
@@ -49,9 +48,14 @@ import org.jboss.virtual.spi.cache.VFSCacheFactory;
  */
 public class VFSRedeployTestCase extends AbstractDeployerUnitTest
 {
+   public VFSRedeployTestCase(String name) throws Throwable
+   {
+      super(name);
+   }
+
    public static Test suite()
    {
-      return new TestSuite(VFSRedeployTestCase.class);
+      return suite(VFSRedeployTestCase.class);
    }
 
    public void setUp() throws Exception
@@ -103,11 +107,6 @@ public class VFSRedeployTestCase extends AbstractDeployerUnitTest
          }
 
       }
-   }
-
-   public VFSRedeployTestCase(String name) throws Throwable
-   {
-      super(name);
    }
 
    protected void addDeployers(Kernel kernel)
