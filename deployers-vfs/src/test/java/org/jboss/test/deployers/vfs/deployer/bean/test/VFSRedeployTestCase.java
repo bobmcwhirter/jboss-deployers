@@ -97,7 +97,7 @@ public class VFSRedeployTestCase extends AbstractDeployerUnitTest
       {
          try
          {
-            Method method = file.getClass().getDeclaredMethod("getHandler");
+            Method method = VirtualFile.class.getDeclaredMethod("getHandler");
             method.setAccessible(true);
             return (VirtualFileHandler)method.invoke(file);
          }
