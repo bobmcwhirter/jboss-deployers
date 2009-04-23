@@ -25,10 +25,7 @@ import java.lang.reflect.Method;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.jboss.deployers.spi.DeploymentException;
-import org.jboss.deployers.spi.deployer.helpers.AbstractDeployer;
-import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.vfs.deployer.kernel.BeanDeployer;
 import org.jboss.deployers.vfs.deployer.kernel.BeanMetaDataDeployer;
 import org.jboss.deployers.vfs.deployer.kernel.KernelDeploymentDeployer;
@@ -71,11 +68,12 @@ public class VFSRedeployTestCase extends AbstractDeployerUnitTest
       VFSCacheFactory.setInstance(null);
    }
 
-   public static class VerifyVirtualFileDeployer extends AbstractDeployer {
-
-      public void deploy(DeploymentUnit unit) throws DeploymentException
+   @SuppressWarnings("deprecation")
+   public static class VerifyVirtualFileDeployer extends org.jboss.deployers.vfs.spi.deployer.AbstractVFSRealDeployer
+   {
+      public void deploy(VFSDeploymentUnit unit) throws DeploymentException
       {
-         VirtualFile deploymentRoot = ((VFSDeploymentUnit)unit).getRoot();
+         VirtualFile deploymentRoot = unit.getRoot();
          VirtualFile registryRoot;
          try
          {
@@ -105,7 +103,6 @@ public class VFSRedeployTestCase extends AbstractDeployerUnitTest
          }
 
       }
-
    }
 
    public VFSRedeployTestCase(String name) throws Throwable
@@ -141,5 +138,4 @@ public class VFSRedeployTestCase extends AbstractDeployerUnitTest
       assertDeploy(context);
       assertUndeploy(context);
    }
-
 }
