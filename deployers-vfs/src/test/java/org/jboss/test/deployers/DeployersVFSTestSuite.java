@@ -43,6 +43,7 @@ import org.jboss.test.deployers.vfs.structure.VFSStructureTestSuite;
 import org.jboss.test.deployers.vfs.structurebuilder.VFSStructureBuilderTestSuite;
 import org.jboss.test.deployers.vfs.structureprocessor.VFSStructureProcessorTestSuite;
 import org.jboss.test.deployers.vfs.xb.JBossXBDeployersTestSuite;
+import org.jboss.test.deployers.vfs.redeploy.RedeployTestSuite;
 
 /**
  * Deployers VFS Test Suite.
@@ -81,6 +82,7 @@ public class DeployersVFSTestSuite extends TestSuite
       suite.addTest(AnnotationScanningTestSuite.suite());
       suite.addTest(DependencyTestSuite.suite());
       suite.addTest(JMXTestSuite.suite());
+      suite.addTest(RedeployTestSuite.suite());
 
       return suite;
    }
