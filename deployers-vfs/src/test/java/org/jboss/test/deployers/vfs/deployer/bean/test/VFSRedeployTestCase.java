@@ -38,12 +38,10 @@ import org.jboss.kernel.Kernel;
 import org.jboss.test.deployers.support.TCCLClassLoaderDeployer;
 import org.jboss.test.deployers.vfs.deployer.AbstractDeployerUnitTest;
 import org.jboss.virtual.VFS;
-import org.jboss.virtual.VFSUtils;
 import org.jboss.virtual.VirtualFile;
 import org.jboss.virtual.plugins.cache.LRUVFSCache;
 import org.jboss.virtual.spi.VirtualFileHandler;
 import org.jboss.virtual.spi.cache.VFSCacheFactory;
-import org.jboss.virtual.spi.cache.helpers.NoopVFSCache;
 
 /**
  * Tests that a deployer sees the same underlying child during redeployment.
