@@ -21,22 +21,24 @@
 */
 package org.jboss.test.deployers.vfs.metadata.test;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Collections;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.test.deployers.BaseDeployersVFSTest;
+import org.jboss.test.deployers.vfs.metadata.support.ServicesFilter;
 import org.jboss.virtual.VirtualFile;
+import org.jboss.virtual.VirtualFileFilter;
 
 /**
  * MetaDataUnitTestCase.
  * 
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public class MetaDataUnitTestCase extends BaseDeployersVFSTest
@@ -170,6 +172,17 @@ public class MetaDataUnitTestCase extends BaseDeployersVFSTest
       assertNoMetaDataMatch(context, "jboss-service.xml", "-not.xml");
    }
    
+   public void testRecurseInMetaInf() throws Exception
+   {
+      VFSDeploymentContext context = createDeploymentContext("/metadata", "toplevel/metadata-recurseinmetainf.jar");
+      context.setMetaDataPath(Collections.singletonList("META-INF"));
+      VirtualFileFilter filter = new ServicesFilter();
+      Set<String> expected = new HashSet<String>();
+      expected.add(getVfsURL("/metadata/toplevel/metadata-recurseinmetainf.jar/META-INF/jboss-service.xml"));
+      expected.add(getVfsURL("/metadata/toplevel/metadata-recurseinmetainf.jar/META-INF/services/wsdl.xml"));
+      assertMetaDataMatch(context, expected, filter);
+   }
+
    protected void assertMetaDataMatch(VFSDeploymentContext context, String expected, String name) throws Exception
    {
       VirtualFile file = context.getMetaDataFile(name);
@@ -186,15 +199,32 @@ public class MetaDataUnitTestCase extends BaseDeployersVFSTest
    protected void assertMetaDataMatch(VFSDeploymentContext context, Set<String> expected, String name, String suffix) throws Exception
    {
       List<VirtualFile> files = context.getMetaDataFiles(name, suffix);
+      assertMetaDataMatch(expected, files);
+   }
+   
+   protected void assertMetaDataMatch(VFSDeploymentContext context, Set<String> expected, VirtualFileFilter filter) throws Exception
+   {
+      List<VirtualFile> files = context.getMetaDataFiles(filter);
+      assertMetaDataMatch(expected, files);
+   }
+
+   protected void assertMetaDataMatch(Set<String> expected, List<VirtualFile> files) throws Exception
+   {
       Set<String> actual = new HashSet<String>(files.size());
       for (VirtualFile file : files)
          actual.add(file.toURL().toString());
       assertEquals(expected, actual);
    }
-   
+
    protected void assertNoMetaDataMatch(VFSDeploymentContext context, String name, String suffix) throws Exception
    {
       List<VirtualFile> files = context.getMetaDataFiles(name, suffix);
+      assertEmpty(files);
+   }
+
+   protected void assertNoMetaDataMatch(VFSDeploymentContext context, VirtualFileFilter filter) throws Exception
+   {
+      List<VirtualFile> files = context.getMetaDataFiles(filter);
       assertEmpty(files);
    }
 }

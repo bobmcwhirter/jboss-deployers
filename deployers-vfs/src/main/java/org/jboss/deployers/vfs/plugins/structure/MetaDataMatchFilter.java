@@ -88,4 +88,10 @@ public class MetaDataMatchFilter implements VirtualFileFilterWithAttributes
          return fileName.endsWith(suffix);
       return false;
    }
+
+   @Override
+   public String toString()
+   {
+      return "name=" + name + ", suffix=" + suffix;
+   }
 }

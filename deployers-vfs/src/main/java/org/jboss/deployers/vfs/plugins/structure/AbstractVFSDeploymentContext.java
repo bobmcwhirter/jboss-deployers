@@ -36,6 +36,7 @@ import org.jboss.deployers.vfs.spi.structure.VFSDeploymentResourceLoader;
 import org.jboss.logging.Logger;
 import org.jboss.virtual.VFSUtils;
 import org.jboss.virtual.VirtualFile;
+import org.jboss.virtual.VirtualFileFilter;
 
 /**
  * AbstractVFSDeploymentContext.
@@ -245,6 +246,20 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
    {
       if (name == null && suffix == null)
          throw new IllegalArgumentException("Null name and suffix");
+
+      VirtualFileFilter filter = new MetaDataMatchFilter(name, suffix);
+      return getMetaDataFiles(filter);
+   }
+
+   public List<VirtualFile> getMetaDataFiles(VirtualFileFilter filter)
+   {
+      if (filter == null)
+      {
+         // we don't wanna guess what needs to be filtered
+         // if all is what you want, use your own ALL filter
+         throw new IllegalArgumentException("Null filter");
+      }
+
       try
       {
          // There isn't a metadata location so let's see whether the root matches.
@@ -252,27 +267,25 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
          if (metaDataLocations == null || metaDataLocations.isEmpty())
          {
             // It has to be a plain file
-            if (root != null && SecurityActions.isLeaf(root))
+            if (root != null && SecurityActions.isLeaf(root) && filter.accepts(root))
             {
-               String fileName = root.getName();
-               if (name != null && fileName.equals(name))
-                  return Collections.singletonList(root);
-               if (suffix != null && fileName.endsWith(suffix))
-                  return Collections.singletonList(root);
+               return Collections.singletonList(root);
             }
-
-            // No match
-            return Collections.emptyList();
+            else
+            {
+               // No match
+               return Collections.emptyList();
+            }
          }
          // Look in the meta data location
          List<VirtualFile> results = new ArrayList<VirtualFile>();
          for (VirtualFile location : metaDataLocations)
          {
-            List<VirtualFile> result = location.getChildren(new MetaDataMatchFilter(name, suffix));
+            List<VirtualFile> result = location.getChildren(filter);
             if (result != null && result.isEmpty() == false)
             {
                if (log.isTraceEnabled())
-                  log.trace("Found name=" + name + ", suffix=" + suffix + " in " + location.getName());
+                  log.trace("Found results with " + filter + " in " + location.getName());
                results.addAll(result);
                deployed();
             }
@@ -281,7 +294,7 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
       }
       catch (Exception e)
       {
-         log.debug("Error retrieving meta data: name=" + name + " suffix=" + suffix, e);
+         log.debug("Error retrieving meta data: filter=" + filter, e);
          return Collections.emptyList();
       }
    }

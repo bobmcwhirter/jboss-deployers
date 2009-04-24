@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.virtual.VirtualFile;
+import org.jboss.virtual.VirtualFileFilter;
 
 /**
  * VFSDeploymentUnit.
@@ -54,6 +55,15 @@ public interface VFSDeploymentUnit extends DeploymentUnit
     * @throws IllegalArgumentException if both the name and suffix are null
     */
    List<VirtualFile> getMetaDataFiles(String name, String suffix);
+   
+   /**
+    * Gets the metadata files for this deployment unit
+    *
+    * @param filter the file filter
+    * @return the virtual files that match
+    * @throws IllegalArgumentException if both the name and suffix are null
+    */
+   List<VirtualFile> getMetaDataFiles(VirtualFileFilter filter);
    
    /**
     * Prepend metadata file locations.
