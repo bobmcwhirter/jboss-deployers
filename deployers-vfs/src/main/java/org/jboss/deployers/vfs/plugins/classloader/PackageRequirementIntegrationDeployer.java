@@ -35,7 +35,7 @@ import org.jboss.classloading.spi.metadata.helpers.AbstractRequirement;
  * @param <T> exact output type
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  */
-public class PackageRequirementIntegrationDeployer<T> extends RequirementIntegrationDeployer<T>
+public class PackageRequirementIntegrationDeployer<T> extends CachingRequirementIntegrationDeployer<T>
 {
    private Set<String> packages;
 

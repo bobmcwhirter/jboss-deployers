@@ -34,7 +34,7 @@ import org.jboss.classloading.plugins.metadata.ModuleRequirement;
  * @param <T> exact output type
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  */
-public class ModuleRequirementIntegrationDeployer<T> extends RequirementIntegrationDeployer<T>
+public class ModuleRequirementIntegrationDeployer<T> extends CachingRequirementIntegrationDeployer<T>
 {
    private String module;
 

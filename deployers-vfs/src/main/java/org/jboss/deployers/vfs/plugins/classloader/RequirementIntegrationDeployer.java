@@ -124,7 +124,7 @@ public abstract class RequirementIntegrationDeployer<T> extends AbstractOptional
       }
 
       RequirementsMetaData requirements = clmd.getRequirements();
-      AbstractRequirement integrationModule = hasIntegrationModuleRequirement(requirements);
+      AbstractRequirement integrationModule = hasIntegrationModuleRequirement(unit, requirements);
       // If we are importing integration core then import the integration at the same version
       if (integrationModule != null)
       {
@@ -157,7 +157,7 @@ public abstract class RequirementIntegrationDeployer<T> extends AbstractOptional
       if (clmd != null)
       {
          RequirementsMetaData requirements = clmd.getRequirements();
-         AbstractRequirement integrationModule = hasIntegrationModuleRequirement(requirements);
+         AbstractRequirement integrationModule = hasIntegrationModuleRequirement(unit, requirements);
          if (integrationModule != null)
          {
             ClassLoadingMetaDataFactory factory = ClassLoadingMetaDataFactory.getInstance();
@@ -175,6 +175,18 @@ public abstract class RequirementIntegrationDeployer<T> extends AbstractOptional
             }
          }
       }
+   }
+
+   /**
+    * Do we have integration module requirements.
+    *
+    * @param unit the deployment unit
+    * @param requirements the current requirements
+    * @return integration core requirement
+    */
+   protected AbstractRequirement hasIntegrationModuleRequirement(VFSDeploymentUnit unit, RequirementsMetaData requirements)
+   {
+      return hasIntegrationModuleRequirement(requirements);
    }
 
    /**

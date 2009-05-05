@@ -47,6 +47,9 @@ import org.jboss.virtual.VirtualFile;
  */
 public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealDeployer<T>
 {
+   /** The is integration cached flag key */
+   public static final String IS_INTEGRATION_FLAG_KEY = UrlIntegrationDeployer.class.getSimpleName() + "::isIntegrationDeployment";
+
    /** Location of integration jar */
    private Set<URL> integrationURLs;
 
@@ -118,6 +121,9 @@ public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealD
    {
       if (isIntegrationDeployment(unit, metaData))
       {
+         // mark as integration deployment
+         unit.addAttachment(IS_INTEGRATION_FLAG_KEY, true, Boolean.class);
+
          List<VirtualFile> added = new ArrayList<VirtualFile>();
          try
          {
@@ -140,7 +146,8 @@ public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealD
    @Override
    public void undeploy(VFSDeploymentUnit unit, T metaData)
    {
-      if (isIntegrationDeployment(unit, metaData))
+      Boolean isIntegrationDeployment = unit.getAttachment(IS_INTEGRATION_FLAG_KEY, Boolean.class);
+      if (isIntegrationDeployment != null && isIntegrationDeployment)
       {
          for (URL integrationURL : integrationURLs)
          {
@@ -154,6 +161,8 @@ public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealD
                log.warn("Error removing integration from classpath: " + integrationURL, t);
             }
          }
+         // remove integration flag
+         unit.removeAttachment(IS_INTEGRATION_FLAG_KEY);
       }
    }
 
