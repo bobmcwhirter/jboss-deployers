@@ -131,7 +131,9 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
     *
     * @param contextKey the context key
     * @param unitKey the unit key
+    * @deprecated no longer in use
     */
+   @Deprecated
    protected static void mergeScopes(ScopeKey contextKey, ScopeKey unitKey)
    {
       if (contextKey == null)
