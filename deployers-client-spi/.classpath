@@ -3,9 +3,9 @@
   <classpathentry kind="output" path="target/classes"/>
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
   <classpathentry kind="var" path="M2_REPO/sun-jaxb/jaxb-api/2.1.4/jaxb-api-2.1.4.jar" sourcepath="M2_REPO/sun-jaxb/jaxb-api/2.1.4/jaxb-api-2.1.4-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-common-core/2.2.10.GA/jboss-common-core-2.2.10.GA.jar" sourcepath="M2_REPO/org/jboss/jboss-common-core/2.2.10.GA/jboss-common-core-2.2.10.GA-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-common-core/2.2.13.GA/jboss-common-core-2.2.13.GA.jar" sourcepath="M2_REPO/org/jboss/jboss-common-core/2.2.13.GA/jboss-common-core-2.2.13.GA-sources.jar"/>
   <classpathentry kind="src" path="/jboss-deployers-core-spi"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/man/jboss-managed/2.0.0.GA/jboss-managed-2.0.0.GA.jar" sourcepath="M2_REPO/org/jboss/man/jboss-managed/2.0.0.GA/jboss-managed-2.0.0.GA-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/man/jboss-managed/2.1.0.CR8/jboss-managed-2.1.0.CR8.jar" sourcepath="M2_REPO/org/jboss/man/jboss-managed/2.1.0.CR8/jboss-managed-2.1.0.CR8-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-mdr/2.0.1.GA/jboss-mdr-2.0.1.GA.jar" sourcepath="M2_REPO/org/jboss/jboss-mdr/2.0.1.GA/jboss-mdr-2.0.1.GA-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/man/jboss-metatype/2.0.0.GA/jboss-metatype-2.0.0.GA.jar" sourcepath="M2_REPO/org/jboss/man/jboss-metatype/2.0.0.GA/jboss-metatype-2.0.0.GA-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/man/jboss-metatype/2.1.0.CR8/jboss-metatype-2.1.0.CR8.jar" sourcepath="M2_REPO/org/jboss/man/jboss-metatype/2.1.0.CR8/jboss-metatype-2.1.0.CR8-sources.jar"/>
 </classpath>
