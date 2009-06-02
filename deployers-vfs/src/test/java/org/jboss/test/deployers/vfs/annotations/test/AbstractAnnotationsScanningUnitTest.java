@@ -21,9 +21,11 @@
 */
 package org.jboss.test.deployers.vfs.annotations.test;
 
+import java.lang.annotation.Annotation;
 import java.util.Set;
 
 import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
+import org.jboss.deployers.spi.annotations.Element;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.test.deployers.BootstrapDeployersTest;
 import org.jboss.test.deployers.vfs.annotations.support.NoExtRecurseFilter;
@@ -73,7 +75,7 @@ public abstract class AbstractAnnotationsScanningUnitTest extends BootstrapDeplo
       {
          AnnotationEnvironment env = unit.getAttachment(AnnotationEnvironment.class);
          assertNotNull(env);
-         Set annotations = env.classIsAnnotatedWith("org.jboss.test.deployers.vfs.annotations.support.MarkedAnnotation");
+         Set<Element<Annotation, Class<?>>> annotations = env.classIsAnnotatedWith("org.jboss.test.deployers.vfs.annotations.support.MarkedAnnotation");
          assertNotNull(annotations);
          assertEquals(1, annotations.size());
 

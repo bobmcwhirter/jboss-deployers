@@ -83,6 +83,9 @@ public abstract class AbstractSynchAdapter implements SynchAdapter
     */
    static class MergeException extends IOException
    {
+      /** The serialVersionUID */
+      private static final long serialVersionUID = 5228888050899870372L;
+
       MergeException(VirtualFile dest, VirtualFile source, Exception cause)
       {
          super("Conflict merging files, dest: " + dest + ", source: " + source);
