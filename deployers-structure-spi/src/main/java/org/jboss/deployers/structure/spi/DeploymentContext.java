@@ -348,6 +348,13 @@ public interface DeploymentContext extends ManagedObjectsWithTransientAttachment
    Object getControllerContextName();
 
    /**
+    * Get the required stage.
+    *
+    * @return the required stage
+    */
+   DeploymentStage getRequiredStage();
+
+   /**
     * Set the required stage.
     *
     * @param stage the required stage

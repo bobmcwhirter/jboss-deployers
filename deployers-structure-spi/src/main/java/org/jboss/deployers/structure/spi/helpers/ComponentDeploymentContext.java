@@ -429,6 +429,11 @@ public class ComponentDeploymentContext implements DeploymentContext, ComponentD
       return parent.getControllerContextName();
    }
 
+   public DeploymentStage getRequiredStage()
+   {
+      return parent.getRequiredStage();
+   }
+   
    public void setRequiredStage(DeploymentStage stage)
    {
       parent.setRequiredStage(stage);

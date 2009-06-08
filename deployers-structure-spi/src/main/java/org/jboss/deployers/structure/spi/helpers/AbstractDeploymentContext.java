@@ -44,14 +44,14 @@ import javax.management.ObjectName;
 import org.jboss.classloading.spi.RealClassLoader;
 import org.jboss.dependency.spi.ControllerContext;
 import org.jboss.dependency.spi.DependencyInfo;
-import org.jboss.dependency.spi.ControllerState;
 import org.jboss.deployers.client.spi.Deployment;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.DeploymentState;
-import org.jboss.deployers.spi.deployer.DeploymentStage;
 import org.jboss.deployers.spi.attachments.Attachments;
 import org.jboss.deployers.spi.attachments.MutableAttachments;
 import org.jboss.deployers.spi.attachments.helpers.ManagedObjectsWithTransientAttachmentsImpl;
+import org.jboss.deployers.spi.deployer.DeploymentStage;
+import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.structure.spi.ClassLoaderFactory;
 import org.jboss.deployers.structure.spi.DeploymentContext;
 import org.jboss.deployers.structure.spi.DeploymentContextVisitor;
@@ -156,6 +156,9 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
    
    /** The transient attachements */
    private transient TrackingMutableAttachments transientAttachments;
+   
+   /** The required stage */
+   private DeploymentStage requiredStage = DeploymentStages.INSTALLED;
    
    /**
     * Get the scope builder for a deployment context
@@ -772,21 +775,22 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
       }
    }
 
+   public DeploymentStage getRequiredStage()
+   {
+      DeploymentContext parent = getParent();
+      if (parent != null)
+         return parent.getRequiredStage();
+      else
+         return this.requiredStage;
+   }
+   
    public void setRequiredStage(DeploymentStage stage)
    {
-      ControllerContext controllerContext = getTransientAttachments().getAttachment(ControllerContext.class);
-      if (controllerContext != null)
-      {
-         controllerContext.setRequiredState(new ControllerState(stage.getName()));
-      }
-      else
-      {
-         DeploymentContext parent = getParent();
-         if (parent == null)
-            throw new IllegalStateException("Deployment ControllerContext has not been set");
-
+      DeploymentContext parent = getParent();
+      if (parent != null)
          parent.setRequiredStage(stage);
-      }
+      else
+         this.requiredStage = stage;
    }
 
    public DependencyInfo getDependencyInfo()

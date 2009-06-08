@@ -31,6 +31,7 @@ import org.jboss.test.deployers.deployer.test.DeployerContextClassLoaderUnitTest
 import org.jboss.test.deployers.deployer.test.DeployerFlowUnitTestCase;
 import org.jboss.test.deployers.deployer.test.DeployerOrderingUnitTestCase;
 import org.jboss.test.deployers.deployer.test.DeployerProtocolUnitTestCase;
+import org.jboss.test.deployers.deployer.test.DeployerRequiredStageUnitTestCase;
 import org.jboss.test.deployers.deployer.test.DeployerWidthFirstUnitTestCase;
 import org.jboss.test.deployers.deployer.test.DeployersImplUnitTestCase;
 import org.jboss.test.deployers.deployer.test.HeuristicAllOrNothingUnitTestCase;
@@ -65,6 +66,7 @@ public class DeployersDeployerTestSuite extends TestSuite
       suite.addTest(HeuristicAllOrNothingUnitTestCase.suite());
       suite.addTest(HeuristicRussionDollUnitTestCase.suite());
       suite.addTest(DeployerContextClassLoaderUnitTestCase.suite());
+      suite.addTest(DeployerRequiredStageUnitTestCase.suite());
 
       return suite;
    }

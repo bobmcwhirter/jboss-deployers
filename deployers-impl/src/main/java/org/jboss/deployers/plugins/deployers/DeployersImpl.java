@@ -636,6 +636,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
 
       checkShutdown();
 
+      context.setRequiredStage(stage);
       ControllerState state = new ControllerState(stageName);
       try
       {
@@ -773,7 +774,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
             {
                DeploymentControllerContext deploymentControllerContext = context.getTransientAttachments().getAttachment(ControllerContext.class.getName(), DeploymentControllerContext.class);
                ControllerState current = deploymentControllerContext.getState();
-               if (ControllerState.ERROR.equals(current) == false && states.isBeforeState(current, state))
+               if (ControllerState.ERROR.equals(current) == false && states.isBeforeState(current, state) && current.getStateString().equals(context.getRequiredStage().getName()) == false)
                {
                   checkShutdown();
                   try

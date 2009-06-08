@@ -468,6 +468,11 @@ public class AbstractDeploymentUnit extends AbstractMutableAttachments implement
       return getDeploymentContext().getControllerContextName();
    }
 
+   public DeploymentStage getRequiredStage()
+   {
+      return getDeploymentContext().getRequiredStage();
+   }
+   
    public void setRequiredStage(DeploymentStage stage)
    {
       getDeploymentContext().setRequiredStage(stage);
