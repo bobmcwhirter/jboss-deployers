@@ -39,7 +39,7 @@ import org.jboss.virtual.plugins.vfs.helpers.PathTokenizer;
  * @param <T> exact value type
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class TreeStructureCache<T> implements StructureCache<T>
+public class TreeStructureCache<T> extends AbstractStructureCache<T>
 {
    /** The tree root */
    private final Node<T> root = createRoot();
@@ -84,10 +84,33 @@ public class TreeStructureCache<T> implements StructureCache<T>
       return (node != null ? node.getValue() : null);
    }
 
-   public Set<String> getLeaves(String pathName)
+   public Set<String> getLeaves(String pathName, StructureCacheFilter filter)
    {
       Node<T> node = getNode(pathName);
-      return (node != null) ? node.getChildrenNames() : null;
+      if (node != null)
+      {
+         Set<String> children = node.getChildrenNames();
+         if (filter != null && children != null && children.isEmpty() == false)
+         {
+            Set<String> result = new HashSet<String>();
+            for (String child : children)
+            {
+               if (filter.accepts(child))
+               {
+                  result.add(child);
+               }
+            }
+            return result;
+         }
+         else
+         {
+            return children;
+         }
+      }
+      else
+      {
+         return null;
+      }
    }
 
    public void invalidateCache(String pathName)

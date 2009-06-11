@@ -22,6 +22,7 @@
 package org.jboss.deployers.vfs.spi.structure.modified;
 
 import org.jboss.virtual.VirtualFile;
+import org.jboss.virtual.VirtualFileFilter;
 import org.jboss.virtual.VisitorAttributes;
 
 /**
@@ -36,7 +37,12 @@ public class UpdateDeleteVisitor extends SynchVisitor
 
    public UpdateDeleteVisitor(VisitorAttributes attributes, StructureCache<Long> cache, SynchAdapter synchAdapter, VirtualFile originalRoot)
    {
-      super(attributes, cache, synchAdapter);
+      this(null, attributes, cache, synchAdapter, originalRoot);
+   }
+
+   public UpdateDeleteVisitor(VirtualFileFilter filter, VisitorAttributes attributes, StructureCache<Long> cache, SynchAdapter synchAdapter, VirtualFile originalRoot)
+   {
+      super(filter, attributes, cache, synchAdapter);
       if (originalRoot == null)
          throw new IllegalArgumentException("Null original root");
 

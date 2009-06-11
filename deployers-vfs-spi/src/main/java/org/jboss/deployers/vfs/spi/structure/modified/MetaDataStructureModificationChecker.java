@@ -46,6 +46,9 @@ public class MetaDataStructureModificationChecker extends AbstractStructureModif
    /** The metadata filter */
    private VirtualFileFilter filter;
 
+   /** The structure cache filter */
+   private StructureCacheFilter cacheFilter;
+
    public MetaDataStructureModificationChecker(MainDeployerStructure mainDeployer)
    {
       super(mainDeployer);
@@ -59,6 +62,27 @@ public class MetaDataStructureModificationChecker extends AbstractStructureModif
    public void setFilter(VirtualFileFilter filter)
    {
       this.filter = filter;
+   }
+
+   /**
+    * Set the structure cache filter.
+    *
+    * @param cacheFilter the cache filter
+    */
+   public void setCacheFilter(StructureCacheFilter cacheFilter)
+   {
+      this.cacheFilter = cacheFilter;
+   }
+
+   /**
+    * Check filters.
+    */
+   public void start()
+   {
+      if (cacheFilter == null && filter instanceof StructureCacheFilter)
+      {
+         cacheFilter = (StructureCacheFilter) filter;
+      }
    }
 
    @Override
@@ -143,7 +167,7 @@ public class MetaDataStructureModificationChecker extends AbstractStructureModif
                {
                   List<VirtualFile> children = mdpVF.getChildren(filter);
                   String mdpPathName = mdpVF.getPathName();
-                  Set<String> leaves = getCache().getLeaves(mdpPathName);
+                  Set<String> leaves = getCache().getLeaves(mdpPathName, cacheFilter);
                   // do we have some new files or some were deleted
                   if (leaves != null && children != null && leaves.size() != children.size())
                   {

@@ -68,6 +68,19 @@ public interface StructureCache<T>
    Set<String> getLeaves(String pathName);
 
    /**
+    * Get filtered leaves for this path name parameter.
+    * Only exact sub path nodes count in.
+    *
+    * This method should return a mutable Set copy
+    * as we intend to modify it in checker processing.
+    *
+    * @param pathName the path name
+    * @param filter the leaves path filter
+    * @return sub-paths nodes or null if no such match yet
+    */
+   Set<String> getLeaves(String pathName, StructureCacheFilter filter);
+
+   /**
     * Invalidate cache for path name.
     *
     * @param pathName the path name

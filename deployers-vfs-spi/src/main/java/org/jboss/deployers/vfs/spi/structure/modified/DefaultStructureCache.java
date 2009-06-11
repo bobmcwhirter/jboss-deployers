@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
  * @param <T> exact cache value type
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class DefaultStructureCache<T> implements StructureCache<T>
+public class DefaultStructureCache<T> extends AbstractStructureCache<T>
 {
    private Map<String, T> map = new ConcurrentHashMap<String, T>();
 
@@ -53,13 +53,14 @@ public class DefaultStructureCache<T> implements StructureCache<T>
       return map.get(pathName);
    }
 
-   public Set<String> getLeaves(String pathName)
+   public Set<String> getLeaves(String pathName, StructureCacheFilter filter)
    {
       Set<String> result = null;
       Pattern pattern = Pattern.compile(pathName + "/[^/]+");
       for (String key : map.keySet())
       {
-         if (pattern.matcher(key).matches())
+         // first the pattern should match, only then we check the filter
+         if (pattern.matcher(key).matches() && (filter == null || filter.accepts(key)))
          {
             if (result == null)
                result = new HashSet<String>();

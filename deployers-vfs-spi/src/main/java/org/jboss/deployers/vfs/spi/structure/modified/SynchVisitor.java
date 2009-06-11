@@ -22,9 +22,10 @@
 package org.jboss.deployers.vfs.spi.structure.modified;
 
 import org.jboss.logging.Logger;
-import org.jboss.virtual.VirtualFileVisitor;
-import org.jboss.virtual.VisitorAttributes;
 import org.jboss.virtual.VirtualFile;
+import org.jboss.virtual.VirtualFileFilter;
+import org.jboss.virtual.VisitorAttributes;
+import org.jboss.virtual.VirtualFileVisitor;
 
 /**
  * Synch file visitor.
@@ -35,17 +36,24 @@ public abstract class SynchVisitor implements VirtualFileVisitor
 {
    protected final Logger log = Logger.getLogger(getClass());
 
+   private VirtualFileFilter filter;
    private VisitorAttributes attributes;
    private StructureCache<Long> cache;
    private SynchAdapter synchAdapter;
 
    protected SynchVisitor(VisitorAttributes attributes, StructureCache<Long> cache, SynchAdapter synchAdapter)
    {
+      this(null, attributes, cache, synchAdapter);
+   }
+
+   protected SynchVisitor(VirtualFileFilter filter, VisitorAttributes attributes, StructureCache<Long> cache, SynchAdapter synchAdapter)
+   {
       if (cache == null)
          throw new IllegalArgumentException("Null cache");
       if (synchAdapter == null)
          throw new IllegalArgumentException("Null synch adapter");
 
+      this.filter = filter;
       if (attributes != null)
          this.attributes = attributes;
       else
@@ -63,7 +71,10 @@ public abstract class SynchVisitor implements VirtualFileVisitor
    {
       try
       {
-         doVisit(file);
+         if (filter == null || filter.accepts(file))
+         {
+            doVisit(file);
+         }
       }
       catch (Exception e)
       {

@@ -22,6 +22,7 @@
 package org.jboss.deployers.vfs.spi.structure.modified;
 
 import org.jboss.virtual.VirtualFile;
+import org.jboss.virtual.VirtualFileFilter;
 import org.jboss.virtual.VisitorAttributes;
 
 /**
@@ -36,7 +37,12 @@ public class AddVisitor extends SynchVisitor
 
    public AddVisitor(VisitorAttributes attributes, StructureCache<Long> cache, SynchAdapter synchAdapter, VirtualFile tempRoot, int initialPathLenght)
    {
-      super(attributes, cache, synchAdapter);
+      this(null, attributes, cache, synchAdapter, tempRoot, initialPathLenght);
+   }
+
+   public AddVisitor(VirtualFileFilter filter, VisitorAttributes attributes, StructureCache<Long> cache, SynchAdapter synchAdapter, VirtualFile tempRoot, int initialPathLenght)
+   {
+      super(filter, attributes, cache, synchAdapter);
       if (tempRoot == null)
          throw new IllegalArgumentException("Null temp root");
       if (initialPathLenght < 0)

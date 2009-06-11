@@ -23,9 +23,10 @@ package org.jboss.deployers.vfs.spi.structure.modified;
 
 import java.io.IOException;
 
-import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.deployers.structure.spi.main.MainDeployerStructure;
+import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.virtual.VirtualFile;
+import org.jboss.virtual.VirtualFileFilter;
 import org.jboss.virtual.VisitorAttributes;
 
 /**
@@ -41,6 +42,9 @@ public class SynchWrapperModificationChecker extends AbstractStructureModificati
 {
    /** The true checker delegate */
    private AbstractStructureModificationChecker<Long> delegate;
+
+   /** The filter */
+   private VirtualFileFilter filter;
 
    /** The synch adapter */
    private SynchAdapter synchAdapter;
@@ -85,11 +89,11 @@ public class SynchWrapperModificationChecker extends AbstractStructureModificati
       if (modified == false && root != deploymentContext.getRoot())
       {
          // check for update or delete
-         UpdateDeleteVisitor udVisitor = new UpdateDeleteVisitor(tempAttributes, getCache(), synchAdapter, root);
+         UpdateDeleteVisitor udVisitor = new UpdateDeleteVisitor(filter, tempAttributes, getCache(), synchAdapter, root);
          VirtualFile tempRoot = deploymentContext.getRoot();
          tempRoot.visit(udVisitor);
          // check for addition
-         AddVisitor addVisitor = new AddVisitor(originalAttributes, getCache(), synchAdapter, tempRoot, root.getPathName().length());
+         AddVisitor addVisitor = new AddVisitor(filter, originalAttributes, getCache(), synchAdapter, tempRoot, root.getPathName().length());
          root.visit(addVisitor);
       }
       return modified;
@@ -103,6 +107,16 @@ public class SynchWrapperModificationChecker extends AbstractStructureModificati
    public void removeStructureRoot(VirtualFile root)
    {
       delegate.removeStructureRoot(root);
+   }
+
+   /**
+    * Set the filter.
+    *
+    * @param filter the filter
+    */
+   public void setFilter(VirtualFileFilter filter)
+   {
+      this.filter = filter;
    }
 
    /**
