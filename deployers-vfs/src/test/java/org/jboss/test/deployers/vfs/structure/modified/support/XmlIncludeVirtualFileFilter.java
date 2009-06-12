@@ -21,18 +21,17 @@
  */
 package org.jboss.test.deployers.vfs.structure.modified.support;
 
-import org.jboss.virtual.VirtualFileFilter;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.deployers.vfs.spi.structure.modified.AbstractPathNameFilter;
 
 /**
  * Include only .xml files.
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class XmlIncludeVirtualFileFilter implements VirtualFileFilter
+public class XmlIncludeVirtualFileFilter extends AbstractPathNameFilter
 {
-   public boolean accepts(VirtualFile file)
+   public boolean accepts(String path)
    {
-      return file.getName().endsWith(".xml");
+      return path.endsWith(".xml");
    }
 }

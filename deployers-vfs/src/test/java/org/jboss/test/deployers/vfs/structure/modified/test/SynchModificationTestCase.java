@@ -21,12 +21,13 @@
  */
 package org.jboss.test.deployers.vfs.structure.modified.test;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.FileOutputStream;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.URI;
+import java.net.URL;
 
 import junit.framework.Test;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
@@ -34,9 +35,9 @@ import org.jboss.deployers.vfs.spi.structure.modified.OverrideSynchAdapter;
 import org.jboss.deployers.vfs.spi.structure.modified.StructureModificationChecker;
 import org.jboss.deployers.vfs.spi.structure.modified.SynchAdapter;
 import org.jboss.test.deployers.vfs.structure.modified.support.XmlIncludeVirtualFileFilter;
+import org.jboss.virtual.VFSUtils;
 import org.jboss.virtual.VirtualFile;
 import org.jboss.virtual.VirtualFileFilter;
-import org.jboss.virtual.VFSUtils;
 
 /**
  * Test file synch.
@@ -66,9 +67,17 @@ public class SynchModificationTestCase extends AbstractSynchTest
       {
          public boolean accepts(VirtualFile file)
          {
-            String path = file.getPathName();
-            // only wars, but not its classes
-            return (path.contains(".war") && path.contains("/WEB-INF") == false);
+            try
+            {
+               URL url = file.toURL();
+               String path = url.toExternalForm();
+               // only wars, but not its classes
+               return (path.contains(".war") && path.contains("/WEB-INF/classes") == false);
+            }
+            catch (Exception e)
+            {
+               throw new RuntimeException(e);
+            }
          }
       };
    }
@@ -137,6 +146,28 @@ public class SynchModificationTestCase extends AbstractSynchTest
          assertFalse(checker.hasStructureBeenModified(originalRoot));
          assertEquals(tempTimestamp, tempProps.getLastModified());
 
+         // add new file into WEB-INF
+         VirtualFile webInfo = originalRoot.getChild("WEB-INF");
+         File webInfFile = new File(VFSUtils.getCompatibleURI(webInfo));
+         File newWebInfFile = newFile(webInfFile, "newfile.txt");
+         try
+         {
+            assertNull(tempRoot.getChild("WEB-INF/newfile.txt"));
+            assertFalse(checker.hasStructureBeenModified(originalRoot));
+            assertNotNull(tempRoot.getChild("WEB-INF/newfile.txt"));
+            assertFalse(checker.hasStructureBeenModified(originalRoot));
+
+            // try deleting this one now
+            assertTrue(newWebInfFile.delete());
+            assertFalse(checker.hasStructureBeenModified(originalRoot));
+            assertNull(tempRoot.getChild("WEB-INF/newfile.txt"));
+         }
+         finally
+         {
+            if (newWebInfFile.exists())
+               assertTrue(newWebInfFile.delete());
+         }
+
          // check we don't update for nothing
          @SuppressWarnings("deprecation")
          VirtualFile xhtml = tempRoot.findChild("test.xhtml");
@@ -145,7 +176,6 @@ public class SynchModificationTestCase extends AbstractSynchTest
          Thread.sleep(1500l);
          assertFalse(checker.hasStructureBeenModified(originalRoot));
          assertEquals(xhtmlTimestamp, xhtml.getLastModified());
-
       }
       finally
       {
