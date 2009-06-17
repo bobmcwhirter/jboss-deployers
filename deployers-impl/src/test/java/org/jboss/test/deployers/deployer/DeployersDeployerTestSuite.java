@@ -37,6 +37,7 @@ import org.jboss.test.deployers.deployer.test.DeployersImplUnitTestCase;
 import org.jboss.test.deployers.deployer.test.HeuristicAllOrNothingUnitTestCase;
 import org.jboss.test.deployers.deployer.test.HeuristicRussionDollUnitTestCase;
 import org.jboss.test.deployers.deployer.test.MultipleComponentTypeUnitTestCase;
+import org.jboss.test.deployers.deployer.helpers.test.ExactAttachmentDeployerWithVisitorTestCase;
 
 /**
  * Deployers Deployer Test Suite.
@@ -67,6 +68,9 @@ public class DeployersDeployerTestSuite extends TestSuite
       suite.addTest(HeuristicRussionDollUnitTestCase.suite());
       suite.addTest(DeployerContextClassLoaderUnitTestCase.suite());
       suite.addTest(DeployerRequiredStageUnitTestCase.suite());
+
+      // helper deployers
+      suite.addTest(ExactAttachmentDeployerWithVisitorTestCase.suite());
 
       return suite;
    }

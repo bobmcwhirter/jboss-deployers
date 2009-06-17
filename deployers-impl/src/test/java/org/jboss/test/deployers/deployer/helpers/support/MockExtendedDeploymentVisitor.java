@@ -23,8 +23,7 @@
 package org.jboss.test.deployers.deployer.helpers.support;
 
 import org.jboss.deployers.spi.DeploymentException;
-import org.jboss.deployers.spi.deployer.helpers.ExtendedDeploymentVisitor;
-import org.jboss.deployers.spi.deployer.helpers.RealDeployerWithInput;
+import org.jboss.deployers.spi.deployer.helpers.DeploymentVisitor;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.logging.Logger;
 
@@ -32,15 +31,14 @@ import org.jboss.logging.Logger;
  * MockExtendedDeploymentVisitor
  * 
  * A mock implementation of {@link ExtendedDeploymentVisitor}, to be used in testing
- * the {@link RealDeployerWithInput}
+ * the {@link org.jboss.deployers.spi.deployer.helpers.ExactAttachmentDeployerWithVisitor}
  * 
  *
  * @author Jaikiran Pai
  * @version $Revision: $
  */
-public class MockExtendedDeploymentVisitor<T> implements ExtendedDeploymentVisitor<T>
+public class MockExtendedDeploymentVisitor<T> implements DeploymentVisitor<T>
 {
-
    private String typeName;
    
    private Class<T> type;
@@ -55,9 +53,6 @@ public class MockExtendedDeploymentVisitor<T> implements ExtendedDeploymentVisit
       this.typeName = typeName;
    }
    
-   /**
-    * @see ExtendedDeploymentVisitor#getVisitorTypeName()
-    */
    public String getVisitorTypeName()
    {
       return this.typeName;
@@ -69,7 +64,6 @@ public class MockExtendedDeploymentVisitor<T> implements ExtendedDeploymentVisit
     */
    public void deploy(DeploymentUnit unit, T deployment) throws DeploymentException
    {
-      
       logger.info("Processing unit " + unit + " for deployment " + deployment);
       // if the unit has already been processed by this visitor then increment the count in the
       // attachment
@@ -83,7 +77,7 @@ public class MockExtendedDeploymentVisitor<T> implements ExtendedDeploymentVisit
    }
 
    /**
-    * @see ExtendedDeploymentVisitor#getVisitorType()
+    * @see DeploymentVisitor#getVisitorType()
     */
    public Class<T> getVisitorType()
    {
@@ -92,8 +86,5 @@ public class MockExtendedDeploymentVisitor<T> implements ExtendedDeploymentVisit
 
    public void undeploy(DeploymentUnit unit, T deployment)
    {
-      // TODO Auto-generated method stub
-
    }
-
 }

@@ -22,60 +22,57 @@
 
 package org.jboss.test.deployers.deployer.helpers.test;
 
+import junit.framework.Test;
 import org.jboss.deployers.client.spi.DeployerClient;
 import org.jboss.deployers.client.spi.Deployment;
 import org.jboss.deployers.spi.attachments.MutableAttachments;
-import org.jboss.deployers.spi.deployer.helpers.ExtendedDeploymentVisitor;
-import org.jboss.deployers.spi.deployer.helpers.RealDeployerWithInput;
+import org.jboss.deployers.spi.deployer.helpers.DeploymentVisitor;
+import org.jboss.deployers.spi.deployer.helpers.ExactAttachmentDeployerWithVisitor;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
-import org.jboss.logging.Logger;
 import org.jboss.test.deployers.AbstractDeployerTest;
 import org.jboss.test.deployers.deployer.helpers.support.MockExtendedDeploymentVisitor;
 
 /**
- * RealDeployerWithInputTestCase
+ * ExactAttachmentDeployerWithVisitorTestCase
  * 
- * Test that the {@link RealDeployerWithInput} works as expected
- * with an {@link ExtendedDeploymentVisitor}
+ * Test that the {@link org.jboss.deployers.spi.deployer.helpers.ExactAttachmentDeployerWithVisitor} works as expected
+ * with an {@link DeploymentVisitor}
  *
  * @author Jaikiran Pai
  * @version $Revision: $
  */
-public class RealDeployerWithInputTestCase extends AbstractDeployerTest
+public class ExactAttachmentDeployerWithVisitorTestCase extends AbstractDeployerTest
 {
-
-   /**
-    * Logger
-    */
-   private static Logger logger = Logger.getLogger(RealDeployerWithInputTestCase.class);
-
    /**
     * Constructor
     * 
-    * @param name
+    * @param name the name
     */
-   public RealDeployerWithInputTestCase(String name)
+   public ExactAttachmentDeployerWithVisitorTestCase(String name)
    {
       super(name);
+   }
 
+   public static Test suite()
+   {
+      return suite(ExactAttachmentDeployerWithVisitorTestCase.class);
    }
 
    /**
-    * Tests that the {@link RealDeployerWithInput} works correctly with an {@link ExtendedDeploymentVisitor}
+    * Tests that the {@link org.jboss.deployers.spi.deployer.helpers.ExactAttachmentDeployerWithVisitor} works correctly with an {@link ExtendedDeploymentVisitor}
     * when the unit being processed contains the expected attachment
     * 
-    * @throws Exception
+    * @throws Exception for any error
     */
    public void testExtendedDeploymentVisitorForUnitContainingExpectedAttachment() throws Exception
    {
       // the attachment name which the visitor is interested in
       String attachmentName = "someAttachment";
       // create an mock visitor 
-      ExtendedDeploymentVisitor<String> visitor = new MockExtendedDeploymentVisitor<String>(attachmentName,
-            String.class);
+      MockExtendedDeploymentVisitor<String> visitor = new MockExtendedDeploymentVisitor<String>(attachmentName, String.class);
       // create the real deployer which will then use the visitor to filter out 
       // deployment units
-      RealDeployerWithInput<String> deployer = new RealDeployerWithInput<String>(visitor);
+      ExactAttachmentDeployerWithVisitor<String> deployer = new ExactAttachmentDeployerWithVisitor<String>(visitor.getVisitorTypeName(), visitor);
       // Create the main deployer which will be responsible for processing the deployment
       // unit through various stages
       DeployerClient mainDeployer = createMainDeployer(deployer);
@@ -85,13 +82,11 @@ public class RealDeployerWithInputTestCase extends AbstractDeployerTest
       Deployment deployment = createSimpleDeployment(deploymentName);
       MutableAttachments attachments = (MutableAttachments) deployment.getPredeterminedManagedObjects();
       
-      // I seriously have no idea about how the setInput()/setInputs()/addInput() API expect/work
-      // The more i look into it, the more confused i am.
-      // For some weird reason, this is expected to be done.
+      // Jaikiran's deleted comment ;-)
       attachments.addAttachment(String.class.getName(), "IHaveNoClueWhyTheSetInputAPIWorksTheWayItDoes");
       
       // add the attachment so that this unit will be picked up by the visitor
-      attachments.addAttachment(attachmentName, new String("Test123"));
+      attachments.addAttachment(attachmentName, "Test123");
 
       log.debug("Deploying " + deployment);
       // deploy the deployment
@@ -103,30 +98,26 @@ public class RealDeployerWithInputTestCase extends AbstractDeployerTest
       // the processed unit is expected to contain the "processed" attachment which
       // is added by the mock visitor. This attachment indicates that the unit was
       // rightly picked up by the visitor
-      assertNotNull(ExtendedDeploymentVisitor.class.getName() + " did not process the unit " + unit, unit
-            .getAttachment(MockExtendedDeploymentVisitor.PROCESSED_ATTACHMENT_NAME));
+      assertNotNull(DeploymentVisitor.class.getName() + " did not process the unit " + unit, unit.getAttachment(MockExtendedDeploymentVisitor.PROCESSED_ATTACHMENT_NAME));
       // ensure that the unit was picked up only once by the visitor
-      assertEquals("The extended deployment visitor was expected to process the unit " + unit + " exactly once", unit
-            .getAttachment(MockExtendedDeploymentVisitor.PROCESSED_ATTACHMENT_NAME), 1);
-
+      assertEquals("The extended deployment visitor was expected to process the unit " + unit + " exactly once", unit.getAttachment(MockExtendedDeploymentVisitor.PROCESSED_ATTACHMENT_NAME), 1);
    }
 
    /**
-    * Tests that the {@link RealDeployerWithInput} works correctly with an {@link ExtendedDeploymentVisitor}
+    * Tests that the {@link org.jboss.deployers.spi.deployer.helpers.ExactAttachmentDeployerWithVisitor} works correctly with an {@link DeploymentVisitor}
     * when the unit being processed does *not* contain the expected attachment
     * 
-    * @throws Exception
+    * @throws Exception for any error
     */
    public void testExtendedDeploymentVisitorForWithoutExpectedAttachment() throws Exception
    {
       // the attachment name which the visitor is interested in
       String attachmentName = "someAttachment";
       // create an mock visitor 
-      ExtendedDeploymentVisitor<String> visitor = new MockExtendedDeploymentVisitor<String>(attachmentName,
-            String.class);
+      MockExtendedDeploymentVisitor<String> visitor = new MockExtendedDeploymentVisitor<String>(attachmentName, String.class);
       // create the real deployer which will then use the visitor to filter out 
       // deployment units
-      RealDeployerWithInput<String> deployer = new RealDeployerWithInput<String>(visitor);
+      ExactAttachmentDeployerWithVisitor<String> deployer = new ExactAttachmentDeployerWithVisitor<String>(visitor.getVisitorTypeName(), visitor);
       // Create the main deployer which will be responsible for processing the deployment
       // unit through various stages
       DeployerClient mainDeployer = createMainDeployer(deployer);
@@ -136,14 +127,11 @@ public class RealDeployerWithInputTestCase extends AbstractDeployerTest
       Deployment deployment = createSimpleDeployment(deploymentName);
       MutableAttachments attachments = (MutableAttachments) deployment.getPredeterminedManagedObjects();
 
-      // I seriously have no idea about how the setInput()/setInputs()/addInput() API expect/work
-      // The more i look into it, the more confused i am.
-      // For some weird reason, this is expected to be done.
+      // Jaikiran's deleted comment ;-)
       attachments.addAttachment(String.class.getName(), "IHaveNoClueWhyTheSetInputAPIWorksTheWayItDoes");
-
       
       // add the attachment which the visitor is NOT interested in
-      attachments.addAttachment("ADifferentAttachment", new String("Test123"));
+      attachments.addAttachment("ADifferentAttachment", "Test123");
 
       log.debug("Deploying " + deployment);
       // deploy the deployment
@@ -154,9 +142,6 @@ public class RealDeployerWithInputTestCase extends AbstractDeployerTest
 
       // its expected that the visitor will NOT process this unit, since the
       // unit does not contain the expected attachment
-      assertNull(ExtendedDeploymentVisitor.class.getName() + " did not process the unit " + unit, unit
-            .getAttachment(MockExtendedDeploymentVisitor.PROCESSED_ATTACHMENT_NAME));
-
+      assertNull(DeploymentVisitor.class.getName() + " did not process the unit " + unit, unit.getAttachment(MockExtendedDeploymentVisitor.PROCESSED_ATTACHMENT_NAME));
    }
-
 }
