@@ -842,4 +842,87 @@ public class DeployerFlowUnitTestCase extends AbstractDeployerTest
       postWMD.setOutputs("JBWMD");
       addDeployer(main, postWMD);
    }
+
+   public void testWebServicesDeployersOrder() throws Exception
+   {
+      DeployerClient main = createMainDeployer();
+
+      TestFlowDeployer deployer1 = new TestFlowDeployer("FakeDeployer");
+      deployer1.setOutputs("WebServicesMetaData", "WebServiceDeployment", "JBossWebMetaData" );
+      addDeployer(main, deployer1);
+
+      TestFlowDeployer deployer2 = new TestFlowDeployer("WebServicesDeploymentTypeDeployer");
+      deployer2.setInputs("WebServicesMetaData", "WebServiceDeployment", "JBossWebMetaData" );
+      deployer2.setOutputs("DeploymentType", "JBossWebMetaData");
+      addDeployer(main, deployer2);
+
+      TestFlowDeployer deployer3 = new TestFlowDeployer("WebServiceDeployerEJB");
+      deployer3.setInputs("JBossWebMetaData", "DeploymentType");
+      deployer3.setOutputs("JBossWebMetaData");
+      addDeployer(main, deployer3);
+
+      TestFlowDeployer deployer4 = new TestFlowDeployer("WebServiceDeployerPreJSE");
+      deployer4.setInputs("JBossWebMetaData", "DeploymentType");
+      deployer4.setOutputs("JBossWebMetaData");
+      addDeployer(main, deployer4);
+
+      TestFlowDeployer deployer5 = new TestFlowDeployer("AbstractWarDeployer");
+      deployer5.setInputs("JBossWebMetaData");
+      deployer5.setOutputs("WarDeployment");
+      addDeployer(main, deployer5);
+
+      TestFlowDeployer deployer6 = new TestFlowDeployer("ServiceCL");
+      deployer6.setInputs("DeploymentType", "WarDeployment");
+      addDeployer(main, deployer6);
+
+      Deployment deployment = createSimpleDeployment("testWSDeploymentOrder");
+      main.addDeployment(deployment);
+      main.process();
+
+      assertEquals(1, deployer1.getDeployOrder());
+      assertEquals(2, deployer2.getDeployOrder());
+      assertEquals(3, deployer3.getDeployOrder());
+      assertEquals(4, deployer4.getDeployOrder());
+      assertEquals(5, deployer5.getDeployOrder());
+      assertEquals(6, deployer6.getDeployOrder());
+      assertEquals(-1, deployer1.getUndeployOrder());
+      assertEquals(-1, deployer2.getUndeployOrder());
+      assertEquals(-1, deployer3.getUndeployOrder());
+      assertEquals(-1, deployer4.getUndeployOrder());
+      assertEquals(-1, deployer5.getUndeployOrder());
+      assertEquals(-1, deployer6.getUndeployOrder());
+
+      main.removeDeployment(deployment);
+      main.process();
+
+      assertEquals(1, deployer1.getDeployOrder());
+      assertEquals(2, deployer2.getDeployOrder());
+      assertEquals(3, deployer3.getDeployOrder());
+      assertEquals(4, deployer4.getDeployOrder());
+      assertEquals(5, deployer5.getDeployOrder());
+      assertEquals(6, deployer6.getDeployOrder());
+      assertEquals(12, deployer1.getUndeployOrder());
+      assertEquals(11, deployer2.getUndeployOrder());
+      assertEquals(10, deployer3.getUndeployOrder());
+      assertEquals(9, deployer4.getUndeployOrder());
+      assertEquals(8, deployer5.getUndeployOrder());
+      assertEquals(7, deployer6.getUndeployOrder());
+
+      main.addDeployment(deployment);
+      main.process();
+
+      assertEquals(13, deployer1.getDeployOrder());
+      assertEquals(14, deployer2.getDeployOrder());
+      assertEquals(15, deployer3.getDeployOrder());
+      assertEquals(16, deployer4.getDeployOrder());
+      assertEquals(17, deployer5.getDeployOrder());
+      assertEquals(18, deployer6.getDeployOrder());
+      assertEquals(12, deployer1.getUndeployOrder());
+      assertEquals(11, deployer2.getUndeployOrder());
+      assertEquals(10, deployer3.getUndeployOrder());
+      assertEquals(9, deployer4.getUndeployOrder());
+      assertEquals(8, deployer5.getUndeployOrder());
+      assertEquals(7, deployer6.getUndeployOrder());
+   }
+
 }
