@@ -24,73 +24,102 @@ package org.jboss.deployers.spi.deployer;
 import java.io.Serializable;
 
 /**
- * Comparable deployment stage.
+ * DeploymentStage.
  * 
  * @author <a href="adrian@jboss.org">Adrian Brock</a>
- * @author <a href="ropalka@redhat.com">Richard Opalka</a>
  * @version $Revision: 1.1 $
  */
-public final class DeploymentStage implements Comparable< DeploymentStage >, Serializable
+public class DeploymentStage implements Serializable
 {
-
-   // TODO: Do I have to provide read/writeObject() methods as well?
    /** The serialVersionUID */
-   private static final long serialVersionUID = 3302613286025012192L;
+   private static final long serialVersionUID = 3302613286025012191L;
 
    /** Our stage */
-   private final String name;
+   private String name;
    
-   /** The previous stage */
-   private DeploymentStage after;
+   /** The previous state */
+   private String after;
    
-   /** The next stage */
-   private DeploymentStage before;
+   /** The next state */
+   private String before;
+
+   /**
+    * Safely get the name of stage
+    * 
+    * @param stage the stage
+    * @param context the context for an error
+    * @return the stage name
+    */
+   private static String getStageName(DeploymentStage stage, String context)
+   {
+      if (stage == null)
+         throw new IllegalArgumentException("Null " + context);
+      return stage.getName();
+   }
    
-   /** Stage index. */
-   private int index;
-   
-   /** Computed hashCode(). */
-   private int hashCode;
-   
-   /** Computed toString(). */
-   private String toString;
-   
-   /** Initialization flag. */
-   private boolean initialized;
+   /**
+    * Create a new DeploymentStage.
+    * 
+    * @param name the name of the stage
+    * @throws IllegalArgumentException for a null name
+    */
+   public DeploymentStage(String name)
+   {
+      this(name, (String) null);
+   }
 
    /**
     * Create a new DeploymentStage.
     * 
     * @param name the name of the stage
+    * @param after the name of the stage before our stage
+    * @throws IllegalArgumentException for a null name
     */
-   public DeploymentStage( final String name )
+   public DeploymentStage(String name, String after)
    {
-      if ( name == null )
-      {
-         throw new NullPointerException( "Null name" );
-      }
-      
-      this.name = name;
+      this(name, after, null);
    }
-   
+
    /**
-    * Initializes this deployment stage and makes it immutable.
+    * Create a new DeploymentStage.
     * 
-    * @param after the deployment stage preceding this one
-    * @param before the deployment stage following this one
-    * @param index deployment stage index
+    * @param name the name of the stage
+    * @param after the stage before our stage
+    * @throws IllegalArgumentException for a null parameter
     */
-   public synchronized void initialize( final DeploymentStage after, final DeploymentStage before, final int index )
+   public DeploymentStage(String name, DeploymentStage after)
    {
-      if ( false == this.initialized )
-      {
-         this.after = after;
-         this.before = before;
-         this.index = index;
-         this.hashCode = computeHashCode();
-         this.toString = computeToString();
-         this.initialized = true;
-      }
+      this(name, getStageName(after, "after"), null);
+   }
+
+   /**
+    * Create a new DeploymentStage.
+    * 
+    * @param name the name of the stage
+    * @param after he stage before our stage
+    * @param before the stage after our stage
+    * @throws IllegalArgumentException for a null parameter
+    */
+   public DeploymentStage(String name, DeploymentStage after, DeploymentStage before)
+   {
+      this(name, getStageName(after, "after"), getStageName(before, "before"));
+   }
+
+   /**
+    * Create a new DeploymentStage.
+    * 
+    * @param name the name of the stage
+    * @param after the name of the stage before our stage
+    * @param before the name of the stage after our stage
+    * @throws IllegalArgumentException for a null name
+    */
+   public DeploymentStage(String name, String after, String before)
+   {
+      if (name == null)
+         throw new IllegalArgumentException("Null name");
+      this.name = name;
+      this.after = after;
+      this.before = before;
    }
 
    /**
@@ -104,122 +133,46 @@ public final class DeploymentStage implements Comparable< DeploymentStage >, Ser
    }
 
    /**
-    * Get the after stage.
+    * Get the after.
     * 
-    * @return the after stage.
+    * @return the after.
     */
-   public DeploymentStage getAfter()
+   public String getAfter()
    {
       return after;
    }
 
    /**
-    * Get the before stage.
+    * Get the before.
     * 
-    * @return the before stage.
+    * @return the before.
     */
-   public DeploymentStage getBefore()
+   public String getBefore()
    {
       return before;
    }
-
-   /**
-    * See {@link java.lang.Object#equals(Object)}
-    */
+   
    @Override
-   public boolean equals( final Object obj )
+   public boolean equals(Object obj)
    {
-      if ( obj == this )
-      {
+      if (obj == this)
          return true;
-      }
-      if ( obj == null || false == ( obj instanceof DeploymentStage ) )
-      {
+      if (obj == null || obj instanceof DeploymentStage == false)
          return false;
-      }
       
-      final DeploymentStage other = ( DeploymentStage ) obj;
-
-      if ( false == this.getName().equals( other.getName() ) )
-      {
-         return false;
-      }
-      if ( false == ( this.index == other.index ) )
-      {
-         return false;
-      }
-      if ( false == this.getAfter().equals( other.getAfter() ) )
-      {
-         return false;
-      }
-      if ( false == this.getBefore().equals( other.getBefore() ) )
-      {
-         return false;
-      }
-      
-      return true;
+      DeploymentStage other = (DeploymentStage) obj;
+      return getName().equals(other.getName());
    }
 
-   /**
-    * See {@link java.lang.Object#hashCode()}
-    */
    @Override
    public int hashCode()
    {
-      return this.hashCode;
+      return getName().hashCode();
    }
    
-   /**
-    * See {@link java.lang.Object#toString()}
-    */
    @Override
    public String toString()
    {
-      return this.toString;
+      return getName();
    }
-   
-   /**
-    * See {@link java.lang.Comparable#compareTo(Object)}
-    */
-   public int compareTo( final DeploymentStage other )
-   {
-      return this.index - other.index;
-   }
-
-
-   /**
-    * Computes hashCode - performance optimization.
-    * 
-    * @return computed hashCode value
-    */
-   private int computeHashCode()
-   {
-      int result = 17;
-      
-      result = 37 * result + this.name.hashCode();
-      result = 37 * result + this.index;
-      result = 37 * result + ( this.after == null ? 0 : this.after.hashCode() );
-      result = 37 * result + ( this.before == null ? 0 : this.before.hashCode() );
-      
-      return result;
-   }
-
-   /**
-    * Computes toString - performance optimization.
-    * 
-    * @return computed toString value
-    */
-   private String computeToString()
-   {
-      final StringBuilder sb = new StringBuilder();
-
-      sb.append( this.getName() ).append( "[after=" );
-      sb.append( ( this.after != null ) ? this.after.getName() : null );
-      sb.append( ",before=" );
-      sb.append( ( this.before != null ) ? this.before.getName() : null );
-      sb.append( "]" );
-      
-      return sb.toString();
-   }
-
 }
