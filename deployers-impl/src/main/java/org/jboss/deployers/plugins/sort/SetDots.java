@@ -22,6 +22,7 @@
 package org.jboss.deployers.plugins.sort;
 
 import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Domino dots as a set of values.
@@ -60,6 +61,17 @@ public class SetDots<V> implements Dots<Set<V>>
       return false;
    }
 
+   public boolean contains(Dots<Set<V>> containable)
+   {
+      Set<V> otherSet = containable.getValue();
+      // do not match singe dot, due to name comparison consistency
+      if (otherSet.size() < 2)
+         return false;
+
+      Set<V> copy = new HashSet<V>(otherSet);
+      return copy.retainAll(set) == false; 
+   }
+   
    @Override
    public String toString()
    {
