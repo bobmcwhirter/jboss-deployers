@@ -330,8 +330,8 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
          return;
 
       ControllerState preceeds = null;
-      String before = stage.getBefore();
-      String after = stage.getAfter();
+      String before = stage.getBefore() != null ? stage.getBefore().getName() : null;
+      String after = stage.getAfter() != null ? stage.getAfter().getName() : null;
       if (before != null || after != null)
       {
          // Determine where to put the stage
@@ -610,13 +610,22 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
    
    public DeploymentStage getDeploymentStage(DeploymentContext context) throws DeploymentException
    {
-      DeploymentControllerContext deploymentControllerContext = context.getTransientAttachments().getAttachment(ControllerContext.class.getName(), DeploymentControllerContext.class);
+      DeploymentControllerContext deploymentControllerContext = 
+         context.getTransientAttachments().getAttachment(ControllerContext.class.getName(), DeploymentControllerContext.class);
+      
       if (deploymentControllerContext == null)
+      {
          return null;
+      }
       ControllerState state = deploymentControllerContext.getState();
       if (ControllerState.ERROR.equals(state))
+      {
          return DeploymentStages.NOT_INSTALLED;
-      return new DeploymentStage(state.getStateString());
+      }
+      else
+      {
+         return DeploymentStages.valueOf( state.getStateString() );
+      }
    }
 
    public void change(DeploymentContext context, DeploymentStage stage) throws DeploymentException

@@ -22,40 +22,98 @@
 package org.jboss.deployers.spi.deployer;
 
 /**
- * The Standard DeploymentStages.
+ * The standard deployment stages.
  * 
  * @author <a href="adrian@jboss.org">Adrian Brock</a>
+ * @author <a href="ropalka@redhat.com">Richard Opalka</a>
  * @version $Revision: 1.1 $
  */
-public interface DeploymentStages
+public final class DeploymentStages
 {
+   
+   /**
+    * Forbidden constructor.
+    */
+   private DeploymentStages()
+   {
+      super();
+   }
+
    /** The not installed stage - nothing is done here */
-   DeploymentStage NOT_INSTALLED = new DeploymentStage("Not Installed");
+   public static final DeploymentStage NOT_INSTALLED = new DeploymentStage("Not Installed");
 
    /** The parse stage - where metadata is read */
-   DeploymentStage PARSE = new DeploymentStage("Parse", NOT_INSTALLED);
+   public static final DeploymentStage PARSE = new DeploymentStage("Parse");
 
    /** The post parse stage - where metadata can be fixed up */
-   DeploymentStage POST_PARSE = new DeploymentStage("PostParse", PARSE);
+   public static final DeploymentStage POST_PARSE = new DeploymentStage("PostParse");
 
    /** The pre describe stage - where default dependencies metadata can be created */
-   DeploymentStage PRE_DESCRIBE = new DeploymentStage("PreDescribe", POST_PARSE);
+   public static final DeploymentStage PRE_DESCRIBE = new DeploymentStage("PreDescribe");
 
    /** The describe stage - where dependencies are established */
-   DeploymentStage DESCRIBE = new DeploymentStage("Describe", PRE_DESCRIBE);
+   public static final DeploymentStage DESCRIBE = new DeploymentStage("Describe");
 
    /** The classloader stage - where classloaders are created */
-   DeploymentStage CLASSLOADER = new DeploymentStage("ClassLoader", DESCRIBE);
+   public static final DeploymentStage CLASSLOADER = new DeploymentStage("ClassLoader");
 
    /** The post classloader stage - e.g. aop */
-   DeploymentStage POST_CLASSLOADER = new DeploymentStage("PostClassLoader", CLASSLOADER);
+   public static final DeploymentStage POST_CLASSLOADER = new DeploymentStage("PostClassLoader");
 
    /** The pre real stage - where before real deployments are done */
-   DeploymentStage PRE_REAL = new DeploymentStage("PreReal", POST_CLASSLOADER);
+   public static final DeploymentStage PRE_REAL = new DeploymentStage("PreReal");
 
    /** The real stage - where real deployment processing is done */
-   DeploymentStage REAL = new DeploymentStage("Real", PRE_REAL);
+   public static final DeploymentStage REAL = new DeploymentStage("Real");
 
    /** The installed stage - could be used to provide valve in future? */
-   DeploymentStage INSTALLED = new DeploymentStage("Installed", REAL);
+   public static final DeploymentStage INSTALLED = new DeploymentStage("Installed");
+
+   /**
+    * Turn deployment stages into immutable objects.
+    */
+   static
+   {
+      int index = 1;
+      DeploymentStages.NOT_INSTALLED.initialize( null, PARSE, index++ );
+      DeploymentStages.PARSE.initialize( NOT_INSTALLED, POST_PARSE, index++ );
+      DeploymentStages.POST_PARSE.initialize( PARSE, PRE_DESCRIBE, index++ );
+      DeploymentStages.PRE_DESCRIBE.initialize( POST_PARSE, DESCRIBE, index++ );
+      DeploymentStages.DESCRIBE.initialize( PRE_DESCRIBE, CLASSLOADER, index++ );
+      DeploymentStages.CLASSLOADER.initialize( DESCRIBE, POST_CLASSLOADER, index++ );
+      DeploymentStages.POST_CLASSLOADER.initialize( CLASSLOADER, PRE_REAL, index++ );
+      DeploymentStages.PRE_REAL.initialize( POST_CLASSLOADER, REAL, index++ );
+      DeploymentStages.REAL.initialize( PRE_REAL, INSTALLED, index++ );
+      DeploymentStages.INSTALLED.initialize( REAL, null, index++ );
+   }
+
+   /**
+    * Returns DeploymentStage instance associated with <b>stageAsString</b> stage name.
+    * 
+    * @param stageAsString name of the stage
+    * @return associated DeploymentStage
+    */
+   public static final DeploymentStage valueOf( final String stageAsString )
+   {
+      if ( null == stageAsString )
+      {
+         throw new NullPointerException( "stage" );
+      }
+      
+      DeploymentStage currentStage = DeploymentStages.NOT_INSTALLED;
+      while ( currentStage != null )
+      {
+         if ( currentStage.getName().equals( stageAsString ) )
+         {
+            return currentStage;
+         }
+         else
+         {
+            currentStage = currentStage.getBefore();
+         }
+      }
+
+      throw new IllegalArgumentException( "Uknown stage: " + stageAsString );
+   }
+   
 }
