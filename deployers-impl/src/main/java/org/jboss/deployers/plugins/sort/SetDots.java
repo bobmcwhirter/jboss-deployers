@@ -64,14 +64,15 @@ public class SetDots<V> implements Dots<Set<V>>
    public boolean contains(Dots<Set<V>> containable)
    {
       Set<V> otherSet = containable.getValue();
-      // do not match singe dot, due to name comparison consistency
-      if (otherSet.size() < 2)
-         return false;
-
       Set<V> copy = new HashSet<V>(otherSet);
       return copy.retainAll(set) == false; 
    }
-   
+
+   public int dimension()
+   {
+      return set.size();
+   }
+
    @Override
    public String toString()
    {

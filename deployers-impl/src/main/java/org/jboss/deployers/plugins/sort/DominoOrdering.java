@@ -79,12 +79,12 @@ public class DominoOrdering<T extends Domino<?>>
                if (oneHead.match(twoHead) && oneTail.match(twoTail))
                {
                   // lets try do do more exact match
-                  // although we should aviod singe size checks
+                  // although we should aviod singe dimension checks
                   // which are already part of match() check
                   // in order not to break comparator comparison
-                  if (oneTail.contains(twoHead))
+                  if (twoHead.dimension() > 1 && oneTail.dimension() >= twoHead.dimension() && oneTail.contains(twoHead))
                      relation = -1;
-                  else if (twoTail.contains(oneHead))
+                  else if (oneHead.dimension() > 1 && twoTail.dimension() >= oneHead.dimension() && twoTail.contains(oneHead))
                      relation = 1;
                   else
                      relation = COMPARATOR.compare(one, two);
