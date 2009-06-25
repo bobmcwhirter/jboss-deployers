@@ -851,20 +851,22 @@ public class DeployerFlowUnitTestCase extends AbstractDeployerTest
       deployer1.setOutputs("WebServicesMetaData", "WebServiceDeployment", "JBossWebMetaData" );
       addDeployer(main, deployer1);
 
-      TestFlowDeployer deployer2 = new TestFlowDeployer("WebServicesDeploymentTypeDeployer");
-      deployer2.setInputs("WebServicesMetaData", "WebServiceDeployment", "JBossWebMetaData" );
-      deployer2.setOutputs("DeploymentType", "JBossWebMetaData");
+      TestFlowDeployer deployer4 = new TestFlowDeployer("WebServicesDeploymentTypeDeployer");
+      deployer4.setInputs("WebServicesMetaData", "WebServiceDeployment", "JBossWebMetaData" );
+      deployer4.setOutputs("DeploymentType", "JBossWebMetaData");
+      addDeployer(main, deployer4);
+
+      TestFlowDeployer deployer2 = new TestFlowDeployer("WebServiceDeployerEJB");
+      deployer2.setInputs("JBossWebMetaData", "DeploymentType");
+      deployer2.setOutputs("JBossWebMetaData");
       addDeployer(main, deployer2);
 
-      TestFlowDeployer deployer3 = new TestFlowDeployer("WebServiceDeployerEJB");
+      TestFlowDeployer deployer3 = new TestFlowDeployer("WebServiceDeployerPreJSE");
       deployer3.setInputs("JBossWebMetaData", "DeploymentType");
       deployer3.setOutputs("JBossWebMetaData");
       addDeployer(main, deployer3);
 
-      TestFlowDeployer deployer4 = new TestFlowDeployer("WebServiceDeployerPreJSE");
-      deployer4.setInputs("JBossWebMetaData", "DeploymentType");
-      deployer4.setOutputs("JBossWebMetaData");
-      addDeployer(main, deployer4);
+      // name comparison kicks in between 2,3,4
 
       TestFlowDeployer deployer5 = new TestFlowDeployer("AbstractWarDeployer");
       deployer5.setInputs("JBossWebMetaData");
@@ -924,5 +926,4 @@ public class DeployerFlowUnitTestCase extends AbstractDeployerTest
       assertEquals(8, deployer5.getUndeployOrder());
       assertEquals(7, deployer6.getUndeployOrder());
    }
-
 }
