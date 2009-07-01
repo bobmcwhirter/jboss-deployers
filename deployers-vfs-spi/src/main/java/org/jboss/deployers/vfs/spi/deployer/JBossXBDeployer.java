@@ -21,6 +21,8 @@
 */
 package org.jboss.deployers.vfs.spi.deployer;
 
+// $Id: $
+
 import org.jboss.xb.util.JBossXBHelper;
 
 /**
@@ -28,6 +30,7 @@ import org.jboss.xb.util.JBossXBHelper;
  *
  * @param <T> the expected type
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
+ * @author <a href="thomas.diesler@jboss.com">Thomas Diesler</a>
  */
 public abstract class JBossXBDeployer<T> extends UnmarshallerFactoryDeployer<T, Boolean>
 {
@@ -43,7 +46,6 @@ public abstract class JBossXBDeployer<T> extends UnmarshallerFactoryDeployer<T, 
    public JBossXBDeployer(Class<T> output)
    {
       super(output);
-      this.helper = new JBossXBHelper<T>(output);
    }
 
    /**
@@ -53,6 +55,9 @@ public abstract class JBossXBDeployer<T> extends UnmarshallerFactoryDeployer<T, 
     */
    protected JBossXBHelper<T> getHelper()
    {
+      if (helper == null)
+         helper = new JBossXBHelper<T>(getOutput());
+      
       return helper;
    }
 
@@ -79,7 +84,7 @@ public abstract class JBossXBDeployer<T> extends UnmarshallerFactoryDeployer<T, 
     */
    public boolean isUseSchemaValidation()
    {
-      return helper.isUseSchemaValidation();
+      return getHelper().isUseSchemaValidation();
    }
 
    /**
@@ -89,7 +94,7 @@ public abstract class JBossXBDeployer<T> extends UnmarshallerFactoryDeployer<T, 
     */
    public void setUseSchemaValidation(boolean useSchemaValidation)
    {
-      helper.setUseSchemaValidation(useSchemaValidation);
+      getHelper().setUseSchemaValidation(useSchemaValidation);
    }
 
    /**
@@ -99,7 +104,7 @@ public abstract class JBossXBDeployer<T> extends UnmarshallerFactoryDeployer<T, 
     */
    public boolean isUseValidation()
    {
-      return helper.isUseValidation();
+      return getHelper().isUseValidation();
    }
 
    /**
@@ -109,6 +114,6 @@ public abstract class JBossXBDeployer<T> extends UnmarshallerFactoryDeployer<T, 
     */
    public void setUseValidation(boolean useValidation)
    {
-      helper.setUseValidation(useValidation);
+      getHelper().setUseValidation(useValidation);
    }
 }
