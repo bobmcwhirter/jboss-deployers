@@ -35,7 +35,7 @@ import org.jboss.xb.util.JBossXBHelper;
 public abstract class JBossXBDeployer<T> extends UnmarshallerFactoryDeployer<T, Boolean>
 {
    /** The helper */
-   private JBossXBHelper<T> helper;
+   private final JBossXBHelper<T> helper;
 
    /**
     * Create a new SchemaResolverDeployer.
@@ -46,6 +46,17 @@ public abstract class JBossXBDeployer<T> extends UnmarshallerFactoryDeployer<T, 
    public JBossXBDeployer(Class<T> output)
    {
       super(output);
+      helper = createHelper();
+   }
+
+   /**
+    * Create the helper.
+    *
+    * @return new helper instance
+    */
+   protected JBossXBHelper<T> createHelper()
+   {
+      return new JBossXBHelper<T>(getOutput());
    }
 
    /**
@@ -55,9 +66,6 @@ public abstract class JBossXBDeployer<T> extends UnmarshallerFactoryDeployer<T, 
     */
    protected JBossXBHelper<T> getHelper()
    {
-      if (helper == null)
-         helper = new JBossXBHelper<T>(getOutput());
-      
       return helper;
    }
 
