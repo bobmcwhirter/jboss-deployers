@@ -894,15 +894,17 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
          {
             if (item.isResolved() == false)
             {
-               String dependency;
                ControllerState actualState = null;
                String actualStateString;
 
                Object iDependOn = item.getIDependOn();
                if (contextName.equals(iDependOn) == false && item.resolve(controller) == false)
                {
+                  // some items might only set iDependOn later on
                   iDependOn = item.getIDependOn();
 
+                  String dependency;
+                  ControllerContext other = null;
                   if (iDependOn == null)
                   {
                      dependency = "<UNKNOWN " + item.getName() + ">";
@@ -911,7 +913,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
                   else
                   {
                      dependency = iDependOn.toString();
-                     ControllerContext other = controller.getContext(iDependOn, null);
+                     other = controller.getContext(iDependOn, null);
                      if (other == null)
                         actualStateString = "** NOT FOUND " + item.toHumanReadableString() + " **";
                      else
@@ -921,10 +923,13 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
                      }
                   }
 
-                  ControllerState requiredState = item.getWhenRequired();
-                  String requiredStateString = requiredState.getStateString();
-                  if (actualState == null || states.isAfterState(requiredState, actualState))
+                  ControllerState requiredState = item.getDependentState();
+                  if (requiredState == null)
+                     requiredState = (other != null) ? other.getRequiredState() : ControllerState.INSTALLED;
+                  
+                  if (actualState == null || states.isBeforeState(actualState, requiredState))
                   {
+                     String requiredStateString = requiredState.getStateString();
                      MissingDependency missing = new MissingDependency(name, dependency, requiredStateString, actualStateString);
                      dependencies.add(missing);
                   }
