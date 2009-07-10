@@ -108,4 +108,16 @@ public class MissingDependency implements Serializable
    {
       return requiredState;
    }
+
+   /**
+    * Return a string containing the missing dependency for use in IncompleteDeployments
+    * @return The formatted missing dependency
+    */
+   String display()
+   {
+      return String.format("    Dependency \"%s\" (should be in state \"%s\", but is actually in state \"%s\")\n",
+            dependency,
+            requiredState,
+            actualState);
+   }
 }

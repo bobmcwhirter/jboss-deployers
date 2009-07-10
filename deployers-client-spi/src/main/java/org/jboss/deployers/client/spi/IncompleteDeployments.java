@@ -274,18 +274,7 @@ public class IncompleteDeployments implements Serializable
             buffer.append(String.format("  Deployment \"%s\" is missing the following dependencies:\n", name));
             for (MissingDependency dependency : entry.getValue())
             {
-               if (dependency instanceof MissingAsynchronousDependency)
-               {
-                  buffer.append(String.format("    Dependency \"%s\" (is currently being installed in a background thread)\n",
-                           dependency.getDependency()));
-               }
-               else
-               {
-                  buffer.append(String.format("    Dependency \"%s\" (should be in state \"%s\", but is actually in state \"%s\")\n",
-                          dependency.getDependency(),
-                          dependency.getRequiredState(),
-                          dependency.getActualState()));
-               }
+               buffer.append(dependency.display());
             }
 
             // It is not a root cause if it has missing dependencies
