@@ -35,7 +35,7 @@
       <artifactId>jboss-deployers-client-spi</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.jboss.microcontainer</groupId>
+      <groupId>org.jboss.kernel</groupId>
       <artifactId>jboss-dependency</artifactId>
       <exclusions>
         <exclusion>

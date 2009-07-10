@@ -24,7 +24,7 @@
     <version.jboss.vfs>2.1.2.GA</version.jboss.vfs>
     <version.jboss.man>2.1.1.CR1</version.jboss.man>
     <version.jboss.mdr>2.0.2.GA</version.jboss.mdr>
-    <version.jboss.microcontainer>2.2.0.M2</version.jboss.microcontainer>
+    <version.jboss.kernel>2.2.0-SNAPSHOT</version.jboss.kernel>
     <version.jboss.classloader>2.0.6.GA</version.jboss.classloader>
     <version.jboss.classloading.spi>5.1.0.SP1</version.jboss.classloading.spi>
     <version.jboss.common.core>2.2.14.GA</version.jboss.common.core>
@@ -240,19 +240,19 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.jboss.microcontainer</groupId>
+        <groupId>org.jboss.kernel</groupId>
         <artifactId>jboss-dependency</artifactId>
-        <version>${version.jboss.microcontainer}</version>
+        <version>${version.jboss.kernel}</version>
       </dependency>
       <dependency>
-        <groupId>org.jboss.microcontainer</groupId>
+        <groupId>org.jboss.kernel</groupId>
         <artifactId>jboss-kernel</artifactId>
-        <version>${version.jboss.microcontainer}</version>
+        <version>${version.jboss.kernel}</version>
       </dependency>
       <dependency>
-        <groupId>org.jboss.microcontainer</groupId>
+        <groupId>org.jboss.kernel</groupId>
         <artifactId>jboss-jmx-mc-int</artifactId>
-        <version>${version.jboss.microcontainer}</version>
+        <version>${version.jboss.kernel}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.cl</groupId>

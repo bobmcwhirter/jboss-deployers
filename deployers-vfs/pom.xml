@@ -42,7 +42,7 @@
 	    <artifactId>jboss-deployers-vfs-spi</artifactId>
 	 </dependency>
     <dependency>
-      <groupId>org.jboss.microcontainer</groupId>
+      <groupId>org.jboss.kernel</groupId>
 	    <artifactId>jboss-kernel</artifactId>
 	 </dependency>
     <dependency>
@@ -51,6 +51,10 @@
       <exclusions>
         <exclusion>
           <groupId>org.jboss.microcontainer</groupId>
+          <artifactId>jboss-kernel</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jboss.kernel</groupId>
           <artifactId>jboss-kernel</artifactId>
         </exclusion>
         <exclusion>
@@ -100,6 +104,10 @@
           <artifactId>jboss-kernel</artifactId>
         </exclusion>
         <exclusion>
+          <groupId>org.jboss.kernel</groupId>
+          <artifactId>jboss-kernel</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>org.jboss.cl</groupId>
           <artifactId>jboss-classloading</artifactId>
         </exclusion>
@@ -133,6 +141,10 @@
           <artifactId>jboss-dependency</artifactId>
         </exclusion>
         <exclusion>
+          <groupId>org.jboss.kernel</groupId>
+          <artifactId>jboss-dependency</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>org.jboss.logging</groupId>
           <artifactId>jboss-logging-spi</artifactId>
         </exclusion>
@@ -150,6 +162,10 @@
         </exclusion>
         <exclusion>
           <groupId>org.jboss.microcontainer</groupId>
+          <artifactId>jboss-kernel</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jboss.kernel</groupId>
           <artifactId>jboss-kernel</artifactId>
         </exclusion>
         <exclusion>

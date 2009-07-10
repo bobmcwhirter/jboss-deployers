@@ -25,7 +25,7 @@
 })
 package org.jboss.deployers.vfs.plugins.dependency;
 
-import org.jboss.beans.metadata.plugins.ControllerStateValueAdapter;
+import org.jboss.dependency.spi.ControllerStateValueAdapter;
 import org.jboss.dependency.spi.ControllerState;
 import org.jboss.xb.annotations.JBossXmlAdaptedType;
 import org.jboss.xb.annotations.JBossXmlAdaptedTypes;
