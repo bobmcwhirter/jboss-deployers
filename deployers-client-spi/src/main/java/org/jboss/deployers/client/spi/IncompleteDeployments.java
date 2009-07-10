@@ -239,7 +239,12 @@ public class IncompleteDeployments implements Serializable
          for (Map.Entry<String, Set<MissingDependency>> entry : contextsMissingDependencies.entrySet())
          {
             for (MissingDependency dependency : entry.getValue())
-               mergeRootCauses(rootCauses, dependency.getDependency(), dependency.getActualState());
+            {
+               if (dependency instanceof MissingAsynchronousDependency == false)
+               {
+                  mergeRootCauses(rootCauses, dependency.getDependency(), dependency.getActualState());
+               }
+            }
          }
       }
 
@@ -269,10 +274,18 @@ public class IncompleteDeployments implements Serializable
             buffer.append(String.format("  Deployment \"%s\" is missing the following dependencies:\n", name));
             for (MissingDependency dependency : entry.getValue())
             {
-               buffer.append(String.format("    Dependency \"%s\" (should be in state \"%s\", but is actually in state \"%s\")\n",
-                       dependency.getDependency(),
-                       dependency.getRequiredState(),
-                       dependency.getActualState()));
+               if (dependency instanceof MissingAsynchronousDependency)
+               {
+                  buffer.append(String.format("    Dependency \"%s\" (is currently being installed in a background thread)\n",
+                           dependency.getDependency()));
+               }
+               else
+               {
+                  buffer.append(String.format("    Dependency \"%s\" (should be in state \"%s\", but is actually in state \"%s\")\n",
+                          dependency.getDependency(),
+                          dependency.getRequiredState(),
+                          dependency.getActualState()));
+               }
             }
 
             // It is not a root cause if it has missing dependencies

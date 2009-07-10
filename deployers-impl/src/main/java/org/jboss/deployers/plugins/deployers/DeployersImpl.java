@@ -45,9 +45,11 @@ import org.jboss.dependency.spi.ControllerState;
 import org.jboss.dependency.spi.ControllerStateModel;
 import org.jboss.dependency.spi.DependencyInfo;
 import org.jboss.dependency.spi.DependencyItem;
+import org.jboss.dependency.spi.asynchronous.AsynchronousController;
 import org.jboss.deployers.client.spi.Deployment;
 import org.jboss.deployers.client.spi.IncompleteDeploymentException;
 import org.jboss.deployers.client.spi.IncompleteDeployments;
+import org.jboss.deployers.client.spi.MissingAsynchronousDependency;
 import org.jboss.deployers.client.spi.MissingDependency;
 import org.jboss.deployers.plugins.sort.DeployerSorter;
 import org.jboss.deployers.plugins.sort.DeployerSorterFactory;
@@ -880,6 +882,8 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
    {
       if (context.getState().equals(ControllerState.ERROR))
          contextsInError.put(context.getName().toString(), getRootCause(context.getError()));
+      else if (isBeingInstalledAsynchronously(context))
+         return;
       else
       {
          Object contextName = context.getName();
@@ -902,7 +906,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
                {
                   // some items might only set iDependOn later on
                   iDependOn = item.getIDependOn();
-
+                  boolean isAsynchInProgress = false;
                   String dependency;
                   ControllerContext other = null;
                   if (iDependOn == null)
@@ -918,6 +922,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
                         actualStateString = "** NOT FOUND " + item.toHumanReadableString() + " **";
                      else
                      {
+                        isAsynchInProgress = isBeingInstalledAsynchronously(other);
                         actualState = other.getState();
                         actualStateString = actualState.getStateString();
                      }
@@ -930,7 +935,9 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
                   if (actualState == null || states.isBeforeState(actualState, requiredState))
                   {
                      String requiredStateString = requiredState.getStateString();
-                     MissingDependency missing = new MissingDependency(name, dependency, requiredStateString, actualStateString);
+                     MissingDependency missing = isAsynchInProgress ?
+                           new MissingAsynchronousDependency(name, dependency, requiredStateString, actualStateString) :
+                              new MissingDependency(name, dependency, requiredStateString, actualStateString);
                      dependencies.add(missing);
                   }
                }
@@ -999,6 +1006,15 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
          throw new IncompleteDeploymentException(incomplete);
    }
 
+   protected boolean isBeingInstalledAsynchronously(ControllerContext ctx)
+   {
+      if (controller instanceof AsynchronousController)
+      {
+         return ((AsynchronousController)controller).isAsynchronousInstallInProgress(ctx);
+      }
+      return false;
+   }
+   
    /**
     * Is context deployed.
     *

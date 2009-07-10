@@ -1,0 +1,21 @@
+RULE Wait for Complete in Dependency's ConfigureAction
+CLASS org.jboss.test.deployers.asynchronous.support.TestControllerContext$ConfigureAction 
+METHOD install
+AT EXIT
+BIND ctx:ControllerContext = $1
+IF TRUE
+DO debug("wait in ConfigureAction"),
+   waitFor("Complete", 10000),
+   debug("go!!!")
+ENDRULE
+
+RULE Signal Complete for Dependency once called check
+CLASS org.jboss.test.deployers.asynchronous.test.AsynchronousCheckCompleteTestCase
+METHOD testAsynchronousContextInProgressNotReported
+AT EXIT
+BIND NOTHING
+IF TRUE
+DO debug("signalling wake"),
+   signalWake("Complete", true),
+   debug("signalled!")
+ENDRULE

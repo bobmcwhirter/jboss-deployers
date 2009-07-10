@@ -36,6 +36,8 @@
     <version.junit>4.4</version.junit>
     <version.javassist>3.10.0.GA</version.javassist>
     <version.stax.staxapi>1.0</version.stax.staxapi>
+    <version.ant.junit>1.6.5</version.ant.junit>
+   <version.jboss.byteman>1.0.2</version.jboss.byteman>
   </properties>
 
   <modules>
@@ -341,6 +343,12 @@
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>${version.junit}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.byteman</groupId>
+        <artifactId>byteman</artifactId>
+        <version>${version.jboss.byteman}</version>
         <scope>test</scope>
       </dependency>
     </dependencies>

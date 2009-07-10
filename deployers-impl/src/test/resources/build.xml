@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project>
+   <target name="asynchronous-tests">
+   	<mkdir dir="${report.dir}"/>
+      <antcall target="run-asynchronous-test" inheritrefs="true">
+         <param name="test" value="AsynchronousCheckCompleteTestCase"/>
+      </antcall>
+   </target>
+   
+   <target name="run-asynchronous-test">
+  	   <property name="bytemanScript" value="${testOutputDirectory}/org/jboss/test/deployers/asynchronous/test/${test}.txt"/>
+
+      <junit printsummary="yes" fork="true" haltonfailure="true" haltonerror="true">
+         <classpath>
+            <path refid="maven.test.classpath"/>
+        </classpath>
+        <jvmarg value="-javaagent:${byteman.path}=script:${bytemanScript}"/>
+        <sysproperty key="org.jboss.byteman.debug" value="true"/>
+        <formatter type="plain" usefile="true" extension=".txt" />
+        <formatter classname="org.jboss.ant.taskdefs.XMLJUnitMultipleResultFormatter" usefile="true" extension=".xml" />
+        <test fork="yes" name="org.jboss.test.deployers.asynchronous.test.${test}" todir="${report.dir}"/>
+      </junit>
+   </target>
+</project>
