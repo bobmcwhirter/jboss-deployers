@@ -274,6 +274,7 @@ public class IncompleteDeployments implements Serializable
             buffer.append(String.format("  Deployment \"%s\" is missing the following dependencies:\n", name));
             for (MissingDependency dependency : entry.getValue())
             {
+               buffer.append("    ");
                buffer.append(dependency.display());
             }
 

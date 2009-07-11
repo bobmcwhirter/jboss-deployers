@@ -53,7 +53,7 @@ public class MissingAsynchronousDependency extends MissingDependency
    @Override
    String display()
    {
-      return String.format("    Dependency \"%s\" (is currently being installed in a background thread)\n",
+      return String.format("Dependency \"%s\" (is currently being installed in a background thread)\n",
             super.getDependency());
    }
 }
