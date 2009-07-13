@@ -881,10 +881,10 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
          ControllerStateModel states)
    {
       if (context.getState().equals(ControllerState.ERROR))
+      {
          contextsInError.put(context.getName().toString(), getRootCause(context.getError()));
-      else if (isBeingInstalledAsynchronously(context))
-         return;
-      else
+      }
+      else if (isBeingInstalledAsynchronously(context) == false)
       {
          Object contextName = context.getName();
          String name = contextName.toString();
@@ -937,7 +937,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
                      String requiredStateString = requiredState.getStateString();
                      MissingDependency missing = isAsynchInProgress ?
                            new MissingAsynchronousDependency(name, dependency, requiredStateString, actualStateString) :
-                              new MissingDependency(name, dependency, requiredStateString, actualStateString);
+                           new MissingDependency(name, dependency, requiredStateString, actualStateString);
                      dependencies.add(missing);
                   }
                }
@@ -1006,11 +1006,18 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
          throw new IncompleteDeploymentException(incomplete);
    }
 
+   /**
+    * Is the controller context currently in progress.
+    *
+    * @param ctx the controller context
+    * @return true if in progress, false otherwise
+    */
    protected boolean isBeingInstalledAsynchronously(ControllerContext ctx)
    {
       if (controller instanceof AsynchronousController)
       {
-         return ((AsynchronousController)controller).isAsynchronousInstallInProgress(ctx);
+         AsynchronousController asynchronousController = AsynchronousController.class.cast(controller);
+         return asynchronousController.isAsynchronousInstallInProgress(ctx);
       }
       return false;
    }

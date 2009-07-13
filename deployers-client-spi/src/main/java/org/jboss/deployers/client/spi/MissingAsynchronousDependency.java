@@ -22,7 +22,8 @@
 package org.jboss.deployers.client.spi;
 
 /**
- * 
+ * Missing dependency info wrt asynch handling.
+ *
  * @author <a href="kabir.khan@jboss.com">Kabir Khan</a>
  * @version $Revision: 1.1 $
  */
@@ -53,7 +54,6 @@ public class MissingAsynchronousDependency extends MissingDependency
    @Override
    String display()
    {
-      return String.format("Dependency \"%s\" (is currently being installed in a background thread)\n",
-            super.getDependency());
+      return String.format("Dependency \"%s\" (is currently being installed in a background thread)\n", getDependency());
    }
 }
