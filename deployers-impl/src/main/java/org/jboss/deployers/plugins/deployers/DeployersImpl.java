@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import javax.management.MBeanRegistration;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -59,6 +58,7 @@ import org.jboss.deployers.spi.deployer.Deployer;
 import org.jboss.deployers.spi.deployer.Deployers;
 import org.jboss.deployers.spi.deployer.DeploymentStage;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
+import org.jboss.deployers.spi.deployer.exceptions.ExceptionHandler;
 import org.jboss.deployers.spi.deployer.managed.ManagedObjectCreator;
 import org.jboss.deployers.structure.spi.DeploymentContext;
 import org.jboss.deployers.structure.spi.DeploymentMBean;
@@ -133,6 +133,9 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
 
    /** The ManagedDeploymentCreator plugin */
    private ManagedObjectCreator mgtObjectCreator = null;
+
+   /** The exception handlers */
+   private Set<ExceptionHandler<? extends Throwable>> exceptionHandlers = new HashSet<ExceptionHandler<? extends Throwable>>();
 
    /**
     * Create a new DeployersImpl.
@@ -295,6 +298,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
    {
       if (deployer == null)
          throw new IllegalArgumentException("Null deployer");
+
       deployers.remove(new DeployerWrapper(deployer));
 
       DeploymentStage stage = deployer.getStage();
@@ -360,6 +364,62 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
       controller.addState(new ControllerState(stageName), preceeds);
       stages.put(stageName, stage);
       log.debug("Added stage " + stageName + " before " + preceeds);
+   }
+
+   /**
+    * Set exception handlers.
+    *
+    * @param exceptionHandlers the exception handlers
+    */
+   public void setExceptionHandlers(Set<ExceptionHandler<? extends Throwable>> exceptionHandlers)
+   {
+      if (exceptionHandlers == null)
+         throw new IllegalArgumentException("Null exception handlers");
+
+      for (ExceptionHandler<? extends Throwable> handler : exceptionHandlers)
+         checkExceptionHandler(handler);
+
+      this.exceptionHandlers = exceptionHandlers;
+   }
+
+   /**
+    * Check exception handler.
+    *
+    * @param handler the handler
+    */
+   protected void checkExceptionHandler(ExceptionHandler<? extends Throwable> handler)
+   {
+      if (handler == null)
+         throw new IllegalArgumentException("Null handler");
+
+      if (handler.getExceptionType() == null)
+         throw new IllegalArgumentException("Null exception type: " + handler);
+   }
+
+   /**
+    * Add exception handler.
+    *
+    * @param handler the exception handler
+    * @return Set::add(handler)
+    */
+   public boolean addExceptionHandler(ExceptionHandler<? extends Throwable> handler)
+   {
+      checkExceptionHandler(handler);
+      return exceptionHandlers.add(handler);
+   }
+
+   /**
+    * Remove exception handler.
+    *
+    * @param handler the exception handler
+    * @return Set::remove(handler)
+    */
+   public boolean removeExceptionHandler(ExceptionHandler<? extends Throwable> handler)
+   {
+      if (handler == null)
+         throw new IllegalArgumentException("Null handler");
+
+      return exceptionHandlers.remove(handler);
    }
 
    /**
@@ -819,6 +879,79 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
       return result;
    }
 
+   /**
+    * Get root problem of deployment context.
+    * Handle sub causes while going for the root cause.
+    *
+    * @param dc the deployment context
+    * @return the root
+    */
+   protected Throwable getRootCause(DeploymentContext dc)
+   {
+      ControllerContext context = dc.getTransientAttachments().getAttachment(ControllerContext.class);
+      Throwable error = null;
+      if (context != null)
+         error = getRootCause(context);
+
+      Throwable problem = dc.getProblem();
+      return (problem != null) ? problem : error;
+   }
+
+   /**
+    * Get the root cause of a context's problem.
+    * Handle sub causes while going for the root cause.
+    *
+    * @param context the controller context
+    * @return the root
+    */
+   protected Throwable getRootCause(ControllerContext context)
+   {
+      if (context == null)
+         throw new IllegalArgumentException("Null context");
+
+      Throwable original = context.getError();
+      if (original == null)
+         return null;
+
+      Throwable result = original;
+      handleException(original, context);
+      Throwable cause = result.getCause();
+      while (cause != null)
+      {
+         handleException(cause, context);
+
+         result = cause;
+         cause = cause.getCause();
+      }
+      return result;
+   }
+
+   /**
+    * Handle exception.
+    *
+    * @param exception the exception to handle
+    * @param context the context that has this exception as its problem
+    */
+   @SuppressWarnings("unchecked")
+   protected void handleException(Throwable exception, ControllerContext context)
+   {
+      for (ExceptionHandler handler : exceptionHandlers)
+      {
+         Class<? extends Throwable> type = handler.getExceptionType();
+         if (handler.matchExactExceptionType())
+         {
+            if (type.equals(exception.getClass()))
+            {
+               handler.handleException(exception, context);
+            }
+         }
+         else if (type.isInstance(exception))
+         {
+            handler.handleException(exception, context);
+         }
+      }
+   }
+
    public void checkComplete(Collection<DeploymentContext> errors, Collection<Deployment> missingDeployer) throws DeploymentException
    {
       Map<String, Throwable> deploymentsInError = null;
@@ -830,7 +963,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
       {
          deploymentsInError = new HashMap<String, Throwable>();
          for (DeploymentContext context : errors)
-            deploymentsInError.put(context.getName(), getRootCause(context.getProblem()));
+            deploymentsInError.put(context.getName(), getRootCause(context));
       }
 
       if (missingDeployer != null && missingDeployer.isEmpty() == false)
@@ -882,7 +1015,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
    {
       if (context.getState().equals(ControllerState.ERROR))
       {
-         contextsInError.put(context.getName().toString(), getRootCause(context.getError()));
+         contextsInError.put(context.getName().toString(), getRootCause(context));
       }
       else if (isBeingInstalledAsynchronously(context) == false)
       {
