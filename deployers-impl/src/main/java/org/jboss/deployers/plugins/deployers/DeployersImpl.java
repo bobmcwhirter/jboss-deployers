@@ -893,7 +893,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
       if (context != null)
          error = getRootCause(context);
 
-      Throwable problem = dc.getProblem();
+      Throwable problem = getRootCause(dc.getProblem());
       return (problem != null) ? problem : error;
    }
 
@@ -913,11 +913,14 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
       if (original == null)
          return null;
 
-      Throwable result = original;
+      // handle original first
       handleException(original, context);
+
+      Throwable result = original;
       Throwable cause = result.getCause();
       while (cause != null)
       {
+         // then each cause
          handleException(cause, context);
 
          result = cause;
