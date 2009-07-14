@@ -68,6 +68,7 @@ import org.jboss.kernel.spi.dependency.KernelController;
 import org.jboss.logging.Logger;
 import org.jboss.managed.api.ManagedObject;
 import org.jboss.metadata.spi.repository.MutableMetaDataRepository;
+import org.jboss.util.collection.CollectionsFactory;
 
 /**
  * DeployersImpl.
@@ -135,7 +136,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
    private ManagedObjectCreator mgtObjectCreator = null;
 
    /** The exception handlers */
-   private Set<ExceptionHandler<? extends Throwable>> exceptionHandlers = new HashSet<ExceptionHandler<? extends Throwable>>();
+   private final Set<ExceptionHandler<? extends Throwable>> exceptionHandlers = CollectionsFactory.createLazySet();
 
    /**
     * Create a new DeployersImpl.
@@ -367,22 +368,6 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
    }
 
    /**
-    * Set exception handlers.
-    *
-    * @param exceptionHandlers the exception handlers
-    */
-   public void setExceptionHandlers(Set<ExceptionHandler<? extends Throwable>> exceptionHandlers)
-   {
-      if (exceptionHandlers == null)
-         throw new IllegalArgumentException("Null exception handlers");
-
-      for (ExceptionHandler<? extends Throwable> handler : exceptionHandlers)
-         checkExceptionHandler(handler);
-
-      this.exceptionHandlers = exceptionHandlers;
-   }
-
-   /**
     * Check exception handler.
     *
     * @param handler the handler
@@ -397,6 +382,25 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
    }
 
    /**
+    * Set exception handlers.
+    *
+    * @param exceptionHandlers the exception handlers
+    */
+   public void setExceptionHandlers(Set<ExceptionHandler<? extends Throwable>> exceptionHandlers)
+   {
+      if (exceptionHandlers == null)
+         throw new IllegalArgumentException("Null exception handlers");
+
+      for (ExceptionHandler<? extends Throwable> handler : exceptionHandlers)
+         checkExceptionHandler(handler);
+
+      synchronized (this.exceptionHandlers)
+      {
+         this.exceptionHandlers.addAll(exceptionHandlers);
+      }
+   }
+
+   /**
     * Add exception handler.
     *
     * @param handler the exception handler
@@ -405,7 +409,10 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
    public boolean addExceptionHandler(ExceptionHandler<? extends Throwable> handler)
    {
       checkExceptionHandler(handler);
-      return exceptionHandlers.add(handler);
+      synchronized (this.exceptionHandlers)
+      {
+         return exceptionHandlers.add(handler);
+      }
    }
 
    /**
@@ -419,7 +426,10 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
       if (handler == null)
          throw new IllegalArgumentException("Null handler");
 
-      return exceptionHandlers.remove(handler);
+      synchronized (this.exceptionHandlers)
+      {
+         return exceptionHandlers.remove(handler);
+      }
    }
 
    /**
