@@ -24,7 +24,7 @@ package org.jboss.test.deployers.exceptions.support;
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class AnySimpleExceptionHandler extends SimpleExceptionHandler
+public class AnySimpleExceptionNotificationListener extends SimpleExceptionNotificationListener
 {
    public boolean matchExactExceptionType()
    {

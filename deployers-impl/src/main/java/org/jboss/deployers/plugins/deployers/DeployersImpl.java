@@ -58,7 +58,7 @@ import org.jboss.deployers.spi.deployer.Deployer;
 import org.jboss.deployers.spi.deployer.Deployers;
 import org.jboss.deployers.spi.deployer.DeploymentStage;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
-import org.jboss.deployers.spi.deployer.exceptions.ExceptionHandler;
+import org.jboss.deployers.spi.deployer.exceptions.ExceptionNotificationListener;
 import org.jboss.deployers.spi.deployer.managed.ManagedObjectCreator;
 import org.jboss.deployers.structure.spi.DeploymentContext;
 import org.jboss.deployers.structure.spi.DeploymentMBean;
@@ -136,7 +136,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
    private ManagedObjectCreator mgtObjectCreator = null;
 
    /** The exception handlers */
-   private final Set<ExceptionHandler<? extends Throwable>> exceptionHandlers = CollectionsFactory.createLazySet();
+   private final Set<ExceptionNotificationListener<? extends Throwable>> exceptionNotificationListeners = CollectionsFactory.createLazySet();
 
    /**
     * Create a new DeployersImpl.
@@ -368,67 +368,67 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
    }
 
    /**
-    * Check exception handler.
+    * Check exception notification listener.
     *
-    * @param handler the handler
+    * @param listener the handler
     */
-   protected void checkExceptionHandler(ExceptionHandler<? extends Throwable> handler)
+   protected void checkExceptionNotificationListener(ExceptionNotificationListener<? extends Throwable> listener)
    {
-      if (handler == null)
-         throw new IllegalArgumentException("Null handler");
+      if (listener == null)
+         throw new IllegalArgumentException("Null listener");
 
-      if (handler.getExceptionType() == null)
-         throw new IllegalArgumentException("Null exception type: " + handler);
+      if (listener.getExceptionType() == null)
+         throw new IllegalArgumentException("Null exception type: " + listener);
    }
 
    /**
-    * Set exception handlers.
+    * Set exception notification listeners.
     *
-    * @param exceptionHandlers the exception handlers
+    * @param exceptionNotificationListeners the exception notification listeners
     */
-   public void setExceptionHandlers(Set<ExceptionHandler<? extends Throwable>> exceptionHandlers)
+   public void setExceptionNotificationListener(Set<ExceptionNotificationListener<? extends Throwable>> exceptionNotificationListeners)
    {
-      if (exceptionHandlers == null)
-         throw new IllegalArgumentException("Null exception handlers");
+      if (exceptionNotificationListeners == null)
+         throw new IllegalArgumentException("Null exception notification listeners");
 
-      for (ExceptionHandler<? extends Throwable> handler : exceptionHandlers)
-         checkExceptionHandler(handler);
+      for (ExceptionNotificationListener<? extends Throwable> listener : exceptionNotificationListeners)
+         checkExceptionNotificationListener(listener);
 
-      synchronized (this.exceptionHandlers)
+      synchronized (this.exceptionNotificationListeners)
       {
-         this.exceptionHandlers.addAll(exceptionHandlers);
+         this.exceptionNotificationListeners.addAll(exceptionNotificationListeners);
       }
    }
 
    /**
-    * Add exception handler.
+    * Add exception notification listener.
     *
-    * @param handler the exception handler
-    * @return Set::add(handler)
+    * @param listener the exception notification listener
+    * @return Set::add(listener)
     */
-   public boolean addExceptionHandler(ExceptionHandler<? extends Throwable> handler)
+   public boolean addExceptionNotificationListener(ExceptionNotificationListener<? extends Throwable> listener)
    {
-      checkExceptionHandler(handler);
-      synchronized (this.exceptionHandlers)
+      checkExceptionNotificationListener(listener);
+      synchronized (this.exceptionNotificationListeners)
       {
-         return exceptionHandlers.add(handler);
+         return exceptionNotificationListeners.add(listener);
       }
    }
 
    /**
-    * Remove exception handler.
+    * Remove exception notification listener.
     *
-    * @param handler the exception handler
-    * @return Set::remove(handler)
+    * @param listener the exception notification listener
+    * @return Set::remove(listener)
     */
-   public boolean removeExceptionHandler(ExceptionHandler<? extends Throwable> handler)
+   public boolean removeExceptionNotificationListener(ExceptionNotificationListener<? extends Throwable> listener)
    {
-      if (handler == null)
-         throw new IllegalArgumentException("Null handler");
+      if (listener == null)
+         throw new IllegalArgumentException("Null listener");
 
-      synchronized (this.exceptionHandlers)
+      synchronized (this.exceptionNotificationListeners)
       {
-         return exceptionHandlers.remove(handler);
+         return exceptionNotificationListeners.remove(listener);
       }
    }
 
@@ -924,14 +924,14 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
          return null;
 
       // handle original first
-      handleException(original, context);
+      notify(original, context);
 
       Throwable result = original;
       Throwable cause = result.getCause();
       while (cause != null)
       {
          // then each cause
-         handleException(cause, context);
+         notify(cause, context);
 
          result = cause;
          cause = cause.getCause();
@@ -940,27 +940,27 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
    }
 
    /**
-    * Handle exception.
+    * Notify.
     *
-    * @param exception the exception to handle
+    * @param exception the exception to notify
     * @param context the context that has this exception as its problem
     */
    @SuppressWarnings("unchecked")
-   protected void handleException(Throwable exception, ControllerContext context)
+   protected void notify(Throwable exception, ControllerContext context)
    {
-      for (ExceptionHandler handler : exceptionHandlers)
+      for (ExceptionNotificationListener listener : exceptionNotificationListeners)
       {
-         Class<? extends Throwable> type = handler.getExceptionType();
-         if (handler.matchExactExceptionType())
+         Class<? extends Throwable> type = listener.getExceptionType();
+         if (listener.matchExactExceptionType())
          {
             if (type.equals(exception.getClass()))
             {
-               handler.handleException(exception, context);
+               listener.notify(exception, context);
             }
          }
          else if (type.isInstance(exception))
          {
-            handler.handleException(exception, context);
+            listener.notify(exception, context);
          }
       }
    }

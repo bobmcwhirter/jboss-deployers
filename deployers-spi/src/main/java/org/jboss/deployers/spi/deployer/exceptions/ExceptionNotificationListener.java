@@ -24,12 +24,12 @@ package org.jboss.deployers.spi.deployer.exceptions;
 import org.jboss.dependency.spi.ControllerContext;
 
 /**
- * Deployment exception handler.
+ * Deployment exception notification listener.
  *
  * @param <T> exact exception type
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public interface ExceptionHandler<T extends Throwable>
+public interface ExceptionNotificationListener<T extends Throwable>
 {
    /**
     * Get the exception type.
@@ -46,10 +46,10 @@ public interface ExceptionHandler<T extends Throwable>
    boolean matchExactExceptionType();
 
    /**
-    * Handle exception.
+    * Notify.
     *
-    * @param exception the exception to handle
+    * @param exception the exception that popped up
     * @param context the context the caused the exception
     */
-   void handleException(T exception, ControllerContext context);
+   void notify(T exception, ControllerContext context);
 }

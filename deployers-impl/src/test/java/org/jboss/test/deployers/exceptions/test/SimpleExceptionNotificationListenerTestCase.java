@@ -33,11 +33,11 @@ import org.jboss.deployers.plugins.attachments.AttachmentsImpl;
 import org.jboss.deployers.plugins.deployers.DeployersImpl;
 import org.jboss.deployers.spi.deployer.Deployers;
 import org.jboss.test.deployers.AbstractDeployerTest;
-import org.jboss.test.deployers.exceptions.support.AnySimpleExceptionHandler;
+import org.jboss.test.deployers.exceptions.support.AnySimpleExceptionNotificationListener;
 import org.jboss.test.deployers.exceptions.support.ComplexException;
 import org.jboss.test.deployers.exceptions.support.SimpleException;
 import org.jboss.test.deployers.exceptions.support.SimpleExceptionDeployer;
-import org.jboss.test.deployers.exceptions.support.SimpleExceptionHandler;
+import org.jboss.test.deployers.exceptions.support.SimpleExceptionNotificationListener;
 
 /**
  * Simple exception handler test.
@@ -45,24 +45,24 @@ import org.jboss.test.deployers.exceptions.support.SimpleExceptionHandler;
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 @SuppressWarnings({"ThrowableInstanceNeverThrown"})
-public class SimpleExceptionHandlerTestCase extends AbstractDeployerTest
+public class SimpleExceptionNotificationListenerTestCase extends AbstractDeployerTest
 {
-   public SimpleExceptionHandlerTestCase(String name)
+   public SimpleExceptionNotificationListenerTestCase(String name)
    {
       super(name);
    }
 
    public static Test suite()
    {
-      return suite(SimpleExceptionHandlerTestCase.class);
+      return suite(SimpleExceptionNotificationListenerTestCase.class);
    }
 
    @Override
    protected Deployers createDeployers()
    {
       Deployers deployers = super.createDeployers();
-      ((DeployersImpl)deployers).addExceptionHandler(new SimpleExceptionHandler());
-      ((DeployersImpl)deployers).addExceptionHandler(new AnySimpleExceptionHandler());
+      ((DeployersImpl)deployers).addExceptionNotificationListener(new SimpleExceptionNotificationListener());
+      ((DeployersImpl)deployers).addExceptionNotificationListener(new AnySimpleExceptionNotificationListener());
       return deployers;
    }
 
@@ -94,13 +94,13 @@ public class SimpleExceptionHandlerTestCase extends AbstractDeployerTest
    public void testExactMatch() throws Throwable
    {
       Exception exception = new ComplexException("Failure", null);
-      testExceptionHandling(exception, Collections.<Object>singleton("Test_AnySimpleExceptionHandler"));
+      testExceptionHandling(exception, Collections.<Object>singleton("Test_AnySimpleExceptionNotificationListener"));
    }
 
    public void testAnyMatch() throws Throwable
    {
       Exception exception = new SimpleException("Failure", null);
-      Set<Object> expected = new HashSet<Object>(Arrays.asList("Test_SimpleExceptionHandler", "Test_AnySimpleExceptionHandler"));
+      Set<Object> expected = new HashSet<Object>(Arrays.asList("Test_SimpleExceptionNotificationListener", "Test_AnySimpleExceptionNotificationListener"));
       testExceptionHandling(exception, expected);
    }
 
@@ -113,6 +113,6 @@ public class SimpleExceptionHandlerTestCase extends AbstractDeployerTest
    public void testNested() throws Throwable
    {
       Exception exception = new IllegalArgumentException("Failed", new ComplexException("Nested", null));
-      testExceptionHandling(exception, Collections.<Object>singleton("Test_AnySimpleExceptionHandler"));
+      testExceptionHandling(exception, Collections.<Object>singleton("Test_AnySimpleExceptionNotificationListener"));
    }
 }

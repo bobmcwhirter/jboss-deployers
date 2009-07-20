@@ -21,13 +21,13 @@
  */
 package org.jboss.test.deployers.exceptions.support;
 
-import org.jboss.deployers.spi.deployer.exceptions.ExceptionHandler;
+import org.jboss.deployers.spi.deployer.exceptions.ExceptionNotificationListener;
 import org.jboss.dependency.spi.ControllerContext;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class SimpleExceptionHandler implements ExceptionHandler<SimpleException>
+public class SimpleExceptionNotificationListener implements ExceptionNotificationListener<SimpleException>
 {
    public Class<SimpleException> getExceptionType()
    {
@@ -39,7 +39,7 @@ public class SimpleExceptionHandler implements ExceptionHandler<SimpleException>
       return true;
    }
 
-   public void handleException(SimpleException exception, ControllerContext context)
+   public void notify(SimpleException exception, ControllerContext context)
    {
       SimpleException.failures.add(context.getName() + "_" + getClass().getSimpleName());
    }

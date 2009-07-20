@@ -24,7 +24,7 @@ package org.jboss.test.deployers.exceptions;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
-import org.jboss.test.deployers.exceptions.test.SimpleExceptionHandlerTestCase;
+import org.jboss.test.deployers.exceptions.test.SimpleExceptionNotificationListenerTestCase;
 
 /**
  * Exceptions test suite.
@@ -42,7 +42,7 @@ public class DeployersExceptionsTestSuite extends TestSuite
    {
       TestSuite suite = new TestSuite("Deployers Exceptions Tests");
 
-      suite.addTest(SimpleExceptionHandlerTestCase.suite());
+      suite.addTest(SimpleExceptionNotificationListenerTestCase.suite());
       
       return suite;
    }
