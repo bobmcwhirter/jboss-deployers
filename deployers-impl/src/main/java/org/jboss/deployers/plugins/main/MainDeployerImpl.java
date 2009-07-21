@@ -48,6 +48,7 @@ import org.jboss.deployers.structure.spi.DeploymentContext;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.structure.spi.StructuralDeployers;
 import org.jboss.deployers.structure.spi.helpers.RevertedDeploymentContextComparator;
+import org.jboss.deployers.structure.spi.main.MainDeployerInternals;
 import org.jboss.deployers.structure.spi.main.MainDeployerStructure;
 import org.jboss.logging.Logger;
 import org.jboss.managed.api.ManagedDeployment;
@@ -63,7 +64,7 @@ import org.jboss.util.graph.Vertex;
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  * @version $Revision$
  */
-public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
+public class MainDeployerImpl implements MainDeployer, MainDeployerStructure, MainDeployerInternals
 {
    /** The log */
    private static final Logger log = Logger.getLogger(MainDeployerImpl.class);
@@ -235,12 +236,6 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
       return unit;
    }
 
-   /**
-    * Get a top level deployment context by name
-    *
-    * @param name the name
-    * @return the context
-    */
    public DeploymentContext getTopLevelDeploymentContext(String name)
    {
       if (name == null)
@@ -249,33 +244,16 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
       return topLevelDeployments.get(name);
    }
 
-   // TODO - introduce some interface or push to MDStructure
-
-   /**
-    * Get all deployments.
-    *
-    * @return all deployments
-    */
    public Collection<DeploymentContext> getAll()
    {
       return Collections.unmodifiableCollection(allDeployments.values());
    }
 
-   /**
-    * Get errors.
-    *
-    * @return the errors
-    */
    public Collection<DeploymentContext> getErrors()
    {
       return Collections.unmodifiableCollection(errorDeployments.values());
    }
 
-   /**
-    * Get missing deployers deployments.
-    *
-    * @return the missing deployer deployments
-    */
    public Collection<Deployment> getMissingDeployer()
    {
       return Collections.unmodifiableCollection(missingDeployers.values());
@@ -921,7 +899,14 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure
       return getManagedObjects(context);
    }
 
-   public Map<String, ManagedObject> getManagedObjects(DeploymentContext context) throws DeploymentException
+   /**
+    * Get managed objects.
+    *
+    * @param context the deployment context
+    * @return map of managed objects
+    * @throws DeploymentException for any error
+    */
+   protected Map<String, ManagedObject> getManagedObjects(DeploymentContext context) throws DeploymentException
    {
       if (context == null)
          throw new IllegalArgumentException("Null context");

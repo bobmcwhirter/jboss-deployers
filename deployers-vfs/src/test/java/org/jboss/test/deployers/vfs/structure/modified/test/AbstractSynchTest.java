@@ -21,7 +21,7 @@
  */
 package org.jboss.test.deployers.vfs.structure.modified.test;
 
-import org.jboss.deployers.structure.spi.main.MainDeployerStructure;
+import org.jboss.deployers.structure.spi.main.MainDeployerInternals;
 import org.jboss.deployers.vfs.spi.structure.modified.MetaDataStructureModificationChecker;
 import org.jboss.deployers.vfs.spi.structure.modified.StructureModificationChecker;
 import org.jboss.deployers.vfs.spi.structure.modified.SynchAdapter;
@@ -44,12 +44,12 @@ public abstract class AbstractSynchTest extends BootstrapDeployersTest
 
    protected StructureModificationChecker createStructureModificationChecker()
    {
-      MainDeployerStructure mainDeployerStructure = getMainDeployerStructure();
+      MainDeployerInternals mainDeployerInternals = getMainDeployerInternals();
       VirtualFileFilter filter = createFilter();
       VirtualFileFilter recurseFilter = createRecurseFilter();
       SynchAdapter synchAdapter = createSynchAdapter();
 
-      MetaDataStructureModificationChecker mdsmc = new MetaDataStructureModificationChecker(mainDeployerStructure);
+      MetaDataStructureModificationChecker mdsmc = new MetaDataStructureModificationChecker(mainDeployerInternals);
       mdsmc.setFilter(filter);
       mdsmc.start();
 

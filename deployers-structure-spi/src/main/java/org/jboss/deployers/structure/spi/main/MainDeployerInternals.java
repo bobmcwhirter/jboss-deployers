@@ -21,35 +21,67 @@
  */
 package org.jboss.deployers.structure.spi.main;
 
+import java.util.Collection;
+
+import org.jboss.deployers.client.spi.Deployment;
 import org.jboss.deployers.spi.DeploymentException;
-import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.deployers.structure.spi.DeploymentContext;
 
 /**
- * MainDeployerStructure.
- * 
- * @author <a href="adrian@jboss.org">Adrian Brock</a>
- * @author <a href="ales.justin@jboss.org">Ales Justin</a>
- * @version $Revision: 1.1 $
+ * Expose some of the internals via proper interface.
+ * Should be used with care or not at all,
+ * as these are impl details, which are subject to change.
+ *
+ * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public interface MainDeployerStructure
+public interface MainDeployerInternals
 {
    /**
-    * Get a deployment unit
-    * 
-    * @param name the name of the unit
-    * @return the unit or null if not found
+    * Get a deployment context
+    *
+    * @param name the name of the context
+    * @return the context or null if not found
     * @throws IllegalArgumentException for a null name
     */
-   DeploymentUnit getDeploymentUnit(String name);
+   DeploymentContext getDeploymentContext(String name);
 
    /**
     * Get a deployment context
-    * 
+    *
     * @param name the name of the context
     * @param errorNotFound whether to throw an error if not found
     * @return the context
     * @throws IllegalArgumentException for a null name
     * @throws DeploymentException for not found
     */
-   DeploymentUnit getDeploymentUnit(String name, boolean errorNotFound) throws DeploymentException;
+   DeploymentContext getDeploymentContext(String name, boolean errorNotFound) throws DeploymentException;
+
+   /**
+    * Get a top level deployment context by name
+    *
+    * @param name the name
+    * @return the context
+    */
+   DeploymentContext getTopLevelDeploymentContext(String name);
+
+   /**
+    * Get all deployments.
+    *
+    * @return all deployments
+    */
+   Collection<DeploymentContext> getAll();
+
+   /**
+    * Get errors.
+    *
+    * @return the errors
+    */
+   Collection<DeploymentContext> getErrors();
+
+   /**
+    * Get missing deployers deployments.
+    *
+    * @return the missing deployer deployments
+    */
+   Collection<Deployment> getMissingDeployer();
 }

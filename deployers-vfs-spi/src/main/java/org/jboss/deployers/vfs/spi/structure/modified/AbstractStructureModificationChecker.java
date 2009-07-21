@@ -26,7 +26,7 @@ import java.net.URISyntaxException;
 
 import org.jboss.deployers.client.spi.Deployment;
 import org.jboss.deployers.structure.spi.DeploymentContext;
-import org.jboss.deployers.structure.spi.main.MainDeployerStructure;
+import org.jboss.deployers.structure.spi.main.MainDeployerInternals;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.logging.Logger;
@@ -44,7 +44,7 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
    protected Logger log = Logger.getLogger(getClass());
 
    /** The main deployer structure */
-   private MainDeployerStructure mainDeployer;
+   private MainDeployerInternals mainDeployer;
 
    /** The structure cache */
    private StructureCache<T> cache;
@@ -53,7 +53,7 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
    {
    }
 
-   protected AbstractStructureModificationChecker(MainDeployerStructure mainDeployer)
+   protected AbstractStructureModificationChecker(MainDeployerInternals mainDeployer)
    {
       if (mainDeployer == null)
          throw new IllegalArgumentException("Null main deployer");
@@ -89,7 +89,7 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
     *
     * @return the main deployer structure
     */
-   protected MainDeployerStructure getMainDeployerStructure()
+   protected MainDeployerInternals getMainDeployerInternals()
    {
       if (mainDeployer == null)
          throw new IllegalArgumentException("Null main deployer structure");
@@ -106,7 +106,7 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
    @SuppressWarnings("deprecation")
    protected VFSDeploymentContext getDeploymentContext(String name)
    {
-      DeploymentContext deploymentContext = getMainDeployerStructure().getDeploymentContext(name);
+      DeploymentContext deploymentContext = getMainDeployerInternals().getDeploymentContext(name);
       if (deploymentContext == null || deploymentContext instanceof VFSDeploymentContext == false)
          return null;
 

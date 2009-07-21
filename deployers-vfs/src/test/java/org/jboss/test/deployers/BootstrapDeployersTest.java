@@ -38,6 +38,7 @@ import org.jboss.dependency.spi.dispatch.InvokeDispatchContext;
 import org.jboss.deployers.client.spi.DeployerClient;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.structure.spi.main.MainDeployerStructure;
+import org.jboss.deployers.structure.spi.main.MainDeployerInternals;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.client.VFSDeploymentFactory;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
@@ -77,6 +78,11 @@ public abstract class BootstrapDeployersTest extends MicrocontainerTest
       return getDelegate().getMainDeployer();
    }
    
+   protected MainDeployerInternals getMainDeployerInternals()
+   {
+      return getDelegate().getMainDeployer();
+   }
+
    protected String getRoot(Class<?> clazz)
    {
       ProtectionDomain pd = clazz.getProtectionDomain();

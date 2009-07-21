@@ -25,7 +25,7 @@ import java.io.File;
 import java.net.URL;
 
 import junit.framework.Test;
-import org.jboss.deployers.structure.spi.main.MainDeployerStructure;
+import org.jboss.deployers.structure.spi.main.MainDeployerInternals;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.deployers.vfs.spi.structure.modified.MetaDataStructureModificationChecker;
 import org.jboss.deployers.vfs.spi.structure.modified.StructureCache;
@@ -53,9 +53,9 @@ public class MetaDataStructureModificationTestCase extends StructureModification
       return suite(MetaDataStructureModificationTestCase.class);
    }
 
-   protected StructureModificationChecker createStructureModificationChecker(MainDeployerStructure mainDeployerStructure, VirtualFileFilter filter)
+   protected StructureModificationChecker createStructureModificationChecker(MainDeployerInternals mainDeployerInternals, VirtualFileFilter filter)
    {
-      MetaDataStructureModificationChecker structureModificationChecker = new MetaDataStructureModificationChecker(mainDeployerStructure);
+      MetaDataStructureModificationChecker structureModificationChecker = new MetaDataStructureModificationChecker(mainDeployerInternals);
       structureModificationChecker.setCache(createStructureCache());
       structureModificationChecker.setFilter(filter);
       return structureModificationChecker;

@@ -23,7 +23,7 @@ package org.jboss.deployers.vfs.spi.structure.modified;
 
 import java.io.IOException;
 
-import org.jboss.deployers.structure.spi.main.MainDeployerStructure;
+import org.jboss.deployers.structure.spi.main.MainDeployerInternals;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.virtual.VirtualFile;
 import org.jboss.virtual.VirtualFileFilter;
@@ -71,9 +71,9 @@ public class SynchWrapperModificationChecker extends AbstractStructureModificati
    }
 
    @Override
-   protected MainDeployerStructure getMainDeployerStructure()
+   protected MainDeployerInternals getMainDeployerInternals()
    {
-      return delegate.getMainDeployerStructure();
+      return delegate.getMainDeployerInternals();
    }
 
    @Override

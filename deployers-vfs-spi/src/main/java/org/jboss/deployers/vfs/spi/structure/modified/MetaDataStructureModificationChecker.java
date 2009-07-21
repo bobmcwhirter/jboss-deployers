@@ -28,7 +28,7 @@ import java.util.Set;
 
 import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.deployers.spi.structure.StructureMetaData;
-import org.jboss.deployers.structure.spi.main.MainDeployerStructure;
+import org.jboss.deployers.structure.spi.main.MainDeployerInternals;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.virtual.VirtualFile;
 import org.jboss.virtual.VirtualFileFilter;
@@ -57,7 +57,7 @@ public class MetaDataStructureModificationChecker extends AbstractStructureModif
    /** The structure cache filter */
    private StructureCacheFilter cacheFilter;
 
-   public MetaDataStructureModificationChecker(MainDeployerStructure mainDeployer)
+   public MetaDataStructureModificationChecker(MainDeployerInternals mainDeployer)
    {
       super(mainDeployer);
    }

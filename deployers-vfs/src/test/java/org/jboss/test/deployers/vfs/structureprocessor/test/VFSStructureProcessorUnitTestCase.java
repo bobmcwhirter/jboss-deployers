@@ -27,16 +27,16 @@ import java.util.Collection;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.jboss.deployers.client.spi.DeployerClient;
-import org.jboss.deployers.plugins.main.MainDeployerImpl;
+import org.jboss.deployers.spi.structure.ModificationType;
 import org.jboss.deployers.structure.spi.DeploymentContext;
 import org.jboss.deployers.structure.spi.StructureProcessor;
+import org.jboss.deployers.structure.spi.main.MainDeployerInternals;
 import org.jboss.deployers.vfs.plugins.structure.jar.JARStructure;
 import org.jboss.deployers.vfs.plugins.structure.modify.FileModificationTypeMatcher;
 import org.jboss.deployers.vfs.plugins.structure.modify.ModificationTypeMatcher;
 import org.jboss.deployers.vfs.plugins.structure.modify.ModificationTypeStructureProcessor;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
-import org.jboss.deployers.spi.structure.ModificationType;
 import org.jboss.virtual.VFSUtils;
 import org.jboss.virtual.VirtualFile;
 
@@ -88,7 +88,7 @@ public class VFSStructureProcessorUnitTestCase extends StructureProcessorUnitTes
 
    protected VFSDeploymentContext getTopDeploymentContext(DeployerClient main, String name)
    {
-      MainDeployerImpl mdi = (MainDeployerImpl)main;
+      MainDeployerInternals mdi = (MainDeployerInternals)main;
       Collection<DeploymentContext> all = mdi.getAll();
       for (DeploymentContext dc : all)
       {

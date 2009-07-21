@@ -21,9 +21,9 @@
  */
 package org.jboss.test.deployers.vfs.structure.modified.test;
 
-import org.jboss.deployers.structure.spi.main.MainDeployerStructure;
-import org.jboss.deployers.vfs.spi.structure.modified.StructureModificationChecker;
+import org.jboss.deployers.structure.spi.main.MainDeployerInternals;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
+import org.jboss.deployers.vfs.spi.structure.modified.StructureModificationChecker;
 import org.jboss.test.deployers.vfs.webbeans.test.AbstractWebBeansTest;
 import org.jboss.virtual.AssembledDirectory;
 import org.jboss.virtual.VirtualFileFilter;
@@ -42,12 +42,12 @@ public abstract class StructureModificationTest extends AbstractWebBeansTest
 
    protected StructureModificationChecker createStructureModificationChecker()
    {
-      MainDeployerStructure mainDeployer = getMainDeployerStructure();
+      MainDeployerInternals mainDeployer = getMainDeployerInternals();
       VirtualFileFilter filter = createFilter();
       return createStructureModificationChecker(mainDeployer, filter);
    }
 
-   protected abstract StructureModificationChecker createStructureModificationChecker(MainDeployerStructure mainDeployerStructure, VirtualFileFilter filter);
+   protected abstract StructureModificationChecker createStructureModificationChecker(MainDeployerInternals mainDeployerInternals, VirtualFileFilter filter);
 
    protected abstract VirtualFileFilter createFilter();
 
