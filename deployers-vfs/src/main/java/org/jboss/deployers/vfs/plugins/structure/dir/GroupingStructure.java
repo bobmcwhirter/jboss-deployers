@@ -124,9 +124,7 @@ public class GroupingStructure extends AbstractVFSStructureDeployer
 
                List<VirtualFile> children = groupVF.getChildren(gf);
                for (VirtualFile child : children)
-               {
                   structureContext.determineChildStructure(child);
-               }
             }
             else
             {
@@ -262,6 +260,9 @@ public class GroupingStructure extends AbstractVFSStructureDeployer
     */
    public void setFilters(Map<String, VirtualFileFilter> filters)
    {
+      if (filters == null)
+         throw new IllegalArgumentException("Null filters");
+
       this.filters = filters;
    }
 }
