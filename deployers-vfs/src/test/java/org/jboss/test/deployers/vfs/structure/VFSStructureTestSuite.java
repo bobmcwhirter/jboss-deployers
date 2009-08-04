@@ -25,6 +25,8 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 import org.jboss.test.deployers.vfs.structure.dir.test.DirStructureUnitTestCase;
+import org.jboss.test.deployers.vfs.structure.dir.test.EsbStructureUnitTestCase;
+import org.jboss.test.deployers.vfs.structure.dir.test.GroupingStructureUnitTestCase;
 import org.jboss.test.deployers.vfs.structure.dir.test.RealDirStructureUnitTestCase;
 import org.jboss.test.deployers.vfs.structure.ear.test.EARStructureRecognizeTestCase;
 import org.jboss.test.deployers.vfs.structure.ear.test.EARStructureUnitTestCase;
@@ -84,6 +86,8 @@ public class VFSStructureTestSuite extends TestSuite
       suite.addTest(InnerModificationUnitTestCase.suite());
       suite.addTest(DirStructureUnitTestCase.suite());
       suite.addTest(RealDirStructureUnitTestCase.suite());
+      suite.addTest(GroupingStructureUnitTestCase.suite());
+      suite.addTest(EsbStructureUnitTestCase.suite());
       suite.addTest(MetaDataStructureModificationTestCase.suite());
       suite.addTest(MetaDataStructureModificationTreeCacheTestCase.suite());
       suite.addTest(SynchModificationTestCase.suite());

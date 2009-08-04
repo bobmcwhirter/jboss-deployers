@@ -69,13 +69,28 @@ public abstract class AbstractStructureTest extends BaseTestCase
 
    protected void assertChildContexts(VFSDeploymentContext context, String... paths)
    {
+      assertChildContexts(context, false, paths);
+   }
+
+   protected void assertChildContexts(VFSDeploymentContext context, boolean flatten, String... paths)
+   {
       List<String> expected = new ArrayList<String>();
       if (paths != null)
       {
          for (String path : paths)
             expected.add(path);
       }
-      List<DeploymentContext> children = context.getChildren();
+
+      List<DeploymentContext> children;
+      if (flatten)
+      {
+         children = new ArrayList<DeploymentContext>();
+         flattenContexts(children, context);
+      }
+      else
+      {
+         children = context.getChildren();
+      }
       assertNotNull(children);
       assertEquals("Expected " + expected + " got " + simplePrint(children), expected.size(), children.size());
       
@@ -84,14 +99,47 @@ public abstract class AbstractStructureTest extends BaseTestCase
          boolean found = false;
          for (DeploymentContext child : children)
          {
-            if (path.equals(child.getRelativePath()))
+            String childPath = child.getRelativePath();
+            if (path.equals(childPath))
+            {
                found = true;
+               break;
+            }
+            if (flatten)
+            {
+               DeploymentContext parent = child.getParent();
+               if (parent != null)
+               {
+                  String parentPath = parent.getRelativePath();
+                  if (parentPath.endsWith("/") == false && childPath.startsWith("/") == false)
+                     parentPath += "/";
+
+                  if (path.equals(parentPath + childPath))
+                  {
+                     found = true;
+                     break;
+                  }
+               }
+            }
          }
          if (found == false)
             fail("Expected " + path + " in " + children);
       }
    }
-   
+
+   protected void flattenContexts(List<DeploymentContext> contexts, DeploymentContext context)
+   {
+      List<DeploymentContext> children = context.getChildren();
+      if (children != null)
+      {
+         for (DeploymentContext dc : children)
+         {
+            contexts.add(dc);
+            flattenContexts(contexts, dc);
+         }
+      }
+   }
+
    protected String simplePrint(List<DeploymentContext> children)
    {
       StringBuilder builder = new StringBuilder();

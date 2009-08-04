@@ -22,38 +22,50 @@
 package org.jboss.test.deployers.vfs.structure.dir.test;
 
 import junit.framework.Test;
-import org.jboss.deployers.vfs.plugins.structure.dir.DirectoryStructure;
+import org.jboss.deployers.vfs.plugins.structure.dir.GroupingStructure;
 import org.jboss.deployers.vfs.plugins.structure.jar.JARStructure;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.test.deployers.vfs.structure.ear.support.MockEarStructureDeployer;
+import org.jboss.virtual.VirtualFileFilter;
+import org.jboss.virtual.VirtualFile;
 
 /**
- * Legacy directory structure tests.
- * See JBAS-5900 for more information.
+ * Test grouping examples.
+ * Substitute for legacy DirectoryStrucutre.
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class DirStructureUnitTestCase extends SubDirectoryStructureTest
+public class GroupingStructureUnitTestCase extends SubDirectoryStructureTest
 {
-   public DirStructureUnitTestCase(String name)
+   public GroupingStructureUnitTestCase(String name)
    {
       super(name);
    }
 
    public static Test suite()
    {
-      return suite(DirStructureUnitTestCase.class);
+      return suite(GroupingStructureUnitTestCase.class);
    }
 
    protected boolean shouldFlattenContext()
    {
-      return false;  // this one already produces flat view
+      return true;
    }
 
-   @SuppressWarnings("deprecation")
    protected VFSDeploymentContext determineStructure(VFSDeployment deployment) throws Exception
    {
-      return determineStructureWithStructureDeployers(deployment, new MockEarStructureDeployer(), new JARStructure(), new DirectoryStructure());
+      GroupingStructure gs = new GroupingStructure();
+      VirtualFileFilter top = new VirtualFileFilter()
+      {
+         public boolean accepts(VirtualFile file)
+         {
+            return file.getName().endsWith(".sar");
+         }
+      };
+      gs.setShortCircuitFilter(top);
+      gs.addGroup("lib");
+      gs.addGroup("lib/nested");
+      return determineStructureWithStructureDeployers(deployment, new MockEarStructureDeployer(), new JARStructure(), gs);
    }
 }

@@ -22,38 +22,51 @@
 package org.jboss.test.deployers.vfs.structure.dir.test;
 
 import junit.framework.Test;
-import org.jboss.deployers.vfs.plugins.structure.dir.DirectoryStructure;
+import org.jboss.deployers.vfs.plugins.structure.dir.GroupingStructure;
 import org.jboss.deployers.vfs.plugins.structure.jar.JARStructure;
+import org.jboss.deployers.vfs.plugins.structure.war.WARStructure;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
-import org.jboss.test.deployers.vfs.structure.ear.support.MockEarStructureDeployer;
+import org.jboss.test.deployers.vfs.structure.AbstractStructureTest;
+import org.jboss.virtual.VirtualFile;
+import org.jboss.virtual.VirtualFileFilter;
 
 /**
- * Legacy directory structure tests.
- * See JBAS-5900 for more information.
+ * Esb example test.
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class DirStructureUnitTestCase extends SubDirectoryStructureTest
+public class EsbStructureUnitTestCase extends AbstractStructureTest
 {
-   public DirStructureUnitTestCase(String name)
+   public EsbStructureUnitTestCase(String name)
    {
       super(name);
    }
 
    public static Test suite()
    {
-      return suite(DirStructureUnitTestCase.class);
+      return suite(EsbStructureUnitTestCase.class);
    }
-
-   protected boolean shouldFlattenContext()
-   {
-      return false;  // this one already produces flat view
-   }
-
-   @SuppressWarnings("deprecation")
+   
    protected VFSDeploymentContext determineStructure(VFSDeployment deployment) throws Exception
    {
-      return determineStructureWithStructureDeployers(deployment, new MockEarStructureDeployer(), new JARStructure(), new DirectoryStructure());
+      GroupingStructure gs = new GroupingStructure();
+      VirtualFileFilter top = new VirtualFileFilter()
+      {
+         public boolean accepts(VirtualFile file)
+         {
+            return file.getName().endsWith(".esb");
+         }
+      };
+      gs.setShortCircuitFilter(top);
+      gs.addGroup("jars");
+      gs.addGroup("wars");
+      return determineStructureWithStructureDeployers(deployment, new JARStructure(), new WARStructure(), gs);
+   }
+
+   public void testEsbStructure() throws Throwable
+   {
+      VFSDeploymentContext context = assertDeploy("/structure/dir", "beve.esb");
+      assertChildContexts(context, "jars/j1.jar", "wars/w1.war");
    }
 }
