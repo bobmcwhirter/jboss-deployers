@@ -123,12 +123,9 @@ public class GroupingStructure extends AbstractVFSStructureDeployer
                   gf = groupFilter;
 
                List<VirtualFile> children = groupVF.getChildren(gf);
-               if (children != null && children.isEmpty() == false)
+               for (VirtualFile child : children)
                {
-                  for (VirtualFile child : children)
-                  {
-                     structureContext.determineChildStructure(child);
-                  }
+                  structureContext.determineChildStructure(child);
                }
             }
             else
