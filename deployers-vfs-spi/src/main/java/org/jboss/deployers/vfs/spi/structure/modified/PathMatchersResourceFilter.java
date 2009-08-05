@@ -42,7 +42,7 @@ import org.jboss.util.collection.ConcurrentSet;
  *
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class PathMatcherResourceFilter implements StructureCacheFilter, VirtualFileFilter
+public class PathMatchersResourceFilter implements StructureCacheFilter, VirtualFileFilter
 {
    /** The path matchers */
    private Set<PathMatcher> pathMatchers = new ConcurrentSet<PathMatcher>();
@@ -50,7 +50,7 @@ public class PathMatcherResourceFilter implements StructureCacheFilter, VirtualF
    /** The virtual file filter delegate */
    private VirtualFileFilter delegate;
 
-   public PathMatcherResourceFilter(VirtualFileFilter delegate)
+   public PathMatchersResourceFilter(VirtualFileFilter delegate)
    {
       if (delegate == null)
          throw new IllegalArgumentException("Null delegate");
