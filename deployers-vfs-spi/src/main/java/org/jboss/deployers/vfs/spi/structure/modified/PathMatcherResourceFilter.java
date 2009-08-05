@@ -36,9 +36,13 @@ import org.jboss.util.collection.ConcurrentSet;
  * For structure cache filer we use PathMatchers.
  * They should be injected via MC's IoC incallback.
  *
+ * Note: delegate's file matchers and this class' path matchers should be the same instance
+ * otherwise there might be potential compatibility issue on VFS children and StructureCache nodes.
+ * @see org.jboss.deployers.vfs.spi.deployer.AbstractResourceMatcher
+ *
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class PathMatcherJoinedFilter implements StructureCacheFilter, VirtualFileFilter
+public class PathMatcherResourceFilter implements StructureCacheFilter, VirtualFileFilter
 {
    /** The path matchers */
    private Set<PathMatcher> pathMatchers = new ConcurrentSet<PathMatcher>();
@@ -46,7 +50,7 @@ public class PathMatcherJoinedFilter implements StructureCacheFilter, VirtualFil
    /** The virtual file filter delegate */
    private VirtualFileFilter delegate;
 
-   public PathMatcherJoinedFilter(VirtualFileFilter delegate)
+   public PathMatcherResourceFilter(VirtualFileFilter delegate)
    {
       if (delegate == null)
          throw new IllegalArgumentException("Null delegate");
