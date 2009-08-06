@@ -74,7 +74,7 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
       int p = path.lastIndexOf("/");
 
       String fileName;
-      if (p > 0)
+      if (p >= 0)
          fileName = path.substring(p + 1);
       else
          fileName = path;

@@ -79,7 +79,7 @@ public class PathMatchersResourceFilter implements StructureCacheFilter, Virtual
     * @param pm the path matcher
     * @return Set#add
     */
-   public boolean addFileMatcher(PathMatcher pm)
+   public boolean addPathMatcher(PathMatcher pm)
    {
       return pathMatchers.add(pm);
    }
@@ -90,7 +90,7 @@ public class PathMatchersResourceFilter implements StructureCacheFilter, Virtual
     * @param pm the path matcher
     * @return Set#remove
     */
-   public boolean removeFileMatcher(PathMatcher pm)
+   public boolean removePathMatcher(PathMatcher pm)
    {
       return pathMatchers.remove(pm);
    }

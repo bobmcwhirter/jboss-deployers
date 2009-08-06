@@ -19,35 +19,47 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.test.deployers.vfs.matchers;
+package org.jboss.test.deployers.vfs.matchers.support;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
-import org.jboss.test.deployers.vfs.matchers.test.FileMatchersTestCase;
-import org.jboss.test.deployers.vfs.matchers.test.JarExtensionsTestCase;
-import org.jboss.test.deployers.vfs.matchers.test.PathMatchersTestCase;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.jboss.beans.metadata.api.annotations.Install;
+import org.jboss.beans.metadata.api.annotations.Uninstall;
+import org.jboss.deployers.vfs.spi.deployer.PathMatcher;
+import org.jboss.deployers.vfs.spi.structure.modified.PathMatchersResourceFilter;
+import org.jboss.virtual.VirtualFileFilter;
 
 /**
- * Matchers test suite.
+ * Exposes matchers.
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class VFSMatchersTestSuite extends TestSuite
+public class ExposedPMRFilter extends PathMatchersResourceFilter
 {
-   public static void main(String[] args)
+   protected Set<PathMatcher> matchers = new HashSet<PathMatcher>();
+
+   public ExposedPMRFilter(VirtualFileFilter delegate)
    {
-      TestRunner.run(suite());
+      super(delegate);
    }
 
-   public static Test suite()
+   public Set<PathMatcher> getMatchers()
    {
-      TestSuite suite = new TestSuite("VFS Matchers Tests");
+      return matchers;
+   }
 
-      suite.addTest(FileMatchersTestCase.suite());
-      suite.addTest(PathMatchersTestCase.suite());
-      suite.addTest(JarExtensionsTestCase.suite());
+   @Install
+   public boolean addPathMatcher(PathMatcher pm)
+   {
+      super.addPathMatcher(pm);
+      return matchers.add(pm);
+   }
 
-      return suite;
+   @Uninstall
+   public boolean removePathMatcher(PathMatcher pm)
+   {
+      matchers.remove(pm);
+      return super.removePathMatcher(pm);
    }
 }
