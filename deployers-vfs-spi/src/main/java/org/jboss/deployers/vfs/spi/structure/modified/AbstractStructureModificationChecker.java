@@ -286,7 +286,7 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
       {
          try
          {
-            return file.isArchive() || file.isLeaf();
+            return file.isLeaf() || file.isArchive();
          }
          catch (IOException e)
          {
