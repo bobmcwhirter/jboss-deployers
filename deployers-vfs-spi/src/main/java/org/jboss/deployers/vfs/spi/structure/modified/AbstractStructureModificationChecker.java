@@ -46,8 +46,11 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
    /** The main deployer structure */
    private MainDeployerInternals mainDeployer;
 
+   /** The root filter */
+   private ModificationCheckerFilter rootFilter;
+
    /** The structure cache */
-   private StructureCache<T> cache;
+   private volatile StructureCache<T> cache;
 
    protected AbstractStructureModificationChecker()
    {
@@ -62,7 +65,37 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
    }
 
    /**
+    * Get root filter.
+    *
+    * Use DefaultRootFilter if no explicit config
+    *
+    * @return
+    */
+   protected ModificationCheckerFilter getRootFilter()
+   {
+      if (rootFilter == null)
+         rootFilter = new DefaultRootFilter();
+
+      return rootFilter;
+   }
+
+   /**
+    * Set root filter.
+    *
+    * @param rootFilter the root filter
+    */
+   public void setRootFilter(ModificationCheckerFilter rootFilter)
+   {
+      if (rootFilter == null)
+         throw new IllegalArgumentException("Null root filter");
+
+      this.rootFilter = rootFilter;
+   }
+
+   /**
     * Get the structure cache.
+    *
+    * Use DefaultStructureCache if no explict config.
     *
     * @return the structure cache
     */
@@ -118,15 +151,15 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
       if (root == null)
          throw new IllegalArgumentException("Null root");
 
-      // skip vfs deployment context lookup if archive or file
-      if (root.isArchive() || root.isLeaf())
+      // skip vfs deployment context lookup accepted by filter
+      if (getRootFilter().accepts(root))
       {
          boolean result = hasRootBeenModified(root);
-         if (result)
+         if (result || getRootFilter().checkTopLevelOnly(root))
          {
             getCache().invalidateCache(root);
+            return result;
          }
-         return result;
       }
 
       VFSDeploymentContext deploymentContext;
@@ -184,13 +217,16 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
       VirtualFile root = vfsDeployment.getRoot();
 
       boolean result = false;
+      boolean skip = false; // skip futher check
 
-      if (checkRoot && (root.isArchive() || root.isLeaf()))
+      if (checkRoot && getRootFilter().accepts(root))
       {
          result = hasRootBeenModified(root);
+         if (result || getRootFilter().checkTopLevelOnly(root))
+            skip = true;
       }
 
-      if (result == false)
+      if (skip == false)
       {
          result = hasStructureBeenModifed(root, deploymentContext);
       }
@@ -239,5 +275,28 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
          throw new IllegalArgumentException("Null root");
 
       getCache().removeCache(root);
+   }
+
+   /**
+    * Default root check constraints.
+    */
+   private static class DefaultRootFilter implements ModificationCheckerFilter
+   {
+      public boolean accepts(VirtualFile file)
+      {
+         try
+         {
+            return file.isArchive() || file.isLeaf();
+         }
+         catch (IOException e)
+         {
+            throw new RuntimeException(e);
+         }
+      }
+
+      public boolean checkTopLevelOnly(VirtualFile root)
+      {
+         return true; // no point in checking entries 
+      }
    }
 }
