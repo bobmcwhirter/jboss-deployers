@@ -51,7 +51,6 @@ public abstract class AbstractSynchTest extends BootstrapDeployersTest
 
       MetaDataStructureModificationChecker mdsmc = new MetaDataStructureModificationChecker(mainDeployerInternals);
       mdsmc.setFilter(filter);
-      mdsmc.start();
 
       SynchWrapperModificationChecker synch = new SynchWrapperModificationChecker(mdsmc, synchAdapter);
 

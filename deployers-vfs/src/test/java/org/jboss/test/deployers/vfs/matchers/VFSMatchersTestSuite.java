@@ -26,7 +26,6 @@ import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 import org.jboss.test.deployers.vfs.matchers.test.FileMatchersTestCase;
 import org.jboss.test.deployers.vfs.matchers.test.JarExtensionsTestCase;
-import org.jboss.test.deployers.vfs.matchers.test.PathMatchersTestCase;
 
 /**
  * Matchers test suite.
@@ -45,7 +44,6 @@ public class VFSMatchersTestSuite extends TestSuite
       TestSuite suite = new TestSuite("VFS Matchers Tests");
 
       suite.addTest(FileMatchersTestCase.suite());
-      suite.addTest(PathMatchersTestCase.suite());
       suite.addTest(JarExtensionsTestCase.suite());
 
       return suite;

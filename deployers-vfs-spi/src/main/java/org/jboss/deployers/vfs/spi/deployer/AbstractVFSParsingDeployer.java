@@ -44,7 +44,7 @@ import org.jboss.virtual.VirtualFile;
  * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
-public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeployerWithOutput<T> implements FileMatcher, PathMatcher
+public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeployerWithOutput<T> implements FileMatcher
 {
    /** The alt mappings key */
    private static final String ALT_MAPPINGS_MAP_KEY = "AltMappingsMap";
@@ -66,19 +66,6 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
    public boolean isDeployable(VirtualFile file)
    {
       String fileName = file.getName();
-      return matchFileName(fileName);
-   }
-
-   public boolean isDeployable(String path)
-   {
-      int p = path.lastIndexOf("/");
-
-      String fileName;
-      if (p >= 0)
-         fileName = path.substring(p + 1);
-      else
-         fileName = path;
-      
       return matchFileName(fileName);
    }
 

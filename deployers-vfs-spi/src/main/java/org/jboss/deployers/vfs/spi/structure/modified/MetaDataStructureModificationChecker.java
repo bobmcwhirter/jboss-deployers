@@ -54,9 +54,6 @@ public class MetaDataStructureModificationChecker extends AbstractStructureModif
    /** The metadata filter */
    private VirtualFileFilter filter;
 
-   /** The structure cache filter */
-   private StructureCacheFilter cacheFilter;
-
    public MetaDataStructureModificationChecker(MainDeployerInternals mainDeployer)
    {
       super(mainDeployer);
@@ -72,40 +69,10 @@ public class MetaDataStructureModificationChecker extends AbstractStructureModif
       this.filter = filter;
    }
 
-   /**
-    * Set the structure cache filter.
-    *
-    * @param cacheFilter the cache filter
-    */
-   public void setCacheFilter(StructureCacheFilter cacheFilter)
-   {
-      this.cacheFilter = cacheFilter;
-   }
-
-   /**
-    * Check filters.
-    */
-   public void start()
-   {
-      if (cacheFilter == null)
-      {
-         if (filter instanceof StructureCacheFilter)
-            cacheFilter = (StructureCacheFilter) filter;
-         else
-            log.warn("No cache filter specified, possible non match on leaves.");
-      }
-      else if (cacheFilter != filter)
-      {
-         // not the same instance
-         log.debug("VFS filter and structure cache filter are not the same instance, possible compatibility issue?");
-      }
-   }
-
    @Override
    protected boolean hasRootBeenModified(VirtualFile root) throws IOException
    {
-      String pathName = root.getPathName();
-      Long cachedValue = getCache().getCacheValue(pathName);
+      Long cachedValue = getCache().getCacheValue(root);
       long lastModified = root.getLastModified();
       if (cachedValue != null)
       {
@@ -113,7 +80,7 @@ public class MetaDataStructureModificationChecker extends AbstractStructureModif
       }
       else
       {
-         getCache().putCacheValue(pathName, lastModified);
+         getCache().putCacheValue(root, lastModified);
          return false;
       }
    }
@@ -182,8 +149,7 @@ public class MetaDataStructureModificationChecker extends AbstractStructureModif
                if (mdpVF != null)
                {
                   List<VirtualFile> children = mdpVF.getChildren(filter);
-                  String mdpPathName = mdpVF.getPathName();
-                  Set<String> leaves = getCache().getLeaves(mdpPathName, cacheFilter);
+                  List<VirtualFile> leaves = getCache().getLeaves(mdpVF, filter);
                   // do we have some new files or some were deleted
                   if (leaves != null && children != null && leaves.size() != children.size())
                   {
@@ -196,17 +162,15 @@ public class MetaDataStructureModificationChecker extends AbstractStructureModif
                   {
                      for (VirtualFile child : children)
                      {
-                        String pathName = child.getPathName();
-
                         // we tried to remove non existing leaf - it's new == modified 
-                        if (leaves != null && leaves.remove(pathName) == false)
+                        if (leaves != null && leaves.remove(child) == false)
                         {
                            if (log.isTraceEnabled())
                               log.trace("Found new metadata file: " + child);
                            return true;
                         }
 
-                        Long timestamp = getCache().getCacheValue(pathName);
+                        Long timestamp = getCache().getCacheValue(child);
                         long lastModified = child.getLastModified();
                         if (timestamp != null)
                         {
@@ -220,14 +184,14 @@ public class MetaDataStructureModificationChecker extends AbstractStructureModif
                         else
                         {
                            // only put if not modified
-                           getCache().putCacheValue(pathName, lastModified);
+                           getCache().putCacheValue(child, lastModified);
                         }
                      }
                   }
                   else
                   {                     
                      // mark empty metadata path
-                     getCache().putCacheValue(mdpPathName, System.currentTimeMillis());
+                     getCache().putCacheValue(mdpVF, System.currentTimeMillis());
                   }
                   // not all previous leaves were removed - we're missing some == modified
                   if (leaves != null && leaves.isEmpty() == false)

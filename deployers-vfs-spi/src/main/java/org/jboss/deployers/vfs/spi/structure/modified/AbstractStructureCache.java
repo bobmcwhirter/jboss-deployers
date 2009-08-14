@@ -21,7 +21,9 @@
  */
 package org.jboss.deployers.vfs.spi.structure.modified;
 
-import java.util.Set;
+import java.util.List;
+
+import org.jboss.virtual.VirtualFile;
 
 /**
  * Abstract structure cache.
@@ -32,8 +34,8 @@ import java.util.Set;
  */
 public abstract class AbstractStructureCache<T> implements StructureCache<T>
 {
-   public Set<String> getLeaves(String pathName)
+   public List<VirtualFile> getLeaves(VirtualFile file)
    {
-      return getLeaves(pathName, null);
+      return getLeaves(file, null);
    }
 }

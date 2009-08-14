@@ -21,7 +21,10 @@
  */
 package org.jboss.deployers.vfs.spi.structure.modified;
 
-import java.util.Set;
+import java.util.List;
+
+import org.jboss.virtual.VirtualFile;
+import org.jboss.virtual.VirtualFileFilter;
 
 /**
  * Simple structure cache.
@@ -34,65 +37,73 @@ public interface StructureCache<T>
    /**
     * Initialize cache.
     *
-    * @param pathName the path name
+    * @param root the root to initialize
     */
-   void initializeCache(String pathName);
+   void initializeCache(VirtualFile root);
 
    /**
     * Put cache value.
     *
-    * @param pathName the path name
+    * @param file the file key
     * @param value the value
     * @return previous value
     */
-   T putCacheValue(String pathName, T value);
+   T putCacheValue(VirtualFile file, T value);
 
    /**
     * Get cache value.
     *
-    * @param pathName the path name
+    * @param file the file key
     * @return the cache value
     */
-   T getCacheValue(String pathName);
+   T getCacheValue(VirtualFile file);
 
    /**
-    * Get leaves for this path name parameter.
-    * Only exact sub path nodes count in.
+    * Get leaves for this file parameter.
+    * Only first level children count in.
     *
     * This method should return a mutable Set copy
     * as we intend to modify it in checker processing.
     *
-    * @param pathName the path name
-    * @return sub-paths nodes or null if no such match yet
+    * @param file the file key
+    * @return first level children or null if no such match yet
     */
-   Set<String> getLeaves(String pathName);
+   List<VirtualFile> getLeaves(VirtualFile file);
 
    /**
-    * Get filtered leaves for this path name parameter.
-    * Only exact sub path nodes count in.
+    * Get leaves for this file parameter.
+    * Only first level children count in.
     *
     * This method should return a mutable Set copy
     * as we intend to modify it in checker processing.
     *
-    * @param pathName the path name
-    * @param filter the leaves path filter
-    * @return sub-paths nodes or null if no such match yet
+    * @param file the file key
+    * @param filter the file filter
+    * @return first level children or null if no such match yet
     */
-   Set<String> getLeaves(String pathName, StructureCacheFilter filter);
+   List<VirtualFile> getLeaves(VirtualFile file, VirtualFileFilter filter);
 
    /**
-    * Invalidate cache for path name.
+    * Invalidate cache for file and all of its subs.
     *
-    * @param pathName the path name
+    * @param file the file key
     */
-   void invalidateCache(String pathName);
+   void invalidateCache(VirtualFile file);
 
    /**
-    * Remove cache for path name.
+    * Remove cache for file and all of its subs.
     *
-    * @param pathName the path name
+    * @param file the file key
     */
-   void removeCache(String pathName);
+   void removeCache(VirtualFile file);
+
+   /**
+    * Remove cache for file and all of its subs.
+    *
+    * @param root the root
+    * @param path the path of non-existing file
+    */
+   void removeCache(VirtualFile root, String path);
 
    /**
     * Flush the cache.

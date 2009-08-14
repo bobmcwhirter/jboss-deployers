@@ -124,7 +124,7 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
          boolean result = hasRootBeenModified(root);
          if (result)
          {
-            getCache().invalidateCache(root.getPathName());
+            getCache().invalidateCache(root);
          }
          return result;
       }
@@ -197,8 +197,7 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
 
       if (result)
       {
-         String pathName = root.getPathName();
-         getCache().invalidateCache(pathName);
+         getCache().invalidateCache(root);
       }
       return result;
    }
@@ -231,8 +230,7 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
       if (root == null)
          throw new IllegalArgumentException("Null root");
 
-      String pathName = root.getPathName();
-      getCache().initializeCache(pathName);
+      getCache().initializeCache(root);
    }
 
    public void removeStructureRoot(VirtualFile root)
@@ -240,7 +238,6 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
       if (root == null)
          throw new IllegalArgumentException("Null root");
 
-      String pathName = root.getPathName();
-      getCache().removeCache(pathName);
+      getCache().removeCache(root);
    }
 }

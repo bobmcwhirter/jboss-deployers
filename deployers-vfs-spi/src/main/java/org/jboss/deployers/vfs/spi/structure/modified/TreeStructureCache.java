@@ -21,16 +21,18 @@
  */
 package org.jboss.deployers.vfs.spi.structure.modified;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.jboss.virtual.VirtualFile;
+import org.jboss.virtual.VirtualFileFilter;
 import org.jboss.virtual.plugins.vfs.helpers.PathTokenizer;
 
 /**
@@ -51,7 +53,7 @@ public class TreeStructureCache<T> extends AbstractStructureCache<T>
     */
    protected Node<T> createRoot()
    {
-      return new Node<T>("", getDefaultValue(), null);
+      return new Node<T>(null, getDefaultValue(), null);
    }
 
    /**
@@ -64,48 +66,43 @@ public class TreeStructureCache<T> extends AbstractStructureCache<T>
       return null;
    }
 
-   public void initializeCache(String pathName)
+   public void initializeCache(VirtualFile root)
    {
-      initializeNode(pathName);
+      initializeNode(root);
    }
 
-   public T putCacheValue(String pathName, T value)
+   public T putCacheValue(VirtualFile file, T value)
    {
       // we try to initialize it if it doesn't exist
-      Node<T> node = initializeNode(pathName);
+      Node<T> node = initializeNode(file);
       T previous = node.getValue();
       node.setValue(value);
       return previous;
    }
 
-   public T getCacheValue(String pathName)
+   public T getCacheValue(VirtualFile file)
    {
-      Node<T> node = getNode(pathName);
+      Node<T> node = getNode(file);
       return (node != null ? node.getValue() : null);
    }
 
-   public Set<String> getLeaves(String pathName, StructureCacheFilter filter)
+   public List<VirtualFile> getLeaves(VirtualFile file, VirtualFileFilter filter)
    {
-      Node<T> node = getNode(pathName);
+      Node<T> node = getNode(file);
       if (node != null)
       {
-         Set<String> children = node.getChildrenNames();
-         if (filter != null && children != null && children.isEmpty() == false)
+         List<VirtualFile> result = new ArrayList<VirtualFile>();
+         Collection<Node<T>> children = node.getChildren();
+         if (children != null && children.isEmpty() == false)
          {
-            Set<String> result = new HashSet<String>();
-            for (String child : children)
+            for (Node<T> child : children)
             {
-               if (filter.accepts(child))
-               {
-                  result.add(child);
-               }
+               VirtualFile vf = child.getFile();
+               if (filter == null || filter.accepts(vf))
+                  result.add(vf);
             }
-            return result;
          }
-         else
-         {
-            return children;
-         }
+         return result;
       }
       else
       {
@@ -113,14 +110,14 @@ public class TreeStructureCache<T> extends AbstractStructureCache<T>
       }
    }
 
-   public void invalidateCache(String pathName)
+   public void invalidateCache(VirtualFile file)
    {
-      removeCache(pathName);
+      removeCache(file);
    }
 
-   public void removeCache(String pathName)
+   public void removeCache(VirtualFile file)
    {
-      Node<T> node = getNode(pathName);
+      Node<T> node = getNode(file);
       if (node != null)
       {
          Node<T> parent = node.getParent();
@@ -129,6 +126,51 @@ public class TreeStructureCache<T> extends AbstractStructureCache<T>
          else // clear root
             flush();
       }
+   }
+
+   public void removeCache(VirtualFile root, String path)
+   {
+      Node<T> node = getNode(root);
+      if (node != null)
+      {
+         List<String> tokens = PathTokenizer.getTokens(path);
+         Node<T> child = findNode(0, tokens, node);
+         if (child != null)
+         {
+            Node<T> parent = child.getParent();
+            if (parent != null)
+               parent.removeChild(node);
+            else // clear root
+               flush();
+         }
+      }
+   }
+
+   /**
+    * Find node.
+    *
+    * @param index the current token index
+    * @param tokens the tokens
+    * @param node the current node
+    * @return found node or null if no match
+    */
+   protected Node<T> findNode(int index, List<String> tokens, Node<T> node)
+   {
+      if (index == tokens.size())
+         return node;
+
+      Collection<Node<T>> nodes = node.getChildren();
+      if (nodes == null || nodes.isEmpty())
+         return null;
+
+      String token = tokens.get(index);
+      for (Node<T> child : nodes)
+      {
+         VirtualFile file = child.getFile();
+         if (token.equals(file.getName()))
+            return findNode(index + 1, tokens, child);
+      }
+      return null;
    }
 
    public void flush()
@@ -140,18 +182,42 @@ public class TreeStructureCache<T> extends AbstractStructureCache<T>
    }
 
    /**
+    * Get file tokens.
+    *
+    * @param file the file to tokenize
+    * @return file's tokens
+    */
+   protected List<VirtualFile> tokens(VirtualFile file)
+   {
+      try
+      {
+         List<VirtualFile> tokens = new ArrayList<VirtualFile>();
+         while(file != null)
+         {
+            tokens.add(0, file);
+            file = file.getParent();
+         }
+         return tokens;
+      }
+      catch (IOException e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+
+   /**
     * Get the path's node.
     *
-    * @param path the path
+    * @param file the file key
     * @return node or null if it doesn't exist
     */
-   protected Node<T> getNode(String path)
+   protected Node<T> getNode(VirtualFile file)
    {
-      List<String> tokens = PathTokenizer.getTokens(path);
+      List<VirtualFile> tokens = tokens(file);
       synchronized (root)
       {
          Node<T> node = root;
-         for (String token : tokens)
+         for (VirtualFile token : tokens)
          {
             node = node.getChild(token);
             if (node == null)
@@ -164,17 +230,17 @@ public class TreeStructureCache<T> extends AbstractStructureCache<T>
    /**
     * Initialize node for pathName param.
     *
-    * @param pathName the path name
+    * @param file the file key
     * @return initialized node
     */
-   protected Node<T> initializeNode(String pathName)
+   protected Node<T> initializeNode(VirtualFile file)
    {
-      List<String> tokens = PathTokenizer.getTokens(pathName);
+      List<VirtualFile> tokens = tokens(file);
       synchronized (root)
       {
          Node<T> node = root;
          boolean newNode = false;
-         for (String token : tokens)
+         for (VirtualFile token : tokens)
          {
             if (newNode)
             {
@@ -205,17 +271,15 @@ public class TreeStructureCache<T> extends AbstractStructureCache<T>
    {
       private ReadWriteLock lock = new ReentrantReadWriteLock();
 
-      private String name;
-      private String fullName;
+      private VirtualFile file;
       private Node<U> parent;
 
       private U value;
-      private Map<String, Node<U>> children;
-      private Set<String> names;
+      private Map<VirtualFile, Node<U>> children;
 
-      private Node(String name, U value, Node<U> parent)
+      private Node(VirtualFile file, U value, Node<U> parent)
       {
-         this.name = name;
+         this.file = file;
          this.value = value;
          this.parent = parent;
          if (parent != null)
@@ -223,35 +287,13 @@ public class TreeStructureCache<T> extends AbstractStructureCache<T>
       }
 
       /**
-       * The node name.
+       * The node file.
        *
-       * @return the node name
+       * @return the node file
        */
-      public String getName()
+      public VirtualFile getFile()
       {
-         return name;
-      }
-
-      /**
-       * Get full name.
-       *
-       * @return the full name
-       */
-      public String getFullName()
-      {
-         if (fullName == null)
-         {
-            Node<U> parent = getParent();
-            if (parent != null && parent.getParent() != null)
-            {
-               fullName = parent.getFullName() + "/" + getName();
-            }
-            else
-            {
-               fullName = getName();
-            }
-         }
-         return fullName;
+         return file;
       }
 
       /**
@@ -295,12 +337,9 @@ public class TreeStructureCache<T> extends AbstractStructureCache<T>
          try
          {
             if (children == null)
-               children = new HashMap<String, Node<U>>();
+               children = new HashMap<VirtualFile, Node<U>>();
 
-            children.put(node.getName(), node);
-
-            if (names != null)
-               names.add(node.getFullName());
+            children.put(node.getFile(), node);
          }
          finally
          {
@@ -321,15 +360,10 @@ public class TreeStructureCache<T> extends AbstractStructureCache<T>
             if (children == null)
                return;
 
-            children.remove(node.getName());
-
-            if (names != null)
-               names.remove(node.getFullName());
+            children.remove(node.getFile());
 
             if (children.isEmpty())
                children = null;
-            if (names != null && names.isEmpty())
-               names = null;
          }
          finally
          {
@@ -347,7 +381,6 @@ public class TreeStructureCache<T> extends AbstractStructureCache<T>
          {
             value = null;
             children = null;
-            names = null;
          }
          finally
          {
@@ -358,49 +391,19 @@ public class TreeStructureCache<T> extends AbstractStructureCache<T>
       /**
        * Get child.
        *
-       * @param name the child name
+       * @param file the child file
        * @return child node or null if not found
        */
-      public Node<U> getChild(String name)
+      public Node<U> getChild(VirtualFile file)
       {
          lock.readLock().lock();
          try
          {
-            return (children != null) ? children.get(name) : null;
+            return (children != null) ? children.get(file) : null;
          }
          finally
          {
             lock.readLock().unlock();
-         }
-      }
-
-      /**
-       * Get children names.
-       *
-       * @return the children names
-       */
-      public Set<String> getChildrenNames()
-      {
-         lock.writeLock().lock();
-         try
-         {
-            if (children == null)
-               return Collections.emptySet();
-
-            // TODO; I don't understand how can I get non-null names, but not equal to children
-            if (names == null || (names.size() != children.size()))
-            {
-               names = new HashSet<String>();
-               for (Node<U> child : children.values())
-               {
-                  names.add(child.getFullName());
-               }
-            }
-            return names;
-         }
-         finally
-         {
-            lock.writeLock().unlock();
          }
       }
 
@@ -425,7 +428,7 @@ public class TreeStructureCache<T> extends AbstractStructureCache<T>
       @Override
       public String toString()
       {
-         return getFullName();
+         return String.valueOf(file);
       }
    }
 }

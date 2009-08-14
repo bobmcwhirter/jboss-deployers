@@ -62,12 +62,12 @@ public class UpdateDeleteVisitor extends SynchVisitor
          // original was deleted, try deleting the temp
          if (getSynchAdapter().delete(file))
          {
-            getCache().removeCache(originalPathName);
+            getCache().removeCache(originalRoot, originalPathName);
          }
       }
       else
       {
-         Long previous = getCache().getCacheValue(originalPathName);
+         Long previous = getCache().getCacheValue(child);
          long lastModified = child.getLastModified();
 
          boolean updateCache = false;
@@ -83,7 +83,7 @@ public class UpdateDeleteVisitor extends SynchVisitor
 
          if (updateCache)
          {
-            getCache().putCacheValue(originalPathName, lastModified);
+            getCache().putCacheValue(child, lastModified);
          }
       }
    }

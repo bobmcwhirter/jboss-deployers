@@ -61,7 +61,7 @@ public class AddVisitor extends SynchVisitor
       {
          // original was added
          long timestamp = getSynchAdapter().add(file, tempRoot, pathName);
-         getCache().putCacheValue(originalPathName, timestamp);
+         getCache().putCacheValue(file, timestamp);
       }
    }
 }

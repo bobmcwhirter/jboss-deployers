@@ -21,10 +21,12 @@
  */
 package org.jboss.test.deployers.vfs.structure.modified.test;
 
-import java.util.Set;
+import java.util.List;
 
 import org.jboss.deployers.vfs.spi.structure.modified.StructureCache;
 import org.jboss.test.deployers.BootstrapDeployersTest;
+import org.jboss.virtual.VirtualFile;
+import org.jboss.virtual.VirtualFileFilter;
 
 /**
  * AbstractStructureCache tests.
@@ -42,28 +44,41 @@ public abstract class AbstractStructureCacheTest extends BootstrapDeployersTest
 
    public void testCacheBehavior() throws Throwable
    {
+      VirtualFile root = createDeploymentRoot("/annotations", "basic-scan");
+
       StructureCache<Long> cache = createStructureCache();
 
-      cache.initializeCache("acme1.jar");
+      cache.initializeCache(root);
 
-      Set<String> leaves = cache.getLeaves("acme1.jar/META-INF");
+      VirtualFile meta_inf = root.getChild("META-INF");
+      List<VirtualFile> leaves = cache.getLeaves(meta_inf);
       assertNull(leaves);
 
-      cache.putCacheValue("acme1.jar/META-INF/a.xml", 1l);
-      cache.putCacheValue("acme1.jar/META-INF/b.xml", 2l);
+      VirtualFile a = meta_inf.getChild("application.properties");
+      VirtualFile b = meta_inf.getChild("jboss-scanning.xml");
+      cache.putCacheValue(a, 1l);
+      cache.putCacheValue(b, 2l);
 
-      cache.putCacheValue("acme1.jar/META-INF", 1l);
+      cache.putCacheValue(meta_inf, 1l);
 
-      leaves = cache.getLeaves("acme1.jar/META-INF");
+      leaves = cache.getLeaves(meta_inf);
+      assertEquals(2, leaves.size());
+      leaves = cache.getLeaves(meta_inf, new VirtualFileFilter()
+      {
+         public boolean accepts(VirtualFile file)
+         {
+            return file.getName().endsWith(".xml");
+         }
+      });
+      assertEquals(1, leaves.size());
+
+      assertNotNull(cache.getCacheValue(a));
+      assertNotNull(cache.getCacheValue(b));
+      assertNotNull(cache.getCacheValue(meta_inf));
+
+      leaves = cache.getLeaves(meta_inf);
       assertEquals(2, leaves.size());
 
-      assertNotNull(cache.getCacheValue("acme1.jar/META-INF/a.xml"));
-      assertNotNull(cache.getCacheValue("acme1.jar/META-INF/b.xml"));
-      assertNotNull(cache.getCacheValue("acme1.jar/META-INF"));
-
-      leaves = cache.getLeaves("acme1.jar/META-INF");
-      assertEquals(2, leaves.size());
-
-      cache.invalidateCache("acme1.jar");
+      cache.invalidateCache(root);
    }
 }
