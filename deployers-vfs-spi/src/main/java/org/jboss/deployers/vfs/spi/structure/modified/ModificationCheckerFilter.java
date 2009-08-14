@@ -39,7 +39,7 @@ public interface ModificationCheckerFilter extends VirtualFileFilter
     * but we should check further if root is a directory
     *
     * @param root the current root
-    * @return true if we should go on, false to return false
+    * @return true if we only check root, false otherwise
     */
-   boolean checkTopLevelOnly(VirtualFile root);
+   boolean checkRootOnly(VirtualFile root);
 }

@@ -155,7 +155,7 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
       if (getRootFilter().accepts(root))
       {
          boolean result = hasRootBeenModified(root);
-         if (result || getRootFilter().checkTopLevelOnly(root))
+         if (result || getRootFilter().checkRootOnly(root))
          {
             getCache().invalidateCache(root);
             return result;
@@ -222,7 +222,7 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
       if (checkRoot && getRootFilter().accepts(root))
       {
          result = hasRootBeenModified(root);
-         if (result || getRootFilter().checkTopLevelOnly(root))
+         if (result || getRootFilter().checkRootOnly(root))
             skip = true;
       }
 
@@ -294,7 +294,7 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
          }
       }
 
-      public boolean checkTopLevelOnly(VirtualFile root)
+      public boolean checkRootOnly(VirtualFile root)
       {
          return true; // no point in checking entries 
       }
