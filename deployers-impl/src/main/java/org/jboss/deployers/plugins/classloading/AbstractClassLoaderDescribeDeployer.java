@@ -48,6 +48,7 @@ public abstract class AbstractClassLoaderDescribeDeployer extends AbstractOption
    {
       super(ClassLoadingMetaData.class);
       setStage(DeploymentStages.DESCRIBE);
+      addOutput(Module.class); // we produce Module
    }
 
    /**
