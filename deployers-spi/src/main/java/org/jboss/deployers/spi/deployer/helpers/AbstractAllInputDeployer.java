@@ -117,6 +117,7 @@ public abstract class AbstractAllInputDeployer extends AbstractDeployer
          throw new IllegalArgumentException("Null input");
 
       optionalInputs.add(input);
+      addInput(input);
    }
 
    /**
