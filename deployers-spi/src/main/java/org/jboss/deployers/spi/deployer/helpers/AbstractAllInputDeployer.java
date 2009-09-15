@@ -50,7 +50,7 @@ public abstract class AbstractAllInputDeployer extends AbstractDeployer
       {
          for (String input : inputs)
          {
-            if (optionalInputs.contains(input) == false && unit.isAttachmentPresent(input) == false)
+            if ((optionalInputs == null || optionalInputs.contains(input) == false) && unit.isAttachmentPresent(input) == false)
             {
                return false;
             }
@@ -116,6 +116,9 @@ public abstract class AbstractAllInputDeployer extends AbstractDeployer
       if (input == null)
          throw new IllegalArgumentException("Null input");
 
+      if (optionalInputs == null)
+         optionalInputs = CollectionsFactory.createLazySet();
+
       optionalInputs.add(input);
       addInput(input);
    }
@@ -127,6 +130,14 @@ public abstract class AbstractAllInputDeployer extends AbstractDeployer
     */
    public void setOptionalInputs(Set<String> optionalInputs)
    {
-      this.optionalInputs = optionalInputs;
+      if (optionalInputs != null)
+      {
+         for (String input : optionalInputs)
+            addOptionalInput(input);
+      }
+      else
+      {
+         this.optionalInputs = optionalInputs;
+      }
    }
 }
