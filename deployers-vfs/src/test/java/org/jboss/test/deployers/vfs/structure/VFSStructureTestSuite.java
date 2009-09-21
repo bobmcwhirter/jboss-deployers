@@ -40,6 +40,7 @@ import org.jboss.test.deployers.vfs.structure.file.test.FileStructureUnitTestCas
 import org.jboss.test.deployers.vfs.structure.jar.test.CombinedJARStructureUnitTestCase;
 import org.jboss.test.deployers.vfs.structure.jar.test.ConfiguredSuffixJARStructureUnitTestCase;
 import org.jboss.test.deployers.vfs.structure.jar.test.JARStructureUnitTestCase;
+import org.jboss.test.deployers.vfs.structure.modified.test.DirRemovalModificationTestCase;
 import org.jboss.test.deployers.vfs.structure.modified.test.MetaDataStructureModificationTestCase;
 import org.jboss.test.deployers.vfs.structure.modified.test.MetaDataStructureModificationTreeCacheTestCase;
 import org.jboss.test.deployers.vfs.structure.modified.test.SynchModificationTestCase;
@@ -91,6 +92,7 @@ public class VFSStructureTestSuite extends TestSuite
       suite.addTest(MetaDataStructureModificationTestCase.suite());
       suite.addTest(MetaDataStructureModificationTreeCacheTestCase.suite());
       suite.addTest(SynchModificationTestCase.suite());
+      suite.addTest(DirRemovalModificationTestCase.suite());
 
       return suite;
    }

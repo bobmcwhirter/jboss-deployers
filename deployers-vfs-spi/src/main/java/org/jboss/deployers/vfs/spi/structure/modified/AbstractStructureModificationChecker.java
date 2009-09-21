@@ -157,7 +157,9 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
          boolean result = hasRootBeenModified(root);
          if (result || getRootFilter().checkRootOnly(root))
          {
-            getCache().invalidateCache(root);
+            if (result)
+               getCache().invalidateCache(root);
+            
             return result;
          }
       }

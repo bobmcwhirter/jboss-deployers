@@ -71,7 +71,7 @@ public class MetaDataStructureModificationTestCase extends StructureModification
       return new XmlIncludeVirtualFileFilter();
    }
 
-   protected void testStructureModified(AssembledDirectory ear, StructureModificationChecker checker, VFSDeploymentUnit deploymentUnit) throws Exception
+   protected void testStructureModified(VirtualFile ear, StructureModificationChecker checker, VFSDeploymentUnit deploymentUnit) throws Exception
    {
       VirtualFile root = deploymentUnit.getRoot();
       // initial run

@@ -25,7 +25,7 @@ import org.jboss.deployers.structure.spi.main.MainDeployerInternals;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.deployers.vfs.spi.structure.modified.StructureModificationChecker;
 import org.jboss.test.deployers.vfs.webbeans.test.AbstractWebBeansTest;
-import org.jboss.virtual.AssembledDirectory;
+import org.jboss.virtual.VirtualFile;
 import org.jboss.virtual.VirtualFileFilter;
 
 /**
@@ -51,9 +51,14 @@ public abstract class StructureModificationTest extends AbstractWebBeansTest
 
    protected abstract VirtualFileFilter createFilter();
 
+   protected VirtualFile makeRoot() throws Exception
+   {
+      return createBasicEar();
+   }
+
    public void testDoBasicTest() throws Exception
    {
-      AssembledDirectory ear = createBasicEar();
+      VirtualFile ear = makeRoot();
       StructureModificationChecker checker = createStructureModificationChecker();
 
       VFSDeploymentUnit deploymentUnit = assertDeploy(ear);
@@ -67,5 +72,5 @@ public abstract class StructureModificationTest extends AbstractWebBeansTest
       }
    }
 
-   protected abstract void testStructureModified(AssembledDirectory ear, StructureModificationChecker checker, VFSDeploymentUnit deploymentUnit) throws Exception;
+   protected abstract void testStructureModified(VirtualFile ear, StructureModificationChecker checker, VFSDeploymentUnit deploymentUnit) throws Exception;
 }
