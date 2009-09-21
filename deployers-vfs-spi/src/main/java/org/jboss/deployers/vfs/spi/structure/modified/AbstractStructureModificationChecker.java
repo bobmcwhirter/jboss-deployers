@@ -69,7 +69,7 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
     *
     * Use DefaultRootFilter if no explicit config
     *
-    * @return
+    * @return root filter
     */
    protected ModificationCheckerFilter getRootFilter()
    {
