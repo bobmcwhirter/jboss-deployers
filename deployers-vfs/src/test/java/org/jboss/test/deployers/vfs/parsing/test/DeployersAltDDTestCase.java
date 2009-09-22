@@ -28,6 +28,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
+import java.security.cert.Certificate;
 
 import junit.framework.Test;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
@@ -83,7 +84,7 @@ public class DeployersAltDDTestCase extends BaseTestCase
 
    private static VirtualFile getMockVF()
    {
-      VirtualFile altDD = new VirtualFile(new VirtualFileHandler()
+      return new VirtualFile(new VirtualFileHandler()
       {
          private static final long serialVersionUID = 1L;
 
@@ -214,7 +215,11 @@ public class DeployersAltDDTestCase extends BaseTestCase
          public void cleanup()
          {
          }
+
+         public Certificate[] getCertificates()
+         {
+            return null;
+         }
       });
-      return altDD;
    }
 }

@@ -21,11 +21,11 @@
   </scm>
 
   <properties>
-    <version.jboss.vfs>2.1.2.GA</version.jboss.vfs>
+    <version.jboss.vfs>2.1.3.SP1</version.jboss.vfs>
     <version.jboss.man>2.1.1.CR1</version.jboss.man>
     <version.jboss.mdr>2.0.2.GA</version.jboss.mdr>
     <version.jboss.kernel>2.2.0-SNAPSHOT</version.jboss.kernel>
-    <version.jboss.classloader>2.0.6.GA</version.jboss.classloader>
+    <version.jboss.classloader>2.0.7.CR1</version.jboss.classloader>
     <version.jboss.classloading.spi>5.1.0.SP1</version.jboss.classloading.spi>
     <version.jboss.common.core>2.2.14.GA</version.jboss.common.core>
     <version.jboss.logging.spi>2.0.5.GA</version.jboss.logging.spi>
@@ -37,7 +37,7 @@
     <version.javassist>3.10.0.GA</version.javassist>
     <version.stax.staxapi>1.0</version.stax.staxapi>
     <version.ant.junit>1.6.5</version.ant.junit>
-   <version.jboss.byteman>1.0.2</version.jboss.byteman>
+    <version.jboss.byteman>1.0.2</version.jboss.byteman>
   </properties>
 
   <modules>

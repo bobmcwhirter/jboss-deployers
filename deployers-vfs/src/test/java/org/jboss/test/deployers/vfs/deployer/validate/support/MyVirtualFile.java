@@ -28,6 +28,7 @@ import java.net.URI;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.security.cert.Certificate;
 
 import org.jboss.virtual.VirtualFile;
 import org.jboss.virtual.spi.VirtualFileHandler;
@@ -194,6 +195,11 @@ public class MyVirtualFile extends VirtualFile
 
          public void cleanup()
          {
+         }
+
+         public Certificate[] getCertificates()
+         {
+            return null;
          }
       };
    }

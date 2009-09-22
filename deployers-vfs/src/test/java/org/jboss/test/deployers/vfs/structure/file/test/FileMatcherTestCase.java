@@ -28,6 +28,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
+import java.security.cert.Certificate;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -243,6 +244,11 @@ public class FileMatcherTestCase extends BaseTestCase
 
             public void cleanup()
             {
+            }
+
+            public Certificate[] getCertificates()
+            {
+               return null;
             }
          };
       }
