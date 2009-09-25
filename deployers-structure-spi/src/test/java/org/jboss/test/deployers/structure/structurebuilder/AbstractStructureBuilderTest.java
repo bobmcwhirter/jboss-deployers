@@ -135,6 +135,28 @@ public abstract class AbstractStructureBuilderTest extends BaseTestCase
       return deployment;
    }
 
+   protected Deployment createOrderedChildren() throws Exception
+   {
+      DeploymentFactory factory = getDeploymentFactory();
+      Deployment deployment = createDeployment(factory);
+      ContextInfo ctx = factory.addContext(deployment, "child1");
+      ctx.setRelativeOrder(1);
+      ctx = factory.addContext(deployment, "child2");
+      ctx.setRelativeOrder(2);
+
+      return deployment;
+   }
+
+   public void testOrderedChildren() throws Exception
+   {
+      Deployment deployment = createOrderedChildren();
+      DeploymentContext context = build(deployment);
+      assertEquals("child1", context.getChildren().get(0).getRelativePath());
+      assertEquals("child2", context.getChildren().get(1).getRelativePath());
+
+      checkDeployment(context, deployment);
+   }
+
    public void testMetaDataLocation() throws Exception
    {
       Deployment deployment = createMetaDataLocation();
