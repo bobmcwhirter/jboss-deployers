@@ -135,10 +135,11 @@ public class AbstractStructureBuilder implements StructureBuilder
                if (childContext == null)
                   throw new IllegalStateException("Child deployment context is null");
 
-               context.addChild(childContext);
                childContext.setParent(context);
-
                applyContextInfo(childContext, child);
+               
+               // Child must be added after context info is applied for correct sorting
+               context.addChild(childContext);
 
                Attachments attachments = child.getPredeterminedManagedObjects(); 
                if (attachments != null)
