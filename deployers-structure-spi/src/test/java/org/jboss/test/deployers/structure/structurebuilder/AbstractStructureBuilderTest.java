@@ -23,6 +23,7 @@ package org.jboss.test.deployers.structure.structurebuilder;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.jboss.deployers.client.spi.Deployment;
 import org.jboss.deployers.client.spi.DeploymentFactory;
@@ -135,24 +136,32 @@ public abstract class AbstractStructureBuilderTest extends BaseTestCase
       return deployment;
    }
 
-   protected Deployment createOrderedChildren() throws Exception
+   protected Deployment createOrderedChildren(String... names) throws Exception
    {
       DeploymentFactory factory = getDeploymentFactory();
       Deployment deployment = createDeployment(factory);
-      ContextInfo ctx = factory.addContext(deployment, "child1");
-      ctx.setRelativeOrder(1);
-      ctx = factory.addContext(deployment, "child2");
-      ctx.setRelativeOrder(2);
-
+      for (int i = 0; names != null && i < names.length; i++)
+      {
+         ContextInfo ctx = factory.addContext(deployment, "child" + names[i]);
+         ctx.setRelativeOrder(i + 1);
+      }
       return deployment;
    }
 
    public void testOrderedChildren() throws Exception
    {
-      Deployment deployment = createOrderedChildren();
+      String[] names = new String[]{"123", "132", "213", "231", "312", "321"};
+      String random = names[new Random().nextInt(6)];
+      log.info("Random: " + random);
+      names = new String[]{String.valueOf(random.charAt(0)), String.valueOf(random.charAt(1)), String.valueOf(random.charAt(2))};
+
+      Deployment deployment = createOrderedChildren(names);
       DeploymentContext context = build(deployment);
-      assertEquals("child1", context.getChildren().get(0).getRelativePath());
-      assertEquals("child2", context.getChildren().get(1).getRelativePath());
+
+      for (int i = 0; i < names.length; i++)
+      {
+         assertEquals("child" + names[i], context.getChildren().get(i).getRelativePath());
+      }
 
       checkDeployment(context, deployment);
    }
