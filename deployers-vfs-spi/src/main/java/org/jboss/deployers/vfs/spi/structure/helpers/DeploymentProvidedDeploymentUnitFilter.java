@@ -21,6 +21,8 @@
 */
 package org.jboss.deployers.vfs.spi.structure.helpers;
 
+import org.jboss.deployers.spi.deployer.helpers.AttachmentLocatorEnum;
+import org.jboss.deployers.spi.deployer.helpers.AttachmentLocatorType;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.structure.spi.DeploymentUnitFilter;
 
@@ -33,9 +35,25 @@ import org.jboss.deployers.structure.spi.DeploymentUnitFilter;
  */
 public class DeploymentProvidedDeploymentUnitFilter extends VFS2BaseBridgeDeploymentUnitFilter
 {
+   /** By default we do local search */
+   private AttachmentLocatorType searchType = AttachmentLocatorEnum.LOCAL;
+
    protected boolean doAccepts(DeploymentUnit unit)
    {
-      DeploymentUnitFilter filter = unit.getAttachment(DeploymentUnitFilter.class);
+      DeploymentUnitFilter filter = searchType.search(unit, DeploymentUnitFilter.class);
       return filter == null || filter.accepts(unit);
+   }
+
+   /**
+    * Set search type.
+    *
+    * @param searchType the search type
+    */
+   public void setSearchType(AttachmentLocatorType searchType)
+   {
+      if (searchType == null)
+         throw new IllegalArgumentException("Null search type");
+
+      this.searchType = searchType;
    }
 }
