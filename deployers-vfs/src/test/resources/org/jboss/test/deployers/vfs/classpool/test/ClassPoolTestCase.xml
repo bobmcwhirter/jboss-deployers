@@ -12,8 +12,6 @@
      <uninstall method="removeModuleRegistry" bean="ClassLoading" whenRequired="Start">
        <parameter><this/></parameter>
      </uninstall>
-     <incallback method="addModule" state="Installed"/>
-     <uncallback method="removeModule" state="Installed"/>
   </bean>
 
   <bean name="ClassPoolFactory" class="org.jboss.classpool.plugins.as5.jbosscl.JBossClDelegatingClassPoolFactory">
