@@ -38,6 +38,8 @@
     <version.stax.staxapi>1.0</version.stax.staxapi>
     <version.ant.junit>1.6.5</version.ant.junit>
     <version.jboss.byteman>1.0.2</version.jboss.byteman>
+    <version.jboss.reflect>2.2.0-SNAPSHOT</version.jboss.reflect>
+    <version.jboss.classpool>1.0.0-SNAPSHOT</version.jboss.classpool>
   </properties>
 
   <modules>
@@ -350,6 +352,16 @@
         <artifactId>byteman</artifactId>
         <version>${version.jboss.byteman}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss</groupId>
+        <artifactId>jboss-reflect</artifactId>
+        <version>${version.jboss.reflect}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss</groupId>
+        <artifactId>jboss-classpool</artifactId>
+        <version>${version.jboss.classpool}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
