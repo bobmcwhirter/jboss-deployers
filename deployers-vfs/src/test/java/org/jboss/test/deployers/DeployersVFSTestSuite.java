@@ -26,6 +26,7 @@ import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 import org.jboss.test.deployers.vfs.annotations.AnnotationScanningTestSuite;
 import org.jboss.test.deployers.vfs.classloader.ClassLoaderTestSuite;
+import org.jboss.test.deployers.vfs.classpool.ClassPoolTestSuite;
 import org.jboss.test.deployers.vfs.dependency.DependencyTestSuite;
 import org.jboss.test.deployers.vfs.deployer.bean.BeanDeployerTestSuite;
 import org.jboss.test.deployers.vfs.deployer.facelets.FaceletsTestSuite;
@@ -39,11 +40,12 @@ import org.jboss.test.deployers.vfs.managed.VFSManagedTestSuite;
 import org.jboss.test.deployers.vfs.matchers.VFSMatchersTestSuite;
 import org.jboss.test.deployers.vfs.metadata.VFSMetaDataTestSuite;
 import org.jboss.test.deployers.vfs.parsing.test.ParsingTestSuite;
+import org.jboss.test.deployers.vfs.redeploy.RedeployTestSuite;
 import org.jboss.test.deployers.vfs.structure.VFSStructureTestSuite;
 import org.jboss.test.deployers.vfs.structurebuilder.VFSStructureBuilderTestSuite;
 import org.jboss.test.deployers.vfs.structureprocessor.VFSStructureProcessorTestSuite;
+import org.jboss.test.deployers.vfs.webbeans.WebBeansTestSuite;
 import org.jboss.test.deployers.vfs.xb.JBossXBDeployersTestSuite;
-import org.jboss.test.deployers.vfs.redeploy.RedeployTestSuite;
 
 /**
  * Deployers VFS Test Suite.
@@ -83,6 +85,8 @@ public class DeployersVFSTestSuite extends TestSuite
       suite.addTest(DependencyTestSuite.suite());
       suite.addTest(JMXTestSuite.suite());
       suite.addTest(RedeployTestSuite.suite());
+      suite.addTest(WebBeansTestSuite.suite()); // now Weld
+      suite.addTest(ClassPoolTestSuite.suite());
 
       return suite;
    }
