@@ -85,12 +85,12 @@ public abstract class ClassPoolTest extends BootstrapDeployersTest
       DeploymentUnit unit = assertDeploy(file);
       try
       {
+         TypeInfoFactory typeInfoFactory = new JavassistTypeInfoFactory();
          ClassLoader classLoader = getClassLoader(unit);
          for (Class<?> clazz: classes)
          {
             String className = clazz.getName();
             assertLoadClass(className, classLoader);
-            TypeInfoFactory typeInfoFactory = new JavassistTypeInfoFactory();
             TypeInfo typeInfo = typeInfoFactory.getTypeInfo(className, classLoader);
             assertEquals(className, typeInfo.getName());
             assertEquals(classLoader, typeInfo.getType().getClassLoader());
