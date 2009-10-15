@@ -79,7 +79,6 @@ public abstract class ClassPoolTest extends BootstrapDeployersTest
       excluded.remove(BeanMetaDataFactoryVisitor.class);
    }
 
-   @SuppressWarnings("deprecation")
    protected void assertClassPool(VirtualFile file, Class<?> ... classes) throws Exception
    {
       DeploymentUnit unit = assertDeploy(file);
@@ -93,7 +92,7 @@ public abstract class ClassPoolTest extends BootstrapDeployersTest
             assertLoadClass(className, classLoader);
             TypeInfo typeInfo = typeInfoFactory.getTypeInfo(className, classLoader);
             assertEquals(className, typeInfo.getName());
-            assertEquals(classLoader, typeInfo.getType().getClassLoader());
+            assertEquals(classLoader, typeInfo.getClassLoader());
          }
       }
       finally
