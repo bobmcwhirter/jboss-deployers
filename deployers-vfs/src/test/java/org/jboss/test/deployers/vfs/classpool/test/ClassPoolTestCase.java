@@ -83,6 +83,15 @@ public class ClassPoolTestCase extends BootstrapDeployersTest
       JavassistTypeInfoFactoryImpl.setPoolFactory(classPoolFactory);
       super.setUp();
    }
+   
+   @Override
+   protected void tearDown() throws Exception
+   {
+      super.tearDown();
+      // reverting exclusion performed on setUp
+      Set<Class<?>> excluded = AbstractJDKChecker.getExcluded();
+      excluded.remove(BeanMetaDataFactoryVisitor.class);
+   }
 
    public void testJar() throws Exception
    {
