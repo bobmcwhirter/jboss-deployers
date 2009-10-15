@@ -3,4 +3,30 @@
   <bean name="EarStructure" class="org.jboss.test.deployers.vfs.structure.ear.support.MockEarStructureDeployer"/>
   <bean name="WarStructure" class="org.jboss.test.deployers.vfs.structure.war.support.MockWarStructureDeployer"/>
 
+  <bean name="ClassLoaderScopingPolicy" class="org.jboss.classpool.plugins.as5.VFSClassLoaderDomainRegistry"/>
+
+  <bean name="RegisterModuleCallback" class="org.jboss.classpool.plugins.as5.RegisterModuleCallback">
+     <install method="addModuleRegistry" bean="ClassLoading" whenRequired="Start">
+       <parameter><this/></parameter>
+     </install>
+     <uninstall method="removeModuleRegistry" bean="ClassLoading" whenRequired="Start">
+       <parameter><this/></parameter>
+     </uninstall>
+     <incallback method="addModule" state="Installed"/>
+     <uncallback method="removeModule" state="Installed"/>
+  </bean>
+
+  <bean name="ClassPoolFactory" class="org.jboss.classpool.plugins.as5.jbosscl.JBossClDelegatingClassPoolFactory">
+     <constructor>
+        <parameter><inject bean="ClassLoaderScopingPolicy"/></parameter>
+        <parameter><inject bean="RegisterModuleCallback"/></parameter>
+     </constructor>
+  </bean>
+
+  <bean name="PoolFactoryInitializer" class="org.jboss.test.deployers.vfs.classpool.support.PoolFactoryInitializer">
+     <constructor>
+        <parameter><inject bean="ClassPoolFactory"/></parameter>
+     </constructor>
+  </bean>
+
 </deployment>

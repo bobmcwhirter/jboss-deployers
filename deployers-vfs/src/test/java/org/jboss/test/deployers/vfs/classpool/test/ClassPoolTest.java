@@ -23,18 +23,10 @@ package org.jboss.test.deployers.vfs.classpool.test;
 
 import java.util.Set;
 
-import javassist.scopedpool.ScopedClassPoolFactory;
 import org.jboss.classloader.plugins.jdk.AbstractJDKChecker;
-import org.jboss.classpool.plugins.as5.RegisterModuleCallback;
-import org.jboss.classpool.plugins.as5.VFSClassLoaderDomainRegistry;
-import org.jboss.classpool.plugins.as5.jbosscl.JBossClDelegatingClassPoolFactory;
-import org.jboss.classpool.spi.ClassPoolRepository;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.vfs.deployer.kernel.BeanMetaDataFactoryVisitor;
 import org.jboss.reflect.plugins.javassist.JavassistTypeInfoFactory;
-import org.jboss.reflect.plugins.javassist.JavassistTypeInfoFactoryImpl;
-import org.jboss.reflect.plugins.javassist.classpool.ClassPoolFactory;
-import org.jboss.reflect.plugins.javassist.classpool.RepositoryClassPoolFactory;
 import org.jboss.reflect.spi.TypeInfo;
 import org.jboss.reflect.spi.TypeInfoFactory;
 import org.jboss.test.deployers.BootstrapDeployersTest;
@@ -62,11 +54,6 @@ public abstract class ClassPoolTest extends BootstrapDeployersTest
       Set<Class<?>> excluded = AbstractJDKChecker.getExcluded();
       excluded.add(BeanMetaDataFactoryVisitor.class);
 
-      ScopedClassPoolFactory scopedClassPoolFactory = new JBossClDelegatingClassPoolFactory(new VFSClassLoaderDomainRegistry(), new RegisterModuleCallback());
-      ClassPoolRepository repository = ClassPoolRepository.getInstance();
-      repository.setClassPoolFactory(scopedClassPoolFactory);
-      ClassPoolFactory classPoolFactory = new RepositoryClassPoolFactory(repository);
-      JavassistTypeInfoFactoryImpl.setPoolFactory(classPoolFactory);
       super.setUp();
    }
 
@@ -92,7 +79,8 @@ public abstract class ClassPoolTest extends BootstrapDeployersTest
             assertLoadClass(className, classLoader);
             TypeInfo typeInfo = typeInfoFactory.getTypeInfo(className, classLoader);
             assertEquals(className, typeInfo.getName());
-            assertEquals(classLoader, typeInfo.getClassLoader());
+            ClassLoader cl = typeInfo.getClassLoader();
+            assertEquals(classLoader, cl);
          }
       }
       finally
