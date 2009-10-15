@@ -21,24 +21,7 @@
  */
 package org.jboss.test.deployers.vfs.classpool.test;
 
-import java.util.Set;
-
-import javassist.scopedpool.ScopedClassPoolFactory;
 import junit.framework.Test;
-
-import org.jboss.classloader.plugins.jdk.AbstractJDKChecker;
-import org.jboss.classpool.plugins.as5.RegisterModuleCallback;
-import org.jboss.classpool.plugins.as5.VFSClassLoaderDomainRegistry;
-import org.jboss.classpool.plugins.as5.jbosscl.JBossClDelegatingClassPoolFactory;
-import org.jboss.classpool.spi.ClassPoolRepository;
-import org.jboss.deployers.structure.spi.DeploymentUnit;
-import org.jboss.deployers.vfs.deployer.kernel.BeanMetaDataFactoryVisitor;
-import org.jboss.reflect.plugins.javassist.JavassistTypeInfoFactoryImpl;
-import org.jboss.reflect.plugins.javassist.classpool.ClassPoolFactory;
-import org.jboss.reflect.plugins.javassist.classpool.RepositoryClassPoolFactory;
-import org.jboss.reflect.spi.TypeInfo;
-import org.jboss.reflect.spi.TypeInfoFactory;
-import org.jboss.test.deployers.BootstrapDeployersTest;
 import org.jboss.test.deployers.vfs.classpool.support.crm.CrmFacade;
 import org.jboss.test.deployers.vfs.classpool.support.ejb.MySLSBean;
 import org.jboss.test.deployers.vfs.classpool.support.ext.External;
@@ -57,40 +40,16 @@ import org.jboss.virtual.AssembledDirectory;
  *
  * @version $Revision$
  */
-public class ClassPoolTestCase extends BootstrapDeployersTest
+public class ClassPoolTestCase extends ClassPoolTest
 {
    public ClassPoolTestCase(String name)
    {
       super(name);
    }
-   
+
    public static Test suite()
    {
       return suite(ClassPoolTestCase.class);
-   }
-
-   @Override
-   protected void setUp() throws Exception
-   {
-      // excluding class that knows hot to load from system classloader
-      Set<Class<?>> excluded = AbstractJDKChecker.getExcluded();
-      excluded.add(BeanMetaDataFactoryVisitor.class);
-      
-      ScopedClassPoolFactory scopedClassPoolFactory = new JBossClDelegatingClassPoolFactory(new VFSClassLoaderDomainRegistry(), new RegisterModuleCallback());
-      ClassPoolRepository repository = ClassPoolRepository.getInstance();
-      repository.setClassPoolFactory(scopedClassPoolFactory);
-      ClassPoolFactory classPoolFactory = new RepositoryClassPoolFactory(repository);
-      JavassistTypeInfoFactoryImpl.setPoolFactory(classPoolFactory);
-      super.setUp();
-   }
-   
-   @Override
-   protected void tearDown() throws Exception
-   {
-      super.tearDown();
-      // reverting exclusion performed on setUp
-      Set<Class<?>> excluded = AbstractJDKChecker.getExcluded();
-      excluded.remove(BeanMetaDataFactoryVisitor.class);
    }
 
    public void testJar() throws Exception
@@ -259,29 +218,5 @@ public class ClassPoolTestCase extends BootstrapDeployersTest
       addPackage(jar, PlainJavaBean.class);
       
       return ear;
-   }
-   
-   @SuppressWarnings("deprecation")
-   private void assertClassPool(AssembledDirectory directory, Class<?> ... classes)
-      throws Exception
-   {
-      DeploymentUnit unit = assertDeploy(directory);
-      try
-      {
-         ClassLoader classLoader = getClassLoader(unit);
-         for (Class<?> clazz: classes)
-         {
-            String className = clazz.getName();
-            assertLoadClass(className, classLoader);
-            TypeInfoFactory typeInfoFactory = new JavassistTypeInfoFactoryImpl();
-            TypeInfo typeInfo = typeInfoFactory.getTypeInfo(className, classLoader);
-            assertEquals(className, typeInfo.getName());
-            assertEquals(classLoader, typeInfo.getType().getClassLoader());
-         }
-      }
-      finally
-      {
-         undeploy(unit);
-      }
    }
 }
