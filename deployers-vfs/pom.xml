@@ -175,6 +175,17 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.jboss</groupId>
+      <artifactId>jboss-reflect</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.papaki</groupId>
+      <artifactId>papaki-core</artifactId>
+    </dependency>
+
+    <!-- tests -->
+
+    <dependency>
       <groupId>org.jboss.logging</groupId>
       <artifactId>jboss-logging-log4j</artifactId>
       <scope>test</scope>
@@ -191,12 +202,8 @@
     </dependency>
     <dependency>
       <groupId>org.jboss</groupId>
-      <artifactId>jboss-reflect</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss</groupId>
       <artifactId>jboss-classpool</artifactId>
       <scope>test</scope>
     </dependency>
-  </dependencies>  
+  </dependencies>
 </project>

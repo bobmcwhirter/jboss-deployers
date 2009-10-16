@@ -21,13 +21,6 @@
 */
 package org.jboss.deployers.vfs.plugins.annotations;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-import javassist.ClassPath;
-import javassist.ClassPool;
-import javassist.LoaderClassPath;
 import org.jboss.classloading.spi.dependency.Module;
 import org.jboss.deployers.plugins.annotations.GenericAnnotationResourceVisitor;
 import org.jboss.deployers.spi.DeploymentException;
@@ -35,10 +28,16 @@ import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
 import org.jboss.deployers.spi.annotations.ScanningMetaData;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.deployers.vfs.plugins.util.ClasspathUtils;
 import org.jboss.deployers.vfs.spi.deployer.AbstractOptionalVFSRealDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnitFilter;
-import org.jboss.virtual.VirtualFile;
+
+import java.net.URL;
+
+import javassist.ClassPath;
+import javassist.ClassPool;
+import javassist.LoaderClassPath;
 
 /**
  * A POST_CLASSLOADER deployer which creates AnnotationEnvironment for sub-deployments.
@@ -58,6 +57,7 @@ public class AnnotationEnvironmentDeployer extends AbstractOptionalVFSRealDeploy
       super(Module.class);
       setStage(DeploymentStages.POST_CLASSLOADER);
       addInput(ScanningMetaData.class);
+      addInput(AnnotationEnvironment.class);
       setOutput(AnnotationEnvironment.class);
       checkInterfaces = true;
    }
@@ -169,7 +169,8 @@ public class AnnotationEnvironmentDeployer extends AbstractOptionalVFSRealDeploy
    {
       try
       {
-         module.visit(visitor, visitor.getFilter(), null, getUrls(unit));
+         URL[] urls = ClasspathUtils.getUrls(unit);
+         module.visit(visitor, visitor.getFilter(), null, urls);
       }
       catch (Exception e)
       {
@@ -177,42 +178,12 @@ public class AnnotationEnvironmentDeployer extends AbstractOptionalVFSRealDeploy
       }
    }
 
-   /**
-    * Get the matching urls.
-    *
-    * @param unit the deployment unit
-    * @return matching urls
-    * @throws Exception for any error
-    */
-   protected URL[] getUrls(VFSDeploymentUnit unit) throws Exception
-   {
-      List<VirtualFile> classpath = unit.getClassPath();
-      if (classpath != null && classpath.isEmpty() == false)
-      {
-         List<URL> urls = new ArrayList<URL>();
-         VirtualFile root = unit.getRoot();
-         for (VirtualFile cp : classpath)
-         {
-            VirtualFile check = cp;
-            while(check != null && check.equals(root) == false)
-               check = check.getParent();
-
-            if (check != null)
-               urls.add(cp.toURL());
-         }
-         if (urls.isEmpty() == false)
-         {
-            if (log.isTraceEnabled())
-               log.trace("Explicit urls: " + urls);
-
-            return urls.toArray(new URL[urls.size()]);
-         }
-      }
-      return new URL[0];
-   }
-
    public void deploy(VFSDeploymentUnit unit, Module module) throws DeploymentException
    {
+      // we already used Papaki or some other mechanism to create env
+      if (unit.isAttachmentPresent(AnnotationEnvironment.class))
+         return;
+
       // running this deployer is costly, check if it should be run
       if (filter != null && filter.accepts(unit) == false)
          return;

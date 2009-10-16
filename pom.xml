@@ -40,6 +40,7 @@
     <version.jboss.byteman>1.0.2</version.jboss.byteman>
     <version.jboss.reflect>2.2.0-SNAPSHOT</version.jboss.reflect>
     <version.jboss.classpool>1.0.0-SNAPSHOT</version.jboss.classpool>
+    <version.jboss.papaki>1.0.0-SNAPSHOT</version.jboss.papaki>
   </properties>
 
   <modules>
@@ -362,6 +363,11 @@
         <groupId>org.jboss</groupId>
         <artifactId>jboss-classpool</artifactId>
         <version>${version.jboss.classpool}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.jboss.papaki</groupId>
+          <artifactId>papaki-core</artifactId>
+          <version>${version.jboss.papaki}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

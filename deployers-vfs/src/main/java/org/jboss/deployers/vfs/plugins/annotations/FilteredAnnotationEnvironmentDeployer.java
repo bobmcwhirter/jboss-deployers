@@ -24,9 +24,12 @@ package org.jboss.deployers.vfs.plugins.annotations;
 import org.jboss.classloading.spi.dependency.Module;
 import org.jboss.classloading.spi.visitor.ResourceFilter;
 import org.jboss.deployers.plugins.annotations.GenericAnnotationResourceVisitor;
+import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
-import org.jboss.deployers.spi.DeploymentException;
+import org.jboss.deployers.vfs.plugins.util.ClasspathUtils;
+
+import java.net.URL;
 
 /**
  * Filtered annotation environment deployer.
@@ -85,7 +88,8 @@ public class FilteredAnnotationEnvironmentDeployer extends ScopedAnnotationEnvir
       ResourceFilter recurse = getFilter(unit, ResourceFilter.class, "recurse", recurseFilter);
       try
       {
-         module.visit(visitor, filter, recurse, getUrls(unit));
+         URL[] urls = ClasspathUtils.getUrls(unit);
+         module.visit(visitor, filter, recurse, urls);
       }
       catch (Exception e)
       {
