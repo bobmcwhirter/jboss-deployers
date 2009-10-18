@@ -28,9 +28,8 @@ import org.jboss.deployers.vfs.spi.deployer.AbstractOptionalVFSRealDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.papaki.AnnotationRepository;
 import org.jboss.papaki.AnnotationScanner;
-import org.jboss.papaki.AnnotationScannerCreator;
+import org.jboss.papaki.AnnotationScannerFactory;
 import org.jboss.papaki.Configuration;
-import org.jboss.papaki.ScanStrategy;
 
 import java.net.URL;
 
@@ -43,10 +42,8 @@ import java.net.URL;
  */
 public class PapakiScannerDeployer extends AbstractOptionalVFSRealDeployer<Configuration>
 {
-   /**
-    * The scanner creator.
-    */
-   private AnnotationScannerCreator creator = ScanStrategy.JAVASSIST_INPUT_STREAM;
+   /** The scanner strategy */
+   private int strategy = AnnotationScannerFactory.JAVASSIST_INPUT_STREAM;
 
    public PapakiScannerDeployer()
    {
@@ -57,12 +54,9 @@ public class PapakiScannerDeployer extends AbstractOptionalVFSRealDeployer<Confi
 
    public void deploy(VFSDeploymentUnit unit, Configuration configuration) throws DeploymentException
    {
-      // let's first verify creator
-      creator.verify();
-
       try
       {
-         AnnotationScanner scanner = creator.create(configuration);
+         AnnotationScanner scanner = AnnotationScannerFactory.getStrategy(strategy); //, configuration);
          URL[] urls = ClasspathUtils.getUrls(unit);
          ClassLoader cl = unit.getClassLoader();
          // TODO - this needs filtering notion
@@ -76,15 +70,12 @@ public class PapakiScannerDeployer extends AbstractOptionalVFSRealDeployer<Confi
    }
 
    /**
-    * Set the annotation scanner creator.
+    * Set the annotation scanner strategy.
     *
-    * @param creator the annotation scanner creator
+    * @param strategy the annotation scanner strategy
     */
-   public void setCreator(AnnotationScannerCreator creator)
+   public void setStrategy(int strategy)
    {
-      if (creator == null)
-         throw new IllegalArgumentException("Null creator");
-
-      this.creator = creator;
+      this.strategy = strategy;
    }
 }
