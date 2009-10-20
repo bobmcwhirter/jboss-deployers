@@ -5,7 +5,7 @@
 
   <bean name="ScanningMDDeployer" class="org.jboss.deployers.vfs.plugins.annotations.ScanningMetaDataDeployer"/>
 
-  <bean name="AnnEnvDeployer" class="org.jboss.deployers.vfs.plugins.annotations.FilteredAnnotationEnvironmentDeployer">
+  <bean name="AnnEnvDeployer" class="org.jboss.deployers.vfs.plugins.annotations.FilteredAnnotationRepositoryDeployer">
     <property name="filter">
       <bean class="org.jboss.deployers.vfs.plugins.annotations.ScanningDeploymentUnitFilter"/>
     </property>

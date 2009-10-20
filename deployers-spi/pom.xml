@@ -17,5 +17,9 @@
       <groupId>org.jboss.deployers</groupId>
       <artifactId>jboss-deployers-structure-spi</artifactId>
     </dependency>
-  </dependencies>  
+    <dependency>
+      <groupId>org.jboss.mcann</groupId>
+      <artifactId>mcann-core</artifactId>
+    </dependency>
+  </dependencies>
 </project>

@@ -69,8 +69,12 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.jboss.mcann</groupId>
+      <artifactId>mcann-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>stax</groupId>
       <artifactId>stax-api</artifactId>
     </dependency>
-  </dependencies>  
+  </dependencies>
 </project>

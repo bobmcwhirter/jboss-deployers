@@ -24,9 +24,9 @@ package org.jboss.test.deployers.vfs.annotations.test;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
-import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
-import org.jboss.deployers.spi.annotations.Element;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.mcann.AnnotationRepository;
+import org.jboss.mcann.Element;
 import org.jboss.test.deployers.BootstrapDeployersTest;
 import org.jboss.test.deployers.vfs.annotations.support.NoExtRecurseFilter;
 import org.jboss.test.deployers.vfs.annotations.support.ext.External;
@@ -73,7 +73,7 @@ public abstract class AbstractAnnotationsScanningUnitTest extends BootstrapDeplo
       assertEar(unit);
       try
       {
-         AnnotationEnvironment env = unit.getAttachment(AnnotationEnvironment.class);
+         AnnotationRepository env = unit.getAttachment(AnnotationRepository.class);
          assertNotNull(env);
          Set<Element<Annotation, Class<?>>> annotations = env.classIsAnnotatedWith("org.jboss.test.deployers.vfs.annotations.support.MarkedAnnotation");
          assertNotNull(annotations);
@@ -97,7 +97,7 @@ public abstract class AbstractAnnotationsScanningUnitTest extends BootstrapDeplo
    @SuppressWarnings("unchecked")
    protected void assertAnnotations(DeploymentUnit unit, int onClass, int onMethod, int onFiled)
    {
-      AnnotationEnvironment env = unit.getAttachment(AnnotationEnvironment.class);
+      AnnotationRepository env = unit.getAttachment(AnnotationRepository.class);
       assertNotNull(env);
 
       Set classes = env.classIsAnnotatedWith("org.jboss.test.deployers.vfs.annotations.support.Marked");

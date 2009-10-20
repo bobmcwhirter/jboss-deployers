@@ -3,7 +3,7 @@
   <bean name="EarStructure" class="org.jboss.test.deployers.vfs.structure.ear.support.MockEarStructureDeployer"/>
   <bean name="WarStructure" class="org.jboss.deployers.vfs.plugins.structure.war.WARStructure"/>
 
-  <bean name="AnnEnvDeployer" class="org.jboss.deployers.vfs.plugins.annotations.FilteredAnnotationEnvironmentDeployer">
+  <bean name="AnnEnvDeployer" class="org.jboss.deployers.vfs.plugins.annotations.FilteredAnnotationRepositoryDeployer">
     <property name="recurseFilter">
       <bean class="org.jboss.test.deployers.vfs.annotations.support.NoExtRecurseFilter"/>
     </property>

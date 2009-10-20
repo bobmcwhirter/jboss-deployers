@@ -33,7 +33,6 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import org.jboss.deployers.spi.DeploymentException;
-import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
 import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.deployers.vfs.plugins.structure.AbstractVFSStructureDeployer;
 import org.jboss.deployers.vfs.spi.structure.CandidateAnnotationsCallback;
@@ -43,6 +42,7 @@ import org.jboss.virtual.VFSUtils;
 import org.jboss.virtual.VirtualFile;
 import org.jboss.virtual.VirtualFileFilter;
 import org.jboss.virtual.plugins.vfs.helpers.SuffixMatchFilter;
+import org.jboss.mcann.AnnotationRepository;
 
 /**
  * A mock ear structure deployer that illustrates concepts involved with an ear
@@ -373,7 +373,7 @@ public class MockEarStructureDeployer extends AbstractVFSStructureDeployer
          map.put(Servlet.class, J2eeModuleMetaData.WEB);
       }
 
-      public void executeCallback(VirtualFile root, StructureContext currentContext, AnnotationEnvironment env, Class<? extends Annotation> annotationClass)
+      public void executeCallback(VirtualFile root, StructureContext currentContext, AnnotationRepository env, Class<? extends Annotation> annotationClass)
       {
          if (result == null)
          {

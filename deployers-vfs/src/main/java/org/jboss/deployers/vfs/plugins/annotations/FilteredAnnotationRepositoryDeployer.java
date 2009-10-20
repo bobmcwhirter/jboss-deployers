@@ -21,15 +21,10 @@
 */
 package org.jboss.deployers.vfs.plugins.annotations;
 
-import org.jboss.classloading.spi.dependency.Module;
 import org.jboss.classloading.spi.visitor.ResourceFilter;
-import org.jboss.deployers.plugins.annotations.GenericAnnotationResourceVisitor;
-import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
-import org.jboss.deployers.vfs.plugins.util.ClasspathUtils;
-
-import java.net.URL;
+import org.jboss.mcann.scanner.DefaultAnnotationScanner;
 
 /**
  * Filtered annotation environment deployer.
@@ -40,12 +35,12 @@ import java.net.URL;
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class FilteredAnnotationEnvironmentDeployer extends ScopedAnnotationEnvironmentDeployer
+public class FilteredAnnotationRepositoryDeployer extends ScopedAnnotationRepositoryDeployer
 {
    private ResourceFilter resourceFilter;
    private ResourceFilter recurseFilter;
 
-   public FilteredAnnotationEnvironmentDeployer()
+   public FilteredAnnotationRepositoryDeployer()
    {
       addInput(ResourceFilter.class.getName() + ".resource");
       addInput(ResourceFilter.class.getName() + ".recurse");
@@ -77,24 +72,18 @@ public class FilteredAnnotationEnvironmentDeployer extends ScopedAnnotationEnvir
     * * org.jboss.classloading.spi.visitor.ResourceFilter.recurse  - recurse resource filter
     *
     * @param unit the deployment unit
-    * @param module the underlying module
-    * @param visitor the current generic annotation resource visitor
+    * @param scanner the annotation scanner
     */
-   protected void visitModule(VFSDeploymentUnit unit, Module module, GenericAnnotationResourceVisitor visitor) throws DeploymentException
+   @Override
+   protected void configureScanner(VFSDeploymentUnit unit, DefaultAnnotationScanner scanner)
    {
+      super.configureScanner(unit, scanner);
+
       ResourceFilter filter = getFilter(unit, ResourceFilter.class, "resource", resourceFilter);
-      if (filter == null)
-         filter = visitor.getFilter();
+      scanner.setResourceFilter(filter);
+
       ResourceFilter recurse = getFilter(unit, ResourceFilter.class, "recurse", recurseFilter);
-      try
-      {
-         URL[] urls = ClasspathUtils.getUrls(unit);
-         module.visit(visitor, filter, recurse, urls);
-      }
-      catch (Exception e)
-      {
-         throw DeploymentException.rethrowAsDeploymentException("Exception visiting module", e);
-      }
+      scanner.setRecurseFilter(recurse);
    }
 
    /**

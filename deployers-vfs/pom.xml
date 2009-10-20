@@ -179,8 +179,8 @@
       <artifactId>jboss-reflect</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.jboss.papaki</groupId>
-      <artifactId>papaki-core</artifactId>
+      <groupId>org.jboss.mcann</groupId>
+      <artifactId>mcann-core</artifactId>
     </dependency>
 
     <!-- tests -->

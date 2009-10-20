@@ -23,7 +23,7 @@ package org.jboss.deployers.vfs.spi.structure;
 
 import java.lang.annotation.Annotation;
 
-import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
+import org.jboss.mcann.AnnotationRepository;
 import org.jboss.virtual.VirtualFile;
 
 /**
@@ -41,5 +41,5 @@ public interface CandidateAnnotationsCallback
     * @param env the annotation environment
     * @param annotationClass the current annotation class
     */
-   void executeCallback(VirtualFile root, StructureContext currentContext, AnnotationEnvironment env, Class<? extends Annotation> annotationClass);
+   void executeCallback(VirtualFile root, StructureContext currentContext, AnnotationRepository env, Class<? extends Annotation> annotationClass);
 }

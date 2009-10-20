@@ -21,30 +21,26 @@
 */
 package org.jboss.deployers.vfs.plugins.annotations;
 
+import java.net.URL;
+
 import org.jboss.classloading.spi.dependency.Module;
-import org.jboss.deployers.plugins.annotations.GenericAnnotationResourceVisitor;
 import org.jboss.deployers.spi.DeploymentException;
-import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
 import org.jboss.deployers.spi.annotations.ScanningMetaData;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
-import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.vfs.plugins.util.ClasspathUtils;
 import org.jboss.deployers.vfs.spi.deployer.AbstractOptionalVFSRealDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnitFilter;
-
-import java.net.URL;
-
-import javassist.ClassPath;
-import javassist.ClassPool;
-import javassist.LoaderClassPath;
+import org.jboss.mcann.AnnotationRepository;
+import org.jboss.mcann.scanner.DefaultAnnotationScanner;
+import org.jboss.mcann.scanner.ModuleAnnotationScanner;
 
 /**
- * A POST_CLASSLOADER deployer which creates AnnotationEnvironment for sub-deployments.
+ * A POST_CLASSLOADER deployer which creates AnnotationRepository for sub-deployments.
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class AnnotationEnvironmentDeployer extends AbstractOptionalVFSRealDeployer<Module>
+public class AnnotationRepositoryDeployer extends AbstractOptionalVFSRealDeployer<Module>
 {
    private boolean forceAnnotations;
    private boolean keepAnnotations;
@@ -52,13 +48,13 @@ public class AnnotationEnvironmentDeployer extends AbstractOptionalVFSRealDeploy
 
    private VFSDeploymentUnitFilter filter;
 
-   public AnnotationEnvironmentDeployer()
+   public AnnotationRepositoryDeployer()
    {
       super(Module.class);
       setStage(DeploymentStages.POST_CLASSLOADER);
       addInput(ScanningMetaData.class);
-      addInput(AnnotationEnvironment.class);
-      setOutput(AnnotationEnvironment.class);
+      addInput(AnnotationRepository.class);
+      setOutput(AnnotationRepository.class);
       checkInterfaces = true;
    }
 
@@ -103,58 +99,6 @@ public class AnnotationEnvironmentDeployer extends AbstractOptionalVFSRealDeploy
    }
 
    /**
-    * Create GenericAnnotationResourceVisitor.
-    *
-    * Can be used change existing GARV's filter.
-    * Or determin if we need to force/keep annotations.
-    *
-    * @param unit the deployment unit
-    * @param pool the class pool
-    * @param classLoader the classloader
-    * @return new generic annotation visitor
-    */
-   protected GenericAnnotationResourceVisitor createGenericAnnotationResourceVisitor(DeploymentUnit unit, ClassPool pool, ClassLoader classLoader)
-   {
-      GenericAnnotationResourceVisitor visitor = new GenericAnnotationResourceVisitor(pool, classLoader);
-      visitor.setForceAnnotations(forceAnnotations);
-      visitor.setKeepAnnotations(keepAnnotations);
-      visitor.setCheckInterfaces(checkInterfaces);
-      return visitor;
-   }
-
-   /**
-    * Create class pool.
-    *
-    * @param classLoader the class loader
-    * @return javassist class pool
-    */
-   @Deprecated
-   protected ClassPool createClassPool(ClassLoader classLoader)
-   {
-      ClassPool pool = new ClassPool();
-      ClassPath classPath = new LoaderClassPath(classLoader);
-      pool.insertClassPath(classPath);
-      return pool;
-   }
-
-   /**
-    * Create class pool.
-    *
-    * @param unit the deployment unit
-    * @return javassist class pool
-    */
-   protected ClassPool createClassPool(VFSDeploymentUnit unit)
-   {
-      ClassPool pool = new ClassPool();
-      ClassPath deploymentPath = new DeploymentUnitClassPath(unit);
-      pool.appendClassPath(deploymentPath);
-      // fall back to classloader classpath
-      ClassPath classPath = new LoaderClassPath(unit.getClassLoader());
-      pool.appendClassPath(classPath);
-      return pool;
-   }
-
-   /**
     * Visit module.
     *
     * Util method to add some behavior to Module
@@ -162,15 +106,17 @@ public class AnnotationEnvironmentDeployer extends AbstractOptionalVFSRealDeploy
     *
     * @param unit the deployment unit
     * @param module the module
-    * @param visitor the resource visitor
     * @throws DeploymentException for any error
     */
-   protected void visitModule(VFSDeploymentUnit unit, Module module, GenericAnnotationResourceVisitor visitor) throws DeploymentException
+   protected void visitModule(VFSDeploymentUnit unit, Module module) throws DeploymentException
    {
       try
       {
          URL[] urls = ClasspathUtils.getUrls(unit);
-         module.visit(visitor, visitor.getFilter(), null, urls);
+         DefaultAnnotationScanner scanner = new ModuleAnnotationScanner(module);
+         configureScanner(unit, scanner);
+         AnnotationRepository repository = scanner.scan(unit.getClassLoader(), urls);
+         unit.addAttachment(AnnotationRepository.class, repository);
       }
       catch (Exception e)
       {
@@ -178,10 +124,23 @@ public class AnnotationEnvironmentDeployer extends AbstractOptionalVFSRealDeploy
       }
    }
 
+   /**
+    * Configure scanner.
+    *
+    * @param unit the deployment unit
+    * @param scanner the annotation scanner
+    */
+   protected void configureScanner(VFSDeploymentUnit unit, DefaultAnnotationScanner scanner)
+   {
+      scanner.setForceAnnotations(forceAnnotations);
+      scanner.setKeepAnnotations(keepAnnotations);
+      scanner.setCheckInterfaces(checkInterfaces);
+   }
+
    public void deploy(VFSDeploymentUnit unit, Module module) throws DeploymentException
    {
-      // we already used Papaki or some other mechanism to create env
-      if (unit.isAttachmentPresent(AnnotationEnvironment.class))
+      // we already used McAnn or some other mechanism to create repo
+      if (unit.isAttachmentPresent(AnnotationRepository.class))
          return;
 
       // running this deployer is costly, check if it should be run
@@ -201,24 +160,8 @@ public class AnnotationEnvironmentDeployer extends AbstractOptionalVFSRealDeploy
       }
 
       if (log.isTraceEnabled())
-         log.trace("Creating AnnotationEnvironment for " + unit.getName() + ", module: " + module + ", force annotations: " + forceAnnotations);
+         log.trace("Creating AnnotationRepository for " + unit.getName() + ", module: " + module + ", force annotations: " + forceAnnotations);
 
-      ClassLoader classLoader = unit.getClassLoader();
-      ClassPool pool = createClassPool(unit);
-      GenericAnnotationResourceVisitor visitor = createGenericAnnotationResourceVisitor(unit, pool, classLoader);
-
-      // something in javassist uses TCL
-      ClassLoader tcl = Thread.currentThread().getContextClassLoader();
-      Thread.currentThread().setContextClassLoader(classLoader);
-      try
-      {
-         visitModule(unit, module, visitor);
-      }
-      finally
-      {
-         Thread.currentThread().setContextClassLoader(tcl);
-      }
-
-      unit.addAttachment(AnnotationEnvironment.class, visitor.getEnv());
+      visitModule(unit, module);
    }
 }

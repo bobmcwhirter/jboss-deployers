@@ -22,13 +22,13 @@
 package org.jboss.deployers.vfs.plugins.structure;
 
 import org.jboss.classloader.spi.filter.ClassFilter;
-import org.jboss.classloading.plugins.vfs.VFSResourceVisitor;
 import org.jboss.classloading.spi.visitor.ResourceFilter;
-import org.jboss.deployers.plugins.annotations.GenericAnnotationResourceVisitor;
-import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
 import org.jboss.deployers.structure.spi.DeploymentResourceLoader;
 import org.jboss.deployers.structure.spi.helpers.DeploymentResourceClassLoader;
 import org.jboss.deployers.vfs.spi.structure.helpers.AbstractStructureDeployer;
+import org.jboss.mcann.AnnotationRepository;
+import org.jboss.mcann.repository.TypeInfoProvider;
+import org.jboss.mcann.scanner.DefaultAnnotationScanner;
 import org.jboss.virtual.VirtualFile;
 
 /**
@@ -42,17 +42,28 @@ public abstract class AbstractVFSStructureDeployer extends AbstractStructureDepl
    private ClassFilter excluded;
    private ResourceFilter filter;
    private ResourceFilter recurseFilter;
+   private TypeInfoProvider typeInfoProvider;
 
-   protected AnnotationEnvironment createAnnotationEnvironment(VirtualFile root)
+   protected AnnotationRepository createAnnotationRepository(VirtualFile root)
    {
       DeploymentResourceLoader loader = new VFSDeploymentResourceLoaderImpl(root);
       ClassLoader classLoader = new DeploymentResourceClassLoader(loader);
-      GenericAnnotationResourceVisitor visitor = new GenericAnnotationResourceVisitor(classLoader);
-      ResourceFilter filter = this.filter;
-      if (filter == null)
-         filter = visitor.getFilter();
-      VFSResourceVisitor.visit(new VirtualFile[]{root}, null, included, excluded, classLoader, visitor, filter, recurseFilter);
-      return visitor.getEnv();
+      DefaultAnnotationScanner scanner = new DefaultAnnotationScanner();
+      scanner.setIncluded(included);
+      scanner.setExcluded(excluded);
+      scanner.setResourceFilter(filter);
+      scanner.setRecurseFilter(recurseFilter);
+      if (typeInfoProvider != null)
+         scanner.setTypeInfoProvider(typeInfoProvider);
+
+      try
+      {
+         return scanner.scan(classLoader, root.toURL());
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException("Cannot create annotation repository: " + e);
+      }
    }
 
    /**
@@ -93,5 +104,15 @@ public abstract class AbstractVFSStructureDeployer extends AbstractStructureDepl
    public void setRecurseFilter(ResourceFilter recurseFilter)
    {
       this.recurseFilter = recurseFilter;
+   }
+
+   /**
+    * Set type info provider.
+    *
+    * @param typeInfoProvider the type info provider
+    */
+   public void setTypeInfoProvider(TypeInfoProvider typeInfoProvider)
+   {
+      this.typeInfoProvider = typeInfoProvider;
    }
 }

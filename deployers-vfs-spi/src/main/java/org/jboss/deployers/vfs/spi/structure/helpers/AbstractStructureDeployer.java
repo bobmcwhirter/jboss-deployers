@@ -28,7 +28,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
 import org.jboss.deployers.spi.structure.ClassPathEntry;
 import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.deployers.spi.structure.StructureMetaData;
@@ -38,6 +37,7 @@ import org.jboss.deployers.vfs.spi.structure.StructureContext;
 import org.jboss.deployers.vfs.spi.structure.StructureDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSStructuralDeployers;
 import org.jboss.logging.Logger;
+import org.jboss.mcann.AnnotationRepository;
 import org.jboss.util.collection.CollectionsFactory;
 import org.jboss.virtual.VFSUtils;
 import org.jboss.virtual.VirtualFile;
@@ -258,12 +258,12 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
    }
 
    /**
-    * Create annotation environment
+    * Create annotation repository
     *
     * @param root the deployment root
-    * @return new annotation environment
+    * @return new annotation repository
     */
-   protected abstract AnnotationEnvironment createAnnotationEnvironment(VirtualFile root);
+   protected abstract AnnotationRepository createAnnotationRepository(VirtualFile root);
 
    /**
     * Check for candidate annotations.
@@ -291,7 +291,7 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
       boolean result = false;
       for(VirtualFile root : roots)
       {
-         AnnotationEnvironment env = createAnnotationEnvironment(root);
+         AnnotationRepository env = createAnnotationRepository(root);
          for (Class<? extends Annotation> annotationClass : candidateAnnotations)
          {
             if (env.hasClassAnnotatedWith(annotationClass))

@@ -25,23 +25,23 @@ import java.lang.annotation.Annotation;
 import java.util.Set;
 
 import org.jboss.deployers.spi.DeploymentException;
-import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
-import org.jboss.deployers.spi.annotations.Element;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.mcann.AnnotationRepository;
+import org.jboss.mcann.Element;
 
 /**
  * AbstractComponentDeployer.
  *
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  */
-public class AbstractAnnotationDeployer extends AbstractSimpleRealDeployer<AnnotationEnvironment>
+public class AbstractAnnotationDeployer extends AbstractSimpleRealDeployer<AnnotationRepository>
 {
    /** The annotation processors */
    private AnnotationProcessor<?, ?>[] processors;
 
    public AbstractAnnotationDeployer(AnnotationProcessor<?, ?>... processors)
    {
-      super(AnnotationEnvironment.class);
+      super(AnnotationRepository.class);
       if (processors != null && processors.length > 0)
       {
          this.processors = processors;
@@ -56,7 +56,7 @@ public class AbstractAnnotationDeployer extends AbstractSimpleRealDeployer<Annot
    }
 
    @SuppressWarnings("unchecked")
-   public void deploy(DeploymentUnit unit, AnnotationEnvironment deployment) throws DeploymentException
+   public void deploy(DeploymentUnit unit, AnnotationRepository deployment) throws DeploymentException
    {
       for (AnnotationProcessor processor : processors)
       {

@@ -19,25 +19,29 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.deployers.plugins.annotations;
+package org.jboss.deployers.vfs.plugins.annotations;
 
-import javassist.scopedpool.ScopedClassPoolRepository;
 import javassist.ClassPool;
+import javassist.scopedpool.ScopedClassPoolRepository;
+import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
+import org.jboss.mcann.repository.TypeInfoProvider;
+import org.jboss.mcann.repository.javassist.JavassistTypeInfoProvider;
+import org.jboss.mcann.scanner.DefaultAnnotationScanner;
 
 /**
- * Scoped generic annotation deployer.
+ * Scoped class pool usage annotation environment deployer.
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class ScopedGenericAnnotationDeployer extends GenericAnnotationDeployer
+public class ScopedAnnotationRepositoryDeployer extends AnnotationRepositoryDeployer
 {
    private ScopedClassPoolRepository repository;
 
-   public ScopedGenericAnnotationDeployer()
+   public ScopedAnnotationRepositoryDeployer()
    {
    }
 
-   public ScopedGenericAnnotationDeployer(ScopedClassPoolRepository repository)
+   public ScopedAnnotationRepositoryDeployer(ScopedClassPoolRepository repository)
    {
       this.repository = repository;
    }
@@ -52,11 +56,16 @@ public class ScopedGenericAnnotationDeployer extends GenericAnnotationDeployer
       this.repository = repository;
    }
 
-   protected ClassPool createClassPool(ClassLoader classLoader)
+   @Override
+   protected void configureScanner(VFSDeploymentUnit unit, DefaultAnnotationScanner scanner)
    {
-      if (repository != null)
-         return repository.findClassPool(classLoader);
+      super.configureScanner(unit, scanner);
 
-      return super.createClassPool(classLoader);
+      if (repository != null)
+      {
+         ClassPool pool = repository.findClassPool(unit.getClassLoader());
+         TypeInfoProvider provider = new JavassistTypeInfoProvider(pool);
+         scanner.setTypeInfoProvider(provider);
+      }
    }
 }

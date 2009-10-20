@@ -151,6 +151,10 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.jboss.mcann</groupId>
+      <artifactId>mcann-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>javassist</groupId>
       <artifactId>javassist</artifactId>
     </dependency>

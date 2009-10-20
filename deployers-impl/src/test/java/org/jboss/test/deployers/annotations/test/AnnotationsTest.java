@@ -38,13 +38,13 @@ import org.jboss.classloading.spi.version.Version;
 import org.jboss.deployers.client.spi.DeployerClient;
 import org.jboss.deployers.plugins.annotations.GenericAnnotationDeployer;
 import org.jboss.deployers.plugins.classloading.AbstractClassLoaderDescribeDeployer;
-import org.jboss.deployers.spi.annotations.AnnotationEnvironment;
-import org.jboss.deployers.spi.annotations.Element;
 import org.jboss.deployers.spi.attachments.Attachments;
 import org.jboss.deployers.spi.attachments.MutableAttachments;
 import org.jboss.deployers.spi.attachments.PredeterminedManagedObjectAttachments;
 import org.jboss.deployers.spi.deployer.Deployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.mcann.AnnotationRepository;
+import org.jboss.mcann.Element;
 import org.jboss.test.deployers.AbstractDeployerTest;
 import org.jboss.test.deployers.annotations.support.InterceptionClassLoader;
 import org.jboss.test.deployers.annotations.support.InterceptionClassLoaderSystemDeployer;
@@ -114,9 +114,9 @@ public abstract class AnnotationsTest extends AbstractDeployerTest
       mutable.addAttachment(ClassLoadingMetaData.class, md);
    }
 
-   protected AnnotationEnvironment getAnnotationEnvironment(Attachments attachments)
+   protected AnnotationRepository getAnnotationRepository(Attachments attachments)
    {
-      AnnotationEnvironment env = attachments.getAttachment(AnnotationEnvironment.class);
+      AnnotationRepository env = attachments.getAttachment(AnnotationRepository.class);
       assertNotNull(env);
       return env;
    }
