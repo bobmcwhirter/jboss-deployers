@@ -112,7 +112,73 @@
           <artifactId>jboss-classloading</artifactId>
         </exclusion>
       </exclusions>
-	 </dependency>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss</groupId>
+      <artifactId>jboss-reflect</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.man</groupId>
+      <artifactId>jboss-managed</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss</groupId>
+          <artifactId>jboss-reflect</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jboss</groupId>
+          <artifactId>jboss-mdr</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.man</groupId>
+      <artifactId>jboss-metatype</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss</groupId>
+          <artifactId>jboss-reflect</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jboss</groupId>
+          <artifactId>jboss-mdr</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.mcann</groupId>
+      <artifactId>mcann-core</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.vfs</groupId>
+          <artifactId>jboss-vfs</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jboss</groupId>
+          <artifactId>jboss-reflect</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jboss.man</groupId>
+          <artifactId>jboss-managed</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jboss.man</groupId>
+          <artifactId>jboss-metatype</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jboss.microcontainer</groupId>
+          <artifactId>jboss-kernel</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jboss.kernel</groupId>
+          <artifactId>jboss-kernel</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jboss.cl</groupId>
+          <artifactId>jboss-classloading</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.jboss.deployers</groupId>
@@ -174,17 +240,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>org.jboss</groupId>
-      <artifactId>jboss-reflect</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.mcann</groupId>
-      <artifactId>mcann-core</artifactId>
-    </dependency>
-
-    <!-- tests -->
-
     <dependency>
       <groupId>org.jboss.logging</groupId>
       <artifactId>jboss-logging-log4j</artifactId>
