@@ -27,6 +27,7 @@ import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.spi.deployer.helpers.AbstractSimpleRealDeployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.mcann.AnnotationRepository;
+import org.jboss.mcann.repository.TypeInfoProvider;
 import org.jboss.mcann.scanner.DefaultAnnotationScanner;
 import org.jboss.mcann.scanner.ModuleAnnotationScanner;
 
@@ -39,7 +40,9 @@ public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module
 {
    private boolean forceAnnotations;
    private boolean keepAnnotations;
+   private boolean checkSuper;
    private boolean checkInterfaces;
+   private TypeInfoProvider typeInfoProvider;
 
    public GenericAnnotationDeployer()
    {
@@ -70,6 +73,16 @@ public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module
    }
 
    /**
+    * Should we check super for annotations as well.
+    *
+    * @param checkSuper the check super flag
+    */
+   public void setCheckSuper(boolean checkSuper)
+   {
+      this.checkSuper = checkSuper;
+   }
+
+   /**
     * Should we check interfaces for annotations as well.
     *
     * @param checkInterfaces the check interfaces flag
@@ -79,6 +92,16 @@ public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module
       this.checkInterfaces = checkInterfaces;
    }
 
+   /**
+    * Set type info provider.
+    *
+    * @param typeInfoProvider the type info provider
+    */
+   public void setTypeInfoProvider(TypeInfoProvider typeInfoProvider)
+   {
+      this.typeInfoProvider = typeInfoProvider;
+   }
+
    public void deploy(DeploymentUnit unit, Module deployment) throws DeploymentException
    {
       try
@@ -86,7 +109,11 @@ public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module
          DefaultAnnotationScanner scanner = new ModuleAnnotationScanner(deployment);
          scanner.setForceAnnotations(forceAnnotations);
          scanner.setKeepAnnotations(keepAnnotations);
+         scanner.setCheckSuper(checkSuper);
          scanner.setCheckInterfaces(checkInterfaces);
+         if (typeInfoProvider != null)
+            scanner.setTypeInfoProvider(typeInfoProvider);
+
          AnnotationRepository repository = scanner.scan(unit.getClassLoader());
          unit.addAttachment(AnnotationRepository.class, repository);
       }
