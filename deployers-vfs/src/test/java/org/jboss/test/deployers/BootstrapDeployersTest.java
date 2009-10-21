@@ -21,14 +21,13 @@
 */
 package org.jboss.test.deployers;
 
+import java.io.IOException;
 import java.net.URL;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.List;
-import java.io.IOException;
 
 import junit.framework.AssertionFailedError;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.jboss.classloader.plugins.ClassLoaderUtils;
@@ -37,8 +36,8 @@ import org.jboss.dependency.spi.ControllerContext;
 import org.jboss.dependency.spi.dispatch.InvokeDispatchContext;
 import org.jboss.deployers.client.spi.DeployerClient;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
-import org.jboss.deployers.structure.spi.main.MainDeployerStructure;
 import org.jboss.deployers.structure.spi.main.MainDeployerInternals;
+import org.jboss.deployers.structure.spi.main.MainDeployerStructure;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.client.VFSDeploymentFactory;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;

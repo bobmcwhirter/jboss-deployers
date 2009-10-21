@@ -44,6 +44,7 @@ public class AnnotationRepositoryDeployer extends AbstractOptionalVFSRealDeploye
 {
    private boolean forceAnnotations;
    private boolean keepAnnotations;
+   private boolean checkSuper;
    private boolean checkInterfaces;
 
    private VFSDeploymentUnitFilter filter;
@@ -76,6 +77,16 @@ public class AnnotationRepositoryDeployer extends AbstractOptionalVFSRealDeploye
    public void setKeepAnnotations(boolean keepAnnotations)
    {
       this.keepAnnotations = keepAnnotations;
+   }
+
+   /**
+    * Should we check super class for annotations as well.
+    *
+    * @param checkSuper the check super flag
+    */
+   public void setCheckSuper(boolean checkSuper)
+   {
+      this.checkSuper = checkSuper;
    }
 
    /**
@@ -134,6 +145,7 @@ public class AnnotationRepositoryDeployer extends AbstractOptionalVFSRealDeploye
    {
       scanner.setForceAnnotations(forceAnnotations);
       scanner.setKeepAnnotations(keepAnnotations);
+      scanner.setCheckSuper(checkSuper);
       scanner.setCheckInterfaces(checkInterfaces);
    }
 

@@ -102,15 +102,15 @@ public abstract class AbstractAnnotationsScanningUnitTest extends BootstrapDeplo
 
       Set classes = env.classIsAnnotatedWith("org.jboss.test.deployers.vfs.annotations.support.Marked");
       assertNotNull(classes);
-      assertEquals(onClass, classes.size());
+      assertEquals(classes.toString(), onClass, classes.size());
 
       Set methods = env.classHasMethodAnnotatedWith("org.jboss.test.deployers.vfs.annotations.support.Marked");
       assertNotNull(methods);
-      assertEquals(onMethod, methods.size());
+      assertEquals(methods.toString(), onMethod, methods.size());
 
       Set fields = env.classHasFieldAnnotatedWith("org.jboss.test.deployers.vfs.annotations.support.Marked");
       assertNotNull(fields);
-      assertEquals(onFiled, fields.size());
+      assertEquals(fields.toString(), onFiled, fields.size());
    }
 
    protected AssembledDirectory createTopLevelWithUtil() throws Exception
