@@ -260,5 +260,10 @@
       <artifactId>jboss-classpool</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.jboss.metadata</groupId>
+      <artifactId>jboss-metadata</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
