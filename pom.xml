@@ -41,6 +41,7 @@
     <version.ant.junit>1.6.5</version.ant.junit>
     <version.jboss.byteman>1.0.3.CP01</version.jboss.byteman>
     <version.jboss.mcann>1.0.0-SNAPSHOT</version.jboss.mcann>
+    <version.jboss.metadata>1.0.2.Beta1</version.jboss.metadata>
   </properties>
 
   <modules>
@@ -367,6 +368,12 @@
         <groupId>org.jboss.byteman</groupId>
         <artifactId>byteman</artifactId>
         <version>${version.jboss.byteman}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.metadata</groupId>
+        <artifactId>jboss-metadata</artifactId>
+        <version>${version.jboss.metadata}</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
