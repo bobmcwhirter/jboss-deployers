@@ -21,6 +21,8 @@
  */
 package org.jboss.test.deployers.vfs.classpool.test;
 
+import junit.framework.Test;
+
 import org.jboss.test.deployers.vfs.classpool.support.crm.CrmFacade;
 import org.jboss.test.deployers.vfs.classpool.support.ejb.MySLSBean;
 import org.jboss.test.deployers.vfs.classpool.support.ext.External;
@@ -31,8 +33,6 @@ import org.jboss.test.deployers.vfs.classpool.support.ui.UIBean;
 import org.jboss.test.deployers.vfs.classpool.support.util.SomeUtil;
 import org.jboss.test.deployers.vfs.classpool.support.web.AnyServlet;
 import org.jboss.virtual.AssembledDirectory;
-
-import junit.framework.Test;
 
 /**
  * Test case for ClassPool.
@@ -94,7 +94,6 @@ public class ClassPoolTestCase extends ClassPoolTest
    public void testWarInEar() throws Exception 
    {
       AssembledDirectory directory = createWarInEar();
-      // TODO - make proper .war CL check --> MockWarCLDeployer
       assertClassPool(directory, AnyServlet.class);
    }
    
