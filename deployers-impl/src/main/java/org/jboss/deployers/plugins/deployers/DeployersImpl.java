@@ -512,8 +512,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
       }
    }
 
-   public Map<String, ManagedObject> getManagedObjects(DeploymentContext context)
-      throws DeploymentException
+   public Map<String, ManagedObject> getManagedObjects(DeploymentContext context) throws DeploymentException
    {
       if (context == null)
          throw new IllegalArgumentException("Null context");

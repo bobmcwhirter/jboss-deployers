@@ -27,7 +27,6 @@ import org.jboss.deployers.spi.deployer.managed.ManagedDeploymentCreator;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.managed.api.ManagedDeployment;
 import org.jboss.managed.api.ManagedObject;
-import org.jboss.managed.api.ManagedDeployment.DeploymentPhase;
 import org.jboss.managed.plugins.ManagedDeploymentImpl;
 
 /**
@@ -36,20 +35,10 @@ import org.jboss.managed.plugins.ManagedDeploymentImpl;
  * @author Scott.Stark@jboss.org
  * @version $Revision$
  */
-public class DefaultManagedDeploymentCreator
-   implements ManagedDeploymentCreator
+public class DefaultManagedDeploymentCreator implements ManagedDeploymentCreator
 {
-   public ManagedDeployment build(DeploymentUnit unit,
-         Map<String, ManagedObject> unitMOs,
-         ManagedDeployment parent)
+   public ManagedDeployment build(DeploymentUnit unit, Map<String, ManagedObject> unitMOs, ManagedDeployment parent)
    {
-      DeploymentPhase phase = unit.getAttachment(DeploymentPhase.class);
-      if( phase == null )
-         phase = DeploymentPhase.APPLICATION;
-      ManagedDeployment md = new ManagedDeploymentImpl(unit.getName(), unit.getSimpleName(),
-            phase, parent, unitMOs);
-
-      return md;
+      return new ManagedDeploymentImpl(unit.getName(), unit.getSimpleName(), parent, unitMOs);
    }
-
 }
