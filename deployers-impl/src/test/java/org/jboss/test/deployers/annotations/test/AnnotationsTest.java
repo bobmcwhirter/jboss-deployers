@@ -48,6 +48,8 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.mcann.AnnotationRepository;
 import org.jboss.mcann.Element;
 import org.jboss.mcann.repository.DefaultConfiguration;
+import org.jboss.mcann.repository.ConfigurationCreator;
+import org.jboss.mcann.repository.Configuration;
 import org.jboss.mcann.repository.javassist.JavassistTypeInfoProvider;
 import org.jboss.test.deployers.AbstractDeployerTest;
 import org.jboss.test.deployers.annotations.support.InterceptionClassLoader;
@@ -197,9 +199,16 @@ public abstract class AnnotationsTest extends AbstractDeployerTest
    protected Deployer createGenericAnnotationDeployer()
    {
       GenericAnnotationDeployer deployer = new GenericAnnotationDeployer();
-      DefaultConfiguration configuration = new DefaultConfiguration();
+      final DefaultConfiguration configuration = new DefaultConfiguration();
       applyConfiguration(configuration);
-      deployer.setConfiguration(configuration);
+      ConfigurationCreator creator = new ConfigurationCreator()
+      {
+         public Configuration createConfiguration()
+         {
+            return configuration;
+         }
+      };
+      deployer.setConfigurationCreator(creator);
       return deployer;
    }
 

@@ -27,7 +27,7 @@ import org.jboss.deployers.structure.spi.DeploymentResourceLoader;
 import org.jboss.deployers.structure.spi.helpers.DeploymentResourceClassLoader;
 import org.jboss.deployers.vfs.spi.structure.helpers.AbstractStructureDeployer;
 import org.jboss.mcann.AnnotationRepository;
-import org.jboss.mcann.repository.Configuration;
+import org.jboss.mcann.repository.ConfigurationCreator;
 import org.jboss.mcann.scanner.DefaultAnnotationScanner;
 import org.jboss.virtual.VirtualFile;
 
@@ -41,7 +41,7 @@ public abstract class AbstractVFSStructureDeployer extends AbstractStructureDepl
    private ClassFilter included;
    private ClassFilter excluded;
    private ResourceFilter recurseFilter;
-   private Configuration configuration;
+   private ConfigurationCreator creator;
 
    protected AnnotationRepository createAnnotationRepository(VirtualFile root)
    {
@@ -51,8 +51,8 @@ public abstract class AbstractVFSStructureDeployer extends AbstractStructureDepl
       scanner.setIncluded(included);
       scanner.setExcluded(excluded);
       scanner.setRecurseFilter(recurseFilter);
-      if (configuration != null)
-         scanner.setConfiguration(configuration);
+      if (creator != null)
+         scanner.setConfiguration(creator.createConfiguration());
 
       try
       {
@@ -95,12 +95,12 @@ public abstract class AbstractVFSStructureDeployer extends AbstractStructureDepl
    }
 
    /**
-    * Set configuration.
+    * Set configuration creator.
     *
-    * @param configuration the configuration
+    * @param creator the configuration creator
     */
-   public void setConfiguration(Configuration configuration)
+   public void setConfigurationCreator(ConfigurationCreator creator)
    {
-      this.configuration = configuration;
+      this.creator = creator;
    }
 }

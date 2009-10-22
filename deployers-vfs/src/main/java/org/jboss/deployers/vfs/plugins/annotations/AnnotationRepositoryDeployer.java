@@ -32,7 +32,7 @@ import org.jboss.deployers.vfs.spi.deployer.AbstractOptionalVFSRealDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnitFilter;
 import org.jboss.mcann.AnnotationRepository;
-import org.jboss.mcann.repository.Configuration;
+import org.jboss.mcann.repository.ConfigurationCreator;
 import org.jboss.mcann.repository.DefaultConfiguration;
 import org.jboss.mcann.scanner.DefaultAnnotationScanner;
 import org.jboss.mcann.scanner.ModuleAnnotationScanner;
@@ -44,7 +44,7 @@ import org.jboss.mcann.scanner.ModuleAnnotationScanner;
  */
 public class AnnotationRepositoryDeployer extends AbstractOptionalVFSRealDeployer<Module>
 {
-   private Configuration configuration;
+   private ConfigurationCreator creator;
    private VFSDeploymentUnitFilter filter;
 
    public AnnotationRepositoryDeployer()
@@ -57,23 +57,13 @@ public class AnnotationRepositoryDeployer extends AbstractOptionalVFSRealDeploye
    }
 
    /**
-    * Get default configuration.
+    * Set configuration creator.
     *
-    * @return the configuration
+    * @param creator the configuration creator
     */
-   protected Configuration getConfiguration()
+   public void setConfigurationCreator(ConfigurationCreator creator)
    {
-      return configuration;
-   }
-
-   /**
-    * Set default configuration.
-    *
-    * @param configuration the configuration
-    */
-   public void setConfiguration(Configuration configuration)
-   {
-      this.configuration = configuration;
+      this.creator = creator;
    }
 
    /**
@@ -105,8 +95,8 @@ public class AnnotationRepositoryDeployer extends AbstractOptionalVFSRealDeploye
 
          DefaultConfiguration config = new DefaultConfiguration();
          configureScanner(unit, scanner, config);
-         if (configuration != null)
-            config.merge(configuration); // override with custom config
+         if (creator != null)
+            config.merge(creator.createConfiguration()); // override with custom config
          scanner.setConfiguration(config);
 
          AnnotationRepository repository = scanner.scan(unit.getClassLoader(), urls);
@@ -152,7 +142,7 @@ public class AnnotationRepositoryDeployer extends AbstractOptionalVFSRealDeploye
       }
 
       if (log.isTraceEnabled())
-         log.trace("Creating AnnotationRepository for " + unit.getName() + ", module: " + module + ", configuration: " + configuration);
+         log.trace("Creating AnnotationRepository for " + unit.getName() + ", module: " + module + ", configuration: " + creator);
 
       visitModule(unit, module);
    }
