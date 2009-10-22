@@ -198,9 +198,14 @@ public abstract class AnnotationsTest extends AbstractDeployerTest
    {
       GenericAnnotationDeployer deployer = new GenericAnnotationDeployer();
       DefaultConfiguration configuration = new DefaultConfiguration();
-      configuration.setTypeInfoProvider(new JavassistTypeInfoProvider());
-      configuration.setForceAnnotations(true);
+      applyConfiguration(configuration);
       deployer.setConfiguration(configuration);
       return deployer;
+   }
+
+   protected void applyConfiguration(DefaultConfiguration configuration)
+   {
+      configuration.setTypeInfoProvider(new JavassistTypeInfoProvider());
+      configuration.setForceAnnotations(true);
    }
 }
