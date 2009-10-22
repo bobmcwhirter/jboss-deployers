@@ -21,8 +21,11 @@
  */
 package org.jboss.test.deployers.vfs.classpool.test;
 
-import junit.framework.Test;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
+import junit.framework.Test;
 import org.jboss.test.deployers.vfs.classpool.support.crm.CrmFacade;
 import org.jboss.test.deployers.vfs.classpool.support.ejb.MySLSBean;
 import org.jboss.test.deployers.vfs.classpool.support.ext.External;
@@ -80,9 +83,16 @@ public class ClassPoolTestCase extends ClassPoolTest
    public void testBasicEar() throws Exception
    {
       AssembledDirectory directory = createBasicEar();
-      assertClassPool(directory, SomeUtil.class, PlainJavaBean.class,
-            MySLSBean.class, AnyServlet.class, UIBean.class,
-            JsfBean.class, CrmFacade.class, SomeMBean.class);
+      Map<Class<?>, String> classes = new HashMap<Class<?>, String>();
+      classes.put(SomeUtil.class, null);
+      classes.put(PlainJavaBean.class, null);
+      classes.put(MySLSBean.class, null);
+      classes.put(AnyServlet.class, "simple.war");
+      classes.put(UIBean.class, "simple.war");
+      classes.put(JsfBean.class, "jsfapp.war");
+      classes.put(CrmFacade.class, "jsfapp.war");
+      classes.put(SomeMBean.class, null);
+      assertClassPool(directory, classes);
    }
    
    public void testTopLevelWithUtil() throws Exception 
@@ -94,7 +104,7 @@ public class ClassPoolTestCase extends ClassPoolTest
    public void testWarInEar() throws Exception 
    {
       AssembledDirectory directory = createWarInEar();
-      assertClassPool(directory, AnyServlet.class);
+      assertClassPool(directory, Collections.<Class<?>, String>singletonMap(AnyServlet.class, "simple.war"));
    }
    
    public void testJarInEar() throws Exception 

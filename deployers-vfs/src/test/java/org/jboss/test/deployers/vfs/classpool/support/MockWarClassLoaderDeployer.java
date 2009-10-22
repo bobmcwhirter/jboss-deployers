@@ -79,7 +79,7 @@ public class MockWarClassLoaderDeployer extends AbstractVFSRealDeployer
    public void deploy(VFSDeploymentUnit unit) throws DeploymentException
    {
       // ignore if it already has classloading or not war deployment
-      if (unit.getName().endsWith(".war") == false || unit.isAttachmentPresent(ClassLoadingMetaData.class))
+      if (unit.getSimpleName().endsWith(".war") == false || unit.isAttachmentPresent(ClassLoadingMetaData.class))
          return;
 
       // The default domain name is the unit name

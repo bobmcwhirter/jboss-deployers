@@ -21,7 +21,9 @@
  */
 package org.jboss.test.deployers.vfs.classpool.test;
 
+import java.util.Map;
 import java.util.Set;
+import java.util.HashMap;
 
 import org.jboss.classloader.plugins.jdk.AbstractJDKChecker;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
@@ -68,13 +70,25 @@ public abstract class ClassPoolTest extends BootstrapDeployersTest
 
    protected void assertClassPool(VirtualFile file, Class<?> ... classes) throws Exception
    {
+      Map<Class<?>, String> map = new HashMap<Class<?>, String>();
+      for (Class<?> clazz : classes)
+      {
+         map.put(clazz, null);
+      }
+      assertClassPool(file, map);
+   }
+
+   protected void assertClassPool(VirtualFile file, Map<Class<?>, String> classes) throws Exception
+   {
       DeploymentUnit unit = assertDeploy(file);
       try
       {
          TypeInfoFactory typeInfoFactory = new JavassistTypeInfoFactory();
-         ClassLoader classLoader = getClassLoader(unit);
-         for (Class<?> clazz: classes)
+         for (Map.Entry<Class<?>, String> entry : classes.entrySet())
          {
+            DeploymentUnit du = getDeploymentUnit(unit, entry.getValue());
+            ClassLoader classLoader = getClassLoader(du);
+            Class<?> clazz = entry.getKey();
             String className = clazz.getName();
             assertLoadClass(className, classLoader);
             TypeInfo typeInfo = typeInfoFactory.getTypeInfo(className, classLoader);
@@ -87,5 +101,13 @@ public abstract class ClassPoolTest extends BootstrapDeployersTest
       {
          undeploy(unit);
       }
+   }
+
+   protected DeploymentUnit getDeploymentUnit(DeploymentUnit parent, String name)
+   {
+      if (name == null)
+         return parent;
+
+      return assertChild(parent, name);
    }
 }
