@@ -51,7 +51,8 @@ public abstract class AbstractVFSStructureDeployer extends AbstractStructureDepl
       scanner.setIncluded(included);
       scanner.setExcluded(excluded);
       scanner.setRecurseFilter(recurseFilter);
-      scanner.setConfiguration(configuration);
+      if (configuration != null)
+         scanner.setConfiguration(configuration);
 
       try
       {
