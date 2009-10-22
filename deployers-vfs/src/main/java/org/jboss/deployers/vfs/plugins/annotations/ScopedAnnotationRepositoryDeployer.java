@@ -24,6 +24,7 @@ package org.jboss.deployers.vfs.plugins.annotations;
 import javassist.ClassPool;
 import javassist.scopedpool.ScopedClassPoolRepository;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
+import org.jboss.mcann.repository.DefaultConfiguration;
 import org.jboss.mcann.repository.TypeInfoProvider;
 import org.jboss.mcann.repository.javassist.JavassistTypeInfoProvider;
 import org.jboss.mcann.scanner.DefaultAnnotationScanner;
@@ -57,15 +58,15 @@ public class ScopedAnnotationRepositoryDeployer extends AnnotationRepositoryDepl
    }
 
    @Override
-   protected void configureScanner(VFSDeploymentUnit unit, DefaultAnnotationScanner scanner)
+   protected void configureScanner(VFSDeploymentUnit unit, DefaultAnnotationScanner scanner, DefaultConfiguration configuration)
    {
-      super.configureScanner(unit, scanner);
+      super.configureScanner(unit, scanner, configuration);
 
       if (repository != null)
       {
          ClassPool pool = repository.findClassPool(unit.getClassLoader());
          TypeInfoProvider provider = new JavassistTypeInfoProvider(pool);
-         scanner.setTypeInfoProvider(provider);
+         configuration.setTypeInfoProvider(provider);
       }
    }
 }

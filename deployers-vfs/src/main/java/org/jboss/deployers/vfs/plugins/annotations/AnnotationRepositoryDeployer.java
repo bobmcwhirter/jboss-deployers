@@ -33,6 +33,7 @@ import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnitFilter;
 import org.jboss.mcann.AnnotationRepository;
 import org.jboss.mcann.repository.Configuration;
+import org.jboss.mcann.repository.DefaultConfiguration;
 import org.jboss.mcann.scanner.DefaultAnnotationScanner;
 import org.jboss.mcann.scanner.ModuleAnnotationScanner;
 
@@ -56,7 +57,17 @@ public class AnnotationRepositoryDeployer extends AbstractOptionalVFSRealDeploye
    }
 
    /**
-    * Set configuration.
+    * Get default configuration.
+    *
+    * @return the configuration
+    */
+   protected Configuration getConfiguration()
+   {
+      return configuration;
+   }
+
+   /**
+    * Set default configuration.
     *
     * @param configuration the configuration
     */
@@ -91,7 +102,13 @@ public class AnnotationRepositoryDeployer extends AbstractOptionalVFSRealDeploye
       {
          URL[] urls = ClasspathUtils.getUrls(unit);
          DefaultAnnotationScanner scanner = new ModuleAnnotationScanner(module);
-         configureScanner(unit, scanner);
+
+         DefaultConfiguration config = new DefaultConfiguration();
+         configureScanner(unit, scanner, config);
+         if (configuration != null)
+            config.merge(configuration); // override with custom config
+         scanner.setConfiguration(config);
+
          AnnotationRepository repository = scanner.scan(unit.getClassLoader(), urls);
          unit.addAttachment(AnnotationRepository.class, repository);
       }
@@ -106,10 +123,10 @@ public class AnnotationRepositoryDeployer extends AbstractOptionalVFSRealDeploye
     *
     * @param unit the deployment unit
     * @param scanner the annotation scanner
+    * @param configuration the configuration
     */
-   protected void configureScanner(VFSDeploymentUnit unit, DefaultAnnotationScanner scanner)
+   protected void configureScanner(VFSDeploymentUnit unit, DefaultAnnotationScanner scanner, DefaultConfiguration configuration)
    {
-      scanner.setConfiguration(configuration);
    }
 
    public void deploy(VFSDeploymentUnit unit, Module module) throws DeploymentException

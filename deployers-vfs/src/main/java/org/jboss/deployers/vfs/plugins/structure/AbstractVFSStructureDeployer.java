@@ -27,7 +27,7 @@ import org.jboss.deployers.structure.spi.DeploymentResourceLoader;
 import org.jboss.deployers.structure.spi.helpers.DeploymentResourceClassLoader;
 import org.jboss.deployers.vfs.spi.structure.helpers.AbstractStructureDeployer;
 import org.jboss.mcann.AnnotationRepository;
-import org.jboss.mcann.repository.TypeInfoProvider;
+import org.jboss.mcann.repository.Configuration;
 import org.jboss.mcann.scanner.DefaultAnnotationScanner;
 import org.jboss.virtual.VirtualFile;
 
@@ -40,9 +40,8 @@ public abstract class AbstractVFSStructureDeployer extends AbstractStructureDepl
 {
    private ClassFilter included;
    private ClassFilter excluded;
-   private ResourceFilter filter;
    private ResourceFilter recurseFilter;
-   private TypeInfoProvider typeInfoProvider;
+   private Configuration configuration;
 
    protected AnnotationRepository createAnnotationRepository(VirtualFile root)
    {
@@ -51,10 +50,8 @@ public abstract class AbstractVFSStructureDeployer extends AbstractStructureDepl
       DefaultAnnotationScanner scanner = new DefaultAnnotationScanner();
       scanner.setIncluded(included);
       scanner.setExcluded(excluded);
-      scanner.setResourceFilter(filter);
       scanner.setRecurseFilter(recurseFilter);
-      if (typeInfoProvider != null)
-         scanner.setTypeInfoProvider(typeInfoProvider);
+      scanner.setConfiguration(configuration);
 
       try
       {
@@ -87,16 +84,6 @@ public abstract class AbstractVFSStructureDeployer extends AbstractStructureDepl
    }
 
    /**
-    * Set the filter.
-    *
-    * @param filter the filter
-    */
-   public void setFilter(ResourceFilter filter)
-   {
-      this.filter = filter;
-   }
-
-   /**
     * Set the recurse filter.
     *
     * @param recurseFilter the recurse filter
@@ -107,12 +94,12 @@ public abstract class AbstractVFSStructureDeployer extends AbstractStructureDepl
    }
 
    /**
-    * Set type info provider.
+    * Set configuration.
     *
-    * @param typeInfoProvider the type info provider
+    * @param configuration the configuration
     */
-   public void setTypeInfoProvider(TypeInfoProvider typeInfoProvider)
+   public void setConfiguration(Configuration configuration)
    {
-      this.typeInfoProvider = typeInfoProvider;
+      this.configuration = configuration;
    }
 }

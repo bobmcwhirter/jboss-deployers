@@ -24,6 +24,7 @@ package org.jboss.deployers.vfs.plugins.annotations;
 import org.jboss.classloading.spi.visitor.ResourceFilter;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
+import org.jboss.mcann.repository.DefaultConfiguration;
 import org.jboss.mcann.scanner.DefaultAnnotationScanner;
 
 /**
@@ -73,14 +74,15 @@ public class FilteredAnnotationRepositoryDeployer extends ScopedAnnotationReposi
     *
     * @param unit the deployment unit
     * @param scanner the annotation scanner
+    * @param configuration the configuration
     */
    @Override
-   protected void configureScanner(VFSDeploymentUnit unit, DefaultAnnotationScanner scanner)
+   protected void configureScanner(VFSDeploymentUnit unit, DefaultAnnotationScanner scanner, DefaultConfiguration configuration)
    {
-      super.configureScanner(unit, scanner);
+      super.configureScanner(unit, scanner, configuration);
 
       ResourceFilter filter = getFilter(unit, ResourceFilter.class, "resource", resourceFilter);
-      scanner.setResourceFilter(filter);
+      configuration.setResourceFilter(filter);
 
       ResourceFilter recurse = getFilter(unit, ResourceFilter.class, "recurse", recurseFilter);
       scanner.setRecurseFilter(recurse);

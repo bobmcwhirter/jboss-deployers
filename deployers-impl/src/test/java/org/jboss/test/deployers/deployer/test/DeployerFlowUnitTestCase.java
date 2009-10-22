@@ -1027,6 +1027,10 @@ public class DeployerFlowUnitTestCase extends AbstractDeployerTest
 
    public void testDeployersOrderTest2() throws Exception
    {
+   }
+
+   public void x() throws Exception
+   {
       DeployerClient main = createMainDeployer();
 
       // "1", "2", "3", "4" and "6" are provided by deployers in different stage

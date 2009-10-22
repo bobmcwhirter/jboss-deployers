@@ -21,10 +21,6 @@
  */
 package org.jboss.test.deployers.vfs.classpool.support;
 
-import java.io.ByteArrayInputStream;
-import java.util.Properties;
-import java.util.Set;
-
 import org.jboss.classloader.spi.filter.ClassFilter;
 import org.jboss.classloader.spi.filter.RecursivePackageClassFilter;
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
@@ -32,21 +28,18 @@ import org.jboss.classloading.spi.metadata.ExportAll;
 import org.jboss.classloading.spi.version.Version;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
-import org.jboss.deployers.vfs.spi.deployer.AbstractSimpleVFSRealDeployer;
+import org.jboss.deployers.vfs.spi.deployer.AbstractVFSRealDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
-import org.jboss.metadata.common.jboss.LoaderRepositoryConfigMetaData;
-import org.jboss.metadata.common.jboss.LoaderRepositoryMetaData;
-import org.jboss.metadata.web.jboss.JBossWebMetaData;
 
 /**
- * MockWarClassLoaderDeployer.Based on WarClassLoaderDeployer.
+ * MockWarClassLoaderDeployer based on WarClassLoaderDeployer.
  *  
  * @author Scott.Stark@jboss.org
  * @author adrian@jboss.org
  * @author ales.justin@jboss.org
  * @author <a href="flavia.rainone@jboss.com">Flavia Rainone</a>
  */
-public class MockWarClassLoaderDeployer extends AbstractSimpleVFSRealDeployer<JBossWebMetaData>
+public class MockWarClassLoaderDeployer extends AbstractVFSRealDeployer
 {
    /** The parent class loader first model flag */
    private boolean java2ClassLoadingCompliance = false;
@@ -59,7 +52,6 @@ public class MockWarClassLoaderDeployer extends AbstractSimpleVFSRealDeployer<JB
     */
    public MockWarClassLoaderDeployer()
    {
-      super(JBossWebMetaData.class);
       setStage(DeploymentStages.POST_PARSE);
       addInput(ClassLoadingMetaData.class);
       setOutput(ClassLoadingMetaData.class);
@@ -84,75 +76,17 @@ public class MockWarClassLoaderDeployer extends AbstractSimpleVFSRealDeployer<JB
       this.filteredPackages = pkgs;
    }
 
-   @Override
-   public void deploy(VFSDeploymentUnit unit, JBossWebMetaData metaData) throws DeploymentException
+   public void deploy(VFSDeploymentUnit unit) throws DeploymentException
    {
-      // Ignore if it already has classloading
-      if (unit.isAttachmentPresent(ClassLoadingMetaData.class))
+      // ignore if it already has classloading or not war deployment
+      if (unit.getName().endsWith(".war") == false || unit.isAttachmentPresent(ClassLoadingMetaData.class))
          return;
 
       // The default domain name is the unit name
       String domainName = unit.getName();
-      
+
       // The default classloading compliance is on the deployer
       boolean j2seClassLoadingCompliance = java2ClassLoadingCompliance;
-      
-      // Do we have a legacy classloading element?
-      org.jboss.metadata.web.jboss.ClassLoadingMetaData webCLMD = metaData.getClassLoading();
-      if (webCLMD != null)
-      {
-         // Was the complince set?
-         if (webCLMD.wasJava2ClassLoadingComplianceSet())
-            j2seClassLoadingCompliance = webCLMD.isJava2ClassLoadingCompliance();
-
-         // Does it have a loader repository
-         LoaderRepositoryMetaData lrmd = webCLMD.getLoaderRepository();
-         if (lrmd != null)
-         {
-            // Use the trimmed repository name as the domain
-            String repositoryName = lrmd.getName();
-            if (repositoryName != null)
-            {
-               repositoryName = repositoryName.trim();
-               if (repositoryName != null)
-               {
-                  domainName = repositoryName;
-                  
-                  // If there was no compliance set see if the loader repository has one
-                  if (webCLMD.wasJava2ClassLoadingComplianceSet() == false)
-                  {
-                     Set<LoaderRepositoryConfigMetaData> configs = lrmd.getLoaderRepositoryConfig();
-                     if (configs != null && configs.isEmpty() == false)
-                     {
-                        LoaderRepositoryConfigMetaData lrcmd = configs.iterator().next();
-
-                        Properties props = new Properties();
-                        String config = lrcmd.getConfig();
-                        try
-                        {
-                           if (config != null)
-                           {
-                              ByteArrayInputStream bais = new ByteArrayInputStream(config.getBytes());
-                              props.load(bais);
-                           }
-                        }
-                        catch (Exception e)
-                        {
-                           throw DeploymentException.rethrowAsDeploymentException("Error parsing repository config " + config, e);
-                        }
-                        String java2ParentDelegation = props.getProperty("java2ParentDelegation");
-                        if( java2ParentDelegation == null )
-                        {
-                           // Check for previous mis-spelled property name
-                           java2ParentDelegation = props.getProperty("java2ParentDelegaton", "false");
-                        }
-                        j2seClassLoadingCompliance = Boolean.valueOf(java2ParentDelegation);
-                     }
-                  }
-               }
-            }
-         }
-      }
 
       // Create a classloading metadata
       // NOTE: Don't explicitly set the parentDomain otherwise it will create a top level classloader
@@ -164,7 +98,7 @@ public class MockWarClassLoaderDeployer extends AbstractSimpleVFSRealDeployer<JB
       classLoadingMetaData.setImportAll(true);
       classLoadingMetaData.setVersion(Version.DEFAULT_VERSION);
       classLoadingMetaData.setJ2seClassLoadingCompliance(j2seClassLoadingCompliance);
-      ClassFilter filter = null;
+      ClassFilter filter;
       if (filteredPackages != null)
       {
          filter = RecursivePackageClassFilter.createRecursivePackageClassFilterFromString(filteredPackages);
