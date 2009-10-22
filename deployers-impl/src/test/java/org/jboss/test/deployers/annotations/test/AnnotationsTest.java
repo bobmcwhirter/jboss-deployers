@@ -25,11 +25,11 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Set;
 
+import org.jboss.classloader.plugins.filter.CombiningClassFilter;
 import org.jboss.classloader.spi.ClassLoaderSystem;
 import org.jboss.classloader.spi.ParentPolicy;
 import org.jboss.classloader.spi.filter.ClassFilter;
 import org.jboss.classloader.spi.filter.PackageClassFilter;
-import org.jboss.classloader.plugins.filter.CombiningClassFilter;
 import org.jboss.classloading.spi.dependency.ClassLoading;
 import org.jboss.classloading.spi.dependency.policy.mock.MockClassLoadingMetaData;
 import org.jboss.classloading.spi.metadata.CapabilitiesMetaData;
@@ -47,10 +47,8 @@ import org.jboss.deployers.spi.deployer.Deployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.mcann.AnnotationRepository;
 import org.jboss.mcann.Element;
-import org.jboss.mcann.repository.DefaultConfiguration;
-import org.jboss.mcann.repository.ConfigurationCreator;
-import org.jboss.mcann.repository.Configuration;
-import org.jboss.mcann.repository.javassist.JavassistTypeInfoProvider;
+import org.jboss.mcann.repository.AbstractSettings;
+import org.jboss.mcann.repository.javassist.JavassistConfiguration;
 import org.jboss.test.deployers.AbstractDeployerTest;
 import org.jboss.test.deployers.annotations.support.InterceptionClassLoader;
 import org.jboss.test.deployers.annotations.support.InterceptionClassLoaderSystem;
@@ -199,22 +197,14 @@ public abstract class AnnotationsTest extends AbstractDeployerTest
    protected Deployer createGenericAnnotationDeployer()
    {
       GenericAnnotationDeployer deployer = new GenericAnnotationDeployer();
-      final DefaultConfiguration configuration = new DefaultConfiguration();
-      applyConfiguration(configuration);
-      ConfigurationCreator creator = new ConfigurationCreator()
-      {
-         public Configuration createConfiguration()
-         {
-            return configuration;
-         }
-      };
-      deployer.setConfigurationCreator(creator);
+      final JavassistConfiguration configuration = new JavassistConfiguration();
+      applySettings(configuration);
+      deployer.setConfiguration(configuration);
       return deployer;
    }
 
-   protected void applyConfiguration(DefaultConfiguration configuration)
+   protected void applySettings(AbstractSettings settings)
    {
-      configuration.setTypeInfoProvider(new JavassistTypeInfoProvider());
-      configuration.setForceAnnotations(true);
+      settings.setForceAnnotations(true);
    }
 }

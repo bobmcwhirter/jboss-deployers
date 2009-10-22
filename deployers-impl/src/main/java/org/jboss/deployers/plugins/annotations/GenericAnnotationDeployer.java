@@ -27,7 +27,7 @@ import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.spi.deployer.helpers.AbstractSimpleRealDeployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.mcann.AnnotationRepository;
-import org.jboss.mcann.repository.ConfigurationCreator;
+import org.jboss.mcann.repository.Configuration;
 import org.jboss.mcann.scanner.DefaultAnnotationScanner;
 import org.jboss.mcann.scanner.ModuleAnnotationScanner;
 
@@ -38,7 +38,7 @@ import org.jboss.mcann.scanner.ModuleAnnotationScanner;
  */
 public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module>
 {
-   private ConfigurationCreator creator;
+   private Configuration configuration;
 
    public GenericAnnotationDeployer()
    {
@@ -52,8 +52,8 @@ public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module
       try
       {
          DefaultAnnotationScanner scanner = new ModuleAnnotationScanner(deployment);
-         if (creator != null)
-            scanner.setConfiguration(creator.createConfiguration());
+         if (configuration != null)
+            scanner.setConfiguration(configuration);
          
          AnnotationRepository repository = scanner.scan(unit.getClassLoader());
          unit.addAttachment(AnnotationRepository.class, repository);
@@ -65,12 +65,12 @@ public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module
    }
 
    /**
-    * Set configuration creator.
+    * Set configuration.
     *
-    * @param creator the configuration creator
+    * @param configuration the configuration creator
     */
-   public void setConfigurationCreator(ConfigurationCreator creator)
+   public void setConfiguration(Configuration configuration)
    {
-      this.creator = creator;
+      this.configuration = configuration;
    }
 }

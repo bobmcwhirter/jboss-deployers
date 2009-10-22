@@ -24,7 +24,8 @@ package org.jboss.deployers.vfs.plugins.annotations;
 import org.jboss.classloading.spi.visitor.ResourceFilter;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
-import org.jboss.mcann.repository.DefaultConfiguration;
+import org.jboss.mcann.repository.AbstractSettings;
+import org.jboss.mcann.repository.AbstractConfiguration;
 import org.jboss.mcann.scanner.DefaultAnnotationScanner;
 
 /**
@@ -36,7 +37,7 @@ import org.jboss.mcann.scanner.DefaultAnnotationScanner;
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class FilteredAnnotationRepositoryDeployer extends ScopedAnnotationRepositoryDeployer
+public class FilteredAnnotationRepositoryDeployer extends AnnotationRepositoryDeployer
 {
    private ResourceFilter resourceFilter;
    private ResourceFilter recurseFilter;
@@ -48,23 +49,28 @@ public class FilteredAnnotationRepositoryDeployer extends ScopedAnnotationReposi
    }
 
    /**
-    * Get filter.
-    * Try attachment first, then deployer's filter.
+    * Try attachment first, then default value.
     *
     * @param <T> the expected class type
     * @param unit the deployment unit
     * @param expectedClass the expected class
     * @param suffix the suffix
     * @param defaultValue the default value
-    * @return found filter or null
+    * @return attchment or default value
     */
-   protected <T> T getFilter(DeploymentUnit unit, Class<T> expectedClass, String suffix, T defaultValue)
+   protected <T> T getAttachment(DeploymentUnit unit, Class<T> expectedClass, String suffix, T defaultValue)
    {
-      String name = expectedClass.getName() + "." + (suffix != null ? suffix : "");
+      String name = expectedClass.getName() + (suffix != null ? ("." + suffix) : "");
       T result = unit.getAttachment(name, expectedClass);
       if (result == null)
          result = defaultValue;
       return result;
+   }
+
+   @Override
+   protected AbstractConfiguration createConfiguration(VFSDeploymentUnit unit)
+   {
+      return getAttachment(unit, AbstractConfiguration.class, null, super.createConfiguration(unit)); 
    }
 
    /**
@@ -74,17 +80,17 @@ public class FilteredAnnotationRepositoryDeployer extends ScopedAnnotationReposi
     *
     * @param unit the deployment unit
     * @param scanner the annotation scanner
-    * @param configuration the configuration
+    * @param settings the settings
     */
    @Override
-   protected void configureScanner(VFSDeploymentUnit unit, DefaultAnnotationScanner scanner, DefaultConfiguration configuration)
+   protected void configureScanner(VFSDeploymentUnit unit, DefaultAnnotationScanner scanner, AbstractSettings settings)
    {
-      super.configureScanner(unit, scanner, configuration);
+      super.configureScanner(unit, scanner, settings);
 
-      ResourceFilter filter = getFilter(unit, ResourceFilter.class, "resource", resourceFilter);
-      configuration.setResourceFilter(filter);
+      ResourceFilter filter = getAttachment(unit, ResourceFilter.class, "resource", resourceFilter);
+      settings.setResourceFilter(filter);
 
-      ResourceFilter recurse = getFilter(unit, ResourceFilter.class, "recurse", recurseFilter);
+      ResourceFilter recurse = getAttachment(unit, ResourceFilter.class, "recurse", recurseFilter);
       scanner.setRecurseFilter(recurse);
    }
 

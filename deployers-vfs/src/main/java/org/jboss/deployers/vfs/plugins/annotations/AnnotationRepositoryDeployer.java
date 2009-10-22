@@ -32,8 +32,10 @@ import org.jboss.deployers.vfs.spi.deployer.AbstractOptionalVFSRealDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnitFilter;
 import org.jboss.mcann.AnnotationRepository;
-import org.jboss.mcann.repository.ConfigurationCreator;
+import org.jboss.mcann.repository.Configuration;
 import org.jboss.mcann.repository.DefaultConfiguration;
+import org.jboss.mcann.repository.AbstractSettings;
+import org.jboss.mcann.repository.AbstractConfiguration;
 import org.jboss.mcann.scanner.DefaultAnnotationScanner;
 import org.jboss.mcann.scanner.ModuleAnnotationScanner;
 
@@ -44,7 +46,7 @@ import org.jboss.mcann.scanner.ModuleAnnotationScanner;
  */
 public class AnnotationRepositoryDeployer extends AbstractOptionalVFSRealDeployer<Module>
 {
-   private ConfigurationCreator creator;
+   private Configuration configuration;
    private VFSDeploymentUnitFilter filter;
 
    public AnnotationRepositoryDeployer()
@@ -57,13 +59,13 @@ public class AnnotationRepositoryDeployer extends AbstractOptionalVFSRealDeploye
    }
 
    /**
-    * Set configuration creator.
+    * Set configuration.
     *
-    * @param creator the configuration creator
+    * @param configuration the configuration
     */
-   public void setConfigurationCreator(ConfigurationCreator creator)
+   public void setConfiguration(Configuration configuration)
    {
-      this.creator = creator;
+      this.configuration = configuration;
    }
 
    /**
@@ -93,10 +95,10 @@ public class AnnotationRepositoryDeployer extends AbstractOptionalVFSRealDeploye
          URL[] urls = ClasspathUtils.getUrls(unit);
          DefaultAnnotationScanner scanner = new ModuleAnnotationScanner(module);
 
-         DefaultConfiguration config = new DefaultConfiguration();
+         AbstractConfiguration config = new DefaultConfiguration();
          configureScanner(unit, scanner, config);
-         if (creator != null)
-            config.merge(creator.createConfiguration()); // override with custom config
+         if (configuration != null)
+            config.merge(configuration); // override with custom config
          scanner.setConfiguration(config);
 
          AnnotationRepository repository = scanner.scan(unit.getClassLoader(), urls);
@@ -108,14 +110,19 @@ public class AnnotationRepositoryDeployer extends AbstractOptionalVFSRealDeploye
       }
    }
 
+   protected AbstractConfiguration createConfiguration(VFSDeploymentUnit unit)
+   {
+      return new DefaultConfiguration();
+   }
+
    /**
     * Configure scanner.
     *
     * @param unit the deployment unit
     * @param scanner the annotation scanner
-    * @param configuration the configuration
+    * @param settings the settings
     */
-   protected void configureScanner(VFSDeploymentUnit unit, DefaultAnnotationScanner scanner, DefaultConfiguration configuration)
+   protected void configureScanner(VFSDeploymentUnit unit, DefaultAnnotationScanner scanner, AbstractSettings settings)
    {
    }
 
@@ -142,7 +149,7 @@ public class AnnotationRepositoryDeployer extends AbstractOptionalVFSRealDeploye
       }
 
       if (log.isTraceEnabled())
-         log.trace("Creating AnnotationRepository for " + unit.getName() + ", module: " + module + ", configuration: " + creator);
+         log.trace("Creating AnnotationRepository for " + unit.getName() + ", module: " + module + ", configuration: " + configuration);
 
       visitModule(unit, module);
    }

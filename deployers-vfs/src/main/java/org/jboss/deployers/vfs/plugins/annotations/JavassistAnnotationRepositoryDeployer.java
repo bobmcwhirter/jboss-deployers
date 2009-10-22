@@ -19,33 +19,22 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.test.deployers.annotations.test;
+package org.jboss.deployers.vfs.plugins.annotations;
 
-import junit.framework.Test;
-import org.jboss.mcann.repository.AbstractSettings;
+import org.jboss.mcann.repository.AbstractConfiguration;
+import org.jboss.mcann.repository.javassist.JavassistConfiguration;
+import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 
 /**
- * AnnotationEnvKeepTestCase.
- * In this test we keep the javassist provided annotations.
+ * Javassist annotation repository deployer.
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class AnnotationEnvKeepTestCase extends AnnotationEnvTestCase
+public class JavassistAnnotationRepositoryDeployer extends FilteredAnnotationRepositoryDeployer
 {
-   public AnnotationEnvKeepTestCase(String name)
-   {
-      super(name);
-   }
-
-   public static Test suite()
-   {
-      return suite(AnnotationEnvKeepTestCase.class);
-   }
-
    @Override
-   protected void applySettings(AbstractSettings settings)
+   protected AbstractConfiguration createConfiguration(VFSDeploymentUnit unit)
    {
-      super.applySettings(settings);
-      settings.setKeepAnnotations(true);
+      return new JavassistConfiguration();
    }
 }
