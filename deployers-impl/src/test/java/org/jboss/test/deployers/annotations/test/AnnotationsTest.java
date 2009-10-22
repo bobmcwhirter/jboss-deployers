@@ -154,7 +154,7 @@ public abstract class AnnotationsTest extends AbstractDeployerTest
       InterceptionClassLoader icl = (InterceptionClassLoader)cl;
       Set<String> loaded = icl.getLoaded();
       assertNotNull(loaded);
-      assertEquals(loaded.contains(className), checkFlag);
+      assertEquals(checkFlag, loaded.contains(className));
    }
 
    protected DeployerClient getMainDeployer(Deployer... deployers)
@@ -187,6 +187,8 @@ public abstract class AnnotationsTest extends AbstractDeployerTest
 
    protected Deployer createGenericAnnotationDeployer()
    {
-      return new GenericAnnotationDeployer();
+      GenericAnnotationDeployer deployer = new GenericAnnotationDeployer();
+      //deployer.setTypeInfoProvider(new JavassistTypeInfoProvider());
+      return deployer;
    }
 }

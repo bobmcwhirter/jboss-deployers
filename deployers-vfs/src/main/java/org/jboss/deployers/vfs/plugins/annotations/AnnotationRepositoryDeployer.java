@@ -32,6 +32,7 @@ import org.jboss.deployers.vfs.spi.deployer.AbstractOptionalVFSRealDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnitFilter;
 import org.jboss.mcann.AnnotationRepository;
+import org.jboss.mcann.repository.Configuration;
 import org.jboss.mcann.scanner.DefaultAnnotationScanner;
 import org.jboss.mcann.scanner.ModuleAnnotationScanner;
 
@@ -42,11 +43,7 @@ import org.jboss.mcann.scanner.ModuleAnnotationScanner;
  */
 public class AnnotationRepositoryDeployer extends AbstractOptionalVFSRealDeployer<Module>
 {
-   private boolean forceAnnotations;
-   private boolean keepAnnotations;
-   private boolean checkSuper;
-   private boolean checkInterfaces;
-
+   private Configuration configuration;
    private VFSDeploymentUnitFilter filter;
 
    public AnnotationRepositoryDeployer()
@@ -56,47 +53,16 @@ public class AnnotationRepositoryDeployer extends AbstractOptionalVFSRealDeploye
       addInput(ScanningMetaData.class);
       addInput(AnnotationRepository.class);
       setOutput(AnnotationRepository.class);
-      checkInterfaces = true;
    }
 
    /**
-    * Should we force all annotations to be available.
+    * Set configuration.
     *
-    * @param forceAnnotations the force annotations flag
+    * @param configuration the configuration
     */
-   public void setForceAnnotations(boolean forceAnnotations)
+   public void setConfiguration(Configuration configuration)
    {
-      this.forceAnnotations = forceAnnotations;
-   }
-
-   /**
-    * Set the keep annotations flag.
-    *
-    * @param keepAnnotations the keep annotations flag
-    */
-   public void setKeepAnnotations(boolean keepAnnotations)
-   {
-      this.keepAnnotations = keepAnnotations;
-   }
-
-   /**
-    * Should we check super class for annotations as well.
-    *
-    * @param checkSuper the check super flag
-    */
-   public void setCheckSuper(boolean checkSuper)
-   {
-      this.checkSuper = checkSuper;
-   }
-
-   /**
-    * Should we check interfaces for annotations as well.
-    *
-    * @param checkInterfaces the check interfaces flag
-    */
-   public void setCheckInterfaces(boolean checkInterfaces)
-   {
-      this.checkInterfaces = checkInterfaces;
+      this.configuration = configuration;
    }
 
    /**
@@ -143,10 +109,7 @@ public class AnnotationRepositoryDeployer extends AbstractOptionalVFSRealDeploye
     */
    protected void configureScanner(VFSDeploymentUnit unit, DefaultAnnotationScanner scanner)
    {
-      scanner.setForceAnnotations(forceAnnotations);
-      scanner.setKeepAnnotations(keepAnnotations);
-      scanner.setCheckSuper(checkSuper);
-      scanner.setCheckInterfaces(checkInterfaces);
+      scanner.setConfiguration(configuration);
    }
 
    public void deploy(VFSDeploymentUnit unit, Module module) throws DeploymentException
@@ -172,7 +135,7 @@ public class AnnotationRepositoryDeployer extends AbstractOptionalVFSRealDeploye
       }
 
       if (log.isTraceEnabled())
-         log.trace("Creating AnnotationRepository for " + unit.getName() + ", module: " + module + ", force annotations: " + forceAnnotations);
+         log.trace("Creating AnnotationRepository for " + unit.getName() + ", module: " + module + ", configuration: " + configuration);
 
       visitModule(unit, module);
    }

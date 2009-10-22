@@ -24,6 +24,7 @@ package org.jboss.test.deployers.annotations.test;
 import junit.framework.Test;
 import org.jboss.deployers.plugins.annotations.GenericAnnotationDeployer;
 import org.jboss.deployers.spi.deployer.Deployer;
+import org.jboss.mcann.repository.DefaultConfiguration;
 
 /**
  * AnnotationEnvKeepTestCase.
@@ -45,8 +46,10 @@ public class AnnotationEnvKeepTestCase extends AnnotationEnvTestCase
 
    protected Deployer createGenericAnnotationDeployer()
    {
+      DefaultConfiguration configuration = new DefaultConfiguration();
+      configuration.setKeepAnnotations(true);
       GenericAnnotationDeployer deployer = new GenericAnnotationDeployer();
-      deployer.setKeepAnnotations(true);
+      deployer.setConfiguration(configuration);
       return deployer; 
    }
 }

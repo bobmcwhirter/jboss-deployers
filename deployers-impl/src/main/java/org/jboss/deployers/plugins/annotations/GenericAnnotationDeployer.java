@@ -27,7 +27,7 @@ import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.spi.deployer.helpers.AbstractSimpleRealDeployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.mcann.AnnotationRepository;
-import org.jboss.mcann.repository.TypeInfoProvider;
+import org.jboss.mcann.repository.Configuration;
 import org.jboss.mcann.scanner.DefaultAnnotationScanner;
 import org.jboss.mcann.scanner.ModuleAnnotationScanner;
 
@@ -38,68 +38,13 @@ import org.jboss.mcann.scanner.ModuleAnnotationScanner;
  */
 public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module>
 {
-   private boolean forceAnnotations;
-   private boolean keepAnnotations;
-   private boolean checkSuper;
-   private boolean checkInterfaces;
-   private TypeInfoProvider typeInfoProvider;
+   private Configuration configuration;
 
    public GenericAnnotationDeployer()
    {
       super(Module.class);
       setStage(DeploymentStages.POST_CLASSLOADER);
       setOutput(AnnotationRepository.class);
-      checkInterfaces = true;
-   }
-
-   /**
-    * Should we force all annotations to be available.
-    *
-    * @param forceAnnotations the force annotations flag
-    */
-   public void setForceAnnotations(boolean forceAnnotations)
-   {
-      this.forceAnnotations = forceAnnotations;
-   }
-
-   /**
-    * Set the keep annotations flag.
-    *
-    * @param keepAnnotations the keep annotations flag
-    */
-   public void setKeepAnnotations(boolean keepAnnotations)
-   {
-      this.keepAnnotations = keepAnnotations;
-   }
-
-   /**
-    * Should we check super for annotations as well.
-    *
-    * @param checkSuper the check super flag
-    */
-   public void setCheckSuper(boolean checkSuper)
-   {
-      this.checkSuper = checkSuper;
-   }
-
-   /**
-    * Should we check interfaces for annotations as well.
-    *
-    * @param checkInterfaces the check interfaces flag
-    */
-   public void setCheckInterfaces(boolean checkInterfaces)
-   {
-      this.checkInterfaces = checkInterfaces;
-   }
-
-   /**
-    * Set type info provider.
-    *
-    * @param typeInfoProvider the type info provider
-    */
-   public void setTypeInfoProvider(TypeInfoProvider typeInfoProvider)
-   {
-      this.typeInfoProvider = typeInfoProvider;
    }
 
    public void deploy(DeploymentUnit unit, Module deployment) throws DeploymentException
@@ -107,13 +52,7 @@ public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module
       try
       {
          DefaultAnnotationScanner scanner = new ModuleAnnotationScanner(deployment);
-         scanner.setForceAnnotations(forceAnnotations);
-         scanner.setKeepAnnotations(keepAnnotations);
-         scanner.setCheckSuper(checkSuper);
-         scanner.setCheckInterfaces(checkInterfaces);
-         if (typeInfoProvider != null)
-            scanner.setTypeInfoProvider(typeInfoProvider);
-
+         scanner.setConfiguration(configuration);
          AnnotationRepository repository = scanner.scan(unit.getClassLoader());
          unit.addAttachment(AnnotationRepository.class, repository);
       }
@@ -121,5 +60,15 @@ public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module
       {
          throw DeploymentException.rethrowAsDeploymentException("Cannot create AR", e);
       }
+   }
+
+   /**
+    * Set configuration.
+    *
+    * @param configuration the configuration
+    */
+   public void setConfiguration(Configuration configuration)
+   {
+      this.configuration = configuration;
    }
 }

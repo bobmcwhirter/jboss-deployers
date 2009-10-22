@@ -21,7 +21,22 @@
 */
 package org.jboss.test.deployers.annotations.test;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Set;
+
 import junit.framework.Test;
+import org.jboss.classloader.plugins.ClassLoaderUtils;
+import org.jboss.deployers.client.spi.DeployerClient;
+import org.jboss.deployers.client.spi.Deployment;
+import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.mcann.AnnotationRepository;
+import org.jboss.mcann.Element;
+import org.jboss.test.deployers.annotations.support.AnnotationsHolder;
+import org.jboss.test.deployers.annotations.support.TestAnnotation;
 
 /**
  * AnnotationEnvTestCase.
@@ -40,12 +55,6 @@ public class AnnotationEnvTestCase extends AnnotationsTest
       return suite(AnnotationEnvTestCase.class);
    }
 
-   public void testX()
-   {
-      // FIXME
-   }
-
-/*
    @SuppressWarnings("unchecked")
    public void testDirectClassUsage() throws Exception
    {
@@ -143,8 +152,8 @@ public class AnnotationEnvTestCase extends AnnotationsTest
          String annotationName = "org.jboss.test.deployers.annotations.support.TestAnnotation";
 
          assertNotLoaded(unit, "org.jboss.test.deployers.annotations.support.AnnotationsHolder");
-         // annotations are loaded, OK?
-         assertLoaded(unit, "org.jboss.test.deployers.annotations.support.TestAnnotation");
+         // annotations are not loaded, OK?
+         assertNotLoaded(unit, "org.jboss.test.deployers.annotations.support.TestAnnotation");
 
          AnnotationRepository env = getAnnotationRepository(unit);
          Set<Element<Annotation, Class<?>>> classes = env.classIsAnnotatedWith(annotationName);
@@ -198,5 +207,4 @@ public class AnnotationEnvTestCase extends AnnotationsTest
          assertUndeploy(deployer, deployment);
       }
    }
-*/
 }
