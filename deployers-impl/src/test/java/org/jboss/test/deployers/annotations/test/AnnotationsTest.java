@@ -25,7 +25,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Set;
 
-import org.jboss.classloader.plugins.system.DefaultClassLoaderSystem;
 import org.jboss.classloader.spi.ClassLoaderSystem;
 import org.jboss.classloader.spi.ParentPolicy;
 import org.jboss.classloading.spi.dependency.ClassLoading;
@@ -45,8 +44,11 @@ import org.jboss.deployers.spi.deployer.Deployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.mcann.AnnotationRepository;
 import org.jboss.mcann.Element;
+import org.jboss.mcann.repository.DefaultConfiguration;
+import org.jboss.mcann.repository.javassist.JavassistTypeInfoProvider;
 import org.jboss.test.deployers.AbstractDeployerTest;
 import org.jboss.test.deployers.annotations.support.InterceptionClassLoader;
+import org.jboss.test.deployers.annotations.support.InterceptionClassLoaderSystem;
 import org.jboss.test.deployers.annotations.support.InterceptionClassLoaderSystemDeployer;
 import org.jboss.test.deployers.classloading.support.MockClassLoaderDescribeDeployer;
 
@@ -160,7 +162,7 @@ public abstract class AnnotationsTest extends AbstractDeployerTest
    protected DeployerClient getMainDeployer(Deployer... deployers)
    {
       ClassLoading classLoading = new ClassLoading();
-      ClassLoaderSystem system = new DefaultClassLoaderSystem();
+      ClassLoaderSystem system = new InterceptionClassLoaderSystem();
       system.getDefaultDomain().setParentPolicy(ParentPolicy.BEFORE_BUT_JAVA_ONLY);
 
       deployer1 = new MockClassLoaderDescribeDeployer();
@@ -188,7 +190,9 @@ public abstract class AnnotationsTest extends AbstractDeployerTest
    protected Deployer createGenericAnnotationDeployer()
    {
       GenericAnnotationDeployer deployer = new GenericAnnotationDeployer();
-      //deployer.setTypeInfoProvider(new JavassistTypeInfoProvider());
+      DefaultConfiguration configuration = new DefaultConfiguration();
+      configuration.setTypeInfoProvider(new JavassistTypeInfoProvider());
+      deployer.setConfiguration(configuration);
       return deployer;
    }
 }

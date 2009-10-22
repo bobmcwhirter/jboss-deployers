@@ -152,8 +152,8 @@ public class AnnotationEnvTestCase extends AnnotationsTest
          String annotationName = "org.jboss.test.deployers.annotations.support.TestAnnotation";
 
          assertNotLoaded(unit, "org.jboss.test.deployers.annotations.support.AnnotationsHolder");
-         // annotations are not loaded, OK?
-         assertNotLoaded(unit, "org.jboss.test.deployers.annotations.support.TestAnnotation");
+         // annotations are loaded, OK?
+         assertLoaded(unit, "org.jboss.test.deployers.annotations.support.TestAnnotation");
 
          AnnotationRepository env = getAnnotationRepository(unit);
          Set<Element<Annotation, Class<?>>> classes = env.classIsAnnotatedWith(annotationName);
