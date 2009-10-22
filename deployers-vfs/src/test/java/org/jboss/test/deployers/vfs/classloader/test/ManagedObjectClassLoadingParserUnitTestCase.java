@@ -84,12 +84,6 @@ public class ManagedObjectClassLoadingParserUnitTestCase extends BootstrapDeploy
 
    public void testManagedObject() throws Exception
    {
-      // FIXME: Reflect::ClassInfo::getAnnotations changed - checkManagedObject();
-      // TODO - uncomment once Managed + Reflect issues are sorted out.
-   }
-
-   public void checkManagedObject() throws Exception
-   {
       VFSDeploymentUnit unit0 = addDeployment("/classloader", "deployment0");
       try
       {
