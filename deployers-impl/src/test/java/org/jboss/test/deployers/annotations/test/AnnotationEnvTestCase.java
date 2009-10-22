@@ -66,7 +66,8 @@ public class AnnotationEnvTestCase extends AnnotationsTest
             deployment.getName(),
             null,
             ClassLoaderUtils.classNameToPath("org.jboss.test.deployers.annotations.support.AnnotationsHolder"),
-            ClassLoaderUtils.classNameToPath("org.jboss.test.deployers.annotations.support.TestAnnotation")
+            ClassLoaderUtils.classNameToPath("org.jboss.test.deployers.annotations.support.TestAnnotation"),
+            ClassLoaderUtils.classNameToPath("org.jboss.reflect.plugins.javassist.JavassistMethod")
       );
 
       DeploymentUnit unit = assertDeploy(deployer, deployment);
@@ -143,7 +144,8 @@ public class AnnotationEnvTestCase extends AnnotationsTest
             deployment.getName(),
             null,
             ClassLoaderUtils.classNameToPath("org.jboss.test.deployers.annotations.support.AnnotationsHolder"),
-            ClassLoaderUtils.classNameToPath("org.jboss.test.deployers.annotations.support.TestAnnotation")
+            ClassLoaderUtils.classNameToPath("org.jboss.test.deployers.annotations.support.TestAnnotation"),
+            ClassLoaderUtils.classNameToPath("org.jboss.reflect.plugins.javassist.JavassistMethod")
       );
 
       DeploymentUnit unit = assertDeploy(deployer, deployment);
