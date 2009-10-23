@@ -105,7 +105,7 @@ public abstract class ClassPoolTest extends BootstrapDeployersTest
 
    protected DeploymentUnit getDeploymentUnit(DeploymentUnit parent, String name)
    {
-      if (name == null)
+      if (name == null || "".equals(name))
          return parent;
 
       return assertChild(parent, name);

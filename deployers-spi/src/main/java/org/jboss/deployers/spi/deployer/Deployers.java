@@ -49,6 +49,8 @@ public interface Deployers
    
    /**
     * Process deployment
+    *
+    * Note: the undeploy list must be undeployed in reverse order.
     * 
     * @param deploy the deployments to deploy
     * @param undeploy the deployments to remove
