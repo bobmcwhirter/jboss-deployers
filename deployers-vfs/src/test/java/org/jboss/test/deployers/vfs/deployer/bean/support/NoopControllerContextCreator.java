@@ -22,16 +22,16 @@
 package org.jboss.test.deployers.vfs.deployer.bean.support;
 
 import org.jboss.beans.metadata.spi.BeanMetaData;
-import org.jboss.dependency.spi.ControllerContext;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
-import org.jboss.deployers.vfs.spi.deployer.helpers.ControllerContextCreator;
+import org.jboss.deployers.vfs.spi.deployer.helpers.KernelControllerContextCreator;
+import org.jboss.kernel.spi.dependency.KernelControllerContext;
 
 /**
  * 
  * @author <a href="kabir.khan@jboss.com">Kabir Khan</a>
  * @version $Revision: 1.1 $
  */
-public class NoopControllerContextCreator implements ControllerContextCreator
+public class NoopControllerContextCreator implements KernelControllerContextCreator
 {
    private boolean triggered;
    
@@ -40,7 +40,7 @@ public class NoopControllerContextCreator implements ControllerContextCreator
       return triggered;
    }
    
-   public ControllerContext createContext(DeploymentUnit unit, BeanMetaData beanMetaData)
+   public KernelControllerContext createContext(DeploymentUnit unit, BeanMetaData beanMetaData)
    {
       triggered = true;
       return null;

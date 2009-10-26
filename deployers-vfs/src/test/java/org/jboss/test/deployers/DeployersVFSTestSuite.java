@@ -29,6 +29,7 @@ import org.jboss.test.deployers.vfs.classloader.ClassLoaderTestSuite;
 import org.jboss.test.deployers.vfs.classpool.ClassPoolTestSuite;
 import org.jboss.test.deployers.vfs.dependency.DependencyTestSuite;
 import org.jboss.test.deployers.vfs.deployer.bean.BeanDeployerTestSuite;
+import org.jboss.test.deployers.vfs.deployer.bean.test.KernelControllerContextCreatorTestCase;
 import org.jboss.test.deployers.vfs.deployer.facelets.FaceletsTestSuite;
 import org.jboss.test.deployers.vfs.deployer.jaxp.JAXPDeployerTestSuite;
 import org.jboss.test.deployers.vfs.deployer.merge.MergeDeployerTestSuite;
@@ -87,6 +88,7 @@ public class DeployersVFSTestSuite extends TestSuite
       suite.addTest(RedeployTestSuite.suite());
       suite.addTest(WebBeansTestSuite.suite()); // now Weld
       suite.addTest(ClassPoolTestSuite.suite());
+      suite.addTest(KernelControllerContextCreatorTestCase.suite());
 
       return suite;
    }

@@ -31,12 +31,11 @@ import org.jboss.beans.metadata.spi.BeanMetaData;
 import org.jboss.beans.metadata.spi.ClassLoaderMetaData;
 import org.jboss.beans.metadata.spi.ValueMetaData;
 import org.jboss.dependency.spi.Controller;
-import org.jboss.dependency.spi.ControllerContext;
 import org.jboss.dependency.spi.ScopeInfo;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.helpers.AbstractSimpleRealDeployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
-import org.jboss.deployers.vfs.spi.deployer.helpers.ControllerContextCreator;
+import org.jboss.deployers.vfs.spi.deployer.helpers.KernelControllerContextCreator;
 import org.jboss.kernel.Kernel;
 import org.jboss.kernel.plugins.dependency.AbstractKernelControllerContext;
 import org.jboss.kernel.spi.dependency.KernelControllerContext;
@@ -58,7 +57,7 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
    private Controller controller;
    
    /** List of controller context creators */
-   private List<ControllerContextCreator> controllerContextCreators = new CopyOnWriteArrayList<ControllerContextCreator>();
+   private List<KernelControllerContextCreator> controllerContextCreators = new CopyOnWriteArrayList<KernelControllerContextCreator>();
    
    /** The default controller context creator */
    
@@ -109,7 +108,7 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
     * 
     * @param creator The controller context creator to be added
     */
-   public void addControllerContextCreator(ControllerContextCreator creator)
+   public void addControllerContextCreator(KernelControllerContextCreator creator)
    {
       if (creator != null)
          controllerContextCreators.add(creator);
@@ -120,7 +119,7 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
     * 
     * @param creator The controller context creator to be removed
     */
-   public void removeControllerContextCreator(ControllerContextCreator creator)
+   public void removeControllerContextCreator(KernelControllerContextCreator creator)
    {
       if (creator != null)
          controllerContextCreators.remove(creator);
@@ -144,13 +143,10 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
             log.debug("Unable to retrieve classloader for deployment: " + unit.getName() + " reason=" + e.toString());
          }
       }
-      ControllerContext context = createControllerContext(unit, deployment);
-      if (context instanceof KernelControllerContext)
-      {
-         ScopeInfo scopeInfo = ((KernelControllerContext)context).getScopeInfo();
-         scopeInfo.setScope(unit.getScope());
-         scopeInfo.setMutableScope(unit.getMutableScope());
-      }
+      KernelControllerContext context = createControllerContext(unit, deployment);
+      ScopeInfo scopeInfo = context.getScopeInfo();
+      scopeInfo.setScope(unit.getScope());
+      scopeInfo.setMutableScope(unit.getMutableScope());
       
       try
       {
@@ -162,13 +158,13 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
       }
    }
 
-   private ControllerContext createControllerContext(DeploymentUnit unit, BeanMetaData deployment)
+   private KernelControllerContext createControllerContext(DeploymentUnit unit, BeanMetaData deployment)
    {
       if (controllerContextCreators.size() > 0)
       {
-         for (ControllerContextCreator creator : controllerContextCreators)
+         for (KernelControllerContextCreator creator : controllerContextCreators)
          {
-            ControllerContext context = creator.createContext(unit, deployment);
+            KernelControllerContext context = creator.createContext(unit, deployment);
             if (context != null)
                return context;
          }

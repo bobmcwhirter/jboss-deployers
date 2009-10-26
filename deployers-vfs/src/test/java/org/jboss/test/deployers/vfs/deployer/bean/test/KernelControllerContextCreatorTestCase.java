@@ -44,16 +44,16 @@ import org.jboss.test.deployers.vfs.deployer.bean.support.TriggerSpecialControll
  * @author <a href="kabir.khan@jboss.com">Kabir Khan</a>
  * @version $Revision: 1.1 $
  */
-public class ControllerContextCreatorTestCase extends AbstractDeployerUnitTest
+public class KernelControllerContextCreatorTestCase extends AbstractDeployerUnitTest
 {
    BeanMetaDataDeployer beanMetaDataDeployer;
    
    public static Test suite()
    {
-      return new TestSuite(ControllerContextCreatorTestCase.class);
+      return new TestSuite(KernelControllerContextCreatorTestCase.class);
    }
 
-   public ControllerContextCreatorTestCase(String name) throws Throwable
+   public KernelControllerContextCreatorTestCase(String name) throws Throwable
    {
       super(name);
    }
