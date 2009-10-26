@@ -52,6 +52,20 @@ public class NameIgnoreMechanismTestCase extends BaseDeployersVFSTest
       return suite(NameIgnoreMechanismTestCase.class);
    }
 
+   protected void testNameIgnoreMechanism(FeedbackDeployer fbd, int size) throws Throwable
+   {
+      NIMDeployer nimd = new NIMDeployer(new CollectionNameIgnoreMechanism(Collections.singleton("fst.txt")));
+
+      DeployerClient main = createMainDeployer(fbd, nimd);
+      addStructureDeployer(main, new JARStructure());
+
+      Deployment deployment = createDeployment("/matchers", "ignore");
+      main.deploy(deployment);
+
+      assertEquals(size, fbd.getFiles().size());
+      assertFalse(fbd.getFiles().contains("fst.txt"));
+   }
+
    public void testSingleNameNoSuffix() throws Throwable
    {
       FeedbackDeployer fbd1 = new FeedbackDeployer();
@@ -75,16 +89,8 @@ public class NameIgnoreMechanismTestCase extends BaseDeployersVFSTest
       FeedbackDeployer fbd = new FeedbackDeployer();
       Set<String> names = new HashSet<String>(Arrays.asList("empty.txt", "fst.txt", "snd.txt"));
       fbd.setNames(names);
-      NIMDeployer nimd = new NIMDeployer(new CollectionNameIgnoreMechanism(Collections.singleton("fst.txt")));
 
-      DeployerClient main = createMainDeployer(fbd, nimd);
-      addStructureDeployer(main, new JARStructure());
-
-      Deployment deployment = createDeployment("/matchers", "ignore");
-      main.deploy(deployment);
-
-      assertEquals(2, fbd.getFiles().size());
-      assertFalse(fbd.getFiles().contains("fst.txt"));
+      testNameIgnoreMechanism(fbd, 2);
    }
 
    public void testNoNameJustSuffix() throws Throwable
@@ -92,16 +98,8 @@ public class NameIgnoreMechanismTestCase extends BaseDeployersVFSTest
       FeedbackDeployer fbd = new FeedbackDeployer();
       fbd.setSuffix(".txt");
       fbd.setAllowMultipleFiles(true);
-      NIMDeployer nimd = new NIMDeployer(new CollectionNameIgnoreMechanism(Collections.singleton("fst.txt")));
 
-      DeployerClient main = createMainDeployer(fbd, nimd);
-      addStructureDeployer(main, new JARStructure());
-
-      Deployment deployment = createDeployment("/matchers", "ignore");
-      main.deploy(deployment);
-
-      assertEquals(2, fbd.getFiles().size());
-      assertFalse(fbd.getFiles().contains("fst.txt"));
+      testNameIgnoreMechanism(fbd, 2);
    }
 
    public void testNamesWithSuffix() throws Throwable
@@ -110,15 +108,7 @@ public class NameIgnoreMechanismTestCase extends BaseDeployersVFSTest
       Set<String> names = new HashSet<String>(Arrays.asList("empty.txt", "fst.txt", "snd.txt"));
       fbd.setNames(names);
       fbd.setSuffix(".tmp");
-      NIMDeployer nimd = new NIMDeployer(new CollectionNameIgnoreMechanism(Collections.singleton("fst.txt")));
 
-      DeployerClient main = createMainDeployer(fbd, nimd);
-      addStructureDeployer(main, new JARStructure());
-
-      Deployment deployment = createDeployment("/matchers", "ignore");
-      main.deploy(deployment);
-
-      assertEquals(3, fbd.getFiles().size());
-      assertFalse(fbd.getFiles().contains("fst.txt"));
+      testNameIgnoreMechanism(fbd, 3);
    }
 }
