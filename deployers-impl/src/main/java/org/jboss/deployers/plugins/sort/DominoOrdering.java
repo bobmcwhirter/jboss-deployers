@@ -78,7 +78,7 @@ public class DominoOrdering<T extends Domino<?>>
                // pass-through deployers
                if (oneHead.match(twoHead) && oneTail.match(twoTail))
                {
-                  // lets try do do more exact match
+                  // lets try to do more exact match
                   // although we should aviod singe dimension checks
                   // which are already part of match() check
                   // in order not to break comparator comparison

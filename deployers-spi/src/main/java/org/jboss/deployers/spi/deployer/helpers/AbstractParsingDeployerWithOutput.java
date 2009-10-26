@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.matchers.JarExtensionProvider;
+import org.jboss.deployers.spi.deployer.matchers.NameIgnoreMechanism;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 
 /**
@@ -37,8 +38,7 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
  * @author Scott.Stark@jboss.org
  * @version $Revision: 1.1 $
  */
-public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsingDeployer
-   implements JarExtensionProvider
+public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsingDeployer implements JarExtensionProvider
 {
    /** The metadata file names */
    private Set<String> names;
@@ -368,6 +368,19 @@ public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsi
       
       // Register it
       unit.getTransientManagedObjects().addAttachment(key, result, getOutput());
+   }
+
+   /**
+    * Ignore name.
+    *
+    * @param unit the unit
+    * @param name the name
+    * @return true if we should ignore the name, false otherwise
+    */
+   protected boolean ignoreName(DeploymentUnit unit, String name)
+   {
+      NameIgnoreMechanism mechanism = unit.getAttachment(NameIgnoreMechanism.class);
+      return mechanism != null && mechanism.ignore(unit, name);
    }
 
    /**

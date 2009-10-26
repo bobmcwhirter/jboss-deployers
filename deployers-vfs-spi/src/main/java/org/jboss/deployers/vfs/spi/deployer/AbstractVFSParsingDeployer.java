@@ -190,14 +190,14 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
    @Override
    protected T parse(DeploymentUnit unit, String name, T root) throws Exception
    {
+      if (ignoreName(unit, name))
+         return null;
+
       // Try to find the metadata
       VFSDeploymentUnit vfsDeploymentUnit = (VFSDeploymentUnit) unit;
 
       VirtualFile file = getMetadataFile(vfsDeploymentUnit, getOutput(), name, true);
-      if(file == null)
-            return null;
-
-      return parseAndInit(vfsDeploymentUnit, file, root);
+      return (file != null) ? parseAndInit(vfsDeploymentUnit, file, root) : null;
    }
 
    protected T parse(DeploymentUnit unit, Set<String> names, T root) throws Exception
@@ -209,17 +209,25 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
 
       List<VirtualFile> files = new ArrayList<VirtualFile>();
       Set<String> missingFiles = new HashSet<String>();
+      Set<String> ignoredFiles = new HashSet<String>();
 
       for (String name : names)
       {
-         VirtualFile file = getMetadataFile(vfsDeploymentUnit, matchFileToClass(unit, name), name, true);
-         if (file != null)
-            files.add(file);
+         if (ignoreName(unit, name))
+         {
+            ignoredFiles.add(name);
+         }
          else
-            missingFiles.add(name);
+         {
+            VirtualFile file = getMetadataFile(vfsDeploymentUnit, matchFileToClass(unit, name), name, true);
+            if (file != null)
+               files.add(file);
+            else
+               missingFiles.add(name);
+         }
       }
 
-      if (missingFiles.size() == names.size())
+      if (missingFiles.size() + ignoredFiles.size() == names.size())
          return null;
 
       return mergeFiles(vfsDeploymentUnit, root, files, missingFiles);
@@ -232,14 +240,14 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
       // The infrastructure will only check leafs anyway so no need to check here
       if (name == null && isIncludeDeploymentFile())
          name = unit.getName();
-      
+
       // Try to find the metadata
       VFSDeploymentUnit vfsDeploymentUnit = (VFSDeploymentUnit) unit;
 
       // let's check altDD first
       VirtualFile file = getMetadataFile(vfsDeploymentUnit, getOutput(), name, false);
       if (file != null)
-         return parseAndInit(vfsDeploymentUnit, file, root);
+         return parseAndInit(vfsDeploymentUnit, file, root, true);
 
       // try all name+suffix matches
       List<VirtualFile> files = vfsDeploymentUnit.getMetaDataFiles(name, suffix);
@@ -248,7 +256,7 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
          case 0 :
             return null;
          case 1 :
-            return parseAndInit(vfsDeploymentUnit, files.get(0), root);
+            return parseAndInit(vfsDeploymentUnit, files.get(0), root, true);
          default :
             return handleMultipleFiles(vfsDeploymentUnit, root, files);
       }
@@ -265,6 +273,24 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
     */
    protected T parseAndInit(VFSDeploymentUnit unit, VirtualFile file, T root) throws Exception
    {
+      return parseAndInit(unit, file, root, false);
+   }
+
+   /**
+    * Parse the file, initialize the result if exists.
+    *
+    * @param unit the deployment unit
+    * @param file the file
+    * @param root the root
+    * @param checkIgnore do we check for ignored names
+    * @return parsed result
+    * @throws Exception for any error
+    */
+   protected T parseAndInit(VFSDeploymentUnit unit, VirtualFile file, T root, boolean checkIgnore) throws Exception
+   {
+      if (checkIgnore && ignoreName(unit, file.getName()))
+         return null;
+
       T result = parse(unit, file, root);
       if (result != null)
          init(unit, result, file);
@@ -280,26 +306,34 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
 
       List<VirtualFile> files = new ArrayList<VirtualFile>();
       Set<String> missingFiles = new HashSet<String>();
+      Set<String> ignoredFiles = new HashSet<String>();
 
       for (String name : names)
       {
-         // try finding altDD file
-         VirtualFile file = getMetadataFile(vfsDeploymentUnit, matchFileToClass(unit, name), name, false);
-         if (file == null)
+         if (ignoreName(unit, name))
          {
-            List<VirtualFile> matched = vfsDeploymentUnit.getMetaDataFiles(name, suffix);
-            if (matched != null && matched.isEmpty() == false)
-               files.addAll(matched);
-            else
-               missingFiles.add(name);
+            ignoredFiles.add(name);
          }
          else
          {
-            files.add(file);
+            // try finding altDD file
+            VirtualFile file = getMetadataFile(vfsDeploymentUnit, matchFileToClass(unit, name), name, false);
+            if (file == null)
+            {
+               List<VirtualFile> matched = vfsDeploymentUnit.getMetaDataFiles(name, suffix);
+               if (matched != null && matched.isEmpty() == false)
+                  files.addAll(matched);
+               else
+                  missingFiles.add(name);
+            }
+            else
+            {
+               files.add(file);
+            }
          }
       }
 
-      if (missingFiles.size() == names.size())
+      if (missingFiles.size() + ignoredFiles.size() == names.size())
          return null;
 
       return mergeFiles(vfsDeploymentUnit, root, files, missingFiles);
@@ -337,11 +371,14 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
 
       for (VirtualFile file : files)
       {
-         T result = parse(unit, file, root);
-         if (result != null)
+         if (ignoreName(unit, file.getName()) == false)
          {
-            init(unit, result, file);
-            unit.addAttachment(file.toURL().toString(), result, getOutput());
+            T result = parse(unit, file, root);
+            if (result != null)
+            {
+               init(unit, result, file);
+               unit.addAttachment(file.toURL().toString(), result, getOutput());
+            }
          }
       }
 
