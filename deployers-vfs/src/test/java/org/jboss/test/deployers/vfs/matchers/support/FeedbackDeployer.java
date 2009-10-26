@@ -23,6 +23,7 @@ package org.jboss.test.deployers.vfs.matchers.support;
 
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.List;
 
 import org.jboss.deployers.vfs.spi.deployer.AbstractVFSParsingDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
@@ -33,11 +34,11 @@ import org.jboss.virtual.VirtualFile;
  * 
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public abstract class FeedbackDeployer extends AbstractVFSParsingDeployer<Object>
+public class FeedbackDeployer extends AbstractVFSParsingDeployer<Object>
 {
    private Set<String> files = new TreeSet<String>();
 
-   protected FeedbackDeployer()
+   public FeedbackDeployer()
    {
       super(Object.class);
    }
@@ -51,5 +52,15 @@ public abstract class FeedbackDeployer extends AbstractVFSParsingDeployer<Object
    public Set<String> getFiles()
    {
       return files;
+   }
+
+   @Override
+   protected Object mergeFiles(VFSDeploymentUnit unit, Object root, List<VirtualFile> files, Set<String> missingFiles) throws Exception
+   {
+      for (VirtualFile file : files)
+      {
+         parse(unit, file, root);
+      }
+      return null;
    }
 }

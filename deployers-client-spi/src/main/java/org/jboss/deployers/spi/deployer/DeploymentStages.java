@@ -25,6 +25,7 @@ package org.jboss.deployers.spi.deployer;
  * The Standard DeploymentStages.
  * 
  * @author <a href="adrian@jboss.org">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public interface DeploymentStages
@@ -32,8 +33,11 @@ public interface DeploymentStages
    /** The not installed stage - nothing is done here */
    DeploymentStage NOT_INSTALLED = new DeploymentStage("Not Installed");
 
+   /** The pre parse stage - where pre parsing stuff can be prepared; altDD, ignore, ... */
+   DeploymentStage PRE_PARSE = new DeploymentStage("PreParse", NOT_INSTALLED);
+
    /** The parse stage - where metadata is read */
-   DeploymentStage PARSE = new DeploymentStage("Parse", NOT_INSTALLED);
+   DeploymentStage PARSE = new DeploymentStage("Parse", PRE_PARSE);
 
    /** The post parse stage - where metadata can be fixed up */
    DeploymentStage POST_PARSE = new DeploymentStage("PostParse", PARSE);
