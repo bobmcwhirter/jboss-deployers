@@ -38,6 +38,13 @@ public class SpecialControllerContextCreator implements KernelControllerContextC
 {
    public static final String TRIGGER = "TriggerSpecialControllerContextCreator";
       
+   private int order;
+   
+   public SpecialControllerContextCreator(int order)
+   {
+      this.order = order;
+   }
+   
    public KernelControllerContext createContext(Controller controller, DeploymentUnit unit, BeanMetaData beanMetaData)
    {
       if (unit.getAttachment(TRIGGER) != null)
@@ -54,6 +61,11 @@ public class SpecialControllerContextCreator implements KernelControllerContextC
          super(info, metaData, target);
       }
       
+   }
+
+   public int getRelativeOrder()
+   {
+      return order;
    }
 }
 

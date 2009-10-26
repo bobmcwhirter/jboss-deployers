@@ -21,6 +21,9 @@
 */ 
 package org.jboss.test.deployers.vfs.deployer.bean.support;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jboss.beans.metadata.spi.BeanMetaData;
 import org.jboss.dependency.spi.Controller;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
@@ -34,9 +37,16 @@ import org.jboss.kernel.spi.dependency.KernelControllerContext;
  */
 public class NoopControllerContextCreator implements KernelControllerContextCreator
 {
-   private boolean triggered;
+   private static List<Integer> triggered = new ArrayList<Integer>();
    
-   public boolean isTriggered()
+   private int order;
+   
+   public NoopControllerContextCreator(int order)
+   {
+      this.order = order;
+   }
+   
+   public static List<Integer> getTriggered()
    {
       return triggered;
    }
@@ -49,8 +59,12 @@ public class NoopControllerContextCreator implements KernelControllerContextCrea
          throw new IllegalArgumentException("Null unit");
       if (beanMetaData == null)
          throw new IllegalArgumentException("Null beanMetadata");
-      triggered = true;
+      triggered.add(order);
       return null;
    }
 
+   public int getRelativeOrder()
+   {
+      return order;
+   }
 }

@@ -21,9 +21,12 @@
 */
 package org.jboss.deployers.vfs.deployer.kernel;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.jboss.beans.metadata.plugins.AbstractClassLoaderMetaData;
 import org.jboss.beans.metadata.plugins.AbstractValueMetaData;
@@ -57,7 +60,9 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
    private Controller controller;
    
    /** List of controller context creators */
-   private List<KernelControllerContextCreator> controllerContextCreators = new CopyOnWriteArrayList<KernelControllerContextCreator>();
+   private ArrayList<KernelControllerContextCreator> controllerContextCreators = new ArrayList<KernelControllerContextCreator>();
+   
+   private ReadWriteLock lock = new ReentrantReadWriteLock();
    
    /** The default controller context creator */
    
@@ -110,8 +115,31 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
     */
    public void addControllerContextCreator(KernelControllerContextCreator creator)
    {
-      if (creator != null)
+      if (creator == null)
+         return;
+      
+      lock.writeLock().lock();
+      try
+      {
          controllerContextCreators.add(creator);
+         Collections.sort(controllerContextCreators, new Comparator<KernelControllerContextCreator>()
+         {
+
+            public int compare(KernelControllerContextCreator o1, KernelControllerContextCreator o2)
+            {
+               if (o1.getRelativeOrder() < o2.getRelativeOrder())
+                  return -1;
+               if (o1.getRelativeOrder() > o2.getRelativeOrder())
+                  return 1;
+               
+               return 0;
+            }
+         });
+      }
+      finally
+      {
+         lock.writeLock().unlock();
+      }
    }
    
    /**
@@ -121,8 +149,18 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
     */
    public void removeControllerContextCreator(KernelControllerContextCreator creator)
    {
-      if (creator != null)
+      if (creator == null)
+         return;
+      
+      lock.writeLock().lock();
+      try
+      {
          controllerContextCreators.remove(creator);
+      }
+      finally
+      {
+         lock.writeLock().unlock();
+      }
    }
    
    @Override
@@ -170,11 +208,19 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
    {
       if (controllerContextCreators.size() > 0)
       {
-         for (KernelControllerContextCreator creator : controllerContextCreators)
+         lock.readLock().lock();
+         try
          {
-            KernelControllerContext context = creator.createContext(controller, unit, deployment);
-            if (context != null)
-               return context;
+            for (KernelControllerContextCreator creator : controllerContextCreators)
+            {
+               KernelControllerContext context = creator.createContext(controller, unit, deployment);
+               if (context != null)
+                  return context;
+            }
+         }
+         finally
+         {
+            lock.readLock().unlock();
          }
       }
       return new AbstractKernelControllerContext(null, deployment, null);

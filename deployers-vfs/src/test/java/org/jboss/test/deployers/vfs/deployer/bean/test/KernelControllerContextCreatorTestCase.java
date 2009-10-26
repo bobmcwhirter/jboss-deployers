@@ -24,8 +24,6 @@ package org.jboss.test.deployers.vfs.deployer.bean.test;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.jboss.beans.metadata.spi.BeanMetaData;
-import org.jboss.beans.metadata.spi.builder.BeanMetaDataBuilder;
 import org.jboss.dependency.spi.ControllerContext;
 import org.jboss.deployers.vfs.deployer.kernel.BeanDeployer;
 import org.jboss.deployers.vfs.deployer.kernel.BeanMetaDataDeployer;
@@ -83,7 +81,8 @@ public class KernelControllerContextCreatorTestCase extends AbstractDeployerUnit
 
    public void testNoopControllerContextCreator() throws Throwable
    {
-      NoopControllerContextCreator noop = new NoopControllerContextCreator();
+      NoopControllerContextCreator.getTriggered().clear();
+      NoopControllerContextCreator noop = new NoopControllerContextCreator(1);
       beanMetaDataDeployer.addControllerContextCreator(noop);
       try
       {
@@ -91,7 +90,8 @@ public class KernelControllerContextCreatorTestCase extends AbstractDeployerUnit
          VFSDeployment context = createDeployment("/bean", "toplevel/my-beans.xml");
          assertDeploy(context);
          
-         assertTrue(noop.isTriggered());
+         assertEquals(1, NoopControllerContextCreator.getTriggered().size());
+         assertTrue(NoopControllerContextCreator.getTriggered().contains(1));
          
          ControllerContext test = controller.getInstalledContext("Test");
          assertNotNull(test);
@@ -107,19 +107,21 @@ public class KernelControllerContextCreatorTestCase extends AbstractDeployerUnit
 
    public void testSpecialControllerContextCreatorNotTriggered() throws Throwable
    {
-      NoopControllerContextCreator noop1 = new NoopControllerContextCreator();
+      NoopControllerContextCreator.getTriggered().clear();
+      NoopControllerContextCreator noop1 = new NoopControllerContextCreator(1);
       beanMetaDataDeployer.addControllerContextCreator(noop1);
-      SpecialControllerContextCreator special = new SpecialControllerContextCreator();
+      SpecialControllerContextCreator special = new SpecialControllerContextCreator(2);
       beanMetaDataDeployer.addControllerContextCreator(special);
-      NoopControllerContextCreator noop2 = new NoopControllerContextCreator();
+      NoopControllerContextCreator noop2 = new NoopControllerContextCreator(3);
       beanMetaDataDeployer.addControllerContextCreator(noop2);
       try
       {
          VFSDeployment context = createDeployment("/bean", "toplevel/my-beans.xml");
          assertDeploy(context);
          
-         assertTrue(noop1.isTriggered());
-         assertTrue(noop2.isTriggered());
+         assertEquals(2, NoopControllerContextCreator.getTriggered().size());
+         assertTrue(NoopControllerContextCreator.getTriggered().contains(1));
+         assertTrue(NoopControllerContextCreator.getTriggered().contains(3));
          
          ControllerContext test = controller.getInstalledContext("Test");
          assertNotNull(test);
@@ -137,21 +139,23 @@ public class KernelControllerContextCreatorTestCase extends AbstractDeployerUnit
 
    public void testSpecialControllerContextCreatorTriggered() throws Throwable
    {
+      NoopControllerContextCreator.getTriggered().clear();
       addDeployer(main, new TriggerSpecialControllerContextDeployer());
       
-      NoopControllerContextCreator noop1 = new NoopControllerContextCreator();
+      NoopControllerContextCreator noop1 = new NoopControllerContextCreator(1);
       beanMetaDataDeployer.addControllerContextCreator(noop1);
-      SpecialControllerContextCreator special = new SpecialControllerContextCreator();
+      SpecialControllerContextCreator special = new SpecialControllerContextCreator(2);
       beanMetaDataDeployer.addControllerContextCreator(special);
-      NoopControllerContextCreator noop2 = new NoopControllerContextCreator();
+      NoopControllerContextCreator noop2 = new NoopControllerContextCreator(3);
       beanMetaDataDeployer.addControllerContextCreator(noop2);
       try
       {
          VFSDeployment context = createDeployment("/bean", "toplevel/my-beans.xml");
          assertDeploy(context);
          
-         assertTrue(noop1.isTriggered());
-         assertFalse(noop2.isTriggered());
+         assertEquals(1, NoopControllerContextCreator.getTriggered().size());
+         assertTrue(NoopControllerContextCreator.getTriggered().contains(1));
+         assertFalse(NoopControllerContextCreator.getTriggered().contains(3));
          
          ControllerContext test = controller.getInstalledContext("Test");
          assertNotNull(test);
@@ -165,5 +169,58 @@ public class KernelControllerContextCreatorTestCase extends AbstractDeployerUnit
          beanMetaDataDeployer.removeControllerContextCreator(special);
          beanMetaDataDeployer.removeControllerContextCreator(noop2);
       }
+   }
+   
+   public void testControllerContextOrder() throws Throwable
+   {
+      NoopControllerContextCreator.getTriggered().clear();
+      NoopControllerContextCreator noop6 = new NoopControllerContextCreator(6);
+      beanMetaDataDeployer.addControllerContextCreator(noop6);
+      NoopControllerContextCreator noop1 = new NoopControllerContextCreator(1);
+      beanMetaDataDeployer.addControllerContextCreator(noop1);
+      NoopControllerContextCreator noop3 = new NoopControllerContextCreator(3);
+      beanMetaDataDeployer.addControllerContextCreator(noop3);
+      NoopControllerContextCreator noop4 = new NoopControllerContextCreator(4);
+      beanMetaDataDeployer.addControllerContextCreator(noop4);
+      NoopControllerContextCreator noop2 = new NoopControllerContextCreator(2);
+      beanMetaDataDeployer.addControllerContextCreator(noop2);
+      NoopControllerContextCreator noop5 = new NoopControllerContextCreator(5);
+      beanMetaDataDeployer.addControllerContextCreator(noop5);
+      try
+      {
+         VFSDeployment context = createDeployment("/bean", "toplevel/my-beans.xml");
+         assertDeploy(context);
+         
+         assertEquals(6, NoopControllerContextCreator.getTriggered().size());
+         assertTrue(NoopControllerContextCreator.getTriggered().contains(1));
+         assertTrue(NoopControllerContextCreator.getTriggered().contains(2));
+         assertTrue(NoopControllerContextCreator.getTriggered().contains(3));
+         assertTrue(NoopControllerContextCreator.getTriggered().contains(4));
+         assertTrue(NoopControllerContextCreator.getTriggered().contains(5));
+         assertTrue(NoopControllerContextCreator.getTriggered().contains(6));
+         
+         int last = 0;
+         for (int i : NoopControllerContextCreator.getTriggered())
+         {
+            assertTrue(last + 1 == i);
+            last = i;
+         }
+         
+         ControllerContext test = controller.getInstalledContext("Test");
+         assertNotNull(test);
+         assertEquals(AbstractKernelControllerContext.class, test.getClass());
+         assertUndeploy(context);
+         assertNull(controller.getContext("Test", null));
+      }
+      finally
+      {
+         beanMetaDataDeployer.removeControllerContextCreator(noop1);
+         beanMetaDataDeployer.removeControllerContextCreator(noop2);
+         beanMetaDataDeployer.removeControllerContextCreator(noop3);
+         beanMetaDataDeployer.removeControllerContextCreator(noop4);
+         beanMetaDataDeployer.removeControllerContextCreator(noop5);
+         beanMetaDataDeployer.removeControllerContextCreator(noop6);
+      }
+      
    }
 }

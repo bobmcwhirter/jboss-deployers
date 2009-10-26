@@ -36,6 +36,13 @@ import org.jboss.kernel.spi.dependency.KernelControllerContext;
 public interface KernelControllerContextCreator
 {
    /**
+    * The relative order of this creator. BeanMetaDataDeployer will try to 
+    * create contexts with values first.
+    * @return The relative order
+    */
+   int getRelativeOrder();
+   
+   /**
     * Create a controller context
     * @param controller The controller to which the beans will be deployed
     * @param unit The deployment unit we are deploying
