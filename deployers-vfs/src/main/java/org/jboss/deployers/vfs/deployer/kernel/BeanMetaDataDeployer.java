@@ -158,7 +158,15 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
       }
    }
 
-   private KernelControllerContext createControllerContext(DeploymentUnit unit, BeanMetaData deployment)
+   /**
+    * Creates a kernel controller context using the controller context creators in controllerContextCreators.
+    * The first controller context creator that returns a context is used. If no matching controller context
+    * creator is found, a plain KernelControllerContext is created.
+    * @param unit The deployment unit
+    * @param deployment The bean metadata being deployed
+    * @return the created KernelControllerContext
+    */
+   protected KernelControllerContext createControllerContext(DeploymentUnit unit, BeanMetaData deployment)
    {
       if (controllerContextCreators.size() > 0)
       {
