@@ -1,22 +1,27 @@
 <classpath>
-  <classpathentry kind="src" path="src/main/java"/>
+  <classpathentry kind="src" path="src/main/java" including="**/*.java"/>
   <classpathentry kind="output" path="target/classes"/>
-  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
   <classpathentry kind="var" path="M2_REPO/javax/activation/activation/1.1.1/activation-1.1.1.jar"/>
   <classpathentry kind="var" path="M2_REPO/wutka-dtdparser/dtdparser121/1.2.1/dtdparser121-1.2.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/javassist/javassist/3.11.0.GA/javassist-3.11.0.GA.jar" sourcepath="M2_REPO/javassist/javassist/3.11.0.GA/javassist-3.11.0.GA-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/sun-jaxb/jaxb-api/2.1.4/jaxb-api-2.1.4.jar" sourcepath="M2_REPO/sun-jaxb/jaxb-api/2.1.4/jaxb-api-2.1.4-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/cl/jboss-classloader/2.0.7.CR1/jboss-classloader-2.0.7.CR1.jar" sourcepath="M2_REPO/org/jboss/cl/jboss-classloader/2.0.7.CR1/jboss-classloader-2.0.7.CR1-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/integration/jboss-classloading-spi/5.1.0.SP1/jboss-classloading-spi-5.1.0.SP1.jar" sourcepath="M2_REPO/org/jboss/integration/jboss-classloading-spi/5.1.0.SP1/jboss-classloading-spi-5.1.0.SP1-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/cl/jboss-classloading-vfs/2.0.7.CR1/jboss-classloading-vfs-2.0.7.CR1.jar" sourcepath="M2_REPO/org/jboss/cl/jboss-classloading-vfs/2.0.7.CR1/jboss-classloading-vfs-2.0.7.CR1-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-common-core/2.2.14.GA/jboss-common-core-2.2.14.GA.jar" sourcepath="M2_REPO/org/jboss/jboss-common-core/2.2.14.GA/jboss-common-core-2.2.14.GA-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/kernel/jboss-dependency/2.2.0-SNAPSHOT/jboss-dependency-2.2.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/jboss/kernel/jboss-dependency/2.2.0-SNAPSHOT/jboss-dependency-2.2.0-SNAPSHOT-sources.jar"/>
   <classpathentry kind="src" path="/jboss-deployers-client-spi"/>
   <classpathentry kind="src" path="/jboss-deployers-core-spi"/>
   <classpathentry kind="src" path="/jboss-deployers-structure-spi"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/logging/jboss-logging-spi/2.0.5.GA/jboss-logging-spi-2.0.5.GA.jar" sourcepath="M2_REPO/org/jboss/logging/jboss-logging-spi/2.0.5.GA/jboss-logging-spi-2.0.5.GA-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/man/jboss-managed/2.1.1.CR1/jboss-managed-2.1.1.CR1.jar" sourcepath="M2_REPO/org/jboss/man/jboss-managed/2.1.1.CR1/jboss-managed-2.1.1.CR1-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/logging/jboss-logging-spi/2.2.0.CR1/jboss-logging-spi-2.2.0.CR1.jar" sourcepath="M2_REPO/org/jboss/logging/jboss-logging-spi/2.2.0.CR1/jboss-logging-spi-2.2.0.CR1-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/man/jboss-managed/2.1.1.GA/jboss-managed-2.1.1.GA.jar" sourcepath="M2_REPO/org/jboss/man/jboss-managed/2.1.1.GA/jboss-managed-2.1.1.GA-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-mdr/2.0.2.GA/jboss-mdr-2.0.2.GA.jar" sourcepath="M2_REPO/org/jboss/jboss-mdr/2.0.2.GA/jboss-mdr-2.0.2.GA-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/man/jboss-metatype/2.1.1.CR1/jboss-metatype-2.1.1.CR1.jar" sourcepath="M2_REPO/org/jboss/man/jboss-metatype/2.1.1.CR1/jboss-metatype-2.1.1.CR1-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-reflect/2.0.2.GA/jboss-reflect-2.0.2.GA.jar" sourcepath="M2_REPO/org/jboss/jboss-reflect/2.0.2.GA/jboss-reflect-2.0.2.GA-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/jbossxb/2.0.2-SNAPSHOT/jbossxb-2.0.2-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/man/jboss-metatype/2.1.1.GA/jboss-metatype-2.1.1.GA.jar" sourcepath="M2_REPO/org/jboss/man/jboss-metatype/2.1.1.GA/jboss-metatype-2.1.1.GA-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-reflect/2.2.0-SNAPSHOT/jboss-reflect-2.2.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/jboss/jboss-reflect/2.2.0-SNAPSHOT/jboss-reflect-2.2.0-SNAPSHOT-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/jboss-vfs/2.2.0-SNAPSHOT/jboss-vfs-2.2.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/jboss/jboss-vfs/2.2.0-SNAPSHOT/jboss-vfs-2.2.0-SNAPSHOT-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/jbossxb/2.0.2-SNAPSHOT/jbossxb-2.0.2-SNAPSHOT.jar" sourcepath="M2_REPO/org/jboss/jbossxb/2.0.2-SNAPSHOT/jbossxb-2.0.2-SNAPSHOT-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/mcann/mcann-core/1.0.0-SNAPSHOT/mcann-core-1.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/jboss/mcann/mcann-core/1.0.0-SNAPSHOT/mcann-core-1.0.0-SNAPSHOT-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/apache-xerces/xercesImpl/2.9.1/xercesImpl-2.9.1.jar"/>
   <classpathentry kind="var" path="M2_REPO/apache-xerces/xml-apis/2.9.1/xml-apis-2.9.1.jar"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 </classpath>

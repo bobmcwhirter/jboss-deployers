@@ -15,6 +15,16 @@
   <dependencies>
     <!-- Global dependencies -->
     <dependency>
+      <groupId>org.jboss.kernel</groupId>
+       <artifactId>jboss-kernel</artifactId>
+       <exclusions>
+         <exclusion>
+           <groupId>org.jboss.kernel</groupId>
+           <artifactId>jboss-dependency</artifactId>
+         </exclusion>
+       </exclusions>
+    </dependency>
+    <dependency>
       <groupId>org.jboss</groupId>
       <artifactId>jboss-vfs</artifactId>
       <exclusions>
