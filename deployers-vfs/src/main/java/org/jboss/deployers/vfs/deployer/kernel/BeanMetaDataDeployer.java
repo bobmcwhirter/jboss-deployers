@@ -164,7 +164,7 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
       {
          for (KernelControllerContextCreator creator : controllerContextCreators)
          {
-            KernelControllerContext context = creator.createContext(unit, deployment);
+            KernelControllerContext context = creator.createContext(controller, unit, deployment);
             if (context != null)
                return context;
          }

@@ -22,6 +22,7 @@
 package org.jboss.test.deployers.vfs.deployer.bean.support;
 
 import org.jboss.beans.metadata.spi.BeanMetaData;
+import org.jboss.dependency.spi.Controller;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.vfs.spi.deployer.helpers.KernelControllerContextCreator;
 import org.jboss.kernel.spi.dependency.KernelControllerContext;
@@ -40,8 +41,14 @@ public class NoopControllerContextCreator implements KernelControllerContextCrea
       return triggered;
    }
    
-   public KernelControllerContext createContext(DeploymentUnit unit, BeanMetaData beanMetaData)
+   public KernelControllerContext createContext(Controller controller, DeploymentUnit unit, BeanMetaData beanMetaData)
    {
+      if (controller == null)
+         throw new IllegalArgumentException("Null controller");
+      if (unit == null)
+         throw new IllegalArgumentException("Null unit");
+      if (beanMetaData == null)
+         throw new IllegalArgumentException("Null beanMetadata");
       triggered = true;
       return null;
    }

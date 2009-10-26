@@ -22,8 +22,9 @@
 package org.jboss.deployers.vfs.spi.deployer.helpers;
 
 import org.jboss.beans.metadata.spi.BeanMetaData;
-import org.jboss.dependency.spi.ControllerContext;
+import org.jboss.dependency.spi.Controller;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.kernel.spi.dependency.KernelControllerContext;
 
 /**
  * Interface used to create a controller context. Intention is to be able
@@ -32,11 +33,14 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
  * @author <a href="kabir.khan@jboss.com">Kabir Khan</a>
  * @version $Revision: 1.1 $
  */
-public interface ControllerContextCreator
+public interface KernelControllerContextCreator
 {
    /**
     * Create a controller context
+    * @param controller The controller to which the beans will be deployed
+    * @param unit The deployment unit we are deploying
+    * @param beanMetaData The bean metadata we are deploying
     * @return the created controller context or null if this controller context creator should not handle the creation of the context 
     */
-   ControllerContext createContext(DeploymentUnit unit, BeanMetaData beanMetaData);
+   KernelControllerContext createContext(Controller controller, DeploymentUnit unit, BeanMetaData beanMetaData);
 }

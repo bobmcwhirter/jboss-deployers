@@ -23,6 +23,7 @@ package org.jboss.test.deployers.vfs.deployer.bean.support;
 
 import org.jboss.beans.info.spi.BeanInfo;
 import org.jboss.beans.metadata.spi.BeanMetaData;
+import org.jboss.dependency.spi.Controller;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.vfs.spi.deployer.helpers.KernelControllerContextCreator;
 import org.jboss.kernel.plugins.dependency.AbstractKernelControllerContext;
@@ -37,7 +38,7 @@ public class SpecialControllerContextCreator implements KernelControllerContextC
 {
    public static final String TRIGGER = "TriggerSpecialControllerContextCreator";
       
-   public KernelControllerContext createContext(DeploymentUnit unit, BeanMetaData beanMetaData)
+   public KernelControllerContext createContext(Controller controller, DeploymentUnit unit, BeanMetaData beanMetaData)
    {
       if (unit.getAttachment(TRIGGER) != null)
          return new SpecialControllerContext(null, beanMetaData, null);
