@@ -1046,7 +1046,7 @@ public class DeployerFlowUnitTestCase extends AbstractDeployerTest
       addDeployer( main, deployer3 );
 
       TestFlowDeployer deployer4 = new TestFlowDeployer( "WSDeploymentAspectDeployer" );
-      deployer4.setInputs( "8", "6" );  // note 6 is both input and output
+      deployer4.setInputs( "6", "7", "8" );  // note 6 is both input and output
       deployer4.setOutputs( "9", "6", "0" );
       addDeployer( main, deployer4 );
 
