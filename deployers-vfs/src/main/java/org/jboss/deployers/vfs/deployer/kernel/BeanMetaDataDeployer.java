@@ -24,6 +24,7 @@ package org.jboss.deployers.vfs.deployer.kernel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -51,6 +52,7 @@ import org.jboss.metadata.spi.scope.ScopeKey;
  * type {@link org.jboss.beans.metadata.spi.BeanMetaData}.
  * 
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
+ * @author <a href="kabir.khan@jboss.com">Kabir Khan</a>
  * @version $Revision: 1.1 $
  */
 public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaData>
@@ -59,13 +61,10 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
    private Controller controller;
    
    /** List of controller context creators */
-   private ArrayList<KernelControllerContextCreator> controllerContextCreators = new ArrayList<KernelControllerContextCreator>();
+   private List<KernelControllerContextCreator> controllerContextCreators = new ArrayList<KernelControllerContextCreator>();
    
    private ReadWriteLock lock = new ReentrantReadWriteLock();
-   
-   /** The default controller context creator */
-   
-   
+
    /**
     * Create a new BeanDeployer.
     * 
