@@ -40,6 +40,11 @@ public class SpecialControllerContextCreator implements KernelControllerContextC
       
    private int order;
    
+   public SpecialControllerContextCreator()
+   {
+      this(3);
+   }
+   
    public SpecialControllerContextCreator(int order)
    {
       this.order = order;

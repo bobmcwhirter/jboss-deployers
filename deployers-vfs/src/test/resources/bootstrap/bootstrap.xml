@@ -85,6 +85,9 @@
    <bean name="KernelDeploymentDeployer" class="org.jboss.deployers.vfs.deployer.kernel.KernelDeploymentDeployer"/>
    <bean name="BeanMetaDataDeployer" class="org.jboss.deployers.vfs.deployer.kernel.BeanMetaDataDeployer">
       <constructor><parameter class="org.jboss.dependency.spi.Controller"><inject bean="jboss.kernel:service=KernelController"/></parameter></constructor>
+      <!-- Accept any implementor of KernelControllerContextCreator -->
+      <incallback method="addControllerContextCreator"/>
+      <uncallback method="removeControllerContextCreator"/>
    </bean>
 
    <!-- VFS ClassLoader -->

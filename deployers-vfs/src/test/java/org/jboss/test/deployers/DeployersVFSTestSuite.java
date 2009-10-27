@@ -88,7 +88,6 @@ public class DeployersVFSTestSuite extends TestSuite
       suite.addTest(RedeployTestSuite.suite());
       suite.addTest(WebBeansTestSuite.suite()); // now Weld
       suite.addTest(ClassPoolTestSuite.suite());
-      suite.addTest(KernelControllerContextCreatorTestCase.suite());
 
       return suite;
    }
