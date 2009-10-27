@@ -82,10 +82,16 @@ public class DominoOrdering<T extends Domino<?>>
                   // although we should aviod singe dimension checks
                   // which are already part of match() check
                   // in order not to break comparator comparison
-                  if (twoHead.dimension() > 1 && oneTail.dimension() >= twoHead.dimension() && oneTail.contains(twoHead))
+                  if ((twoHead.dimension() > 1 && oneTail.dimension() >= twoHead.dimension() && oneTail.contains(twoHead)) ||
+                      (oneTail.dimension() > 1 && twoHead.dimension() >= oneTail.dimension() && twoHead.contains(oneTail)))
+                  {
                      relation = -1;
-                  else if (oneHead.dimension() > 1 && twoTail.dimension() >= oneHead.dimension() && twoTail.contains(oneHead))
+                  }
+                  else if ((oneHead.dimension() > 1 && twoTail.dimension() >= oneHead.dimension() && twoTail.contains(oneHead)) ||
+                           (twoTail.dimension() > 1 && oneHead.dimension() >= twoTail.dimension() && oneHead.contains(twoTail)))
+                  {
                      relation = 1;
+                  }
                   // make name compare lazy - might already be fixed with transitive order
                }
                else
