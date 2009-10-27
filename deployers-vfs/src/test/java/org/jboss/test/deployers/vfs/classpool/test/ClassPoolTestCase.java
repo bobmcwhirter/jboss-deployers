@@ -134,6 +134,7 @@ public class ClassPoolTestCase extends ClassPoolTest
          TypeInfo ti = typeInfoFactory.getTypeInfo(AnyServlet.class.getName(), cl);
          ClassInfo ci = assertInstanceOf(ti, ClassInfo.class);
          MethodInfo mi = ci.getDeclaredMethod("getBean");
+         assertNotNull("No such 'getBean' method on " + ci, mi);
          TypeInfo rt = mi.getReturnType();
          TypeInfo cti = typeInfoFactory.getTypeInfo(PlainJavaBean.class.getName(), getClassLoader(unit));
          assertSame(rt, cti);
