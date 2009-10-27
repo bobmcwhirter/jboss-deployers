@@ -86,8 +86,7 @@ public class DominoOrdering<T extends Domino<?>>
                      relation = -1;
                   else if (oneHead.dimension() > 1 && twoTail.dimension() >= oneHead.dimension() && twoTail.contains(oneHead))
                      relation = 1;
-                  else
-                     relation = COMPARATOR.compare(one, two);
+                  // make name compare lazy - might already be fixed with transitive order
                }
                else
                {
