@@ -21,6 +21,8 @@
  */
 package org.jboss.test.deployers.vfs.classpool.support.web;
 
+import org.jboss.test.deployers.vfs.classpool.support.jar.PlainJavaBean;
+
 /**
  * 
  * @author <a href="mailto:flavia.rainone@jboss.org">Flavia Rainone</a>
@@ -29,4 +31,8 @@ package org.jboss.test.deployers.vfs.classpool.support.web;
  */
 public class AnyServlet
 {
+   public PlainJavaBean getBean()
+   {
+      return new PlainJavaBean();
+   }
 }

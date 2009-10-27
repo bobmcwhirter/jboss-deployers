@@ -21,9 +21,9 @@
  */
 package org.jboss.test.deployers.vfs.classpool.test;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashMap;
 
 import org.jboss.classloader.plugins.jdk.AbstractJDKChecker;
 import org.jboss.deployers.structure.spi.DeploymentUnit;

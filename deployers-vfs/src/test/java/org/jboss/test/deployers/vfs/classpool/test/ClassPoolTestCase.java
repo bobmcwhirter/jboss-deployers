@@ -26,6 +26,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.Test;
+import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.reflect.plugins.javassist.JavassistTypeInfoFactory;
+import org.jboss.reflect.spi.ClassInfo;
+import org.jboss.reflect.spi.MethodInfo;
+import org.jboss.reflect.spi.TypeInfo;
+import org.jboss.reflect.spi.TypeInfoFactory;
 import org.jboss.test.deployers.vfs.classpool.support.crm.CrmFacade;
 import org.jboss.test.deployers.vfs.classpool.support.ejb.MySLSBean;
 import org.jboss.test.deployers.vfs.classpool.support.ext.External;
@@ -112,7 +118,32 @@ public class ClassPoolTestCase extends ClassPoolTest
       AssembledDirectory directory = createJarInEar();
       assertClassPool(directory, PlainJavaBean.class);
    }
-   
+
+   /**
+    * FIXME -- classpools issue?
+    */
+   public void testHierarchyCLUsage() throws Exception
+   {
+      AssembledDirectory directory = createBasicEar();
+      DeploymentUnit unit = assertDeploy(directory);
+      try
+      {
+         TypeInfoFactory typeInfoFactory = new JavassistTypeInfoFactory();
+         DeploymentUnit child = getDeploymentUnit(unit, "simple.war");
+         ClassLoader cl = getClassLoader(child);
+         TypeInfo ti = typeInfoFactory.getTypeInfo(AnyServlet.class.getName(), cl);
+         ClassInfo ci = assertInstanceOf(ti, ClassInfo.class);
+         MethodInfo mi = ci.getDeclaredMethod("getBean");
+         TypeInfo rt = mi.getReturnType();
+         TypeInfo cti = typeInfoFactory.getTypeInfo(PlainJavaBean.class.getName(), getClassLoader(unit));
+         assertSame(rt, cti);
+      }
+      finally
+      {
+         undeploy(unit);
+      }
+   }
+
    private AssembledDirectory createJar() throws Exception
    {
       AssembledDirectory jar = createAssembledDirectory("simple.jar", "simple.jar");

@@ -25,6 +25,7 @@ import javassist.scopedpool.ScopedClassPoolFactory;
 import org.jboss.classpool.spi.ClassPoolRepository;
 import org.jboss.reflect.plugins.javassist.classpool.ClassPoolFactory;
 import org.jboss.reflect.plugins.javassist.classpool.RepositoryClassPoolFactory;
+import org.jboss.reflect.plugins.javassist.classpool.DefaultClassPoolFactory;
 import org.jboss.reflect.plugins.javassist.JavassistTypeInfoFactoryImpl;
 
 /**
@@ -45,5 +46,10 @@ public class PoolFactoryInitializer
       repository.setClassPoolFactory(poolFactory);
       ClassPoolFactory classPoolFactory = new RepositoryClassPoolFactory(repository);
       JavassistTypeInfoFactoryImpl.setPoolFactory(classPoolFactory);
+   }
+
+   public void stop()
+   {
+      JavassistTypeInfoFactoryImpl.setPoolFactory(DefaultClassPoolFactory.getInstance());
    }
 }
