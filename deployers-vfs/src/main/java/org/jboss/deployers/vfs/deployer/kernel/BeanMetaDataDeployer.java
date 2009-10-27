@@ -24,7 +24,6 @@ package org.jboss.deployers.vfs.deployer.kernel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -122,19 +121,7 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
       try
       {
          controllerContextCreators.add(creator);
-         Collections.sort(controllerContextCreators, new Comparator<KernelControllerContextCreator>()
-         {
-
-            public int compare(KernelControllerContextCreator o1, KernelControllerContextCreator o2)
-            {
-               if (o1.getRelativeOrder() < o2.getRelativeOrder())
-                  return -1;
-               if (o1.getRelativeOrder() > o2.getRelativeOrder())
-                  return 1;
-               
-               return 0;
-            }
-         });
+         Collections.sort(controllerContextCreators, KernelControllerContextComparator.getInstance());
       }
       finally
       {
