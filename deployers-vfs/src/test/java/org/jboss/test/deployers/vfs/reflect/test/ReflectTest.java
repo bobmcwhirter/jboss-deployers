@@ -28,8 +28,13 @@ import java.util.Set;
 import org.jboss.classloader.plugins.jdk.AbstractJDKChecker;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.vfs.deployer.kernel.BeanMetaDataFactoryVisitor;
+import org.jboss.deployers.vfs.spi.client.VFSDeploymentFactory;
+import org.jboss.deployers.client.spi.Deployment;
+import org.jboss.deployers.spi.attachments.MutableAttachments;
 import org.jboss.reflect.spi.TypeInfo;
 import org.jboss.reflect.spi.TypeInfoFactory;
+import org.jboss.reflect.spi.ClassInfo;
+import org.jboss.reflect.spi.MethodInfo;
 import org.jboss.test.deployers.BootstrapDeployersTest;
 import org.jboss.test.deployers.vfs.reflect.support.jar.PlainJavaBean;
 import org.jboss.test.deployers.vfs.reflect.support.ejb.MySLSBean;
@@ -42,6 +47,8 @@ import org.jboss.test.deployers.vfs.reflect.support.util.SomeUtil;
 import org.jboss.test.deployers.vfs.reflect.support.ext.External;
 import org.jboss.virtual.VirtualFile;
 import org.jboss.virtual.AssembledDirectory;
+import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
+import org.jboss.classloading.spi.metadata.ExportAll;
 
 /**
  * Abstract test for Reflect.
@@ -78,6 +85,14 @@ public abstract class ReflectTest extends BootstrapDeployersTest
    }
 
    protected abstract TypeInfoFactory createTypeInfoFactory();
+
+   protected TypeInfo assertReturnType(TypeInfo ti, String method)
+   {
+      ClassInfo ci = assertInstanceOf(ti, ClassInfo.class);
+      MethodInfo mi = ci.getDeclaredMethod(method);
+      assertNotNull("No such '" + method + "' method on " + ci, mi);
+      return mi.getReturnType();      
+   }
 
    protected void assertTypeInfo(VirtualFile file, Class<?> ... classes) throws Exception
    {
@@ -124,8 +139,13 @@ public abstract class ReflectTest extends BootstrapDeployersTest
 
    protected AssembledDirectory createJar() throws Exception
    {
-      AssembledDirectory jar = createAssembledDirectory("simple.jar", "simple.jar");
-      addPackage(jar, PlainJavaBean.class);
+      return createJar("simple.jar", PlainJavaBean.class);
+   }
+
+   protected AssembledDirectory createJar(String name, Class<?> reference) throws Exception
+   {
+      AssembledDirectory jar = createAssembledDirectory(name, name);
+      addPackage(jar, reference);
       return jar;
    }
 
@@ -238,5 +258,23 @@ public abstract class ReflectTest extends BootstrapDeployersTest
       addPackage(jar, PlainJavaBean.class);
 
       return ear;
+   }
+
+   protected Deployment createIsolatedDeployment(String name) throws Exception
+   {
+      return createIsolatedDeployment(name, null, PlainJavaBean.class);
+   }
+
+   protected Deployment createIsolatedDeployment(String name, String parentDomain, Class<?> reference) throws Exception
+   {
+      AssembledDirectory jar = createJar(name, reference);
+      Deployment deployment = VFSDeploymentFactory.getInstance().createVFSDeployment(jar);
+      MutableAttachments attachments = (MutableAttachments)deployment.getPredeterminedManagedObjects();
+      ClassLoadingMetaData clmd1 = new ClassLoadingMetaData();
+      clmd1.setDomain(name + "_Domain");
+      clmd1.setParentDomain(parentDomain);
+      clmd1.setExportAll(ExportAll.NON_EMPTY);
+      attachments.addAttachment(ClassLoadingMetaData.class, clmd1);
+      return deployment;
    }
 }

@@ -25,9 +25,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jboss.deployers.client.spi.DeployerClient;
+import org.jboss.deployers.client.spi.Deployment;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
-import org.jboss.reflect.spi.ClassInfo;
-import org.jboss.reflect.spi.MethodInfo;
 import org.jboss.reflect.spi.TypeInfo;
 import org.jboss.reflect.spi.TypeInfoFactory;
 import org.jboss.test.deployers.vfs.reflect.support.crm.CrmFacade;
@@ -123,16 +123,85 @@ public abstract class TypeInfoTest extends ReflectTest
          DeploymentUnit child = getDeploymentUnit(unit, "simple.war");
          ClassLoader cl = getClassLoader(child);
          TypeInfo ti = typeInfoFactory.getTypeInfo(AnyServlet.class.getName(), cl);
-         ClassInfo ci = assertInstanceOf(ti, ClassInfo.class);
-         MethodInfo mi = ci.getDeclaredMethod("getBean");
-         assertNotNull("No such 'getBean' method on " + ci, mi);
-         TypeInfo rt = mi.getReturnType();
+         TypeInfo rt = assertReturnType(ti, "getBean");
          TypeInfo cti = typeInfoFactory.getTypeInfo(PlainJavaBean.class.getName(), getClassLoader(unit));
          assertSame(rt, cti);
       }
       finally
       {
          undeploy(unit);
+      }
+   }
+
+   public void testIsolatedJars() throws Exception
+   {
+      Deployment d1 = createIsolatedDeployment("j1.jar");
+      Deployment d2 = createIsolatedDeployment("j2.jar");
+      DeployerClient main = getDeployerClient();
+      main.deploy(d1, d2);
+      try
+      {
+         DeploymentUnit du1 = getMainDeployerStructure().getDeploymentUnit(d1.getName(), true);
+         DeploymentUnit du2 = getMainDeployerStructure().getDeploymentUnit(d2.getName(), true);
+         ClassLoader cl1 = getClassLoader(du1);
+         ClassLoader cl2 = getClassLoader(du2);
+         assertFalse(cl1.equals(cl2));
+         Class<?> clazz1 = assertLoadClass(PlainJavaBean.class.getName(), cl1, cl1);
+         Class<?> clazz2 = assertLoadClass(PlainJavaBean.class.getName(), cl2, cl2);
+         assertNoClassEquality(clazz1, clazz2);
+
+         TypeInfoFactory factory = createTypeInfoFactory();
+         TypeInfo ti1 = factory.getTypeInfo(PlainJavaBean.class.getName(), cl1);
+         TypeInfo ti2 = factory.getTypeInfo(PlainJavaBean.class.getName(), cl2);
+         assertNotSame(ti1, ti2);
+         TypeInfo ti3 = factory.getTypeInfo(clazz1);
+         assertSame(ti1, ti3); // FIXME - fails with JavassistTIF
+         TypeInfo ti4 = factory.getTypeInfo(clazz2);
+         assertSame(ti2, ti4);
+         assertNotSame(ti3, ti4);
+      }
+      finally
+      {
+         main.undeploy(d1, d2);
+      }
+   }
+
+   public void testDomainHierarchy() throws Exception
+   {
+      Deployment top = createIsolatedDeployment("top.jar", null, PlainJavaBean.class);
+      Deployment left = createIsolatedDeployment("left.jar", "top.jar_Domain", AnyServlet.class);
+      Deployment right = createIsolatedDeployment("right.jar", "top.jar_Domain", AnyServlet.class);
+      DeployerClient main = getDeployerClient();
+      main.deploy(top, left, right);
+      try
+      {
+         DeploymentUnit duTop = getMainDeployerStructure().getDeploymentUnit(top.getName(), true);
+         DeploymentUnit duLeft = getMainDeployerStructure().getDeploymentUnit(left.getName(), true);
+         DeploymentUnit duRight = getMainDeployerStructure().getDeploymentUnit(right.getName(), true);
+         ClassLoader topCL = getClassLoader(duTop);
+         ClassLoader leftCL = getClassLoader(duLeft);
+         ClassLoader rightCL = getClassLoader(duRight);
+         Class<?> asL = assertLoadClass(AnyServlet.class.getName(), leftCL);
+         Class<?> asR = assertLoadClass(AnyServlet.class.getName(), rightCL);
+         assertFalse(asL.equals(asR));
+         Class<?> pjbL = assertLoadClass(PlainJavaBean.class.getName(), leftCL, topCL);
+         Class<?> pjbR = assertLoadClass(PlainJavaBean.class.getName(), rightCL, topCL);
+         assertEquals(pjbL, pjbR);
+
+         TypeInfoFactory factory = createTypeInfoFactory();
+         TypeInfo pjbTI = factory.getTypeInfo(PlainJavaBean.class.getName(), topCL);
+         TypeInfo asTIL = factory.getTypeInfo(AnyServlet.class.getName(), leftCL);
+         TypeInfo asTIR = factory.getTypeInfo(AnyServlet.class.getName(), rightCL);
+
+         TypeInfo rtL = assertReturnType(asTIL, "getBean");
+         assertSame(pjbTI, rtL);
+
+         TypeInfo rtR = assertReturnType(asTIR, "getBean");
+         assertSame(pjbTI, rtR);
+      }
+      finally
+      {
+         main.undeploy(top, left, right);
       }
    }
 }
