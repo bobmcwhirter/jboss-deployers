@@ -25,8 +25,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.CtMethod;
 import junit.framework.Test;
+
+import org.jboss.classpool.spi.ClassPoolRepository;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.reflect.plugins.javassist.JavassistTypeInfoFactory;
+import org.jboss.reflect.spi.TypeInfo;
+import org.jboss.reflect.spi.TypeInfoFactory;
 import org.jboss.test.deployers.vfs.reflect.support.crm.CrmFacade;
 import org.jboss.test.deployers.vfs.reflect.support.ejb.MySLSBean;
 import org.jboss.test.deployers.vfs.reflect.support.ext.External;
@@ -114,16 +122,23 @@ public class ClassPoolTestCase extends ClassPoolTest
       assertClassPool(directory, PlainJavaBean.class);
    }
 
-   /**
-    * FIXME -- classpools issue?
-    */
    public void testHierarchyCLUsage() throws Exception
    {
       AssembledDirectory directory = createBasicEar();
       DeploymentUnit unit = assertDeploy(directory);
       try
       {
-         // TODO - test just classpools
+         DeploymentUnit child = getDeploymentUnit(unit, "simple.war");
+         ClassLoader cl = getClassLoader(child);
+         ClassPoolRepository repository = ClassPoolRepository.getInstance();
+         ClassPool classPool = repository.registerClassLoader(cl);
+         CtClass ctClass = classPool.getCtClass(AnyServlet.class.getName());
+         CtMethod ctMethod = ctClass.getDeclaredMethod("getBean");
+         assertNotNull("No such 'getBean' method on " + ctClass, ctMethod);
+         CtClass returnCtClass = ctMethod.getReturnType();
+         classPool = repository.registerClassLoader(getClassLoader(unit));
+         CtClass returnCtClass2 = classPool.getCtClass(PlainJavaBean.class.getName());
+         assertSame(returnCtClass, returnCtClass2);
       }
       finally
       {

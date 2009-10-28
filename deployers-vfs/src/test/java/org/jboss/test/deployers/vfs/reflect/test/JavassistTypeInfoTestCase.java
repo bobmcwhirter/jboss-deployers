@@ -22,8 +22,16 @@
 package org.jboss.test.deployers.vfs.reflect.test;
 
 import junit.framework.Test;
+
+import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.reflect.plugins.javassist.JavassistTypeInfoFactory;
+import org.jboss.reflect.spi.ClassInfo;
+import org.jboss.reflect.spi.MethodInfo;
+import org.jboss.reflect.spi.TypeInfo;
 import org.jboss.reflect.spi.TypeInfoFactory;
+import org.jboss.test.deployers.vfs.classpool.support.jar.PlainJavaBean;
+import org.jboss.test.deployers.vfs.classpool.support.web.AnyServlet;
+import org.jboss.virtual.AssembledDirectory;
 
 /**
  * Javassist test case for TypeInfo.
@@ -52,6 +60,37 @@ public class JavassistTypeInfoTestCase extends TypeInfoTest
    @Override
    public void testHierarchyCLUsage() throws Exception
    {
-      // FIXME -- fix Classpool's hierarchy usage
+      AssembledDirectory directory = createBasicEar();
+      DeploymentUnit unit = assertDeploy(directory);
+      try
+      {
+         TypeInfoFactory typeInfoFactory = new JavassistTypeInfoFactory();
+         DeploymentUnit child = getDeploymentUnit(unit, "simple.war");
+         ClassLoader cl = getClassLoader(child);
+         
+         try
+         {
+            cl.loadClass(PlainJavaBean.class.getName());
+         } catch (ClassNotFoundException e) {}
+         
+         
+         ClassLoader cl1 = getClassLoader(unit);
+         try
+         {
+            cl1.loadClass(PlainJavaBean.class.getName());
+         } catch (ClassNotFoundException e) {}
+         
+         TypeInfo ti = typeInfoFactory.getTypeInfo(AnyServlet.class.getName(), cl);
+         ClassInfo ci = assertInstanceOf(ti, ClassInfo.class);
+         MethodInfo mi = ci.getDeclaredMethod("getBean");
+         assertNotNull("No such 'getBean' method on " + ci, mi);
+         TypeInfo rt = mi.getReturnType();
+         TypeInfo cti = typeInfoFactory.getTypeInfo(PlainJavaBean.class.getName(), getClassLoader(unit));
+         assertSame(rt, cti);
+      }
+      finally
+      {
+         undeploy(unit);
+      }
    }
 }

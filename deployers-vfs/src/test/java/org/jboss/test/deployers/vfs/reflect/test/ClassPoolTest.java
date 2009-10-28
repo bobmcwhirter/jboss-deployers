@@ -24,10 +24,14 @@ package org.jboss.test.deployers.vfs.reflect.test;
 import java.util.HashMap;
 import java.util.Map;
 
+import javassist.ClassPool;
+import javassist.CtClass;
+
+import org.jboss.classpool.spi.ClassPoolRepository;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
-import org.jboss.virtual.VirtualFile;
-import org.jboss.reflect.spi.TypeInfoFactory;
 import org.jboss.reflect.plugins.javassist.JavassistTypeInfoFactory;
+import org.jboss.reflect.spi.TypeInfoFactory;
+import org.jboss.virtual.VirtualFile;
 
 /**
  * Abstract test for ClassPool.
@@ -64,7 +68,21 @@ public abstract class ClassPoolTest extends ReflectTest
       DeploymentUnit unit = assertDeploy(file);
       try
       {
-         // TODO - actually test *just* classpools
+         for (Map.Entry<Class<?>, String> entry : classes.entrySet())
+         {
+            DeploymentUnit du = getDeploymentUnit(unit, entry.getValue());
+            ClassLoader classLoader = getClassLoader(du);
+            Class<?> clazz = entry.getKey();
+            String className = clazz.getName();
+            // sanity check
+            Class<?> loadedClass = assertLoadClass(className, classLoader);
+            ClassPoolRepository repository = ClassPoolRepository.getInstance();
+            ClassPool classPool = repository.registerClassLoader(classLoader);
+            CtClass ctClass = classPool.getCtClass(className);
+            assertEquals(className, clazz.getName());
+            ClassLoader cl = ctClass.getClassPool().getClassLoader();
+            assertEquals(loadedClass.getClassLoader(), cl);
+         }
       }
       finally
       {
