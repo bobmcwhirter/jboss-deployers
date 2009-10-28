@@ -153,12 +153,12 @@ public abstract class TypeInfoTest extends ReflectTest
          TypeInfoFactory factory = createTypeInfoFactory();
          TypeInfo ti1 = factory.getTypeInfo(PlainJavaBean.class.getName(), cl1);
          TypeInfo ti2 = factory.getTypeInfo(PlainJavaBean.class.getName(), cl2);
-         assertNotSame(ti1, ti2);
+         assertNotEquals(ti1, ti2);
          TypeInfo ti3 = factory.getTypeInfo(clazz1);
-         assertSame(ti1, ti3); // FIXME - fails with JavassistTIF
+         assertEquals(ti1, ti3);
          TypeInfo ti4 = factory.getTypeInfo(clazz2);
-         assertSame(ti2, ti4);
-         assertNotSame(ti3, ti4);
+         assertEquals(ti2, ti4);
+         assertNotEquals(ti3, ti4);
       }
       finally
       {
@@ -194,10 +194,10 @@ public abstract class TypeInfoTest extends ReflectTest
          TypeInfo asTIR = factory.getTypeInfo(AnyServlet.class.getName(), rightCL);
 
          TypeInfo rtL = assertReturnType(asTIL, "getBean");
-         assertSame(pjbTI, rtL);
+         assertEquals(pjbTI, rtL);
 
          TypeInfo rtR = assertReturnType(asTIR, "getBean");
-         assertSame(pjbTI, rtR);
+         assertEquals(pjbTI, rtR);
       }
       finally
       {

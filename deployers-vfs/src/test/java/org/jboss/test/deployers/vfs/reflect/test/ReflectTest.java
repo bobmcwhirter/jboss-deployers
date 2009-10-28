@@ -26,29 +26,30 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jboss.classloader.plugins.jdk.AbstractJDKChecker;
+import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
+import org.jboss.classloading.spi.metadata.ExportAll;
+import org.jboss.classloading.spi.version.Version;
+import org.jboss.deployers.client.spi.Deployment;
+import org.jboss.deployers.spi.attachments.MutableAttachments;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.vfs.deployer.kernel.BeanMetaDataFactoryVisitor;
 import org.jboss.deployers.vfs.spi.client.VFSDeploymentFactory;
-import org.jboss.deployers.client.spi.Deployment;
-import org.jboss.deployers.spi.attachments.MutableAttachments;
-import org.jboss.reflect.spi.TypeInfo;
-import org.jboss.reflect.spi.TypeInfoFactory;
 import org.jboss.reflect.spi.ClassInfo;
 import org.jboss.reflect.spi.MethodInfo;
+import org.jboss.reflect.spi.TypeInfo;
+import org.jboss.reflect.spi.TypeInfoFactory;
 import org.jboss.test.deployers.BootstrapDeployersTest;
-import org.jboss.test.deployers.vfs.reflect.support.jar.PlainJavaBean;
+import org.jboss.test.deployers.vfs.reflect.support.crm.CrmFacade;
 import org.jboss.test.deployers.vfs.reflect.support.ejb.MySLSBean;
-import org.jboss.test.deployers.vfs.reflect.support.web.AnyServlet;
+import org.jboss.test.deployers.vfs.reflect.support.ext.External;
+import org.jboss.test.deployers.vfs.reflect.support.jar.PlainJavaBean;
+import org.jboss.test.deployers.vfs.reflect.support.jsf.JsfBean;
 import org.jboss.test.deployers.vfs.reflect.support.service.SomeMBean;
 import org.jboss.test.deployers.vfs.reflect.support.ui.UIBean;
-import org.jboss.test.deployers.vfs.reflect.support.jsf.JsfBean;
-import org.jboss.test.deployers.vfs.reflect.support.crm.CrmFacade;
 import org.jboss.test.deployers.vfs.reflect.support.util.SomeUtil;
-import org.jboss.test.deployers.vfs.reflect.support.ext.External;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.test.deployers.vfs.reflect.support.web.AnyServlet;
 import org.jboss.virtual.AssembledDirectory;
-import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
-import org.jboss.classloading.spi.metadata.ExportAll;
+import org.jboss.virtual.VirtualFile;
 
 /**
  * Abstract test for Reflect.
@@ -127,6 +128,16 @@ public abstract class ReflectTest extends BootstrapDeployersTest
       {
          undeploy(unit);
       }
+   }
+
+   protected void assertEquals(TypeInfo ti1, TypeInfo ti2)
+   {
+      assertSame(ti1, ti2);
+   }
+
+   protected void assertNotEquals(TypeInfo ti1, TypeInfo ti2)
+   {
+      assertNotSame(ti1, ti2);
    }
 
    protected DeploymentUnit getDeploymentUnit(DeploymentUnit parent, String name)
@@ -269,12 +280,17 @@ public abstract class ReflectTest extends BootstrapDeployersTest
    {
       AssembledDirectory jar = createJar(name, reference);
       Deployment deployment = VFSDeploymentFactory.getInstance().createVFSDeployment(jar);
+
+      ClassLoadingMetaData clmd = new ClassLoadingMetaData();
+      clmd.setDomain(name + "_Domain");
+      clmd.setParentDomain(parentDomain);
+      clmd.setImportAll(true);
+      clmd.setExportAll(ExportAll.NON_EMPTY);
+      clmd.setVersion(Version.DEFAULT_VERSION);
+
       MutableAttachments attachments = (MutableAttachments)deployment.getPredeterminedManagedObjects();
-      ClassLoadingMetaData clmd1 = new ClassLoadingMetaData();
-      clmd1.setDomain(name + "_Domain");
-      clmd1.setParentDomain(parentDomain);
-      clmd1.setExportAll(ExportAll.NON_EMPTY);
-      attachments.addAttachment(ClassLoadingMetaData.class, clmd1);
+      attachments.addAttachment(ClassLoadingMetaData.class, clmd);
+
       return deployment;
    }
 }
