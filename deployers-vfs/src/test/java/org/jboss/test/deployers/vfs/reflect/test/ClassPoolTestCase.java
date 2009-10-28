@@ -29,12 +29,8 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import junit.framework.Test;
-
 import org.jboss.classpool.spi.ClassPoolRepository;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
-import org.jboss.reflect.plugins.javassist.JavassistTypeInfoFactory;
-import org.jboss.reflect.spi.TypeInfo;
-import org.jboss.reflect.spi.TypeInfoFactory;
 import org.jboss.test.deployers.vfs.reflect.support.crm.CrmFacade;
 import org.jboss.test.deployers.vfs.reflect.support.ejb.MySLSBean;
 import org.jboss.test.deployers.vfs.reflect.support.ext.External;
