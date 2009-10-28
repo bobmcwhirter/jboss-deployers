@@ -113,9 +113,6 @@ public abstract class TypeInfoTest extends ReflectTest
       assertTypeInfo(directory, PlainJavaBean.class);
    }
 
-   /**
-    * FIXME -- classpools issue?
-    */
    public void testHierarchyCLUsage() throws Exception
    {
       AssembledDirectory directory = createBasicEar();
