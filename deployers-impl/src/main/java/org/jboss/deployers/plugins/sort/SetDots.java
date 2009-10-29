@@ -46,26 +46,12 @@ public class SetDots<V> implements Dots<Set<V>>
       return set;
    }
 
-   public boolean match(Dots<Set<V>> containable)
-   {
-      if (set.isEmpty() == false)
-      {
-         for(V value : containable.getValue())
-         {
-            if (set.contains(value))
-            {
-               return true;
-            }
-         }
-      }
-      return false;
-   }
-
-   public boolean contains(Dots<Set<V>> containable)
+   public int intersect(Dots<Set<V>> containable)
    {
       Set<V> otherSet = containable.getValue();
       Set<V> copy = new HashSet<V>(otherSet);
-      return copy.retainAll(set) == false; 
+      copy.retainAll(set);
+      return copy.size();
    }
 
    public int dimension()

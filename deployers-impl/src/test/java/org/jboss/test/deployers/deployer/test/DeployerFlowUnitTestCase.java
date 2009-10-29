@@ -1092,7 +1092,7 @@ public class DeployerFlowUnitTestCase extends AbstractDeployerTest
       main.process();
    }
 
-   public void testRemovingOverlapping2() throws Exception
+   public void testPartialOverlapping() throws Exception
    {
       DeployerClient main = createMainDeployer();
 

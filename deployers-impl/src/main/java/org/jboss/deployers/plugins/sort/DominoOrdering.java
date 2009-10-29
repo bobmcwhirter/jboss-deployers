@@ -70,25 +70,24 @@ public class DominoOrdering<T extends Domino<?>>
             Dots oneTail = one.getTail();
             Dots twoHead = two.getHead();
             Dots twoTail = two.getTail();
-            boolean fstXsnd = oneTail.match(twoHead);
-            boolean sndXfst = twoTail.match(oneHead);
+            int fstXsnd = oneTail.intersect(twoHead);
+            int sndXfst = twoTail.intersect(oneHead);
             int relation = 0;
-            if (fstXsnd && sndXfst)
+            if (fstXsnd > 0 && sndXfst > 0)
             {
                // pass-through deployers
-               if (oneHead.match(twoHead) && oneTail.match(twoTail))
+               if (oneHead.intersect(twoHead) > 0 && oneTail.intersect(twoTail) > 0)
                {
                   // lets try to do more exact match
                   // although we should aviod singe dimension checks
                   // which are already part of match() check
-                  // in order not to break comparator comparison
-                  if ((twoHead.dimension() > 1 && oneTail.dimension() >= twoHead.dimension() && oneTail.contains(twoHead)) ||
-                      (oneTail.dimension() > 1 && twoHead.dimension() >= oneTail.dimension() && twoHead.contains(oneTail)))
+                  if ((twoHead.dimension() > 1 && oneTail.dimension() > 1 && fstXsnd > 1) ||
+                      (oneTail.dimension() > 1 && twoHead.dimension() > 1 && twoHead.intersect(oneTail) > 1))
                   {
                      relation = -1;
                   }
-                  else if ((oneHead.dimension() > 1 && twoTail.dimension() >= oneHead.dimension() && twoTail.contains(oneHead)) ||
-                           (twoTail.dimension() > 1 && oneHead.dimension() >= twoTail.dimension() && oneHead.contains(twoTail)))
+                  else if ((oneHead.dimension() > 1 && twoTail.dimension() > 1 && sndXfst > 1) ||
+                           (twoTail.dimension() > 1 && oneHead.dimension() > 1 && oneHead.intersect(twoTail) > 1))
                   {
                      relation = 1;
                   }
@@ -102,7 +101,7 @@ public class DominoOrdering<T extends Domino<?>>
             }
             else
             {
-               relation = fstXsnd ? -1 : (sndXfst ? 1 : 0);
+               relation = fstXsnd > 0 ? -1 : (sndXfst > 0 ? 1 : 0);
             }
 
             if (relation == 0)

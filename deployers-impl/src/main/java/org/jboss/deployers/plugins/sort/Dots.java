@@ -37,21 +37,14 @@ public interface Dots<T>
    T getValue();
 
    /**
-    * Do this dots match with the param dots.
+    * Return the dimension of intersection.
+    * For strict domino that matches this would be one,
+    * in our case is the size of intersection set.
     *
     * @param dots the dots
-    * @return true if these dots match param dots
+    * @return the intersection dimension
     */
-   boolean match(Dots<T> dots);
-
-   /**
-    * Do this dots contain the param dots.
-    * In most cases this should be te same as a match.
-    *
-    * @param dots the dots
-    * @return true if these dots contain param dots
-    */
-   boolean contains(Dots<T> dots);
+   int intersect(Dots<T> dots);
 
    /**
     * The dimension of different dots.
