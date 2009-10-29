@@ -81,14 +81,12 @@ public class DominoOrdering<T extends Domino<?>>
                   // lets try to do more exact match
                   // although we should aviod singe dimension checks
                   // which are already part of match() check
-                  if (fstXsnd > 1 || (oneTail.dimension() > 1 && twoHead.dimension() > 1 && twoHead.intersect(oneTail) > 1))
-                  {
-                     relation = -1;
-                  }
-                  else if (sndXfst > 1 || (twoTail.dimension() > 1 && oneHead.dimension() > 1 && oneHead.intersect(twoTail) > 1))
-                  {
-                     relation = 1;
-                  }
+                  int thXot = (oneTail.dimension() > 1 && twoHead.dimension() > 1) ? twoHead.intersect(oneTail) : 1;
+                  int before = Math.max(fstXsnd, thXot);
+                  int ohXtt = (oneHead.dimension() > 1 && twoTail.dimension() > 1) ? oneHead.intersect(twoTail) : 1;
+                  int after = Math.max(sndXfst, ohXtt);
+                  relation = after - before; // do we have some more exact match?
+
                   // make name compare lazy - might already be fixed with transitive order
                }
                else
