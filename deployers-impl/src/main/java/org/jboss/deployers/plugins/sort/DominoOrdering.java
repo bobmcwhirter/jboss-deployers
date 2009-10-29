@@ -81,13 +81,11 @@ public class DominoOrdering<T extends Domino<?>>
                   // lets try to do more exact match
                   // although we should aviod singe dimension checks
                   // which are already part of match() check
-                  if ((twoHead.dimension() > 1 && oneTail.dimension() > 1 && fstXsnd > 1) ||
-                      (oneTail.dimension() > 1 && twoHead.dimension() > 1 && twoHead.intersect(oneTail) > 1))
+                  if (fstXsnd > 1 || (oneTail.dimension() > 1 && twoHead.dimension() > 1 && twoHead.intersect(oneTail) > 1))
                   {
                      relation = -1;
                   }
-                  else if ((oneHead.dimension() > 1 && twoTail.dimension() > 1 && sndXfst > 1) ||
-                           (twoTail.dimension() > 1 && oneHead.dimension() > 1 && oneHead.intersect(twoTail) > 1))
+                  else if (sndXfst > 1 || (twoTail.dimension() > 1 && oneHead.dimension() > 1 && oneHead.intersect(twoTail) > 1))
                   {
                      relation = 1;
                   }
