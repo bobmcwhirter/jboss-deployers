@@ -43,6 +43,7 @@ import org.jboss.virtual.VirtualFile;
  * VFSDeploymentClassLoaderPolicyModule.
  * 
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public class VFSDeploymentClassLoaderPolicyModule extends AbstractDeploymentClassLoaderPolicyModule
@@ -77,6 +78,26 @@ public class VFSDeploymentClassLoaderPolicyModule extends AbstractDeploymentClas
       Set<VirtualFile> vfsExcludes = unit.getAttachment(VFSClassLoaderClassPathDeployer.VFS_EXCLUDES, Set.class);
       if (vfsExcludes != null)
          excludedRoots = vfsExcludes.toArray(new VirtualFile[vfsExcludes.size()]);
+   }
+
+   /**
+    * Get roots clone.
+    *
+    * @return cloned roots
+    */
+   protected VirtualFile[] getRoots()
+   {
+      return vfsRoots != NO_ROOTS ? vfsRoots.clone() : NO_ROOTS;
+   }
+
+   /**
+    * Get excluded roots clone.
+    *
+    * @return cloned excluded roots
+    */
+   protected VirtualFile[] getExcludedRoots()
+   {
+      return excludedRoots != null ? excludedRoots.clone() : null;
    }
 
    @Override
