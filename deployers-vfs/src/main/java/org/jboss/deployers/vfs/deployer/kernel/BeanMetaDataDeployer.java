@@ -22,9 +22,10 @@
 package org.jboss.deployers.vfs.deployer.kernel;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -42,8 +43,6 @@ import org.jboss.deployers.vfs.spi.deployer.helpers.KernelControllerContextCreat
 import org.jboss.kernel.Kernel;
 import org.jboss.kernel.plugins.dependency.AbstractKernelControllerContext;
 import org.jboss.kernel.spi.dependency.KernelControllerContext;
-import org.jboss.metadata.spi.scope.Scope;
-import org.jboss.metadata.spi.scope.ScopeKey;
 
 /**
  * BeanMetaDataDeployer.<p>
@@ -64,6 +63,9 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
    private List<KernelControllerContextCreator> controllerContextCreators = new ArrayList<KernelControllerContextCreator>();
    
    private ReadWriteLock lock = new ReentrantReadWriteLock();
+
+   /** Records which KernelContextCreator was used to deploy a context */
+   private Map<String, KernelControllerContextCreator> deployedWithControllerContextCreator = new ConcurrentHashMap<String, KernelControllerContextCreator>();
 
    /**
     * Create a new BeanDeployer.
@@ -201,7 +203,10 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
             {
                KernelControllerContext context = creator.createContext(controller, unit, deployment);
                if (context != null)
+               {
+                  deployedWithControllerContextCreator.put(deployment.getName(), creator);
                   return context;
+               }
             }
          }
          finally
@@ -215,7 +220,16 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
    @Override
    public void undeploy(DeploymentUnit unit, BeanMetaData deployment)
    {
-      controller.uninstall(deployment.getName());
+      KernelControllerContextCreator creator = deployedWithControllerContextCreator.remove(deployment.getName());
+      boolean uninstalled = false;
+      if (creator != null)
+      {
+         uninstalled = creator.uninstallContext(controller, unit, deployment);
+      }
+      if (!uninstalled)
+      {
+         controller.uninstall(deployment.getName());
+      }
       
       // Remove any classloader metadata we added (not necessary if we clone above)
       ClassLoaderMetaData classLoader = deployment.getClassLoader();

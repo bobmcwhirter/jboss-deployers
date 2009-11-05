@@ -34,8 +34,10 @@ import org.jboss.kernel.plugins.dependency.AbstractKernelControllerContext;
 import org.jboss.test.deployers.support.TCCLClassLoaderDeployer;
 import org.jboss.test.deployers.vfs.deployer.AbstractDeployerUnitTest;
 import org.jboss.test.deployers.vfs.deployer.bean.support.NoopControllerContextCreator;
+import org.jboss.test.deployers.vfs.deployer.bean.support.NotUndeployingSpecialControllerContextCreator;
 import org.jboss.test.deployers.vfs.deployer.bean.support.SpecialControllerContextCreator;
 import org.jboss.test.deployers.vfs.deployer.bean.support.TriggerSpecialControllerContextDeployer;
+import org.jboss.test.deployers.vfs.deployer.bean.support.UndeployingSpecialControllerContextCreator;
 
 /**
  * 
@@ -110,7 +112,7 @@ public class KernelControllerContextCreatorTestCase extends AbstractDeployerUnit
       NoopControllerContextCreator.getTriggered().clear();
       NoopControllerContextCreator noop1 = new NoopControllerContextCreator(1);
       beanMetaDataDeployer.addControllerContextCreator(noop1);
-      SpecialControllerContextCreator special = new SpecialControllerContextCreator(2);
+      NotUndeployingSpecialControllerContextCreator special = new NotUndeployingSpecialControllerContextCreator(2);
       beanMetaDataDeployer.addControllerContextCreator(special);
       NoopControllerContextCreator noop2 = new NoopControllerContextCreator(3);
       beanMetaDataDeployer.addControllerContextCreator(noop2);
@@ -128,6 +130,7 @@ public class KernelControllerContextCreatorTestCase extends AbstractDeployerUnit
          assertEquals(AbstractKernelControllerContext.class, test.getClass());
          assertUndeploy(context);
          assertNull(controller.getContext("Test", null));
+         assertEmpty(special.getUndeployedNames());
       }
       finally
       {
@@ -137,14 +140,14 @@ public class KernelControllerContextCreatorTestCase extends AbstractDeployerUnit
       }
    }
 
-   public void testSpecialControllerContextCreatorTriggered() throws Throwable
+   public void testSpecialControllerContextCreatorTriggeredButNotHandlingUndeploy() throws Throwable
    {
       NoopControllerContextCreator.getTriggered().clear();
       addDeployer(main, new TriggerSpecialControllerContextDeployer());
       
       NoopControllerContextCreator noop1 = new NoopControllerContextCreator(1);
       beanMetaDataDeployer.addControllerContextCreator(noop1);
-      SpecialControllerContextCreator special = new SpecialControllerContextCreator(2);
+      NotUndeployingSpecialControllerContextCreator special = new NotUndeployingSpecialControllerContextCreator(2);
       beanMetaDataDeployer.addControllerContextCreator(special);
       NoopControllerContextCreator noop2 = new NoopControllerContextCreator(3);
       beanMetaDataDeployer.addControllerContextCreator(noop2);
@@ -160,8 +163,48 @@ public class KernelControllerContextCreatorTestCase extends AbstractDeployerUnit
          ControllerContext test = controller.getInstalledContext("Test");
          assertNotNull(test);
          assertEquals(SpecialControllerContextCreator.SpecialControllerContext.class, test.getClass());
+         assertFalse(special.getUndeployedNames().contains("Test"));
          assertUndeploy(context);
          assertNull(controller.getContext("Test", null));
+         assertEquals(1, special.getUndeployedNames().size());
+         assertTrue(special.getUndeployedNames().contains("Test"));
+      }
+      finally
+      {
+         beanMetaDataDeployer.removeControllerContextCreator(noop1);
+         beanMetaDataDeployer.removeControllerContextCreator(special);
+         beanMetaDataDeployer.removeControllerContextCreator(noop2);
+      }
+   }
+   
+   public void testSpecialControllerContextCreatorTriggeredAndHandlingUndeploy() throws Throwable
+   {
+      NoopControllerContextCreator.getTriggered().clear();
+      addDeployer(main, new TriggerSpecialControllerContextDeployer());
+      
+      NoopControllerContextCreator noop1 = new NoopControllerContextCreator(1);
+      beanMetaDataDeployer.addControllerContextCreator(noop1);
+      UndeployingSpecialControllerContextCreator special = new UndeployingSpecialControllerContextCreator(2);
+      beanMetaDataDeployer.addControllerContextCreator(special);
+      NoopControllerContextCreator noop2 = new NoopControllerContextCreator(3);
+      beanMetaDataDeployer.addControllerContextCreator(noop2);
+      try
+      {
+         VFSDeployment context = createDeployment("/bean", "toplevel/my-beans.xml");
+         assertDeploy(context);
+         
+         assertEquals(1, NoopControllerContextCreator.getTriggered().size());
+         assertTrue(NoopControllerContextCreator.getTriggered().contains(1));
+         assertFalse(NoopControllerContextCreator.getTriggered().contains(3));
+         
+         ControllerContext test = controller.getInstalledContext("Test");
+         assertNotNull(test);
+         assertEquals(SpecialControllerContextCreator.SpecialControllerContext.class, test.getClass());
+         assertFalse(special.getUndeployedNames().contains("Test"));
+         assertUndeploy(context);
+         assertNull(controller.getContext("Test", null));
+         assertEquals(1, special.getUndeployedNames().size());
+         assertTrue(special.getUndeployedNames().contains("Test"));
       }
       finally
       {

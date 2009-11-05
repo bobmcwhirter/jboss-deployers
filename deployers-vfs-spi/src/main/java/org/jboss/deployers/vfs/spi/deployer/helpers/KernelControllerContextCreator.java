@@ -44,10 +44,25 @@ public interface KernelControllerContextCreator
    
    /**
     * Create a controller context
+    * 
     * @param controller The controller to which the beans will be deployed
     * @param unit The deployment unit we are deploying
     * @param beanMetaData The bean metadata we are deploying
     * @return the created controller context or null if this controller context creator should not handle the creation of the context 
     */
    KernelControllerContext createContext(Controller controller, DeploymentUnit unit, BeanMetaData beanMetaData);
+   
+   /**
+    * Hook to uninstall a context from the controller if it needs special handling on uninstall. The BeanMetaDataDeployer
+    * remembers which KernelContextCreator was used to create a KernelControllerContext and on undeploy will
+    * call this method.
+    * 
+    * @param controller The controller containing the context
+    * @param unit The deployment unit we are uninstalling
+    * @param beanMetaData The bean metadata of the context that we are uninstalling. Its name is normally 
+    * the same as the name of the context to be uninstalled
+    * @return true if uninstall was handled here, false if we did not do the uninstall (i.e. nothing special 
+    * is required for the uninstall, so it should be handled as normal by the BeanMetaDataDeployer)
+    */
+   boolean uninstallContext(Controller controller, DeploymentUnit unit, BeanMetaData beanMetaData);
 }

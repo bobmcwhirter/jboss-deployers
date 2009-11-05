@@ -67,4 +67,9 @@ public class NoopControllerContextCreator implements KernelControllerContextCrea
    {
       return order;
    }
+
+   public boolean uninstallContext(Controller controller, DeploymentUnit unit, BeanMetaData beanMetaData)
+   {
+      throw new IllegalStateException("Should not be called since NoopCCC never creates any deployments");
+   }
 }
