@@ -211,29 +211,6 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
       }
       return new AbstractKernelControllerContext(null, deployment, null);
    }
-   
-   /**
-    * Merge scope keys.
-    *
-    * @param contextKey the context key
-    * @param unitKey the unit key
-    * @deprecated no longer in use
-    */
-   @Deprecated
-   protected static void mergeScopes(ScopeKey contextKey, ScopeKey unitKey)
-   {
-      if (contextKey == null)
-         return;
-      if (unitKey == null)
-         return;
-
-      Collection<Scope> unitScopes = unitKey.getScopes();
-      if (unitScopes == null || unitScopes.isEmpty())
-         return;
-
-      for (Scope scope : unitScopes)
-         contextKey.addScope(scope);
-   }
 
    @Override
    public void undeploy(DeploymentUnit unit, BeanMetaData deployment)
