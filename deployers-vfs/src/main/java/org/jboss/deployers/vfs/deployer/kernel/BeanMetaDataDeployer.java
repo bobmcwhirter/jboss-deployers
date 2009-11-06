@@ -64,7 +64,7 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
    
    private ReadWriteLock lock = new ReentrantReadWriteLock();
 
-   /** Records which KernelContextCreator was used to deploy a context */
+   /** Records which KernelControllerContextCreator was used to deploy a context */
    private Map<String, KernelControllerContextCreator> deployedWithControllerContextCreator = new ConcurrentHashMap<String, KernelControllerContextCreator>();
 
    /**
@@ -188,6 +188,7 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
     * Creates a kernel controller context using the controller context creators in controllerContextCreators.
     * The first controller context creator that returns a context is used. If no matching controller context
     * creator is found, a plain KernelControllerContext is created.
+    *
     * @param unit The deployment unit
     * @param deployment The bean metadata being deployed
     * @return the created KernelControllerContext
@@ -221,12 +222,7 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
    public void undeploy(DeploymentUnit unit, BeanMetaData deployment)
    {
       KernelControllerContextCreator creator = deployedWithControllerContextCreator.remove(deployment.getName());
-      boolean uninstalled = false;
-      if (creator != null)
-      {
-         uninstalled = creator.uninstallContext(controller, unit, deployment);
-      }
-      if (!uninstalled)
+      if (creator == null || creator.uninstallContext(controller, unit, deployment) == false)
       {
          controller.uninstall(deployment.getName());
       }
