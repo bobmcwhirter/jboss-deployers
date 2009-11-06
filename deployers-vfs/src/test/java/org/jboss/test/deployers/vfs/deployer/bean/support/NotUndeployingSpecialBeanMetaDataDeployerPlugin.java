@@ -24,56 +24,40 @@ package org.jboss.test.deployers.vfs.deployer.bean.support;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jboss.beans.info.spi.BeanInfo;
 import org.jboss.beans.metadata.spi.BeanMetaData;
 import org.jboss.dependency.spi.Controller;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
-import org.jboss.deployers.vfs.spi.deployer.helpers.KernelControllerContextCreator;
-import org.jboss.kernel.plugins.dependency.AbstractKernelControllerContext;
-import org.jboss.kernel.spi.dependency.KernelControllerContext;
 
 /**
  * 
  * @author <a href="kabir.khan@jboss.com">Kabir Khan</a>
  * @version $Revision: 1.1 $
  */
-public abstract class SpecialControllerContextCreator implements KernelControllerContextCreator
+public class NotUndeployingSpecialBeanMetaDataDeployerPlugin extends SpecialBeanMetaDataDeployerPlugin
 {
-   public static final String TRIGGER = "TriggerSpecialControllerContextCreator";
-      
-   private int order;
+   private List<String> undeployedNames = new ArrayList<String>();
    
-   public SpecialControllerContextCreator()
+   public NotUndeployingSpecialBeanMetaDataDeployerPlugin()
    {
-      this(3);
-   }
-   
-   public SpecialControllerContextCreator(int order)
-   {
-      this.order = order;
-   }
-   
-   public KernelControllerContext createContext(Controller controller, DeploymentUnit unit, BeanMetaData beanMetaData)
-   {
-      if (unit.getAttachment(TRIGGER) != null)
-         return new SpecialControllerContext(null, beanMetaData, null);
-      return null;
-   }
-   
-   public static class SpecialControllerContext extends AbstractKernelControllerContext
-   {
-      protected SpecialControllerContext(BeanInfo info, BeanMetaData metaData, Object target)
-      {
-         // FIXME SpecialControllerContext constructor
-         super(info, metaData, target);
-      }
-      
+      // FIXME NotUndeployingSpecialControllerContextCreator constructor
+      super();
    }
 
-   public int getRelativeOrder()
+   public NotUndeployingSpecialBeanMetaDataDeployerPlugin(int order)
    {
-      return order;
+      // FIXME NotUndeployingSpecialControllerContextCreator constructor
+      super(order);
+   }
+
+   public boolean uninstallContext(Controller controller, DeploymentUnit unit, BeanMetaData beanMetaData)
+   {
+      undeployedNames.add(beanMetaData.getName());
+      return false;
+   }
+
+   public List<String> getUndeployedNames()
+   {
+      return undeployedNames;
    }
 
 }
-

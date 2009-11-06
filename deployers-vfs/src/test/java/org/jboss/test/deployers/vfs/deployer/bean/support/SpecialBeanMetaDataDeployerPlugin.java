@@ -24,40 +24,56 @@ package org.jboss.test.deployers.vfs.deployer.bean.support;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jboss.beans.info.spi.BeanInfo;
 import org.jboss.beans.metadata.spi.BeanMetaData;
 import org.jboss.dependency.spi.Controller;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.deployers.vfs.spi.deployer.helpers.BeanMetaDataDeployerPlugin;
+import org.jboss.kernel.plugins.dependency.AbstractKernelControllerContext;
+import org.jboss.kernel.spi.dependency.KernelControllerContext;
 
 /**
  * 
  * @author <a href="kabir.khan@jboss.com">Kabir Khan</a>
  * @version $Revision: 1.1 $
  */
-public class NotUndeployingSpecialControllerContextCreator extends SpecialControllerContextCreator
+public abstract class SpecialBeanMetaDataDeployerPlugin implements BeanMetaDataDeployerPlugin
 {
-   private List<String> undeployedNames = new ArrayList<String>();
+   public static final String TRIGGER = "TriggerSpecialControllerContextCreator";
+      
+   private int order;
    
-   public NotUndeployingSpecialControllerContextCreator()
+   public SpecialBeanMetaDataDeployerPlugin()
    {
-      // FIXME NotUndeployingSpecialControllerContextCreator constructor
-      super();
+      this(3);
+   }
+   
+   public SpecialBeanMetaDataDeployerPlugin(int order)
+   {
+      this.order = order;
+   }
+   
+   public KernelControllerContext createContext(Controller controller, DeploymentUnit unit, BeanMetaData beanMetaData)
+   {
+      if (unit.getAttachment(TRIGGER) != null)
+         return new SpecialControllerContext(null, beanMetaData, null);
+      return null;
+   }
+   
+   public static class SpecialControllerContext extends AbstractKernelControllerContext
+   {
+      protected SpecialControllerContext(BeanInfo info, BeanMetaData metaData, Object target)
+      {
+         // FIXME SpecialControllerContext constructor
+         super(info, metaData, target);
+      }
+      
    }
 
-   public NotUndeployingSpecialControllerContextCreator(int order)
+   public int getRelativeOrder()
    {
-      // FIXME NotUndeployingSpecialControllerContextCreator constructor
-      super(order);
-   }
-
-   public boolean uninstallContext(Controller controller, DeploymentUnit unit, BeanMetaData beanMetaData)
-   {
-      undeployedNames.add(beanMetaData.getName());
-      return false;
-   }
-
-   public List<String> getUndeployedNames()
-   {
-      return undeployedNames;
+      return order;
    }
 
 }
+

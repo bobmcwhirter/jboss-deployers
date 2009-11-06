@@ -27,36 +27,49 @@ import java.util.List;
 import org.jboss.beans.metadata.spi.BeanMetaData;
 import org.jboss.dependency.spi.Controller;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.deployers.vfs.spi.deployer.helpers.BeanMetaDataDeployerPlugin;
+import org.jboss.kernel.spi.dependency.KernelControllerContext;
 
 /**
  * 
  * @author <a href="kabir.khan@jboss.com">Kabir Khan</a>
  * @version $Revision: 1.1 $
  */
-public class UndeployingSpecialControllerContextCreator extends SpecialControllerContextCreator
+public class NoopBeanMetaDataDeployerPlugin implements BeanMetaDataDeployerPlugin
 {
-   private List<String> undeployedNames = new ArrayList<String>();
+   private static List<Integer> triggered = new ArrayList<Integer>();
    
-   public UndeployingSpecialControllerContextCreator()
+   private int order;
+   
+   public NoopBeanMetaDataDeployerPlugin(int order)
    {
-      super();
+      this.order = order;
+   }
+   
+   public static List<Integer> getTriggered()
+   {
+      return triggered;
+   }
+   
+   public KernelControllerContext createContext(Controller controller, DeploymentUnit unit, BeanMetaData beanMetaData)
+   {
+      if (controller == null)
+         throw new IllegalArgumentException("Null controller");
+      if (unit == null)
+         throw new IllegalArgumentException("Null unit");
+      if (beanMetaData == null)
+         throw new IllegalArgumentException("Null beanMetadata");
+      triggered.add(order);
+      return null;
    }
 
-   public UndeployingSpecialControllerContextCreator(int order)
+   public int getRelativeOrder()
    {
-      super(order);
+      return order;
    }
 
    public boolean uninstallContext(Controller controller, DeploymentUnit unit, BeanMetaData beanMetaData)
    {
-      undeployedNames.add(beanMetaData.getName());
-      controller.uninstall(beanMetaData.getName());
-      return false;
+      throw new IllegalStateException("Should not be called since NoopBMDDP never creates any deployments");
    }
-
-   public List<String> getUndeployedNames()
-   {
-      return undeployedNames;
-   }
-
 }

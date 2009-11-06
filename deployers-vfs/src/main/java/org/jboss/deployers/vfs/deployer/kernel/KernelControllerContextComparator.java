@@ -2,7 +2,7 @@ package org.jboss.deployers.vfs.deployer.kernel;
 
 import java.util.Comparator;
 
-import org.jboss.deployers.vfs.spi.deployer.helpers.KernelControllerContextCreator;
+import org.jboss.deployers.vfs.spi.deployer.helpers.BeanMetaDataDeployerPlugin;
 
 /**
  * Singleton comparator to compare KernelControllerContextCreators by their relative order
@@ -10,7 +10,7 @@ import org.jboss.deployers.vfs.spi.deployer.helpers.KernelControllerContextCreat
  * @author <a href="kabir.khan@jboss.com">Kabir Khan</a>
  * @version $Revision: 1.1 $
  */
-public class KernelControllerContextComparator implements Comparator<KernelControllerContextCreator>
+public class KernelControllerContextComparator implements Comparator<BeanMetaDataDeployerPlugin>
 {
    /** Singleton instance*/
    private static final KernelControllerContextComparator INSTANCE = new KernelControllerContextComparator();
@@ -34,7 +34,7 @@ public class KernelControllerContextComparator implements Comparator<KernelContr
     * @param o1 The second KernelContextCreator
     * @return An integer as per the {@link Comparator#compare(Object, Object)} contract
     */
-   public int compare(KernelControllerContextCreator o1, KernelControllerContextCreator o2)
+   public int compare(BeanMetaDataDeployerPlugin o1, BeanMetaDataDeployerPlugin o2)
    {
       if (o1.getRelativeOrder() < o2.getRelativeOrder())
          return -1;

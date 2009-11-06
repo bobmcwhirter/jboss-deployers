@@ -39,7 +39,7 @@ import org.jboss.dependency.spi.ScopeInfo;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.helpers.AbstractSimpleRealDeployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
-import org.jboss.deployers.vfs.spi.deployer.helpers.KernelControllerContextCreator;
+import org.jboss.deployers.vfs.spi.deployer.helpers.BeanMetaDataDeployerPlugin;
 import org.jboss.kernel.Kernel;
 import org.jboss.kernel.plugins.dependency.AbstractKernelControllerContext;
 import org.jboss.kernel.spi.dependency.KernelControllerContext;
@@ -59,13 +59,13 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
    /** The controller */
    private Controller controller;
    
-   /** List of controller context creators */
-   private List<KernelControllerContextCreator> controllerContextCreators = new ArrayList<KernelControllerContextCreator>();
+   /** List of bean metadata plugins */
+   private List<BeanMetaDataDeployerPlugin> plugins = new ArrayList<BeanMetaDataDeployerPlugin>();
    
    private ReadWriteLock lock = new ReentrantReadWriteLock();
 
-   /** Records which KernelControllerContextCreator was used to deploy a context */
-   private Map<String, KernelControllerContextCreator> deployedWithControllerContextCreator = new ConcurrentHashMap<String, KernelControllerContextCreator>();
+   /** Records which plugin was used to deploy a context */
+   private Map<String, BeanMetaDataDeployerPlugin> deployedWithPlugin = new ConcurrentHashMap<String, BeanMetaDataDeployerPlugin>();
 
    /**
     * Create a new BeanDeployer.
@@ -113,7 +113,7 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
     * 
     * @param creator The controller context creator to be added
     */
-   public void addControllerContextCreator(KernelControllerContextCreator creator)
+   public void addControllerContextCreator(BeanMetaDataDeployerPlugin creator)
    {
       if (creator == null)
          return;
@@ -121,8 +121,8 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
       lock.writeLock().lock();
       try
       {
-         controllerContextCreators.add(creator);
-         Collections.sort(controllerContextCreators, KernelControllerContextComparator.getInstance());
+         plugins.add(creator);
+         Collections.sort(plugins, KernelControllerContextComparator.getInstance());
       }
       finally
       {
@@ -135,7 +135,7 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
     * 
     * @param creator The controller context creator to be removed
     */
-   public void removeControllerContextCreator(KernelControllerContextCreator creator)
+   public void removeControllerContextCreator(BeanMetaDataDeployerPlugin creator)
    {
       if (creator == null)
          return;
@@ -143,7 +143,7 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
       lock.writeLock().lock();
       try
       {
-         controllerContextCreators.remove(creator);
+         plugins.remove(creator);
       }
       finally
       {
@@ -188,24 +188,23 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
     * Creates a kernel controller context using the controller context creators in controllerContextCreators.
     * The first controller context creator that returns a context is used. If no matching controller context
     * creator is found, a plain KernelControllerContext is created.
-    *
     * @param unit The deployment unit
     * @param deployment The bean metadata being deployed
     * @return the created KernelControllerContext
     */
    protected KernelControllerContext createControllerContext(DeploymentUnit unit, BeanMetaData deployment)
    {
-      if (controllerContextCreators.size() > 0)
+      if (plugins.size() > 0)
       {
          lock.readLock().lock();
          try
          {
-            for (KernelControllerContextCreator creator : controllerContextCreators)
+            for (BeanMetaDataDeployerPlugin plugin : plugins)
             {
-               KernelControllerContext context = creator.createContext(controller, unit, deployment);
+               KernelControllerContext context = plugin.createContext(controller, unit, deployment);
                if (context != null)
                {
-                  deployedWithControllerContextCreator.put(deployment.getName(), creator);
+                  deployedWithPlugin.put(deployment.getName(), plugin);
                   return context;
                }
             }
@@ -221,8 +220,8 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
    @Override
    public void undeploy(DeploymentUnit unit, BeanMetaData deployment)
    {
-      KernelControllerContextCreator creator = deployedWithControllerContextCreator.remove(deployment.getName());
-      if (creator == null || creator.uninstallContext(controller, unit, deployment) == false)
+      BeanMetaDataDeployerPlugin plugin = deployedWithPlugin.remove(deployment.getName());
+      if (plugin == null || plugin.uninstallContext(controller, unit, deployment) == false)
       {
          controller.uninstall(deployment.getName());
       }

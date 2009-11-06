@@ -31,9 +31,9 @@ import org.jboss.test.deployers.vfs.deployer.bean.test.BeanDeployerUnitTestCase;
 import org.jboss.test.deployers.vfs.deployer.bean.test.BeanManagedDeploymentUnitTestCase;
 import org.jboss.test.deployers.vfs.deployer.bean.test.BeanMetaDataFactoryDeployerUnitTestCase;
 import org.jboss.test.deployers.vfs.deployer.bean.test.BeanScanningUnitTestCase;
-import org.jboss.test.deployers.vfs.deployer.bean.test.BootstrapKernelControllerContextCreatorTestCase;
+import org.jboss.test.deployers.vfs.deployer.bean.test.BootstrapBeanMetaDataPluginTestCase;
 import org.jboss.test.deployers.vfs.deployer.bean.test.BuilderBeansUnitTestCase;
-import org.jboss.test.deployers.vfs.deployer.bean.test.KernelControllerContextCreatorTestCase;
+import org.jboss.test.deployers.vfs.deployer.bean.test.BeanMetaDataDeployerPluginTestCase;
 import org.jboss.test.deployers.vfs.deployer.bean.test.KernelDeployerUnitTestCase;
 import org.jboss.test.deployers.vfs.deployer.bean.test.KernelScopeUnitTestCase;
 import org.jboss.test.deployers.vfs.deployer.bean.test.AutowireAnnotationBeansTestCase;
@@ -67,8 +67,8 @@ public class BeanDeployerTestSuite extends TestSuite
       suite.addTest(AnnotatedBeansUnitTestCase.suite());
       suite.addTest(BuilderBeansUnitTestCase.suite());
       suite.addTest(AutowireAnnotationBeansTestCase.suite());
-      suite.addTest(KernelControllerContextCreatorTestCase.suite());
-      suite.addTest(BootstrapKernelControllerContextCreatorTestCase.suite());
+      suite.addTest(BeanMetaDataDeployerPluginTestCase.suite());
+      suite.addTest(BootstrapBeanMetaDataPluginTestCase.suite());
 
       return suite;
    }

@@ -29,7 +29,7 @@ import org.jboss.test.deployers.vfs.classloader.ClassLoaderTestSuite;
 import org.jboss.test.deployers.vfs.reflect.ReflectTestSuite;
 import org.jboss.test.deployers.vfs.dependency.DependencyTestSuite;
 import org.jboss.test.deployers.vfs.deployer.bean.BeanDeployerTestSuite;
-import org.jboss.test.deployers.vfs.deployer.bean.test.KernelControllerContextCreatorTestCase;
+import org.jboss.test.deployers.vfs.deployer.bean.test.BeanMetaDataDeployerPluginTestCase;
 import org.jboss.test.deployers.vfs.deployer.facelets.FaceletsTestSuite;
 import org.jboss.test.deployers.vfs.deployer.jaxp.JAXPDeployerTestSuite;
 import org.jboss.test.deployers.vfs.deployer.merge.MergeDeployerTestSuite;

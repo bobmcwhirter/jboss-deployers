@@ -1,4 +1,0 @@
-<deployment xmlns="urn:jboss:bean-deployer:2.0">
-  <bean name="SpecialControllerContextCreator" class="org.jboss.test.deployers.vfs.deployer.bean.support.NotUndeployingSpecialControllerContextCreator"/>
-  <bean name="TriggerSpecialControllerContextDeployer" class="org.jboss.test.deployers.vfs.deployer.bean.support.TriggerSpecialControllerContextDeployer"/>
-</deployment>

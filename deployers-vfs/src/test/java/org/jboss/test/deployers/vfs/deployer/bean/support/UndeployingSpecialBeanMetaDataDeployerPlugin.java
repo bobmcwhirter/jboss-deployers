@@ -21,9 +21,11 @@
 */ 
 package org.jboss.test.deployers.vfs.deployer.bean.support;
 
-import org.jboss.deployers.spi.DeploymentException;
-import org.jboss.deployers.spi.deployer.DeploymentStages;
-import org.jboss.deployers.spi.deployer.helpers.AbstractRealDeployer;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.jboss.beans.metadata.spi.BeanMetaData;
+import org.jboss.dependency.spi.Controller;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 
 /**
@@ -31,18 +33,30 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
  * @author <a href="kabir.khan@jboss.com">Kabir Khan</a>
  * @version $Revision: 1.1 $
  */
-public class TriggerSpecialControllerContextDeployer extends AbstractRealDeployer
+public class UndeployingSpecialBeanMetaDataDeployerPlugin extends SpecialBeanMetaDataDeployerPlugin
 {
-
-   public TriggerSpecialControllerContextDeployer()
-   {
-      setStage(DeploymentStages.PRE_REAL);
-   }
+   private List<String> undeployedNames = new ArrayList<String>();
    
-   @Override
-   protected void internalDeploy(DeploymentUnit unit) throws DeploymentException
+   public UndeployingSpecialBeanMetaDataDeployerPlugin()
    {
-      unit.addAttachment(SpecialControllerContextCreator.TRIGGER, SpecialControllerContextCreator.TRIGGER);
+      super();
+   }
+
+   public UndeployingSpecialBeanMetaDataDeployerPlugin(int order)
+   {
+      super(order);
+   }
+
+   public boolean uninstallContext(Controller controller, DeploymentUnit unit, BeanMetaData beanMetaData)
+   {
+      undeployedNames.add(beanMetaData.getName());
+      controller.uninstall(beanMetaData.getName());
+      return false;
+   }
+
+   public List<String> getUndeployedNames()
+   {
+      return undeployedNames;
    }
 
 }

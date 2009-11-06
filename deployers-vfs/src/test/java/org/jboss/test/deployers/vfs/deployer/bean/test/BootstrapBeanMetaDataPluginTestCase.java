@@ -27,23 +27,23 @@ import junit.framework.TestSuite;
 import org.jboss.dependency.spi.ControllerContext;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.test.deployers.BootstrapDeployersTest;
-import org.jboss.test.deployers.vfs.deployer.bean.support.SpecialControllerContextCreator;
+import org.jboss.test.deployers.vfs.deployer.bean.support.SpecialBeanMetaDataDeployerPlugin;
 
 /**
  * 
  * @author <a href="kabir.khan@jboss.com">Kabir Khan</a>
  * @version $Revision: 1.1 $
  */
-public class BootstrapKernelControllerContextCreatorTestCase extends BootstrapDeployersTest
+public class BootstrapBeanMetaDataPluginTestCase extends BootstrapDeployersTest
 {
-   public BootstrapKernelControllerContextCreatorTestCase(String name)
+   public BootstrapBeanMetaDataPluginTestCase(String name)
    {
       super(name);
    }
 
    public static Test suite()
    {
-      return new TestSuite(BootstrapKernelControllerContextCreatorTestCase.class);
+      return new TestSuite(BootstrapBeanMetaDataPluginTestCase.class);
    }
 
    public void testSpecialControllerContextCreatorTriggered() throws Throwable
@@ -55,7 +55,7 @@ public class BootstrapKernelControllerContextCreatorTestCase extends BootstrapDe
          
          ControllerContext test = getControllerContext("Test");
          assertNotNull(test);
-         assertEquals(SpecialControllerContextCreator.SpecialControllerContext.class, test.getClass());
+         assertEquals(SpecialBeanMetaDataDeployerPlugin.SpecialControllerContext.class, test.getClass());
       }
       finally
       {

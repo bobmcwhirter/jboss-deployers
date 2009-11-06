@@ -27,13 +27,13 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.kernel.spi.dependency.KernelControllerContext;
 
 /**
- * Interface used to create a controller context. Intention is to be able
- * to override the default KernelControllerContext created by BeanMetaDataDeployer
+ * Interface used by BeanMetaDataDeployer to create controller contexts for deployment, and
+ * to take care of special needs during undeployment.
  * 
  * @author <a href="kabir.khan@jboss.com">Kabir Khan</a>
  * @version $Revision: 1.1 $
  */
-public interface KernelControllerContextCreator
+public interface BeanMetaDataDeployerPlugin
 {
    /**
     * The relative order of this creator. BeanMetaDataDeployer will try to 
