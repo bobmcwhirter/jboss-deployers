@@ -7,6 +7,9 @@
   <bean name="ClassLoaderScopingPolicy" class="org.jboss.classpool.plugins.as5.VFSClassLoaderDomainRegistry"/>
 
   <bean name="RegisterModuleCallback" class="org.jboss.classpool.plugins.as5.RegisterModuleCallback">
+     <constructor>
+       <parameter><inject bean="ClassLoaderScopingPolicy"/></parameter>
+     </constructor>
      <install method="addModuleRegistry" bean="ClassLoading" whenRequired="Start">
        <parameter><this/></parameter>
      </install>
