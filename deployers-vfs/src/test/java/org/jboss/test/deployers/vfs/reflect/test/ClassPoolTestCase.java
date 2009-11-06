@@ -21,15 +21,19 @@
  */
 package org.jboss.test.deployers.vfs.reflect.test;
 
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import junit.framework.Test;
+
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
-import junit.framework.Test;
 import org.jboss.classpool.spi.ClassPoolRepository;
+import org.jboss.deployers.client.spi.DeployerClient;
+import org.jboss.deployers.client.spi.Deployment;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.test.deployers.vfs.reflect.support.crm.CrmFacade;
 import org.jboss.test.deployers.vfs.reflect.support.ejb.MySLSBean;
@@ -139,6 +143,42 @@ public class ClassPoolTestCase extends ClassPoolTest
       finally
       {
          undeploy(unit);
+      }
+   }
+
+   public void testNonDeploymentModule() throws Exception
+   {
+      URL location = AnyServlet.class.getProtectionDomain().getCodeSource().getLocation();
+      System.setProperty("jboss.tests.url", location.toExternalForm());
+      try
+      {
+         AssembledDirectory jar = createJar();
+         addPath(jar, "/reflect/module", "META-INF");
+
+         Deployment deployment = createVFSDeployment(jar);
+         DeployerClient main = getDeployerClient();
+         main.deploy(deployment);
+         try
+         {
+            Object anys = assertBean("AnyServlet", Object.class);
+            Class<?> anysClass = anys.getClass();
+            ClassLoader anysCL = anysClass.getClassLoader();
+
+            DeploymentUnit du = getMainDeployerStructure().getDeploymentUnit(deployment.getName(), true);
+            ClassLoader cl = getClassLoader(du);
+
+            assertNotSame(cl, anysCL);
+
+            // TODO - Flavia, apply ClassPool tests
+         }
+         finally
+         {
+            main.undeploy(deployment);
+         }
+      }
+      finally
+      {
+         System.clearProperty("jboss.tests.url");
       }
    }
 }

@@ -24,6 +24,7 @@ package org.jboss.test.deployers.vfs.reflect.test;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.net.URL;
 
 import org.jboss.deployers.client.spi.DeployerClient;
 import org.jboss.deployers.client.spi.Deployment;
@@ -202,6 +203,46 @@ public abstract class TypeInfoTest extends ReflectTest
       finally
       {
          main.undeploy(top, left, right);
+      }
+   }
+
+   public void testNonDeploymentModule() throws Exception
+   {
+      URL location = AnyServlet.class.getProtectionDomain().getCodeSource().getLocation();
+      System.setProperty("jboss.tests.url", location.toExternalForm());
+      try
+      {
+         AssembledDirectory jar = createJar();
+         addPath(jar, "/reflect/module", "META-INF");
+
+         Deployment deployment = createVFSDeployment(jar);
+         DeployerClient main = getDeployerClient();
+         main.deploy(deployment);
+         try
+         {
+            Object anys = assertBean("AnyServlet", Object.class);
+            Class<?> anysClass = anys.getClass();
+            ClassLoader anysCL = anysClass.getClassLoader();
+
+            DeploymentUnit du = getMainDeployerStructure().getDeploymentUnit(deployment.getName(), true);
+            ClassLoader cl = getClassLoader(du);
+
+            assertNotSame(cl, anysCL);
+
+            TypeInfoFactory factory = createTypeInfoFactory();
+            TypeInfo asTIL = factory.getTypeInfo(anysClass);
+            TypeInfo pjbTI = factory.getTypeInfo(PlainJavaBean.class.getName(), cl);
+            TypeInfo rtL = assertReturnType(asTIL, "getBean");
+            assertEquals(pjbTI, rtL);
+         }
+         finally
+         {
+            main.undeploy(deployment);
+         }
+      }
+      finally
+      {
+         System.clearProperty("jboss.tests.url");
       }
    }
 }

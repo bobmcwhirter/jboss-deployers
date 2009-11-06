@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<deployment xmlns="urn:jboss:bean-deployer:2.0">
+
+  <classloader><inject bean="anys-classloader:0.0.0"/></classloader>
+
+  <classloader name="anys-classloader" xmlns="urn:jboss:classloader:1.0" import-all="true">
+    <capabilities>
+      <package name="org.jboss.test.deployers.vfs.reflect.support.web"/>
+    </capabilities>
+    <root>${jboss.tests.url}</root>
+  </classloader>
+
+  <bean name="AnyServlet" class="org.jboss.test.deployers.vfs.reflect.support.web.AnyServlet"/>
+
+</deployment>
