@@ -182,15 +182,24 @@ public class ClassPoolTestCase extends ClassPoolTest
       }
    }
 
-
    public void testHierarchyNonDeploymentModule() throws Exception
+   {
+      testHierarchy("tif");
+   }
+
+   public void testClassLoadingMetaDataModule() throws Exception
+   {
+      testHierarchy("clmd");
+   }
+
+   public void testHierarchy(String name) throws Exception
    {
       URL location = AnyServlet.class.getProtectionDomain().getCodeSource().getLocation();
       System.setProperty("jboss.tests.url", location.toExternalForm());
       try
       {
          AssembledDirectory jar = createJar();
-         addPath(jar, "/reflect/tif", "META-INF");
+         addPath(jar, "/reflect/" + name, "META-INF");
 
          Deployment deployment = createVFSDeployment(jar);
          DeployerClient main = getDeployerClient();

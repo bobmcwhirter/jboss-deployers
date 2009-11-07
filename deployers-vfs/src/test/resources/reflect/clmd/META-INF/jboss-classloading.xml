@@ -1,0 +1,5 @@
+<classloading xmlns="urn:jboss:classloading:1.0">
+  <capabilities>
+    <package name="org.jboss.test.deployers.vfs.reflect.support.jar"/>
+  </capabilities>
+</classloading>
