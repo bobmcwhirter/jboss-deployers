@@ -181,4 +181,47 @@ public class ClassPoolTestCase extends ClassPoolTest
          System.clearProperty("jboss.tests.url");
       }
    }
+
+
+   public void testHierarchyNonDeploymentModule() throws Exception
+   {
+      URL location = AnyServlet.class.getProtectionDomain().getCodeSource().getLocation();
+      System.setProperty("jboss.tests.url", location.toExternalForm());
+      try
+      {
+         AssembledDirectory jar = createJar();
+         addPath(jar, "/reflect/tif", "META-INF");
+
+         Deployment deployment = createVFSDeployment(jar);
+         DeployerClient main = getDeployerClient();
+         main.deploy(deployment);
+         try
+         {
+            Object anys = assertBean("AnyServlet", Object.class);
+            Class<?> anysClass = anys.getClass();
+            ClassLoader anysCL = anysClass.getClassLoader();
+
+            Object tif = assertBean("TifTester", Object.class);
+            Class<?> tifClass = tif.getClass();
+            ClassLoader tifCL = tifClass.getClassLoader();
+
+            DeploymentUnit du = getMainDeployerStructure().getDeploymentUnit(deployment.getName(), true);
+            ClassLoader cl = getClassLoader(du);
+
+            assertNotSame(cl, anysCL);
+            assertNotSame(cl, tifCL);
+            assertNotSame(anysCL, tifCL);
+
+            // TODO - Flavia, apply ClassPool tests
+         }
+         finally
+         {
+            main.undeploy(deployment);
+         }
+      }
+      finally
+      {
+         System.clearProperty("jboss.tests.url");
+      }
+   }
 }

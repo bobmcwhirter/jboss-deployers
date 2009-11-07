@@ -245,4 +245,53 @@ public abstract class TypeInfoTest extends ReflectTest
          System.clearProperty("jboss.tests.url");
       }
    }
+
+   public void testHierarchyNonDeploymentModule() throws Exception
+   {
+      URL location = AnyServlet.class.getProtectionDomain().getCodeSource().getLocation();
+      System.setProperty("jboss.tests.url", location.toExternalForm());
+      try
+      {
+         AssembledDirectory jar = createJar();
+         addPath(jar, "/reflect/tif", "META-INF");
+
+         Deployment deployment = createVFSDeployment(jar);
+         DeployerClient main = getDeployerClient();
+         main.deploy(deployment);
+         try
+         {
+            Object anys = assertBean("AnyServlet", Object.class);
+            Class<?> anysClass = anys.getClass();
+            ClassLoader anysCL = anysClass.getClassLoader();
+
+            Object tif = assertBean("TifTester", Object.class);
+            Class<?> tifClass = tif.getClass();
+            ClassLoader tifCL = tifClass.getClassLoader();
+
+            DeploymentUnit du = getMainDeployerStructure().getDeploymentUnit(deployment.getName(), true);
+            ClassLoader cl = getClassLoader(du);
+
+            assertNotSame(cl, anysCL);
+            assertNotSame(cl, tifCL);
+            assertNotSame(anysCL, tifCL);
+
+            TypeInfoFactory factory = createTypeInfoFactory();
+            TypeInfo tifTIL = factory.getTypeInfo(tifClass);
+            TypeInfo tifRT = assertReturnType(tifTIL, "getAnys");
+            TypeInfo asTIL = factory.getTypeInfo(anysClass);
+            assertEquals(tifRT, asTIL);
+            TypeInfo pjbTI = factory.getTypeInfo(PlainJavaBean.class.getName(), cl);
+            TypeInfo rtL = assertReturnType(asTIL, "getBean");
+            assertEquals(pjbTI, rtL);
+         }
+         finally
+         {
+            main.undeploy(deployment);
+         }
+      }
+      finally
+      {
+         System.clearProperty("jboss.tests.url");
+      }
+   }
 }
