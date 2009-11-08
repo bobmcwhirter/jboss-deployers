@@ -223,14 +223,18 @@ public abstract class TypeInfoTest extends ReflectTest
       AssembledDirectory war1 = ear.mkdir("ptd-jsf-1.0-SNAPSHOT.war");
       AssembledDirectory webinf1 = war1.mkdir("WEB-INF");
       addPath(war1, "/reflect/ear2war/war1/", "WEB-INF");
-      AssembledDirectory classes1 = webinf1.mkdir("classes");
-      addPackage(classes1, AnyServlet.class);
+      AssembledDirectory lib1 = webinf1.mkdir("lib");
+      AssembledDirectory wj1 = lib1.mkdir("wj1.jar");
+      addPackage(wj1, AnyServlet.class);
+      addPath(wj1, "/reflect/ear2war/manifest/", "META-INF");
 
       AssembledDirectory war2 = ear.mkdir("ptd-ws-1.0-SNAPSHOT.war");
       AssembledDirectory webinf2 = war2.mkdir("WEB-INF");
       addPath(war2, "/reflect/ear2war/war2/", "WEB-INF");
-      AssembledDirectory classes2 = webinf2.mkdir("classes");
-      addPackage(classes2, AnyServlet.class);
+      AssembledDirectory lib2 = webinf2.mkdir("lib");
+      AssembledDirectory wj2 = lib2.mkdir("wj2.jar");
+      addPackage(wj2, AnyServlet.class);
+      addPath(wj2, "/reflect/ear2war/manifest/", "META-INF");
 
       Deployment deployment = createVFSDeployment(ear);
       String top = deployment.getName();
