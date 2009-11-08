@@ -278,19 +278,31 @@ public abstract class ReflectTest extends BootstrapDeployersTest
 
    protected Deployment createIsolatedDeployment(String name, String parentDomain, Class<?> reference) throws Exception
    {
+      return createIsolatedDeployment(name, parentDomain, reference, null);
+   }
+
+   protected Deployment createIsolatedDeployment(String name, String parentDomain, Class<?> reference, ClassLoadingMetaData clmd) throws Exception
+   {
       AssembledDirectory jar = createJar(name, reference);
       Deployment deployment = VFSDeploymentFactory.getInstance().createVFSDeployment(jar);
 
+      if (clmd == null)
+         clmd = createDefaultClassLoadingMetaData(name, parentDomain);
+
+      MutableAttachments attachments = (MutableAttachments)deployment.getPredeterminedManagedObjects();
+      attachments.addAttachment(ClassLoadingMetaData.class, clmd);
+
+      return deployment;
+   }
+
+   protected ClassLoadingMetaData createDefaultClassLoadingMetaData(String name, String parentDomain)
+   {
       ClassLoadingMetaData clmd = new ClassLoadingMetaData();
       clmd.setDomain(name + "_Domain");
       clmd.setParentDomain(parentDomain);
       clmd.setImportAll(true);
       clmd.setExportAll(ExportAll.NON_EMPTY);
       clmd.setVersion(Version.DEFAULT_VERSION);
-
-      MutableAttachments attachments = (MutableAttachments)deployment.getPredeterminedManagedObjects();
-      attachments.addAttachment(ClassLoadingMetaData.class, clmd);
-
-      return deployment;
+      return clmd;
    }
 }

@@ -21,15 +21,16 @@
  */
 package org.jboss.test.deployers.vfs.reflect.test;
 
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.net.URL;
 
+import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
 import org.jboss.deployers.client.spi.DeployerClient;
 import org.jboss.deployers.client.spi.Deployment;
-import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.spi.DeploymentException;
+import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.reflect.spi.TypeInfo;
 import org.jboss.reflect.spi.TypeInfoFactory;
 import org.jboss.test.deployers.vfs.reflect.support.crm.CrmFacade;
@@ -135,10 +136,8 @@ public abstract class TypeInfoTest extends ReflectTest
       }
    }
 
-   public void testIsolatedJars() throws Exception
+   public void testIsolatedJars(Deployment d1, Deployment d2) throws Exception
    {
-      Deployment d1 = createIsolatedDeployment("j1.jar");
-      Deployment d2 = createIsolatedDeployment("j2.jar");
       DeployerClient main = getDeployerClient();
       main.deploy(d1, d2);
       try
@@ -166,6 +165,22 @@ public abstract class TypeInfoTest extends ReflectTest
       {
          main.undeploy(d1, d2);
       }
+   }
+
+   public void testIsolatedJars() throws Exception
+   {
+      Deployment d1 = createIsolatedDeployment("j1.jar");
+      Deployment d2 = createIsolatedDeployment("j2.jar");
+      testIsolatedJars(d1, d2);
+   }
+
+   public void testHierarchyJarsChildFirst() throws Exception
+   {
+      Deployment d1 = createIsolatedDeployment("j1.jar");
+      ClassLoadingMetaData clmd = createDefaultClassLoadingMetaData("j2.jar", "j1.jar_Domain");
+      clmd.setJ2seClassLoadingCompliance(false);
+      Deployment d2 = createIsolatedDeployment("j2.jar", "j1.jar_Domain", PlainJavaBean.class, clmd);
+      testIsolatedJars(d1, d2);
    }
 
    protected void testDomainHierarchy(String top, String left, String right, Deployment... deployments) throws DeploymentException, ClassNotFoundException
