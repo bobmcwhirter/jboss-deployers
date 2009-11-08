@@ -29,6 +29,7 @@ import java.net.URL;
 import org.jboss.deployers.client.spi.DeployerClient;
 import org.jboss.deployers.client.spi.Deployment;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.reflect.spi.TypeInfo;
 import org.jboss.reflect.spi.TypeInfoFactory;
 import org.jboss.test.deployers.vfs.reflect.support.crm.CrmFacade;
@@ -167,18 +168,15 @@ public abstract class TypeInfoTest extends ReflectTest
       }
    }
 
-   public void testDomainHierarchy() throws Exception
+   protected void testDomainHierarchy(String top, String left, String right, Deployment... deployments) throws DeploymentException, ClassNotFoundException
    {
-      Deployment top = createIsolatedDeployment("top.jar", null, PlainJavaBean.class);
-      Deployment left = createIsolatedDeployment("left.jar", "top.jar_Domain", AnyServlet.class);
-      Deployment right = createIsolatedDeployment("right.jar", "top.jar_Domain", AnyServlet.class);
       DeployerClient main = getDeployerClient();
-      main.deploy(top, left, right);
+      main.deploy(deployments);
       try
       {
-         DeploymentUnit duTop = getMainDeployerStructure().getDeploymentUnit(top.getName(), true);
-         DeploymentUnit duLeft = getMainDeployerStructure().getDeploymentUnit(left.getName(), true);
-         DeploymentUnit duRight = getMainDeployerStructure().getDeploymentUnit(right.getName(), true);
+         DeploymentUnit duTop = getMainDeployerStructure().getDeploymentUnit(top, true);
+         DeploymentUnit duLeft = getMainDeployerStructure().getDeploymentUnit(left, true);
+         DeploymentUnit duRight = getMainDeployerStructure().getDeploymentUnit(right, true);
          ClassLoader topCL = getClassLoader(duTop);
          ClassLoader leftCL = getClassLoader(duLeft);
          ClassLoader rightCL = getClassLoader(duRight);
@@ -202,8 +200,43 @@ public abstract class TypeInfoTest extends ReflectTest
       }
       finally
       {
-         main.undeploy(top, left, right);
+         main.undeploy(deployments);
       }
+   }
+
+   public void testDomainHierarchy() throws Exception
+   {
+      Deployment top = createIsolatedDeployment("top.jar", null, PlainJavaBean.class);
+      Deployment left = createIsolatedDeployment("left.jar", "top.jar_Domain", AnyServlet.class);
+      Deployment right = createIsolatedDeployment("right.jar", "top.jar_Domain", AnyServlet.class);
+      testDomainHierarchy(top.getName(), left.getName(), right.getName(), top, left, right);
+   }
+
+   public void testEar2War() throws Exception
+   {
+      AssembledDirectory ear = createAssembledDirectory("ptd-ear-1.0-SNAPSHOT.ear", "ptd-ear-1.0-SNAPSHOT.ear");
+      addPath(ear, "/reflect/ear2war", "META-INF");
+      AssembledDirectory lib = ear.mkdir("lib");
+      AssembledDirectory common = lib.mkdir("common.jar");
+      addPackage(common, PlainJavaBean.class);
+
+      AssembledDirectory war1 = ear.mkdir("ptd-jsf-1.0-SNAPSHOT.war");
+      AssembledDirectory webinf1 = war1.mkdir("WEB-INF");
+      addPath(war1, "/reflect/ear2war/war1/", "WEB-INF");
+      AssembledDirectory classes1 = webinf1.mkdir("classes");
+      addPackage(classes1, AnyServlet.class);
+
+      AssembledDirectory war2 = ear.mkdir("ptd-ws-1.0-SNAPSHOT.war");
+      AssembledDirectory webinf2 = war2.mkdir("WEB-INF");
+      addPath(war2, "/reflect/ear2war/war2/", "WEB-INF");
+      AssembledDirectory classes2 = webinf2.mkdir("classes");
+      addPackage(classes2, AnyServlet.class);
+
+      Deployment deployment = createVFSDeployment(ear);
+      String top = deployment.getName();
+      String left = top + "ptd-jsf-1.0-SNAPSHOT.war/";
+      String right = top + "ptd-ws-1.0-SNAPSHOT.war/";
+      testDomainHierarchy(top, left, right, deployment);
    }
 
    public void testNonDeploymentModule() throws Exception

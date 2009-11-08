@@ -1,0 +1,6 @@
+<classloading xmlns="urn:jboss:classloading:1.0"
+              name="ptd-ear-1.0-SNAPSHOT.ear"
+              domain="ptd-ear-1.0-SNAPSHOT.ear"
+              export-all="NON_EMPTY"
+              import-all="true"
+              parent-first="false"/>

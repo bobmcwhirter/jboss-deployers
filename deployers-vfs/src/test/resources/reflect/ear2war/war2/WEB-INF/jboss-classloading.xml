@@ -1,0 +1,7 @@
+<classloading xmlns="urn:jboss:classloading:1.0"
+              name="ptd-ws-1.0-SNAPSHOT.war"
+              domain="ptd-ws-1.0-SNAPSHOT.war"
+              parent-domain="ptd-ear-1.0-SNAPSHOT.ear"
+              export-all="NON_EMPTY"
+              import-all="true"
+              parent-first="true"/>
