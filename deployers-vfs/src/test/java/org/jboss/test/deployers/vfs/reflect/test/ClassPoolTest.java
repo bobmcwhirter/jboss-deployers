@@ -21,17 +21,18 @@
  */
 package org.jboss.test.deployers.vfs.reflect.test;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javassist.ClassPool;
 import javassist.CtClass;
-
+import javassist.CtMethod;
 import org.jboss.classpool.spi.ClassPoolRepository;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.reflect.plugins.javassist.JavassistTypeInfoFactory;
 import org.jboss.reflect.spi.TypeInfoFactory;
 import org.jboss.virtual.VirtualFile;
+import org.jboss.test.deployers.vfs.reflect.support.web.AnyServlet;
+import org.jboss.test.deployers.vfs.reflect.support.jar.PlainJavaBean;
 
 /**
  * Abstract test for ClassPool.
@@ -53,17 +54,7 @@ public abstract class ClassPoolTest extends ReflectTest
       return new JavassistTypeInfoFactory();
    }
 
-   protected void assertClassPool(VirtualFile file, Class<?> ... classes) throws Exception
-   {
-      Map<Class<?>, String> map = new HashMap<Class<?>, String>();
-      for (Class<?> clazz : classes)
-      {
-         map.put(clazz, null);
-      }
-      assertClassPool(file, map);
-   }
-
-   protected void assertClassPool(VirtualFile file, Map<Class<?>, String> classes) throws Exception
+   protected void assertReflect(VirtualFile file, Map<Class<?>, String> classes) throws Exception
    {
       DeploymentUnit unit = assertDeploy(file);
       try
@@ -88,5 +79,39 @@ public abstract class ClassPoolTest extends ReflectTest
       {
          undeploy(unit);
       }
+   }
+
+   protected void assertSimpleHierarchy(ClassLoader topCL, ClassLoader childCL) throws Exception
+   {
+      ClassPoolRepository repository = ClassPoolRepository.getInstance();
+      ClassPool classPool = repository.registerClassLoader(childCL);
+      CtClass ctClass = classPool.getCtClass(AnyServlet.class.getName());
+      CtMethod ctMethod = ctClass.getDeclaredMethod("getBean");
+      assertNotNull("No such 'getBean' method on " + ctClass, ctMethod);
+
+      CtClass returnCtClass = ctMethod.getReturnType();
+      classPool = repository.registerClassLoader(topCL);
+      CtClass returnCtClass2 = classPool.getCtClass(PlainJavaBean.class.getName());
+      assertSame(returnCtClass, returnCtClass2);
+   }
+
+   protected void assertNonDeploymentModule(ClassLoader cl, Class<?> anysClass) throws Exception
+   {
+      // TODO
+   }
+
+   protected void assertNonDeploymentModule(ClassLoader cl, Class<?> anysClass, Class<?> tifClass) throws Exception
+   {
+      // TODO
+   }
+
+   protected void assertIsolated(ClassLoader cl1, ClassLoader cl2, Class<?> clazz1, Class<?> clazz2) throws Exception
+   {
+      // TODO
+   }
+
+   protected void assertDomainHierarchy(ClassLoader topCL, ClassLoader leftCL, ClassLoader rightCL) throws Exception
+   {
+      // TODO
    }
 }

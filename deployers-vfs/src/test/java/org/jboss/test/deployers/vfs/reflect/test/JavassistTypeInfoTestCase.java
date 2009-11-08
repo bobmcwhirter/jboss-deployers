@@ -58,4 +58,7 @@ public class JavassistTypeInfoTestCase extends TypeInfoTest
    protected void assertNotEquals(TypeInfo ti1, TypeInfo ti2)
    {
    }
+   protected void assertNonDeploymentModule(ClassLoader cl, Class<?> anysClass, Class<?> tifClass) throws Exception
+   {
+   }
 }
