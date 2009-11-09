@@ -183,6 +183,42 @@ public class SubDeploymentMockClassLoaderUnitTestCase extends ClassLoaderDepende
       assertEquals(Arrays.asList("top/sub", "top"), deployer2.undeployed);
    }
 
+   public void testSubDeploymentClassLoaderSpecifiedTopLevel() throws Exception
+   {
+      DeployerClient deployer = getMainDeployer();
+
+      Deployment deployment = createSimpleDeployment("top");
+      ClassLoadingMetaData top = addClassLoadingMetaData(deployment, "top", null, A.class);
+      top.setImportAll(true);
+      
+      ContextInfo sub = addChild(deployment, "sub");
+      ClassLoadingMetaData topSub = addClassLoadingMetaData(sub, "top/sub", null, false, B.class);
+      topSub.setDomain(ClassLoaderSystem.DEFAULT_DOMAIN_NAME);
+      topSub.setTopLevelClassLoader(true);
+      topSub.setImportAll(true);
+      
+      DeploymentUnit unit = assertDeploy(deployer, deployment);
+      
+      assertEquals(Arrays.asList("top", "top/sub"), deployer2.deployed);
+      assertEquals(NONE, deployer2.undeployed);
+      
+      ClassLoader cl = unit.getClassLoader();
+      
+      DeploymentUnit subDeployment = assertChild(unit, "top/sub");
+      ClassLoader clSub = subDeployment.getClassLoader();
+
+      assertLoadClass(cl, A.class);
+      assertLoadClass(cl, B.class, clSub);
+      assertLoadClass(clSub, A.class, cl);
+      assertLoadClass(clSub, B.class);
+      
+      assertUndeploy(deployer, deployment);
+      assertNoDomain("top/sub");
+
+      assertEquals(Arrays.asList("top", "top/sub"), deployer2.deployed);
+      assertEquals(Arrays.asList("top/sub", "top"), deployer2.undeployed);
+   }
+
    public void testMultipleSubDeploymentClassLoader() throws Exception
    {
       DeployerClient deployer = getMainDeployer();

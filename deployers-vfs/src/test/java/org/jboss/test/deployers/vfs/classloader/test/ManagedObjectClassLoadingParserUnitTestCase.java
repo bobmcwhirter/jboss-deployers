@@ -44,7 +44,7 @@ import org.jboss.test.deployers.BootstrapDeployersTest;
 
 /**
  * ManagedObjectClassLoadingParserUnitTestCase.
- * 
+ *
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
  * @version $Revision: 1.1 $
  */
@@ -62,7 +62,7 @@ public class ManagedObjectClassLoadingParserUnitTestCase extends BootstrapDeploy
    {
       super(name);
    }
-   
+
    protected ManagedProperty assertManagedProperty(ManagedObject mo, String name, MetaType metaType, MetaValue metaValue)
    {
       ManagedProperty property = mo.getProperty(name);
@@ -71,7 +71,7 @@ public class ManagedObjectClassLoadingParserUnitTestCase extends BootstrapDeploy
       assertEquals(metaValue, property.getValue());
       return property;
    }
-   
+
    protected <T> ManagedProperty assertManagedProperty(ManagedObject mo, String name, Class<T> type, T value)
    {
       MetaType metaType = mtFactory.resolve(type);
@@ -93,7 +93,7 @@ public class ManagedObjectClassLoadingParserUnitTestCase extends BootstrapDeploy
          assertNotNull(mo);
          getLog().debug("ManagedObject: " + mo + " properties=" + mo.getProperties());
 
-         List<String> expectedProperties = Arrays.asList("name", "version", "domain", "parentDomain", "exportAll", "included", "excluded", "excludedExport", "importAll", "parentFirst", "cache", "blackList", "capabilities", "requirements");
+         List<String> expectedProperties = Arrays.asList("name", "version", "domain", "parentDomain", "topLevelClassLoader", "exportAll", "included", "excluded", "excludedExport", "importAll", "parentFirst", "cache", "blackList", "capabilities", "requirements");
          Set<String> actualProperties = mo.getPropertyNames();
          for (String expected : expectedProperties)
          {
@@ -110,6 +110,7 @@ public class ManagedObjectClassLoadingParserUnitTestCase extends BootstrapDeploy
          assertManagedProperty(mo, "version", Version.class, Version.DEFAULT_VERSION);
          assertManagedProperty(mo, "domain", String.class, null);
          assertManagedProperty(mo, "parentDomain", String.class, null);
+         assertManagedProperty(mo, "topLevelClassLoader", boolean.class, false);
          assertManagedProperty(mo, "exportAll", ExportAll.class, null);
          assertManagedProperty(mo, "included", String.class, null);
          assertManagedProperty(mo, "excluded", String.class, null);
@@ -118,7 +119,7 @@ public class ManagedObjectClassLoadingParserUnitTestCase extends BootstrapDeploy
          assertManagedProperty(mo, "parentFirst", boolean.class, true);
          assertManagedProperty(mo, "capabilities", CapabilitiesMetaData.class, new CapabilitiesMetaData());
          assertManagedProperty(mo, "requirements", RequirementsMetaData.class, new RequirementsMetaData());
-         
+
       }
       finally
       {

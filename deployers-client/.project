@@ -1,17 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-  <name>jboss-deployers-client</name>
-  <comment>JBoss Deployers Client</comment>
-  <projects>
-    <project>jboss-deployers-client-spi</project>
-    <project>jboss-deployers-core</project>
-    <project>jboss-deployers-core-spi</project>
-  </projects>
+	<name>jboss-deployers-client</name>
+	<comment>JBoss Deployers Client</comment>
+	<projects>
+		<project>jboss-deployers-client-spi</project>
+		<project>jboss-deployers-core</project>
+		<project>jboss-deployers-core-spi</project>
+	</projects>
   <buildSpec>
     <buildCommand>
       <name>org.eclipse.jdt.core.javabuilder</name>
     </buildCommand>
+    <buildCommand>
+      <name>org.maven.ide.eclipse.maven2Builder</name>
+    </buildCommand>
   </buildSpec>
   <natures>
+    <nature>org.maven.ide.eclipse.maven2Nature</nature>
     <nature>org.eclipse.jdt.core.javanature</nature>
   </natures>
 </projectDescription>

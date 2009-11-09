@@ -26,6 +26,7 @@ import org.jboss.classloader.spi.ClassLoaderSystem;
 import org.jboss.classloading.spi.dependency.ClassLoading;
 import org.jboss.classloading.spi.dependency.Module;
 import org.jboss.classloading.spi.dependency.policy.ClassLoaderPolicyModule;
+import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
 import org.jboss.deployers.spi.deployer.helpers.AbstractClassLoaderDeployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 
@@ -114,7 +115,12 @@ public class AbstractLevelClassLoaderSystemDeployer extends AbstractClassLoaderD
          throw new IllegalStateException("Module is not an instance of " + ClassLoaderPolicyModule.class.getName() + " actual=" + module.getClass().getName());
       ClassLoaderPolicyModule classLoaderPolicyModule = (ClassLoaderPolicyModule) module;
 
-      if (unit.isTopLevel() || module.getParentDomainName() != null)
+      boolean explicitTopLevel = false;
+      ClassLoadingMetaData clmd = unit.getAttachment(ClassLoadingMetaData.class);
+      if (clmd != null && clmd.isTopLevelClassLoader())
+         explicitTopLevel = true;
+      
+      if (unit.isTopLevel() || module.getParentDomainName() != null || explicitTopLevel)
       {
          // Top level, just create the classloader
          return classLoaderPolicyModule.registerClassLoaderPolicy(system);
