@@ -73,15 +73,17 @@ public abstract class TypeInfoTest extends ReflectTest
    protected void assertSimpleHierarchy(ClassLoader topCL, ClassLoader childCL) throws Exception
    {
       TypeInfoFactory typeInfoFactory = createTypeInfoFactory();
+
       TypeInfo ti = typeInfoFactory.getTypeInfo(AnyServlet.class.getName(), childCL);
       TypeInfo rt = assertReturnType(ti, "getBean");
       TypeInfo cti = typeInfoFactory.getTypeInfo(PlainJavaBean.class.getName(), topCL);
-      assertSame(rt, cti);
+      assertEquals(rt, cti);
    }
 
    protected void assertNonDeploymentModule(ClassLoader cl, Class<?> anysClass) throws Exception
    {
       TypeInfoFactory factory = createTypeInfoFactory();
+
       TypeInfo asTIL = factory.getTypeInfo(anysClass);
       TypeInfo pjbTI = factory.getTypeInfo(PlainJavaBean.class.getName(), cl);
       TypeInfo rtL = assertReturnType(asTIL, "getBean");
@@ -91,10 +93,12 @@ public abstract class TypeInfoTest extends ReflectTest
    protected void assertNonDeploymentModule(ClassLoader cl, Class<?> anysClass, Class<?> tifClass) throws Exception
    {
       TypeInfoFactory factory = createTypeInfoFactory();
+
       TypeInfo tifTIL = factory.getTypeInfo(tifClass);
       TypeInfo tifRT = assertReturnType(tifTIL, "getAnys");
       TypeInfo asTIL = factory.getTypeInfo(anysClass);
       assertEquals(tifRT, asTIL);
+
       TypeInfo pjbTI = factory.getTypeInfo(PlainJavaBean.class.getName(), cl);
       TypeInfo rtL = assertReturnType(asTIL, "getBean");
       assertEquals(pjbTI, rtL);
@@ -103,19 +107,24 @@ public abstract class TypeInfoTest extends ReflectTest
    protected void assertIsolated(ClassLoader cl1, ClassLoader cl2, Class<?> clazz1, Class<?> clazz2) throws Exception
    {
       TypeInfoFactory factory = createTypeInfoFactory();
+
       TypeInfo ti1 = factory.getTypeInfo(PlainJavaBean.class.getName(), cl1);
       TypeInfo ti2 = factory.getTypeInfo(PlainJavaBean.class.getName(), cl2);
       assertNotEquals(ti1, ti2);
+
       TypeInfo ti3 = factory.getTypeInfo(clazz1);
       assertEquals(ti1, ti3);
+
       TypeInfo ti4 = factory.getTypeInfo(clazz2);
       assertEquals(ti2, ti4);
+
       assertNotEquals(ti3, ti4);
    }
 
    protected void assertDomainHierarchy(ClassLoader topCL, ClassLoader leftCL, ClassLoader rightCL) throws Exception
    {
       TypeInfoFactory factory = createTypeInfoFactory();
+
       TypeInfo pjbTI = factory.getTypeInfo(PlainJavaBean.class.getName(), topCL);
       TypeInfo asTIL = factory.getTypeInfo(AnyServlet.class.getName(), leftCL);
       TypeInfo asTIR = factory.getTypeInfo(AnyServlet.class.getName(), rightCL);

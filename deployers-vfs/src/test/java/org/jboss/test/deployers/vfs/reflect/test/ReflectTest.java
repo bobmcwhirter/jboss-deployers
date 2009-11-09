@@ -557,7 +557,8 @@ public abstract class ReflectTest extends BootstrapDeployersTest
    protected ClassLoadingMetaData createDefaultClassLoadingMetaData(String name, String parentDomain)
    {
       ClassLoadingMetaData clmd = new ClassLoadingMetaData();
-      clmd.setDomain(name + "_Domain");
+      if (name != null)
+         clmd.setDomain(name + "_Domain");
       clmd.setParentDomain(parentDomain);
       clmd.setImportAll(true);
       clmd.setExportAll(ExportAll.NON_EMPTY);
