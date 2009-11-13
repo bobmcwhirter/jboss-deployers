@@ -113,14 +113,12 @@ public abstract class AbstractAllInputDeployer extends AbstractDeployer
     */
    public void addOptionalInput(String input)
    {
-      if (input == null)
-         throw new IllegalArgumentException("Null input");
+      addInput(input); // this already checks for null
 
       if (optionalInputs == null)
          optionalInputs = CollectionsFactory.createLazySet();
 
       optionalInputs.add(input);
-      addInput(input);
    }
 
    /**

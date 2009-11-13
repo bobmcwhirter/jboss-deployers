@@ -140,6 +140,14 @@ public class DeployerWrapper implements Deployer, ManagedObjectCreator
       return result;
    }
 
+   public Set<String> getRequiredInputs()
+   {
+      Set<String> result = deployer.getRequiredInputs();
+      if (result == null)
+         return Collections.emptySet();
+      return result;
+   }
+
    public Set<String> getOutputs()
    {
       Set<String> result = deployer.getOutputs();

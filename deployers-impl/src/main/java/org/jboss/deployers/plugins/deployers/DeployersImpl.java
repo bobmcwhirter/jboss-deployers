@@ -1688,9 +1688,21 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
       {
          // No attachment for the input type
          Class<?> input = deployer.getInput();
-         if (input != null && unit.getAttachment(input) == null)
+         if (input != null && unit.isAttachmentPresent(input) == false)
             return false;
       }
+
+      // Check explicitly required inputs - short circut here instead of in the deployer
+      Set<String> requiredInputs = deployer.getRequiredInputs();
+      if (requiredInputs != null && requiredInputs.isEmpty() == false)
+      {
+         for (String requiredInput : requiredInputs)
+         {
+            if (unit.isAttachmentPresent(requiredInput) == false)
+               return false;
+         }
+      }
+
       return true;
    }
 

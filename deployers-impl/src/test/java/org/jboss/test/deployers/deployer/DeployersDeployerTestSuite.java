@@ -25,24 +25,26 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
+import org.jboss.test.deployers.deployer.helpers.test.ExactAttachmentDeployerWithVisitorTestCase;
 import org.jboss.test.deployers.deployer.test.ComponentUnitTestCase;
 import org.jboss.test.deployers.deployer.test.DeployerClassLoaderUnitTestCase;
 import org.jboss.test.deployers.deployer.test.DeployerContextClassLoaderUnitTestCase;
 import org.jboss.test.deployers.deployer.test.DeployerFlowUnitTestCase;
 import org.jboss.test.deployers.deployer.test.DeployerOrderingUnitTestCase;
 import org.jboss.test.deployers.deployer.test.DeployerProtocolUnitTestCase;
+import org.jboss.test.deployers.deployer.test.DeployerRequiredInputsUnitTestCase;
 import org.jboss.test.deployers.deployer.test.DeployerRequiredStageUnitTestCase;
 import org.jboss.test.deployers.deployer.test.DeployerWidthFirstUnitTestCase;
 import org.jboss.test.deployers.deployer.test.DeployersImplUnitTestCase;
 import org.jboss.test.deployers.deployer.test.HeuristicAllOrNothingUnitTestCase;
 import org.jboss.test.deployers.deployer.test.HeuristicRussionDollUnitTestCase;
 import org.jboss.test.deployers.deployer.test.MultipleComponentTypeUnitTestCase;
-import org.jboss.test.deployers.deployer.helpers.test.ExactAttachmentDeployerWithVisitorTestCase;
 
 /**
  * Deployers Deployer Test Suite.
  * 
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 37459 $
  */
 public class DeployersDeployerTestSuite extends TestSuite
@@ -68,6 +70,7 @@ public class DeployersDeployerTestSuite extends TestSuite
       suite.addTest(HeuristicRussionDollUnitTestCase.suite());
       suite.addTest(DeployerContextClassLoaderUnitTestCase.suite());
       suite.addTest(DeployerRequiredStageUnitTestCase.suite());
+      suite.addTest(DeployerRequiredInputsUnitTestCase.suite());
 
       // helper deployers
       suite.addTest(ExactAttachmentDeployerWithVisitorTestCase.suite());

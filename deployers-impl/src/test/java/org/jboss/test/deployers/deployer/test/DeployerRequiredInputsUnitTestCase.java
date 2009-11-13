@@ -21,6 +21,10 @@
 */
 package org.jboss.test.deployers.deployer.test;
 
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Set;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -31,53 +35,63 @@ import org.jboss.deployers.spi.deployer.DeploymentStage;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.test.deployers.AbstractDeployerTest;
-import org.jboss.test.deployers.deployer.support.RequiredStageDeployer;
+import org.jboss.test.deployers.deployer.support.TestSimpleDeployer;
 
 /**
- * DeployerRequiredStageUnitTestCase.
- * 
- * @author <a href="adrian@jboss.com">Adrian Brock</a>
- * @version $Revision: 1.1 $
+ * DeployerRequiredInputsUnitTestCase.
+ *
+ * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  */
-public class DeployerRequiredStageUnitTestCase extends AbstractDeployerTest
+public class DeployerRequiredInputsUnitTestCase extends AbstractDeployerTest
 {
    public static Test suite()
    {
-      return new TestSuite(DeployerRequiredStageUnitTestCase.class);
+      return new TestSuite(DeployerRequiredInputsUnitTestCase.class);
    }
-   
-   public DeployerRequiredStageUnitTestCase(String name)
+
+   public DeployerRequiredInputsUnitTestCase(String name)
    {
       super(name);
    }
 
    public void testRequiredState() throws Exception
    {
-      RequiredStageDeployer deployer = new RequiredStageDeployer();
-      deployer.setStage(DeploymentStages.POST_PARSE);
-      DeployerClient main = createMainDeployer(deployer);
-      
+      TestSimpleDeployer missing = new TestSimpleDeployer();
+      missing.addRequiredInput(Calendar.class); // I guess no calendar is present :-)
+      assertTrue(missing.getInputs().contains(Calendar.class.getName()));
+
+      TestSimpleDeployer all = new TestSimpleDeployer();
+      all.addRequiredInput(DeploymentStage.class.getName());
+      assertTrue(all.getInputs().contains(DeploymentStage.class.getName()));
+
+      TestSimpleDeployer empty = new TestSimpleDeployer();
+
+      DeployerClient main = createMainDeployer(missing, all, empty);
+
       String name = "simple";
-      
       Deployment deployment = createSimpleDeployment(name);
+
       MutableAttachments attachments = (MutableAttachments) deployment.getPredeterminedManagedObjects();
       attachments.addAttachment(DeploymentStage.class, DeploymentStages.DESCRIBE);
 
+      Set<String> singleton;
       main.deploy(deployment);
       try
       {
          DeploymentUnit unit = getDeploymentUnit(main, name);
+         singleton = Collections.singleton(unit.getName());
 
-         assertEquals(DeploymentStages.DESCRIBE, unit.getRequiredStage());
-         assertEquals(DeploymentStages.DESCRIBE, main.getDeploymentStage(name));
-
-         main.change(name, DeploymentStages.INSTALLED);
-         assertEquals(DeploymentStages.INSTALLED, unit.getRequiredStage());
-         assertEquals(DeploymentStages.INSTALLED, main.getDeploymentStage(name));
+         assertEmpty(missing.getDeployedUnits());
+         assertEquals(singleton, all.getDeployedUnits());
+         assertEquals(singleton, empty.getDeployedUnits());
       }
       finally
       {
          main.undeploy(deployment);
       }
+
+      assertEmpty(missing.getUndeployedUnits());
+      assertEquals(singleton, all.getUndeployedUnits());
+      assertEquals(singleton, empty.getUndeployedUnits());        
    }
 }

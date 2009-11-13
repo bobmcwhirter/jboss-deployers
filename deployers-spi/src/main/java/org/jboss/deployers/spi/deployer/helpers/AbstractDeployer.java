@@ -68,6 +68,9 @@ public abstract class AbstractDeployer implements Deployer
    /** The input name */
    private Set<String> inputs;
    
+   /** The required input name */
+   private Set<String> requiredInputs;
+
    /** The output name */
    private Set<String> outputs;
 
@@ -212,6 +215,31 @@ public abstract class AbstractDeployer implements Deployer
       this.inputs = inputs;
    }
 
+   public Set<String> getRequiredInputs()
+   {
+      return requiredInputs;
+   }
+
+   /**
+    * Set the required inputs.
+    *
+    * @param requiredInputs the required inputs .
+    */
+   public void setRequiredInputs(Set<String> requiredInputs)
+   {
+      if (requiredInputs != null)
+      {
+         for (String requiredInput : requiredInputs)
+         {
+            addRequiredInput(requiredInput);
+         }
+      }
+      else
+      {
+         this.requiredInputs = null;
+      }
+   }
+
    /**
     * Set the inputs.
     * 
@@ -287,6 +315,34 @@ public abstract class AbstractDeployer implements Deployer
       addInput(input.getName());
    }
    
+   /**
+    * Add a required input
+    *
+    * @param requiredInput the required input
+    */
+   public void addRequiredInput(String requiredInput)
+   {
+      addInput(requiredInput);
+
+      if (requiredInputs == null)
+         requiredInputs = new HashSet<String>();
+
+      requiredInputs.add(requiredInput);
+   }
+
+   /**
+    * Add a required input input
+    *
+    * @param requiredInput the required input
+    */
+   public void addRequiredInput(Class<?> requiredInput)
+   {
+      if (requiredInput == null)
+         throw new IllegalArgumentException("Null required input");
+
+      addRequiredInput(requiredInput.getName());
+   }
+
    public Set<String> getOutputs()
    {
       return outputs;

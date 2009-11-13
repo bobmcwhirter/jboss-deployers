@@ -64,14 +64,20 @@ public interface Deployer extends Ordered
    boolean isWantComponents();
    
    /**
-    * Whether we want all inputs
+    * Whether we want all inputs.
     *
     * @return true for all inputs
     */
    boolean isAllInputs();
    
    /**
-    * Get the input for this deployer
+    * Get the input for this deployer.
+    *
+    * Most deployers operate on a single attachment,
+    * if you need multiple inputs use required inputs.
+    *
+    * By default we require this input,
+    * if you wanna make this optional set all-inputs to true.
     * 
     * @return the input type
     */
@@ -85,12 +91,31 @@ public interface Deployer extends Ordered
    Class<?> getOutput();
    
    /**
-    * Get the input for this deployer
+    * Get the input for this deployer.
+    *
+    * This is set is mostly meant to help with
+    * natural order based on inputs/outputs.
+    *
+    * If you want to veto your deployer based on inputs,
+    * you should use required inputs.
+    *
+    * Every required input is of course also a plain input.
     * 
     * @return the inputs
     */
    Set<String> getInputs();
    
+   /**
+    * Get the required input for this deployer.
+    *
+    * This represents a set of required inputs,
+    * if one of them is missing, we veto deployer as not relevant
+    * for that deployment, hence it doesn't participate in deployment lifecycle.
+    *
+    * @return the required inputs
+    */
+   Set<String> getRequiredInputs();
+
    /**
     * Get the outputs for this deployer
     * 
