@@ -22,9 +22,9 @@
 package org.jboss.test.deployers.vfs.reflect.test;
 
 import junit.framework.Test;
+
 import org.jboss.reflect.plugins.javassist.JavassistTypeInfoFactory;
 import org.jboss.reflect.spi.TypeInfoFactory;
-import org.jboss.reflect.spi.TypeInfo;
 
 /**
  * Javassist test case for TypeInfo.
@@ -48,17 +48,5 @@ public class JavassistTypeInfoTestCase extends TypeInfoTest
    protected TypeInfoFactory createTypeInfoFactory()
    {
       return new JavassistTypeInfoFactory();
-   }
-
-   // FIXME - fix isolated Classpool behavior
-   // TODO - remove this once this is fixed
-   protected void assertEquals(TypeInfo ti1, TypeInfo ti2)
-   {
-   }
-   protected void assertNotEquals(TypeInfo ti1, TypeInfo ti2)
-   {
-   }
-   protected void assertNonDeploymentModule(ClassLoader cl, Class<?> anysClass, Class<?> tifClass) throws Exception
-   {
    }
 }

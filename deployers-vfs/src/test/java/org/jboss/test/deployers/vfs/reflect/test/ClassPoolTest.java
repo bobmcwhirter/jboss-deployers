@@ -26,13 +26,14 @@ import java.util.Map;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
-import org.jboss.classpool.spi.ClassPoolRepository;
+import javassist.scopedpool.ScopedClassPoolRepository;
+
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.reflect.plugins.javassist.JavassistTypeInfoFactory;
 import org.jboss.reflect.spi.TypeInfoFactory;
-import org.jboss.virtual.VirtualFile;
-import org.jboss.test.deployers.vfs.reflect.support.web.AnyServlet;
 import org.jboss.test.deployers.vfs.reflect.support.jar.PlainJavaBean;
+import org.jboss.test.deployers.vfs.reflect.support.web.AnyServlet;
+import org.jboss.virtual.VirtualFile;
 
 /**
  * Abstract test for ClassPool.
@@ -44,11 +45,21 @@ import org.jboss.test.deployers.vfs.reflect.support.jar.PlainJavaBean;
  */
 public abstract class ClassPoolTest extends ReflectTest
 {
+   protected ScopedClassPoolRepository classPoolRepository = null; 
+   
    protected ClassPoolTest(String name)
    {
       super(name);
    }
 
+   @Override
+   public void setUp() throws Exception
+   {
+      super.setUp();
+      classPoolRepository = (ScopedClassPoolRepository) this.getBean("ClassPoolRepository");
+      assertNotNull(classPoolRepository);
+   }
+   
    protected TypeInfoFactory createTypeInfoFactory()
    {
       return new JavassistTypeInfoFactory();
@@ -67,12 +78,12 @@ public abstract class ClassPoolTest extends ReflectTest
             String className = clazz.getName();
             // sanity check
             Class<?> loadedClass = assertLoadClass(className, classLoader);
-            ClassPoolRepository repository = ClassPoolRepository.getInstance();
-            ClassPool classPool = repository.registerClassLoader(classLoader);
+            ClassPool classPool = classPoolRepository.registerClassLoader(classLoader);
+            assertNotNull("ClassPool for " + classLoader + " is null", classPool);
             CtClass ctClass = classPool.getCtClass(className);
             assertEquals(className, clazz.getName());
             ClassLoader cl = ctClass.getClassPool().getClassLoader();
-            assertEquals(loadedClass.getClassLoader(), cl);
+            assertEquals("Class has been loaded by the wrong class loader: " + clazz.getName(), loadedClass.getClassLoader(), cl);
          }
       }
       finally
@@ -83,35 +94,75 @@ public abstract class ClassPoolTest extends ReflectTest
 
    protected void assertSimpleHierarchy(ClassLoader topCL, ClassLoader childCL) throws Exception
    {
-      ClassPoolRepository repository = ClassPoolRepository.getInstance();
-      ClassPool classPool = repository.registerClassLoader(childCL);
+      ClassPool classPool = classPoolRepository.registerClassLoader(childCL);
       CtClass ctClass = classPool.getCtClass(AnyServlet.class.getName());
       CtMethod ctMethod = ctClass.getDeclaredMethod("getBean");
       assertNotNull("No such 'getBean' method on " + ctClass, ctMethod);
 
       CtClass returnCtClass = ctMethod.getReturnType();
-      classPool = repository.registerClassLoader(topCL);
+      classPool = classPoolRepository.registerClassLoader(topCL);
       CtClass returnCtClass2 = classPool.getCtClass(PlainJavaBean.class.getName());
       assertSame(returnCtClass, returnCtClass2);
    }
 
    protected void assertNonDeploymentModule(ClassLoader cl, Class<?> anysClass) throws Exception
    {
-      // TODO
+      ClassPool classPool = classPoolRepository.registerClassLoader(cl);
+      CtClass asClass = classPool.getCtClass(anysClass.getName());
+      CtClass pjbClass = classPool.getCtClass(PlainJavaBean.class.getName());
+      CtClass rtClass = asClass.getDeclaredMethod("getBean").getReturnType();
+      assertEquals(pjbClass, rtClass);
    }
 
    protected void assertNonDeploymentModule(ClassLoader cl, Class<?> anysClass, Class<?> tifClass) throws Exception
    {
-      // TODO
+      ClassPool classPool = classPoolRepository.registerClassLoader(cl);
+      ClassPool tifClassPool = classPoolRepository.registerClassLoader(tifClass.getClassLoader());
+      ClassPool anysClassPool = classPoolRepository.registerClassLoader(anysClass.getClassLoader());
+      
+      CtClass tifCtClass = tifClassPool.getCtClass(tifClass.getName());
+      CtClass tifRT = tifCtClass.getDeclaredMethod("getAnys").getReturnType();
+      CtClass asCtClass = anysClassPool.getCtClass(anysClass.getName());
+      assertEquals(tifRT, asCtClass);
+
+      CtClass pjbCtClass = classPool.getCtClass(PlainJavaBean.class.getName());
+      CtClass rtL = asCtClass.getDeclaredMethod("getBean").getReturnType();
+      assertEquals(pjbCtClass, rtL);
    }
 
    protected void assertIsolated(ClassLoader cl1, ClassLoader cl2, Class<?> clazz1, Class<?> clazz2) throws Exception
    {
-      // TODO
+      ClassPool classPool1 = classPoolRepository.registerClassLoader(cl1);
+      ClassPool classPool2 = classPoolRepository.registerClassLoader(cl2);
+
+      CtClass class1 = classPool1.getCtClass(PlainJavaBean.class.getName());
+      CtClass class2 = classPool2.getCtClass(PlainJavaBean.class.getName());
+      assertNotSame(class1, class2);
+      
+      ClassPool classPool3 = classPoolRepository.registerClassLoader(clazz1.getClassLoader());
+      CtClass class3 = classPool3.getCtClass(clazz1.getName());
+      assertEquals(class1, class3);
+
+      ClassPool classPool4 = classPoolRepository.registerClassLoader(clazz2.getClassLoader());
+      CtClass class4 = classPool4.getCtClass(clazz2.getName());
+      assertEquals(class2, class4);
+      
+      assertNotSame(class3, class4);
    }
 
    protected void assertDomainHierarchy(ClassLoader topCL, ClassLoader leftCL, ClassLoader rightCL) throws Exception
    {
-      // TODO
+      ClassPool topClassPool = classPoolRepository.registerClassLoader(topCL);
+      ClassPool leftClassPool = classPoolRepository.registerClassLoader(leftCL);
+      ClassPool rightClassPool = classPoolRepository.registerClassLoader(rightCL);
+      CtClass pjbClass = topClassPool.getCtClass(PlainJavaBean.class.getName());
+      CtClass asClassL = leftClassPool.getCtClass(AnyServlet.class.getName());
+      CtClass asClassR = rightClassPool.getCtClass(AnyServlet.class.getName());
+
+      CtClass rtClassL = asClassL.getDeclaredMethod("getBean").getReturnType();
+      assertEquals(pjbClass, rtClassL);
+
+      CtClass rtClassR = asClassR.getDeclaredMethod("getBean").getReturnType();
+      assertEquals(pjbClass, rtClassR);
    }
 }

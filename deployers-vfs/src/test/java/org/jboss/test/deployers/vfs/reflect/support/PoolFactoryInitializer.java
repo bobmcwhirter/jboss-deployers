@@ -21,30 +21,31 @@
  */
 package org.jboss.test.deployers.vfs.reflect.support;
 
-import javassist.scopedpool.ScopedClassPoolFactory;
-import org.jboss.classpool.spi.ClassPoolRepository;
-import org.jboss.reflect.plugins.javassist.classpool.ClassPoolFactory;
-import org.jboss.reflect.plugins.javassist.classpool.RepositoryClassPoolFactory;
-import org.jboss.reflect.plugins.javassist.classpool.DefaultClassPoolFactory;
+import javassist.scopedpool.ScopedClassPoolRepository;
+
 import org.jboss.reflect.plugins.javassist.JavassistTypeInfoFactoryImpl;
+import org.jboss.reflect.plugins.javassist.classpool.ClassPoolFactory;
+import org.jboss.reflect.plugins.javassist.classpool.DefaultClassPoolFactory;
+import org.jboss.reflect.plugins.javassist.classpool.RepositoryClassPoolFactory;
 
 /**
+ * Initializes the pool factory.
+ * 
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
+ * @author <a href="mailto:flavia.rainone@jboss.com">Flavia Rainone</a>
  */
 public class PoolFactoryInitializer
 {
-   private ScopedClassPoolFactory poolFactory;
-
-   public PoolFactoryInitializer(ScopedClassPoolFactory poolFactory)
+   private ScopedClassPoolRepository poolRepository;
+   
+   public PoolFactoryInitializer(ScopedClassPoolRepository repository)
    {
-      this.poolFactory = poolFactory;
+      this.poolRepository = repository;
    }
 
    public void start()
    {
-      ClassPoolRepository repository = ClassPoolRepository.getInstance();
-      repository.setClassPoolFactory(poolFactory);
-      ClassPoolFactory classPoolFactory = new RepositoryClassPoolFactory(repository);
+      ClassPoolFactory classPoolFactory = new RepositoryClassPoolFactory(poolRepository);
       JavassistTypeInfoFactoryImpl.setPoolFactory(classPoolFactory);
    }
 

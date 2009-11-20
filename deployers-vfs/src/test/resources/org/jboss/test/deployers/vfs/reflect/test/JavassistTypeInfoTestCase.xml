@@ -4,7 +4,9 @@
   <bean name="WarStructure" class="org.jboss.test.deployers.vfs.structure.war.support.MockWarStructureDeployer"/>
   <bean name="WarClassLoader" class="org.jboss.test.deployers.vfs.reflect.support.MockWarClassLoaderDeployer"/>
 
-  <bean name="ClassLoaderScopingPolicy" class="org.jboss.classpool.plugins.as5.VFSClassLoaderDomainRegistry"/>
+  <bean name="ClassLoaderScopingPolicy" class="org.jboss.classpool.plugins.as5.VFSClassLoaderDomainRegistry">
+     <constructor factoryMethod="getInstance"/>
+  </bean>
 
   <bean name="RegisterModuleCallback" class="org.jboss.classpool.plugins.as5.RegisterModuleCallback">
      <constructor>
@@ -25,10 +27,15 @@
      </constructor>
   </bean>
 
-  <bean name="PoolFactoryInitializer" class="org.jboss.test.deployers.vfs.reflect.support.PoolFactoryInitializer">
-     <constructor>
-        <parameter><inject bean="ClassPoolFactory"/></parameter>
-     </constructor>
+  <bean name="ClassPoolRepository" class="org.jboss.classpool.plugins.as5.jbosscl.JBossClDelegatingClassPoolRepository">
+     <constructor factoryMethod="getInstance"/>
+     <property name="classPoolFactory"><inject bean="ClassPoolFactory"/></property>
   </bean>
 
+  <bean name="PoolFactoryInitializer" class="org.jboss.test.deployers.vfs.reflect.support.PoolFactoryInitializer">
+     <constructor>
+        <parameter><inject bean="ClassPoolRepository"/></parameter>
+     </constructor>
+  </bean>
+  
 </deployment>
