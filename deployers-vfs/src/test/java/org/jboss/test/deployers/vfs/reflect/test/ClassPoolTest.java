@@ -56,10 +56,17 @@ public abstract class ClassPoolTest extends ReflectTest
    public void setUp() throws Exception
    {
       super.setUp();
-      classPoolRepository = (ScopedClassPoolRepository) this.getBean("ClassPoolRepository");
+      classPoolRepository = (ScopedClassPoolRepository) getBean("ClassPoolRepository");
       assertNotNull(classPoolRepository);
    }
-   
+
+   @Override
+   protected void tearDown() throws Exception
+   {
+      classPoolRepository = null;
+      super.tearDown();
+   }
+
    protected TypeInfoFactory createTypeInfoFactory()
    {
       return new JavassistTypeInfoFactory();
