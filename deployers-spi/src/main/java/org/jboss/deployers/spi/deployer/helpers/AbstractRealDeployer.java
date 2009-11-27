@@ -21,8 +21,10 @@
  */
 package org.jboss.deployers.spi.deployer.helpers;
 
-import org.jboss.deployers.spi.deployer.DeploymentStages;
+import org.jboss.dependency.spi.ControllerContext;
 import org.jboss.deployers.spi.DeploymentException;
+import org.jboss.deployers.spi.deployer.DeploymentStages;
+import org.jboss.deployers.structure.spi.DeploymentRegistry;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 
 /**
@@ -36,6 +38,9 @@ public abstract class AbstractRealDeployer extends AbstractDeployer
 {
    /** Use unit name for controller context name */
    private boolean useUnitName;
+
+   /** The controller context to deployment unit mapping */
+   private DeploymentRegistry registry;
 
    /**
     * Create a new AbstractRealDeployer.
@@ -123,6 +128,30 @@ public abstract class AbstractRealDeployer extends AbstractDeployer
    }
 
    /**
+    * Put context to deployment mapping.
+    *
+    * @param context the context
+    * @param unit the deployment
+    * @return previous mapping value
+    */
+   protected DeploymentUnit putContext(ControllerContext context, DeploymentUnit unit)
+   {
+      return (registry != null) ? registry.putContext(context, unit) : null;
+   }
+
+   /**
+    * Remove context to deployment mapping.
+    *
+    * @param context the context
+    * @param unit the deployment
+    * @return is previous mapping value same as unit param
+    */
+   protected DeploymentUnit removeContext(ControllerContext context, DeploymentUnit unit)
+   {
+      return (registry != null) ? registry.removeContext(context, unit) : null;
+   }
+
+   /**
     * Should we use unit name for controller context name.
     *
     * @return true if usage is allowed
@@ -140,5 +169,15 @@ public abstract class AbstractRealDeployer extends AbstractDeployer
    public void setUseUnitName(boolean useUnitName)
    {
       this.useUnitName = useUnitName;
+   }
+
+   /**
+    * Set the context to deployment mapping.
+    *
+    * @param registry the registry
+    */
+   public void setDeploymentRegistry(DeploymentRegistry registry)
+   {
+      this.registry = registry;
    }
 }

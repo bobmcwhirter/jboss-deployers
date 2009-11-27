@@ -24,9 +24,12 @@ package org.jboss.system.deployers;
 import javax.management.ObjectName;
 
 import org.jboss.classloading.spi.RealClassLoader;
+import org.jboss.dependency.spi.Controller;
+import org.jboss.dependency.spi.ControllerContext;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.helpers.AbstractSimpleRealDeployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.kernel.Kernel;
 import org.jboss.mx.util.ObjectNameFactory;
 import org.jboss.system.ServiceContext;
 import org.jboss.system.ServiceController;
@@ -112,11 +115,29 @@ public class ServiceDeployer extends AbstractSimpleRealDeployer<ServiceMetaData>
             remove(name);
             throw t;
          }
+
+         ControllerContext serviceContext = getControllerContext(name);
+         if (serviceContext != null)
+            putContext(serviceContext, unit);
       }
       catch (Throwable t)
       {
          throw DeploymentException.rethrowAsDeploymentException("Error deploying: " + name, t);
       }
+   }
+
+   /**
+    * Get service's controller context.
+    *
+    * @param name the service's object name
+    * @return the context
+    */
+   protected ControllerContext getControllerContext(ObjectName name)
+   {
+      Kernel kernel = controller.getKernel();
+      Controller controller = kernel.getController();
+      String canonicalName = name.getCanonicalName(); // too impl detail?
+      return controller.getContext(canonicalName, null);
    }
 
    /**
@@ -144,6 +165,11 @@ public class ServiceDeployer extends AbstractSimpleRealDeployer<ServiceMetaData>
    public void undeploy(DeploymentUnit unit, ServiceMetaData deployment)
    {
       ObjectName name = deployment.getObjectName();
+
+      ControllerContext serviceContext = getControllerContext(name);
+      if (serviceContext != null)
+         removeContext(serviceContext, unit);
+
       ServiceContext context = controller.getServiceContext(name);
       if (context != null)
       {

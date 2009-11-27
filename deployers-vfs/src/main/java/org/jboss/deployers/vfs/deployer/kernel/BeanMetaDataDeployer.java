@@ -36,6 +36,7 @@ import org.jboss.beans.metadata.spi.ClassLoaderMetaData;
 import org.jboss.beans.metadata.spi.ValueMetaData;
 import org.jboss.dependency.spi.Controller;
 import org.jboss.dependency.spi.ScopeInfo;
+import org.jboss.dependency.spi.ControllerContext;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.helpers.AbstractSimpleRealDeployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
@@ -177,6 +178,7 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
       try
       {
          controller.install(context);
+         putContext(context, unit);
       }
       catch (Throwable t)
       {
@@ -223,7 +225,8 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
       BeanMetaDataDeployerPlugin plugin = deployedWithPlugin.remove(deployment.getName());
       if (plugin == null || plugin.uninstallContext(controller, unit, deployment) == false)
       {
-         controller.uninstall(deployment.getName());
+         ControllerContext context = controller.uninstall(deployment.getName());
+         removeContext(context, unit);
       }
       
       // Remove any classloader metadata we added (not necessary if we clone above)
