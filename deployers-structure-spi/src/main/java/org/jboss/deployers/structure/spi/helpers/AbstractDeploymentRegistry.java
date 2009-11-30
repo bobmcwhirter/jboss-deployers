@@ -100,11 +100,17 @@ public class AbstractDeploymentRegistry implements DeploymentRegistry
 
    public DeploymentUnit getDeployment(ControllerContext context)
    {
+      if (context == null)
+         throw new IllegalArgumentException("Null context");
+
       return contextMapping.get(context);
    }
 
    public Set<ControllerContext> getContexts(DeploymentUnit unit)
    {
+      if (unit == null)
+         throw new IllegalArgumentException("Null deployment unit");
+
       lock.readLock().lock();
       try
       {

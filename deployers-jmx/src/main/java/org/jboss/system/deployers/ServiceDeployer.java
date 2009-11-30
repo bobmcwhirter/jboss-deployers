@@ -118,7 +118,7 @@ public class ServiceDeployer extends AbstractSimpleRealDeployer<ServiceMetaData>
 
          ControllerContext serviceContext = getControllerContext(name);
          if (serviceContext != null)
-            putContext(serviceContext, unit);
+            putContext(serviceContext, unit.getParent()); // we're component, use parent
       }
       catch (Throwable t)
       {
@@ -168,7 +168,7 @@ public class ServiceDeployer extends AbstractSimpleRealDeployer<ServiceMetaData>
 
       ControllerContext serviceContext = getControllerContext(name);
       if (serviceContext != null)
-         removeContext(serviceContext, unit);
+         removeContext(serviceContext, unit.getParent());
 
       ServiceContext context = controller.getServiceContext(name);
       if (context != null)

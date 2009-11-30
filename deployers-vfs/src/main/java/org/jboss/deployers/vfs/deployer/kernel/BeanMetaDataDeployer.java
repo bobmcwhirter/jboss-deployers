@@ -178,7 +178,7 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
       try
       {
          controller.install(context);
-         putContext(context, unit);
+         putContext(context, unit.getParent()); // we're a component, use parent
       }
       catch (Throwable t)
       {
@@ -226,7 +226,7 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
       if (plugin == null || plugin.uninstallContext(controller, unit, deployment) == false)
       {
          ControllerContext context = controller.uninstall(deployment.getName());
-         removeContext(context, unit);
+         removeContext(context, unit.getParent());
       }
       
       // Remove any classloader metadata we added (not necessary if we clone above)
