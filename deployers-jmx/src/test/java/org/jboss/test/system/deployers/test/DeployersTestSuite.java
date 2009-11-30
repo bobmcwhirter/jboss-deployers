@@ -42,6 +42,7 @@ public class DeployersTestSuite extends TestSuite
       TestSuite suite = new TestSuite("Deployers Tests");
 
        suite.addTest(ServiceUnitNameTestCase.suite());
+       suite.addTest(ServiceDeploymentRegistryTestCase.suite());
 
       return suite;
    }

@@ -27,15 +27,17 @@ import javax.management.ObjectName;
 
 import junit.framework.Test;
 
+import org.jboss.dependency.spi.ControllerContext;
 import org.jboss.deployers.client.plugins.deployment.AbstractDeployment;
 import org.jboss.deployers.client.spi.Deployment;
-import org.jboss.deployers.client.spi.IncompleteDeploymentException;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.structure.spi.DeploymentContext;
+import org.jboss.deployers.structure.spi.DeploymentRegistry;
+import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.structure.spi.StructuralDeployers;
 import org.jboss.deployers.structure.spi.helpers.AbstractDeploymentContext;
+import org.jboss.deployers.structure.spi.helpers.AbstractDeploymentRegistry;
 import org.jboss.system.metadata.ServiceConstructorMetaData;
-import org.jboss.system.metadata.ServiceDependencyMetaData;
 import org.jboss.system.metadata.ServiceMetaData;
 import org.jboss.test.system.deployers.support.Tester;
 
@@ -44,27 +46,33 @@ import org.jboss.test.system.deployers.support.Tester;
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class ServiceUnitNameTestCase extends AbstractServiceTest
+public class ServiceDeploymentRegistryTestCase extends AbstractServiceTest
 {
-   public ServiceUnitNameTestCase(String name)
+   private DeploymentRegistry registry = new AbstractDeploymentRegistry();
+
+   public ServiceDeploymentRegistryTestCase(String name)
    {
       super(name);
    }
 
    public static Test suite()
    {
-      return suite(ServiceUnitNameTestCase.class);
+      return suite(ServiceDeploymentRegistryTestCase.class);
    }
 
-   public void testServiceDeployerComponentName() throws Exception
+   @Override
+   protected DeploymentRegistry getRegistry()
+   {
+      return registry;
+   }
+
+   public void testDeploymentRegistry() throws Exception
    {
       ServiceMetaData metaData = new ServiceMetaData();
-      metaData.setObjectName(new ObjectName("jboss.system:service=Tester"));
+      ObjectName objectName = new ObjectName("jboss.system:service=Tester");
+      metaData.setObjectName(objectName);
       metaData.setCode(Tester.class.getName());
       metaData.setConstructor(new ServiceConstructorMetaData());
-      ServiceDependencyMetaData o = new ServiceDependencyMetaData();
-      o.setIDependOn("somenonexistant");
-      metaData.setDependencies(Collections.singletonList(o));
       addServiceMetaData(metaData);
 
       setStructureDeployer(new StructuralDeployers()
@@ -75,19 +83,22 @@ public class ServiceUnitNameTestCase extends AbstractServiceTest
          }
       });
 
+      ControllerContext context = null;
       Deployment deployment = new AbstractDeployment("SMD");
+      DeploymentUnit unit = deploy(deployment);
       try
       {
-         deploy(deployment);
-         fail("Should not be here");
-      }
-      catch (Exception e)
-      {
-         assertInstanceOf(e, IncompleteDeploymentException.class);
+         context = controller.getInstalledContext(objectName.getCanonicalName());
+         assertNotNull(context);
+         assertSame(unit, registry.getDeployment(context));
+         assertEquals(Collections.singleton(context), registry.getContexts(unit));
       }
       finally
       {
          undeploy(deployment);
+
+         assertNull(registry.getDeployment(context));
+         assertEmpty(registry.getContexts(unit));
       }
    }
 }
