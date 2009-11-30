@@ -37,6 +37,7 @@ import org.jboss.test.deployers.vfs.deployer.bean.test.BeanMetaDataDeployerPlugi
 import org.jboss.test.deployers.vfs.deployer.bean.test.KernelDeployerUnitTestCase;
 import org.jboss.test.deployers.vfs.deployer.bean.test.KernelScopeUnitTestCase;
 import org.jboss.test.deployers.vfs.deployer.bean.test.AutowireAnnotationBeansTestCase;
+import org.jboss.test.deployers.vfs.deployer.bean.test.BeansDeploymentRegistryUnitTestCase;
 
 /**
  * BeanDeployerTestSuite.
@@ -69,6 +70,7 @@ public class BeanDeployerTestSuite extends TestSuite
       suite.addTest(AutowireAnnotationBeansTestCase.suite());
       suite.addTest(BeanMetaDataDeployerPluginTestCase.suite());
       suite.addTest(BootstrapBeanMetaDataPluginTestCase.suite());
+      suite.addTest(BeansDeploymentRegistryUnitTestCase.suite());
 
       return suite;
    }
