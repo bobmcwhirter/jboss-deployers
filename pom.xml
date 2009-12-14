@@ -341,8 +341,8 @@
         <version>${version.jboss.reflect}</version>
       </dependency>
       <dependency>
-        <groupId>org.jboss</groupId>
-        <artifactId>jboss-classpool</artifactId>
+        <groupId>org.jboss.classpool</groupId>
+        <artifactId>jboss-classpool-jbosscl</artifactId>
         <version>${version.jboss.classpool}</version>
       </dependency>
       <dependency>

@@ -290,8 +290,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.jboss</groupId>
-      <artifactId>jboss-classpool</artifactId>
+      <groupId>org.jboss.classpool</groupId>
+      <artifactId>jboss-classpool-jbosscl</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

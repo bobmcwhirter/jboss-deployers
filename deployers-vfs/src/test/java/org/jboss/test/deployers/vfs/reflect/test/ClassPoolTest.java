@@ -88,6 +88,7 @@ public abstract class ClassPoolTest extends ReflectTest
             ClassPool classPool = classPoolRepository.registerClassLoader(classLoader);
             assertNotNull("ClassPool for " + classLoader + " is null", classPool);
             CtClass ctClass = classPool.getCtClass(className);
+            assertNotNull("Class" + className + " retrieved from pool " + classPool + " is null", ctClass);
             assertEquals(className, clazz.getName());
             ClassLoader cl = ctClass.getClassPool().getClassLoader();
             assertEquals("Class has been loaded by the wrong class loader: " + clazz.getName(), loadedClass.getClassLoader(), cl);

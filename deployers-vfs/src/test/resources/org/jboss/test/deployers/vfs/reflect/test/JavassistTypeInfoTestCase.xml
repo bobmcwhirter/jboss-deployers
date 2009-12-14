@@ -4,11 +4,11 @@
   <bean name="WarStructure" class="org.jboss.test.deployers.vfs.structure.war.support.MockWarStructureDeployer"/>
   <bean name="WarClassLoader" class="org.jboss.test.deployers.vfs.reflect.support.MockWarClassLoaderDeployer"/>
 
-  <bean name="ClassLoaderScopingPolicy" class="org.jboss.classpool.plugins.as5.VFSClassLoaderDomainRegistry">
+  <bean name="ClassLoaderScopingPolicy" class="org.jboss.classpool.plugins.jbosscl.VFSClassLoaderDomainRegistry">
      <constructor factoryMethod="getInstance"/>
   </bean>
 
-  <bean name="RegisterModuleCallback" class="org.jboss.classpool.plugins.as5.RegisterModuleCallback">
+  <bean name="RegisterModuleCallback" class="org.jboss.classpool.plugins.jbosscl.RegisterModuleCallback">
      <constructor>
        <parameter><inject bean="ClassLoaderScopingPolicy"/></parameter>
      </constructor>
@@ -20,14 +20,14 @@
      </uninstall>
   </bean>
 
-  <bean name="ClassPoolFactory" class="org.jboss.classpool.plugins.as5.jbosscl.JBossClDelegatingClassPoolFactory">
+  <bean name="ClassPoolFactory" class="org.jboss.classpool.plugins.jbosscl.JBossClDelegatingClassPoolFactory">
      <constructor>
         <parameter><inject bean="ClassLoaderScopingPolicy"/></parameter>
         <parameter><inject bean="RegisterModuleCallback"/></parameter>
      </constructor>
   </bean>
 
-  <bean name="ClassPoolRepository" class="org.jboss.classpool.plugins.as5.jbosscl.JBossClDelegatingClassPoolRepository">
+  <bean name="ClassPoolRepository" class="org.jboss.classpool.plugins.jbosscl.JBossClDelegatingClassPoolRepository">
      <constructor factoryMethod="getInstance"/>
      <property name="classPoolFactory"><inject bean="ClassPoolFactory"/></property>
   </bean>
