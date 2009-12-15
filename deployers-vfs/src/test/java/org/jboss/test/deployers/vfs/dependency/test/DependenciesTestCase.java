@@ -51,6 +51,28 @@ public class DependenciesTestCase extends BootstrapDeployersTest
       assertEquals(state, context.getState());
    }
 
+   public void testBasicDependency() throws Throwable
+   {
+      DeploymentUnit du = addDeployment("/dependency", "basic");
+      try
+      {
+         assertDeployment(du, ControllerState.PRE_INSTALL);
+         DeploymentUnit tmDU = assertDeploy("/dependency", "support");
+         try
+         {
+            assertDeployment(du, ControllerState.INSTALLED);
+         }
+         finally
+         {
+            undeploy(tmDU);
+         }
+      }
+      finally
+      {
+         undeploy(du);
+      }
+   }
+
    public void testBeanDependency() throws Throwable
    {
       DeploymentUnit du = addDeployment("/dependency", "bean");
