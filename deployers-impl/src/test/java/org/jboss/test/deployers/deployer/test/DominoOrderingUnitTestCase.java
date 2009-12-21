@@ -24,28 +24,29 @@ package org.jboss.test.deployers.deployer.test;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.jboss.deployers.plugins.deployers.DeployersImpl;
+import org.jboss.deployers.plugins.sort.DeployerSorter;
+import org.jboss.deployers.plugins.sort.DominoDeployerSorter;
 
 /**
- * DeployerOrderingUnitTestCase.
+ * Old domino sorting.
  *
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class DeployerFlowUnitTestCase extends AbstractDeployerFlowUnitTest
+public class DominoOrderingUnitTestCase extends AbstractSorterOrderingUnitTest
 {
-   public DeployerFlowUnitTestCase(String name)
+   public DominoOrderingUnitTestCase(String name)
    {
       super(name);
    }
 
    public static Test suite()
    {
-      return new TestSuite(DeployerFlowUnitTestCase.class);
+      return new TestSuite(DominoOrderingUnitTestCase.class);
    }
 
    @Override
-   protected void applySortingChanges(DeployersImpl deployers)
+   protected DeployerSorter createSorter()
    {
-      // use default
+      return new DominoDeployerSorter();
    }
 }

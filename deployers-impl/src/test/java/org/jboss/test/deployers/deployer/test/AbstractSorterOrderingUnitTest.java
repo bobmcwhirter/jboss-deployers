@@ -21,31 +21,29 @@
 */
 package org.jboss.test.deployers.deployer.test;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import org.jboss.deployers.plugins.deployers.DeployersImpl;
+import org.jboss.deployers.plugins.sort.DeployerSorter;
+import org.jboss.deployers.plugins.sort.OldStagedSortedDeployers;
 
 /**
- * DeployerOrderingUnitTestCase.
+ * Sorting via sorter.
  *
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class DeployerFlowUnitTestCase extends AbstractDeployerFlowUnitTest
+public abstract class AbstractSorterOrderingUnitTest extends AbstractDeployerFlowUnitTest
 {
-   public DeployerFlowUnitTestCase(String name)
+   protected AbstractSorterOrderingUnitTest(String name)
    {
       super(name);
    }
 
-   public static Test suite()
-   {
-      return new TestSuite(DeployerFlowUnitTestCase.class);
-   }
+   protected abstract DeployerSorter createSorter();
 
    @Override
    protected void applySortingChanges(DeployersImpl deployers)
    {
-      // use default
+      OldStagedSortedDeployers sorter = new OldStagedSortedDeployers();
+      sorter.setSorter(createSorter());
+      deployers.setDeployersByStage(sorter);
    }
 }

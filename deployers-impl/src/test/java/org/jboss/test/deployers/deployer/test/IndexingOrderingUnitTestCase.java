@@ -25,27 +25,36 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.jboss.deployers.plugins.deployers.DeployersImpl;
+import org.jboss.deployers.plugins.sort.NewStagedSortedDeployers;
+import org.jboss.deployers.plugins.sort.StagedSortedDeployers;
 
 /**
- * DeployerOrderingUnitTestCase.
+ * Sorting via indexing.
  *
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class DeployerFlowUnitTestCase extends AbstractDeployerFlowUnitTest
+public class IndexingOrderingUnitTestCase extends AbstractDeployerFlowUnitTest
 {
-   public DeployerFlowUnitTestCase(String name)
+   public IndexingOrderingUnitTestCase(String name)
    {
       super(name);
    }
 
    public static Test suite()
    {
-      return new TestSuite(DeployerFlowUnitTestCase.class);
+      return new TestSuite(IndexingOrderingUnitTestCase.class);
    }
 
    @Override
    protected void applySortingChanges(DeployersImpl deployers)
    {
-      // use default
+      StagedSortedDeployers sorter = new NewStagedSortedDeployers();
+      deployers.setDeployersByStage(sorter);
+   }
+
+   @Override
+   public void testInputOutputLoop() throws Exception
+   {
+      // TODO -- fix me
    }
 }

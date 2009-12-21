@@ -36,8 +36,11 @@ import org.jboss.test.deployers.deployer.test.DeployerRequiredInputsUnitTestCase
 import org.jboss.test.deployers.deployer.test.DeployerRequiredStageUnitTestCase;
 import org.jboss.test.deployers.deployer.test.DeployerWidthFirstUnitTestCase;
 import org.jboss.test.deployers.deployer.test.DeployersImplUnitTestCase;
+import org.jboss.test.deployers.deployer.test.DominoOrderingUnitTestCase;
 import org.jboss.test.deployers.deployer.test.HeuristicAllOrNothingUnitTestCase;
 import org.jboss.test.deployers.deployer.test.HeuristicRussionDollUnitTestCase;
+import org.jboss.test.deployers.deployer.test.IndexingOrderingUnitTestCase;
+import org.jboss.test.deployers.deployer.test.KhanOrderingUnitTestCase;
 import org.jboss.test.deployers.deployer.test.MultipleComponentTypeUnitTestCase;
 
 /**
@@ -60,7 +63,6 @@ public class DeployersDeployerTestSuite extends TestSuite
 
       suite.addTest(DeployerProtocolUnitTestCase.suite());
       suite.addTest(DeployerOrderingUnitTestCase.suite());
-      suite.addTest(DeployerFlowUnitTestCase.suite());
       suite.addTest(DeployerWidthFirstUnitTestCase.suite());
       suite.addTest(DeployerClassLoaderUnitTestCase.suite());
       suite.addTest(DeployersImplUnitTestCase.suite());
@@ -71,6 +73,12 @@ public class DeployersDeployerTestSuite extends TestSuite
       suite.addTest(DeployerContextClassLoaderUnitTestCase.suite());
       suite.addTest(DeployerRequiredStageUnitTestCase.suite());
       suite.addTest(DeployerRequiredInputsUnitTestCase.suite());
+
+      // sorting tests
+      suite.addTest(DeployerFlowUnitTestCase.suite());
+      suite.addTest(DominoOrderingUnitTestCase.suite());
+      suite.addTest(KhanOrderingUnitTestCase.suite());
+      suite.addTest(IndexingOrderingUnitTestCase.suite());
 
       // helper deployers
       suite.addTest(ExactAttachmentDeployerWithVisitorTestCase.suite());
