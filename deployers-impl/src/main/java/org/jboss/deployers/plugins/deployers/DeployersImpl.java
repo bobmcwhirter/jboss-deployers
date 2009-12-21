@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import javax.management.MBeanRegistration;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -126,6 +127,9 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
     * The deployers by stage and type
     */
    private Map<String, List<Deployer>> deployersByStage = new HashMap<String, List<Deployer>>();
+
+   /** The sorter */
+   private DeployerSorter sorter;
 
    /**
     * The scope builder
@@ -246,6 +250,16 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
       newDeployers.removeAll(this.deployers);
       for (Deployer deployer : newDeployers)
          addDeployer(deployer);
+   }
+
+   /**
+    * Set the sorter.
+    *
+    * @param sorter the sorter
+    */
+   public void setSorter(DeployerSorter sorter)
+   {
+      this.sorter = sorter;
    }
 
    /**
@@ -1715,7 +1729,10 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
     */
    protected List<Deployer> insert(List<Deployer> original, Deployer newDeployer)
    {
-      DeployerSorter sorter = DeployerSorterFactory.newSorter();
+      DeployerSorter sorter = this.sorter;
+      if (sorter == null)
+         sorter = DeployerSorterFactory.newSorter();
+      
       return sorter.sortDeployers(original, newDeployer);
    }
 
