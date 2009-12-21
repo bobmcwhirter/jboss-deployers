@@ -28,7 +28,7 @@ import org.jboss.deployers.plugins.sort.DeployerSorter;
 import org.jboss.deployers.plugins.sort.KahnDeployerSorter;
 
 /**
- * Khan topology sorting.
+ * Khan topological sorting.
  *
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
