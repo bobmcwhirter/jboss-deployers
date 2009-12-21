@@ -25,6 +25,8 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.jboss.deployers.client.spi.DeployerClient;
 import org.jboss.deployers.client.spi.Deployment;
+import org.jboss.deployers.plugins.main.MainDeployerImpl;
+import org.jboss.deployers.spi.deployer.Deployer;
 import org.jboss.deployers.spi.deployer.helpers.AbstractDeployer;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.test.deployers.AbstractDeployerTest;
@@ -40,6 +42,26 @@ import org.jboss.test.deployers.deployer.support.TestFlowDeployer;
  */
 public class DeployerFlowUnitTestCase extends AbstractDeployerTest
 {
+   private static void assertDeploy(TestFlowDeployer deployer)
+   {
+      assertTrue(deployer + " must deploy", deployer.getDeployOrder() > 0);
+   }
+
+   private static void assertDeployBefore(TestFlowDeployer deployer1, TestFlowDeployer deployer2)
+   {
+      assertTrue(deployer2 + " must deploy before " + deployer1, deployer1.getDeployOrder() > deployer2.getDeployOrder());
+   }
+
+   private static void assertUndeploy(TestFlowDeployer deployer)
+   {
+      assertTrue(deployer + " must undeploy", deployer.getUndeployOrder() > 0);
+   }
+
+   private static void assertUndeployBefore(TestFlowDeployer deployer1, TestFlowDeployer deployer2)
+   {
+      assertTrue(deployer2 + " must undeploy after " + deployer1, deployer1.getUndeployOrder() < deployer2.getUndeployOrder());
+   }
+
    public static Test suite()
    {
       return new TestSuite(DeployerFlowUnitTestCase.class);
@@ -171,9 +193,10 @@ public class DeployerFlowUnitTestCase extends AbstractDeployerTest
       main.addDeployment(deployment);
       main.process();
 
-      assertEquals(1, deployer1.getDeployOrder());
-      assertEquals(2, deployer2.getDeployOrder());
-      assertEquals(3, deployer3.getDeployOrder());
+      // B can appear at any position
+      // BCA, CBA, CAB
+      assertDeployBefore(deployer2, deployer1);
+      assertTrue("C doesn't deploy", deployer1.getDeployOrder() > 0);
       assertEquals(-1, deployer1.getUndeployOrder());
       assertEquals(-1, deployer2.getUndeployOrder());
       assertEquals(-1, deployer3.getUndeployOrder());
@@ -430,6 +453,19 @@ public class DeployerFlowUnitTestCase extends AbstractDeployerTest
 
    public void testComplicated() throws Exception
    {
+      // (1) (2) (3)
+      //  \   /   |
+      //    T1    T2
+      //    |     |
+      //         (4)
+      //          |
+      //          T3
+      //          |
+      //         (5)
+      //    |     |
+      //    T1    T3
+      //      \   /
+      //       (6)
       DeployerClient main = createMainDeployer();
       TestFlowDeployer deployer6 = new TestFlowDeployer("6");
       deployer6.setInputs("test1", "test3");
@@ -456,12 +492,11 @@ public class DeployerFlowUnitTestCase extends AbstractDeployerTest
       main.addDeployment(deployment);
       main.process();
 
-      assertEquals(1, deployer1.getDeployOrder());
-      assertEquals(2, deployer2.getDeployOrder());
-      assertEquals(3, deployer3.getDeployOrder());
-      assertEquals(4, deployer4.getDeployOrder());
-      assertEquals(5, deployer5.getDeployOrder());
-      assertEquals(6, deployer6.getDeployOrder());
+      assertDeployBefore(deployer6, deployer1);
+      assertDeployBefore(deployer6, deployer2);
+      assertDeployBefore(deployer4, deployer3);
+      assertDeployBefore(deployer5, deployer4);
+      assertDeployBefore(deployer6, deployer5);
       assertEquals(-1, deployer1.getUndeployOrder());
       assertEquals(-1, deployer2.getUndeployOrder());
       assertEquals(-1, deployer3.getUndeployOrder());
@@ -472,34 +507,30 @@ public class DeployerFlowUnitTestCase extends AbstractDeployerTest
       main.removeDeployment(deployment);
       main.process();
 
-      assertEquals(1, deployer1.getDeployOrder());
-      assertEquals(2, deployer2.getDeployOrder());
-      assertEquals(3, deployer3.getDeployOrder());
-      assertEquals(4, deployer4.getDeployOrder());
-      assertEquals(5, deployer5.getDeployOrder());
-      assertEquals(6, deployer6.getDeployOrder());
-      assertEquals(12, deployer1.getUndeployOrder());
-      assertEquals(11, deployer2.getUndeployOrder());
-      assertEquals(10, deployer3.getUndeployOrder());
-      assertEquals(9, deployer4.getUndeployOrder());
-      assertEquals(8, deployer5.getUndeployOrder());
-      assertEquals(7, deployer6.getUndeployOrder());
+      assertDeployBefore(deployer6, deployer1);
+      assertDeployBefore(deployer6, deployer2);
+      assertDeployBefore(deployer4, deployer3);
+      assertDeployBefore(deployer5, deployer4);
+      assertDeployBefore(deployer6, deployer5);
+      assertUndeployBefore(deployer6, deployer1);
+      assertUndeployBefore(deployer6, deployer2);
+      assertUndeployBefore(deployer4, deployer3);
+      assertUndeployBefore(deployer5, deployer4);
+      assertUndeployBefore(deployer6, deployer5);
 
       main.addDeployment(deployment);
       main.process();
 
-      assertEquals(13, deployer1.getDeployOrder());
-      assertEquals(14, deployer2.getDeployOrder());
-      assertEquals(15, deployer3.getDeployOrder());
-      assertEquals(16, deployer4.getDeployOrder());
-      assertEquals(17, deployer5.getDeployOrder());
-      assertEquals(18, deployer6.getDeployOrder());
-      assertEquals(12, deployer1.getUndeployOrder());
-      assertEquals(11, deployer2.getUndeployOrder());
-      assertEquals(10, deployer3.getUndeployOrder());
-      assertEquals(9, deployer4.getUndeployOrder());
-      assertEquals(8, deployer5.getUndeployOrder());
-      assertEquals(7, deployer6.getUndeployOrder());
+      assertDeployBefore(deployer6, deployer1);
+      assertDeployBefore(deployer6, deployer2);
+      assertDeployBefore(deployer4, deployer3);
+      assertDeployBefore(deployer5, deployer4);
+      assertDeployBefore(deployer6, deployer5);
+      assertUndeployBefore(deployer6, deployer1);
+      assertUndeployBefore(deployer6, deployer2);
+      assertUndeployBefore(deployer4, deployer3);
+      assertUndeployBefore(deployer5, deployer4);
+      assertUndeployBefore(deployer6, deployer5);
    }
 
    public void testIntermediateIsRelativelySorted() throws Exception
@@ -528,22 +559,18 @@ public class DeployerFlowUnitTestCase extends AbstractDeployerTest
       main.removeDeployment(deployment);
       main.process();
 
-      assertEquals(1, deployer1.getDeployOrder());
-      assertEquals(2, deployer2.getDeployOrder());
-      assertEquals(3, deployer3.getDeployOrder());
-      assertEquals(6, deployer1.getUndeployOrder());
-      assertEquals(5, deployer2.getUndeployOrder());
-      assertEquals(4, deployer3.getUndeployOrder());
+      assertDeployBefore(deployer2, deployer1);
+      assertTrue("C doesn't deploy", deployer1.getDeployOrder() > 0);
+      assertUndeployBefore(deployer2, deployer1);
+      assertTrue("C doesn't undeploy", deployer1.getUndeployOrder() > 0);
 
       main.addDeployment(deployment);
       main.process();
 
-      assertEquals(7, deployer1.getDeployOrder());
-      assertEquals(8, deployer2.getDeployOrder());
-      assertEquals(9, deployer3.getDeployOrder());
-      assertEquals(6, deployer1.getUndeployOrder());
-      assertEquals(5, deployer2.getUndeployOrder());
-      assertEquals(4, deployer3.getUndeployOrder());
+      assertDeployBefore(deployer2, deployer1);
+      assertTrue("C doesn't deploy", deployer1.getDeployOrder() > 0);
+      assertUndeployBefore(deployer2, deployer1);
+      assertTrue("C doesn't undeploy", deployer1.getUndeployOrder() > 0);
    }
 
    public void testTransitionOrdering() throws Exception
@@ -648,6 +675,15 @@ public class DeployerFlowUnitTestCase extends AbstractDeployerTest
 
    public void testDoubleCycle() throws Exception
    {
+      // (D) (H) (B) (E) (G)
+      //  |   |
+      //  T1 2nd
+      //  |   |
+      // (F) (C)
+      //  |
+      //  T2
+      //  |
+      // (A)
       DeployerClient main = createMainDeployer();
 
       TestFlowDeployer deployer2 = new TestFlowDeployer("A");
@@ -684,14 +720,12 @@ public class DeployerFlowUnitTestCase extends AbstractDeployerTest
       main.addDeployment(deployment);
       main.process();
 
-      assertEquals(1, deployer3.getDeployOrder());
-      assertEquals(2, deployer8.getDeployOrder());
-      assertEquals(3, deployer6.getDeployOrder());
-      assertEquals(4, deployer1.getDeployOrder());
-      assertEquals(5, deployer4.getDeployOrder());
-      assertEquals(6, deployer5.getDeployOrder());
-      assertEquals(7, deployer2.getDeployOrder());
-      assertEquals(8, deployer7.getDeployOrder());
+      assertDeploy(deployer3);
+      assertDeployBefore(deployer6, deployer8);
+      assertDeployBefore(deployer5, deployer1);
+      assertDeploy(deployer4);
+      assertDeployBefore(deployer2, deployer5);
+      assertDeploy(deployer7);
       assertEquals(-1, deployer3.getUndeployOrder());
       assertEquals(-1, deployer8.getUndeployOrder());
       assertEquals(-1, deployer6.getUndeployOrder());
@@ -704,42 +738,34 @@ public class DeployerFlowUnitTestCase extends AbstractDeployerTest
       main.removeDeployment(deployment);
       main.process();
 
-      assertEquals(1, deployer3.getDeployOrder());
-      assertEquals(2, deployer8.getDeployOrder());
-      assertEquals(3, deployer6.getDeployOrder());
-      assertEquals(4, deployer1.getDeployOrder());
-      assertEquals(5, deployer4.getDeployOrder());
-      assertEquals(6, deployer5.getDeployOrder());
-      assertEquals(7, deployer2.getDeployOrder());
-      assertEquals(8, deployer7.getDeployOrder());
-      assertEquals(16, deployer3.getUndeployOrder());
-      assertEquals(15, deployer8.getUndeployOrder());
-      assertEquals(14, deployer6.getUndeployOrder());
-      assertEquals(13, deployer1.getUndeployOrder());
-      assertEquals(12, deployer4.getUndeployOrder());
-      assertEquals(11, deployer5.getUndeployOrder());
-      assertEquals(10, deployer2.getUndeployOrder());
-      assertEquals(9, deployer7.getUndeployOrder());
+      assertDeploy(deployer3);
+      assertDeployBefore(deployer6, deployer8);
+      assertDeployBefore(deployer5, deployer1);
+      assertDeploy(deployer4);
+      assertDeployBefore(deployer2, deployer5);
+      assertDeploy(deployer7);
+      assertUndeploy(deployer3);
+      assertUndeployBefore(deployer6, deployer8);
+      assertUndeployBefore(deployer5, deployer1);
+      assertUndeploy(deployer4);
+      assertUndeployBefore(deployer2, deployer5);
+      assertUndeploy(deployer7);
 
       main.addDeployment(deployment);
       main.process();
 
-      assertEquals(17, deployer3.getDeployOrder());
-      assertEquals(18, deployer8.getDeployOrder());
-      assertEquals(19, deployer6.getDeployOrder());
-      assertEquals(20, deployer1.getDeployOrder());
-      assertEquals(21, deployer4.getDeployOrder());
-      assertEquals(22, deployer5.getDeployOrder());
-      assertEquals(23, deployer2.getDeployOrder());
-      assertEquals(24, deployer7.getDeployOrder());
-      assertEquals(16, deployer3.getUndeployOrder());
-      assertEquals(15, deployer8.getUndeployOrder());
-      assertEquals(14, deployer6.getUndeployOrder());
-      assertEquals(13, deployer1.getUndeployOrder());
-      assertEquals(12, deployer4.getUndeployOrder());
-      assertEquals(11, deployer5.getUndeployOrder());
-      assertEquals(10, deployer2.getUndeployOrder());
-      assertEquals(9, deployer7.getUndeployOrder());
+      assertDeploy(deployer3);
+      assertDeployBefore(deployer6, deployer8);
+      assertDeployBefore(deployer5, deployer1);
+      assertDeploy(deployer4);
+      assertDeployBefore(deployer2, deployer5);
+      assertDeploy(deployer7);
+      assertUndeploy(deployer3);
+      assertUndeployBefore(deployer6, deployer8);
+      assertUndeployBefore(deployer5, deployer1);
+      assertUndeploy(deployer4);
+      assertUndeployBefore(deployer2, deployer5);
+      assertUndeploy(deployer7);
    }
 
    public void testOrderedThenFlowWithPassThrough() throws Exception
@@ -893,10 +919,21 @@ public class DeployerFlowUnitTestCase extends AbstractDeployerTest
       assertEquals(1, deployer1.getDeployOrder());
       assertEquals(2, deployer2.getDeployOrder());
       assertEquals(3, deployer3.getDeployOrder());
-      assertEquals(4, deployer7.getDeployOrder());
-      assertEquals(5, deployer4.getDeployOrder());
-      assertEquals(6, deployer5.getDeployOrder());
-      assertEquals(7, deployer6.getDeployOrder());
+//      assertEquals(4, deployer7.getDeployOrder());
+      assertDeployBefore(deployer2, deployer1);
+      assertDeployBefore(deployer3, deployer1);
+      assertDeployBefore(deployer7, deployer2);
+      assertDeployBefore(deployer7, deployer3);
+      assertDeployBefore(deployer4, deployer2);
+      assertDeployBefore(deployer4, deployer3);
+      assertDeployBefore(deployer5, deployer4);
+      assertDeployBefore(deployer5, deployer7);
+      assertDeployBefore(deployer6, deployer5);
+      assertDeployBefore(deployer6, deployer2);
+      assertDeployBefore(deployer6, deployer3);
+//      assertEquals(5, deployer4.getDeployOrder());
+//      assertEquals(6, deployer5.getDeployOrder());
+//      assertEquals(7, deployer6.getDeployOrder());
       assertEquals(-1, deployer1.getUndeployOrder());
       assertEquals(-1, deployer2.getUndeployOrder());
       assertEquals(-1, deployer3.getUndeployOrder());
@@ -910,17 +947,39 @@ public class DeployerFlowUnitTestCase extends AbstractDeployerTest
       assertEquals(1, deployer1.getDeployOrder());
       assertEquals(2, deployer2.getDeployOrder());
       assertEquals(3, deployer3.getDeployOrder());
-      assertEquals(4, deployer7.getDeployOrder());
-      assertEquals(5, deployer4.getDeployOrder());
-      assertEquals(6, deployer5.getDeployOrder());
-      assertEquals(7, deployer6.getDeployOrder());
+//      assertEquals(4, deployer7.getDeployOrder());
+      assertDeployBefore(deployer2, deployer1);
+      assertDeployBefore(deployer3, deployer1);
+      assertDeployBefore(deployer7, deployer2);
+      assertDeployBefore(deployer7, deployer3);
+      assertDeployBefore(deployer4, deployer2);
+      assertDeployBefore(deployer4, deployer3);
+      assertDeployBefore(deployer5, deployer4);
+      assertDeployBefore(deployer5, deployer7);
+      assertDeployBefore(deployer6, deployer5);
+      assertDeployBefore(deployer6, deployer2);
+      assertDeployBefore(deployer6, deployer3);
+//      assertEquals(5, deployer4.getDeployOrder());
+//      assertEquals(6, deployer5.getDeployOrder());
+//      assertEquals(7, deployer6.getDeployOrder());
       assertEquals(14, deployer1.getUndeployOrder());
       assertEquals(13, deployer2.getUndeployOrder());
       assertEquals(12, deployer3.getUndeployOrder());
-      assertEquals(11, deployer7.getUndeployOrder());
-      assertEquals(10, deployer4.getUndeployOrder());
-      assertEquals(9, deployer5.getUndeployOrder());
-      assertEquals(8, deployer6.getUndeployOrder());
+//      assertEquals(11, deployer7.getUndeployOrder());
+//      assertEquals(10, deployer4.getUndeployOrder());
+//      assertEquals(9, deployer5.getUndeployOrder());
+//      assertEquals(8, deployer6.getUndeployOrder());
+      assertUndeployBefore(deployer2, deployer1);
+      assertUndeployBefore(deployer3, deployer1);
+      assertUndeployBefore(deployer7, deployer2);
+      assertUndeployBefore(deployer7, deployer3);
+      assertUndeployBefore(deployer4, deployer2);
+      assertUndeployBefore(deployer4, deployer3);
+      assertUndeployBefore(deployer5, deployer4);
+      assertUndeployBefore(deployer5, deployer7);
+      assertUndeployBefore(deployer6, deployer5);
+      assertUndeployBefore(deployer6, deployer2);
+      assertUndeployBefore(deployer6, deployer3);
 
       main.addDeployment(deployment);
       main.process();
@@ -928,17 +987,39 @@ public class DeployerFlowUnitTestCase extends AbstractDeployerTest
       assertEquals(15, deployer1.getDeployOrder());
       assertEquals(16, deployer2.getDeployOrder());
       assertEquals(17, deployer3.getDeployOrder());
-      assertEquals(18, deployer7.getDeployOrder());
-      assertEquals(19, deployer4.getDeployOrder());
-      assertEquals(20, deployer5.getDeployOrder());
-      assertEquals(21, deployer6.getDeployOrder());
+//      assertEquals(18, deployer7.getDeployOrder());
+      assertDeployBefore(deployer2, deployer1);
+      assertDeployBefore(deployer3, deployer1);
+      assertDeployBefore(deployer7, deployer2);
+      assertDeployBefore(deployer7, deployer3);
+      assertDeployBefore(deployer4, deployer2);
+      assertDeployBefore(deployer4, deployer3);
+      assertDeployBefore(deployer5, deployer4);
+      assertDeployBefore(deployer5, deployer7);
+      assertDeployBefore(deployer6, deployer5);
+      assertDeployBefore(deployer6, deployer2);
+      assertDeployBefore(deployer6, deployer3);
+//      assertEquals(19, deployer4.getDeployOrder());
+//      assertEquals(20, deployer5.getDeployOrder());
+//      assertEquals(21, deployer6.getDeployOrder());
       assertEquals(14, deployer1.getUndeployOrder());
       assertEquals(13, deployer2.getUndeployOrder());
       assertEquals(12, deployer3.getUndeployOrder());
-      assertEquals(11, deployer7.getUndeployOrder());
-      assertEquals(10, deployer4.getUndeployOrder());
-      assertEquals(9, deployer5.getUndeployOrder());
-      assertEquals(8, deployer6.getUndeployOrder());
+//      assertEquals(11, deployer7.getUndeployOrder());
+//      assertEquals(10, deployer4.getUndeployOrder());
+//      assertEquals(9, deployer5.getUndeployOrder());
+//      assertEquals(8, deployer6.getUndeployOrder());
+      assertUndeployBefore(deployer2, deployer1);
+      assertUndeployBefore(deployer3, deployer1);
+      assertUndeployBefore(deployer7, deployer2);
+      assertUndeployBefore(deployer7, deployer3);
+      assertUndeployBefore(deployer4, deployer2);
+      assertUndeployBefore(deployer4, deployer3);
+      assertUndeployBefore(deployer5, deployer4);
+      assertUndeployBefore(deployer5, deployer7);
+      assertUndeployBefore(deployer6, deployer5);
+      assertUndeployBefore(deployer6, deployer2);
+      assertUndeployBefore(deployer6, deployer3);
 
       main.removeDeployment(deployment);
       main.process();
