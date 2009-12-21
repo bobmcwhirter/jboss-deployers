@@ -51,8 +51,8 @@ import org.jboss.deployers.client.spi.IncompleteDeploymentException;
 import org.jboss.deployers.client.spi.IncompleteDeployments;
 import org.jboss.deployers.client.spi.MissingAsynchronousDependency;
 import org.jboss.deployers.client.spi.MissingDependency;
-import org.jboss.deployers.plugins.sort.DeployerSorter;
-import org.jboss.deployers.plugins.sort.DeployerSorterFactory;
+import org.jboss.deployers.plugins.sort.OldStagedSortedDeployers;
+import org.jboss.deployers.plugins.sort.StagedSortedDeployers;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.DeploymentState;
 import org.jboss.deployers.spi.deployer.Deployer;
@@ -126,10 +126,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
    /**
     * The deployers by stage and type
     */
-   private Map<String, List<Deployer>> deployersByStage = new HashMap<String, List<Deployer>>();
-
-   /** The sorter */
-   private DeployerSorter sorter;
+   private StagedSortedDeployers deployersByStage = new OldStagedSortedDeployers();
 
    /**
     * The scope builder
@@ -219,6 +216,16 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
    }
 
    /**
+    * Set staged sorted deployers.
+    *
+    * @param deployersByStage the stage sorted deployers
+    */
+   public void setDeployersByStage(StagedSortedDeployers deployersByStage)
+   {
+      this.deployersByStage = deployersByStage;
+   }
+
+   /**
     * Get the deployers.
     *
     * @return the deployers.
@@ -253,16 +260,6 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
    }
 
    /**
-    * Set the sorter.
-    *
-    * @param sorter the sorter
-    */
-   public void setSorter(DeployerSorter sorter)
-   {
-      this.sorter = sorter;
-   }
-
-   /**
     * Add a deployer
     *
     * @param deployer the deployer
@@ -285,12 +282,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
          return;
 
       String stageName = stage.getName();
-      List<Deployer> deployers = deployersByStage.get(stageName);
-      if (deployers == null)
-         deployers = Collections.emptyList();
-      deployers = insert(deployers, wrapper);
-      deployersByStage.put(stageName, deployers);
-
+      deployersByStage.addDeployer(stageName, wrapper);
       this.deployers.add(wrapper);
 
       StringBuilder builder = new StringBuilder();
@@ -315,7 +307,8 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
       if (deployer == null)
          throw new IllegalArgumentException("Null deployer");
 
-      deployers.remove(new DeployerWrapper(deployer));
+      DeployerWrapper wrapper = new DeployerWrapper(deployer);
+      deployers.remove(wrapper);
 
       DeploymentStage stage = deployer.getStage();
       if (stage == null)
@@ -325,14 +318,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
       }
 
       String stageName = stage.getName();
-      List<Deployer> deployers = deployersByStage.get(stageName);
-      if (deployers == null)
-         return;
-
-      deployers.remove(deployer);
-      if (deployers.isEmpty())
-         deployersByStage.remove(stageName);
-
+      deployersByStage.removeDeployer(stageName, wrapper);
       log.debug("Removed deployer " + deployer + " from stage " + stageName);
    }
 
@@ -1668,7 +1654,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
     */
    protected synchronized List<Deployer> getDeployersList(String stageName)
    {
-      List<Deployer> deployers = deployersByStage.get(stageName);
+      List<Deployer> deployers = deployersByStage.getDeployerList(stageName);
       if (deployers == null || deployers.isEmpty())
          return Collections.emptyList();
 
@@ -1718,22 +1704,6 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
       }
 
       return true;
-   }
-
-   /**
-    * Insert the new Deployer.
-    *
-    * @param original    the original deployers
-    * @param newDeployer the new deployer
-    * @return the sorted deployers
-    */
-   protected List<Deployer> insert(List<Deployer> original, Deployer newDeployer)
-   {
-      DeployerSorter sorter = this.sorter;
-      if (sorter == null)
-         sorter = DeployerSorterFactory.newSorter();
-      
-      return sorter.sortDeployers(original, newDeployer);
    }
 
    /**
