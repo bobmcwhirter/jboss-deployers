@@ -49,16 +49,4 @@ public class KhanOrderingUnitTestCase extends AbstractSorterOrderingUnitTest
    {
       return new KahnDeployerSorter();
    }
-
-   @Override
-   public void testMultipleOutput() throws Exception
-   {
-      // TODO -- fix me
-   }
-
-   @Override
-   public void testIntermediateIsRelativelySorted() throws Exception
-   {
-      // TODO -- fix me
-   }
 }

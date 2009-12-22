@@ -2024,9 +2024,9 @@ public abstract class AbstractDeployerFlowUnitTest extends AbstractDeployerTest
       addDeployer(main, deployer);
 
       long end = System.currentTimeMillis();
-      System.out.println("----------------------------------------------------------");
-      System.out.println("Deployer sorting took: " + (end - start) + " milliseconds");
-      System.out.println("----------------------------------------------------------");
+      System.out.println("------------------------------------------------------------------------");
+      System.out.println("Deployer sorting (" + getClass().getSimpleName() +  ") took: " + (end - start) + " milliseconds");
+      System.out.println("------------------------------------------------------------------------");
    }
 
    private static void assertDeploy(TestFlowDeployer deployer)
