@@ -1,14 +1,15 @@
 package org.jboss.deployers.plugins.sort;
 
+import org.jboss.deployers.spi.deployer.Deployer;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.jboss.deployers.spi.deployer.Deployer;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -120,7 +121,8 @@ public class SortedDeployers
       }
 
       insertAfterInputs(n);
-      traverseOutputs(n);
+      IdentityHashMap visited = new IdentityHashMap();
+      traverseOutputs(n, visited);
       relativeOrdering();
 
       deployers = new ArrayList<Deployer>();
@@ -176,9 +178,14 @@ public class SortedDeployers
       return deployers;
    }
 
-   private void traverseOutputs(Entry n)
+   private void traverseOutputs(Entry n, IdentityHashMap visited)
    {
       if (n.getOutputs() == null) return;
+      if (visited.containsKey(n))
+      {
+         throw new IllegalStateException("Deployer " + n + " is involved in a cyclic dependency.");
+      }
+      visited.put(n, n);
       for (String output : n.getOutputs())
       {
          List<Entry> inputs = inputMap.get(output);
@@ -196,7 +203,7 @@ public class SortedDeployers
                   removeAt(deployer.getIndex());
                   deployer.setIndex(0);
                   insertAfterInputs(deployer);
-                  traverseOutputs(deployer);
+                  traverseOutputs(deployer, visited);
                }
             }
          }
