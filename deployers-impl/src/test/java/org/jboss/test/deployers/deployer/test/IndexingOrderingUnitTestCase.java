@@ -23,7 +23,6 @@ package org.jboss.test.deployers.deployer.test;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.jboss.deployers.plugins.deployers.DeployersImpl;
 import org.jboss.deployers.plugins.sort.NewStagedSortedDeployers;
 import org.jboss.deployers.plugins.sort.StagedSortedDeployers;
@@ -53,8 +52,14 @@ public class IndexingOrderingUnitTestCase extends AbstractDeployerFlowUnitTest
    }
 
    @Override
-   public void testInputOutputLoop() throws Exception
+   public void testRealWorldAS6DeployersScenario() throws Exception
    {
-      // TODO -- fix me
+      super.testRealWorldAS6DeployersScenario();
+   }
+
+   @Override
+   public void testDoubleCycle() throws Exception
+   {
+      super.testDoubleCycle();
    }
 }

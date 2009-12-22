@@ -21,23 +21,6 @@
  */
 package org.jboss.deployers.plugins.deployers;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.management.MBeanRegistration;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-
 import org.jboss.dependency.spi.Controller;
 import org.jboss.dependency.spi.ControllerContext;
 import org.jboss.dependency.spi.ControllerContextActions;
@@ -51,7 +34,7 @@ import org.jboss.deployers.client.spi.IncompleteDeploymentException;
 import org.jboss.deployers.client.spi.IncompleteDeployments;
 import org.jboss.deployers.client.spi.MissingAsynchronousDependency;
 import org.jboss.deployers.client.spi.MissingDependency;
-import org.jboss.deployers.plugins.sort.OldStagedSortedDeployers;
+import org.jboss.deployers.plugins.sort.NewStagedSortedDeployers;
 import org.jboss.deployers.plugins.sort.StagedSortedDeployers;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.DeploymentState;
@@ -71,6 +54,22 @@ import org.jboss.managed.api.ManagedObject;
 import org.jboss.metadata.spi.repository.MutableMetaDataRepository;
 import org.jboss.util.collection.CollectionsFactory;
 
+import javax.management.MBeanRegistration;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * DeployersImpl.
  *
@@ -79,7 +78,7 @@ import org.jboss.util.collection.CollectionsFactory;
  * @version $Revision$
  */
 public class DeployersImpl implements Deployers, ControllerContextActions,
-   DeployersImplMBean, MBeanRegistration
+        DeployersImplMBean, MBeanRegistration
 {
    /**
     * The log
@@ -91,23 +90,31 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
     */
    private AtomicBoolean shutdown = new AtomicBoolean(false);
 
-   /** Whether to record statistics */
+   /**
+    * Whether to record statistics
+    */
    private boolean collectStats = false;
-   
-   /** The deployment time stats */
+
+   /**
+    * The deployment time stats
+    */
    private DeployerStatistics deploymentTimes;
-   
+
    /**
     * The dependency state machine
     */
    private Controller controller;
 
-   /** The mbean server */
+   /**
+    * The mbean server
+    */
    private MBeanServer server;
-   
-   /** Whether to register deployments as mbeans */
+
+   /**
+    * Whether to register deployments as mbeans
+    */
    private boolean registerMBeans = true;
-   
+
    /**
     * The repository
     */
@@ -126,18 +133,27 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
    /**
     * The deployers by stage and type
     */
-   private StagedSortedDeployers deployersByStage = new OldStagedSortedDeployers();
+   private StagedSortedDeployers deployersByStage = new NewStagedSortedDeployers();
 
    /**
     * The scope builder
     */
    private ScopeBuilder scopeBuilder;
 
-   /** The ManagedDeploymentCreator plugin */
+   /**
+    * The ManagedDeploymentCreator plugin
+    */
    private ManagedObjectCreator mgtObjectCreator = null;
 
-   /** The exception handlers */
+   /**
+    * The exception handlers
+    */
    private final Set<ExceptionNotificationListener<? extends Throwable>> exceptionNotificationListeners = CollectionsFactory.createLazySet();
+
+   /**
+    * tracing addDeployer is *REALLY* inefficient.  Turn it on with this flag
+    */
+   private boolean traceAddDeployer = false;
 
    /**
     * Create a new DeployersImpl.
@@ -186,6 +202,16 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
       shutdown.set(true);
    }
 
+   public boolean isTraceAddDeployer()
+   {
+      return traceAddDeployer;
+   }
+
+   public void setTraceAddDeployer(boolean traceAddDeployer)
+   {
+      this.traceAddDeployer = traceAddDeployer;
+   }
+
    /**
     * Check whether we are shutdown
     */
@@ -197,7 +223,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
 
    /**
     * Get the collectStats.
-    * 
+    *
     * @return the collectStats.
     */
    public boolean isCollectStats()
@@ -207,7 +233,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
 
    /**
     * Set the collectStats.
-    * 
+    *
     * @param collectStats the collectStats.
     */
    public void setCollectStats(boolean collectStats)
@@ -285,16 +311,23 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
       deployersByStage.addDeployer(stageName, wrapper);
       this.deployers.add(wrapper);
 
+
       StringBuilder builder = new StringBuilder();
-      builder.append("Added deployer ").append(deployer).append(" for stage ").append(stageName).append('\n');
-      for (Deployer temp : getDeployersList(stageName))
+      // This string creation takes an extreme amount of time.  So dont' use it unless there are problems.
+
+      if (traceAddDeployer)
       {
-         builder.append(temp);
-         builder.append("{inputs=").append(temp.getInputs());
-         builder.append(" outputs=").append(temp.getOutputs());
-         builder.append("}\n");
+         builder.append("Added deployer ").append(deployer).append(" for stage ").append(stageName).append('\n');
+         for (Deployer temp : getDeployersList(stageName))
+         {
+            builder.append(temp);
+            builder.append("{inputs=").append(temp.getInputs());
+            builder.append(" outputs=").append(temp.getOutputs());
+            builder.append("}\n");
+         }
+         log.debug(builder);
       }
-      log.debug(builder);
+
    }
 
    /**
@@ -457,10 +490,11 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
    {
       return mgtObjectCreator;
    }
+
    public void setMgtObjectCreator(ManagedObjectCreator mgtObjectCreator)
    {
       this.mgtObjectCreator = mgtObjectCreator;
-      log.debug("setMgtObjectCreator, "+mgtObjectCreator);
+      log.debug("setMgtObjectCreator, " + mgtObjectCreator);
    }
 
    /**
@@ -485,7 +519,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
 
    /**
     * Get whether to register mbeans
-    * 
+    *
     * @return true to register mbeans
     */
    public boolean isRegisterMBeans()
@@ -495,7 +529,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
 
    /**
     * Set whether to register mbeans
-    * 
+    *
     * @param registerMBeans true to register mbeans
     */
    public void setRegisterMBeans(boolean registerMBeans)
@@ -508,7 +542,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
       // Bootstrap the repository
       if (repository == null && controller instanceof KernelController)
       {
-         KernelController kernelController = (KernelController)controller;
+         KernelController kernelController = (KernelController) controller;
          repository = kernelController.getKernel().getMetaDataRepository().getMetaDataRepository();
       }
    }
@@ -528,12 +562,12 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
       {
          outputs.addAll(deployer.getOutputs());
          // If the deployer supports ManagedObjectCreator let is augment/modify the managed objects
-         if(deployer.getManagedObjectCreator() != null)
+         if (deployer.getManagedObjectCreator() != null)
             mocs.add(deployer);
       }
       // 
       mgtObjectCreator.build(unit, outputs, managedObjects);
-      for(ManagedObjectCreator moc : mocs)
+      for (ManagedObjectCreator moc : mocs)
       {
          moc.build(unit, outputs, managedObjects);
       }
@@ -588,7 +622,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
          return "No statistics available";
       return deploymentTimes.listTimes(details);
    }
-   
+
    public String listDeployers(String stageName)
    {
       StringBuilder result = new StringBuilder();
@@ -610,7 +644,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
    {
       if (attachment == null || attachment.trim().length() == 0)
          return "No attachment specified";
-      
+
       StringBuilder result = new StringBuilder();
       result.append("<table><tr><th>Stage/Deployer</th><th>top</th><th>component</th><th>parent last</th><th>input<th>output</th></tr>");
       for (String stage : stages.keySet())
@@ -621,17 +655,17 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
 
    /**
     * List the deployers for a stage
-    * 
-    * @param stageName the stage
+    *
+    * @param stageName  the stage
     * @param attachment the attachment
-    * @param builder the builder
+    * @param builder    the builder
     */
    protected void internalListDeployers(String stageName, String attachment, StringBuilder builder)
    {
       List<Deployer> deployers = getDeployersList(stageName);
       if (deployers.isEmpty())
          return;
-      
+
       builder.append("<tr>").append("<td>").append(stageName).append("</td>").append("</tr>");
       for (Deployer deployer : deployers)
       {
@@ -650,7 +684,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
             if (attachment == null || attachment.equals(output))
                outputs.add(output);
          }
-         if (attachment != null && inputs.isEmpty() &&  outputs.isEmpty())
+         if (attachment != null && inputs.isEmpty() && outputs.isEmpty())
             continue;
          while (row < 1 || row < outputs.size() || row < outputs.size())
          {
@@ -679,7 +713,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
          }
       }
    }
-   
+
    public DeploymentStage getDeploymentStage(DeploymentContext context) throws DeploymentException
    {
       DeploymentControllerContext deploymentControllerContext = context.getTransientAttachments().getAttachment(ControllerContext.class.getName(), DeploymentControllerContext.class);
@@ -943,7 +977,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
     * Notify.
     *
     * @param exception the exception to notify
-    * @param context the context that has this exception as its problem
+    * @param context   the context that has this exception as its problem
     */
    @SuppressWarnings("unchecked")
    protected void notify(Throwable exception, ControllerContext context)
@@ -1021,10 +1055,10 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
     * @param states                      controller states
     */
    protected final void checkControllerContext(
-         ControllerContext context,
-         Map<String, Throwable> contextsInError,
-         Map<String, Set<MissingDependency>> contextsMissingDependencies,
-         ControllerStateModel states)
+           ControllerContext context,
+           Map<String, Throwable> contextsInError,
+           Map<String, Set<MissingDependency>> contextsMissingDependencies,
+           ControllerStateModel states)
    {
       if (context.getState().equals(ControllerState.ERROR))
       {
@@ -1077,19 +1111,19 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
                   ControllerState requiredState = item.getDependentState();
                   if (requiredState == null)
                      requiredState = (other != null) ? other.getRequiredState() : ControllerState.INSTALLED;
-                  
+
                   if (actualState == null || states.isBeforeState(actualState, requiredState))
                   {
                      String requiredStateString = requiredState.getStateString();
                      MissingDependency missing = isAsynchInProgress ?
-                           new MissingAsynchronousDependency(name, dependency, requiredStateString, actualStateString) :
-                           new MissingDependency(name, dependency, requiredStateString, actualStateString);
+                             new MissingAsynchronousDependency(name, dependency, requiredStateString, actualStateString) :
+                             new MissingDependency(name, dependency, requiredStateString, actualStateString);
                      dependencies.add(missing);
                   }
                }
             }
          }
-         
+
          if (dependencies.isEmpty() == false)
             contextsMissingDependencies.put(name, dependencies);
       }
@@ -1108,7 +1142,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
    /**
     * Check if deployments are complete.
     *
-    * @param contexts the deployment contexts
+    * @param contexts      the deployment contexts
     * @param checkContexts do we check contexts
     * @throws DeploymentException throw error if deployment is incomplete
     */
@@ -1169,7 +1203,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
       }
       return false;
    }
-   
+
    /**
     * Is context deployed.
     *
@@ -1191,11 +1225,11 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
     * @param states                      controller states
     */
    protected final void checkComplete(
-         DeploymentContext context,
-         Map<String, Throwable> contextsInError,
-         Map<String, Set<MissingDependency>> contextsMissingDependencies,
-         Set<ControllerContext> notInstalled,
-         ControllerStateModel states)
+           DeploymentContext context,
+           Map<String, Throwable> contextsInError,
+           Map<String, Set<MissingDependency>> contextsMissingDependencies,
+           Set<ControllerContext> notInstalled,
+           ControllerStateModel states)
    {
       DeploymentControllerContext dcc = context.getTransientAttachments().getAttachment(ControllerContext.class.getName(), DeploymentControllerContext.class);
       checkControllerContext(dcc, contextsInError, contextsMissingDependencies, notInstalled, states);
@@ -1235,11 +1269,11 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
     * @param states                      controller states
     */
    protected void checkControllerContext(
-         ControllerContext context,
-         Map<String, Throwable> contextsInError,
-         Map<String, Set<MissingDependency>> contextsMissingDependencies,
-         Set<ControllerContext> notInstalled,
-         ControllerStateModel states)
+           ControllerContext context,
+           Map<String, Throwable> contextsInError,
+           Map<String, Set<MissingDependency>> contextsMissingDependencies,
+           Set<ControllerContext> notInstalled,
+           ControllerStateModel states)
    {
       if (context != null)
       {
@@ -1252,7 +1286,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
 
    public void install(ControllerContext context, ControllerState fromState, ControllerState toState) throws Throwable
    {
-      DeploymentControllerContext deploymentControllerContext = (DeploymentControllerContext)context;
+      DeploymentControllerContext deploymentControllerContext = (DeploymentControllerContext) context;
       String stageName = toState.getStateString();
 
       DeploymentContext deploymentContext = deploymentControllerContext.getDeploymentContext();
@@ -1490,7 +1524,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
 
    public void uninstall(ControllerContext context, ControllerState fromState, ControllerState toState)
    {
-      DeploymentControllerContext deploymentControllerContext = (DeploymentControllerContext)context;
+      DeploymentControllerContext deploymentControllerContext = (DeploymentControllerContext) context;
       String stageName = fromState.getStateString();
 
       DeploymentContext deploymentContext = deploymentControllerContext.getDeploymentContext();
@@ -1600,9 +1634,9 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
 
    /**
     * Do a deployment
-    * 
+    *
     * @param deployer the deployer
-    * @param unit the deployment unit
+    * @param unit     the deployment unit
     * @throws DeploymentException for any error
     */
    protected void doDeploy(Deployer deployer, DeploymentUnit unit) throws DeploymentException
@@ -1637,15 +1671,15 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
 
    /**
     * Do an undeployment
-    * 
+    *
     * @param deployer the deployer
-    * @param unit the deployment unit
+    * @param unit     the deployment unit
     */
    protected void doUndeploy(Deployer deployer, DeploymentUnit unit)
    {
       deployer.undeploy(unit);
    }
-   
+
    /**
     * Build a list of  deployers for this stage
     *
@@ -1765,7 +1799,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
 
    /**
     * Register a deployment context's mbean
-    * 
+    *
     * @param context the context
     */
    protected void registerMBean(DeploymentContext context)
@@ -1786,12 +1820,12 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
 
    /**
     * Unregister a deployment context's mbean
-    * 
+    *
     * @param context the context
     */
    protected void unregisterMBean(DeploymentContext context)
    {
-      if (server != null && isRegisterMBeans() && context instanceof DeploymentMBean )
+      if (server != null && isRegisterMBeans() && context instanceof DeploymentMBean)
       {
          try
          {
@@ -1804,7 +1838,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
          }
       }
    }
-   
+
    public ObjectName preRegister(MBeanServer server, ObjectName name) throws Exception
    {
       this.server = server;

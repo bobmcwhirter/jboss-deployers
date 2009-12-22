@@ -121,6 +121,8 @@ public class SortedDeployers
       traverseOutputs(n, visited);
       relativeOrdering();
 
+      // For some reason, something depends on a new list within MC/VDF
+      // be careful if you change this
       deployers = new ArrayList<Deployer>();
       for (Entry entry : entries)
       {
@@ -131,7 +133,8 @@ public class SortedDeployers
    public void removeDeployer(Deployer d)
    {
       Entry removed = null;
-      for (int i = 0; i < entries.size(); i++)
+      int esize = entries.size();
+      for (int i = 0; i < esize; i++)
       {
          if (entries.get(0).deployer == d)
          {
@@ -162,7 +165,7 @@ public class SortedDeployers
             }
          }
       }
-      deployers.clear();
+      deployers = new ArrayList<Deployer>();
       for (Entry entry : entries)
       {
          deployers.add(entry.deployer);
@@ -190,6 +193,9 @@ public class SortedDeployers
          {
             if (deployer.getIndex() < n.getIndex())
             {
+               // if both the new deployer and comparing deployer have the same output as input
+               // don't change the index of the new deployer.  We always want to insert the deployer at the lowest
+               // possible index so that it is guaranteed that a lower index is always "not equal" to it.
                if (n.getInputs().contains(output) && deployer.getOutputs().contains(output))
                {
 
@@ -209,15 +215,30 @@ public class SortedDeployers
 
    private void insertAfterInputs(Entry n)
    {
-      if (n.getInputs() == null) return;
-      for (String input : n.getInputs())
+      Set<String> nInputs = n.getInputs();
+      Set<String> nOutputs = n.getOutputs();
+      if (nInputs == null) return;
+      for (String input : nInputs)
       {
          List<Entry> outputs = outputMap.get(input);
          if (outputs == null) continue;
          for (Entry deployer : outputs)
          {
             if (deployer == n) continue;
-            if (deployer.getIndex() >= n.getIndex()) n.setIndex(deployer.getIndex() + 1);
+            if (deployer.getIndex() >= n.getIndex())
+            {
+               // if both the new deployer and comparing deployer have the same output as input
+               // don't change the index of the new deployer.  We always want to insert the deployer at the lowest
+               // possible index so that it is guaranteed that a lower index is always "not equal" to it.
+               if (nOutputs.contains(input) && deployer.getInputs().contains(input))
+               {
+
+               }
+               else
+               {
+                  n.setIndex(deployer.getIndex() + 1);
+               }
+            }
          }
       }
       insertAt(n);
@@ -245,7 +266,15 @@ public class SortedDeployers
 
    public void relativeOrdering()
    {
-      for (int i = 0; i < entries.size() - 1; i++)
+      // this algorithm may seem buggy, but I don't think it is.
+      // WE can do a simple for loop because deployers are add one at a time
+      // since they are added one at a time, the current entry list is already sorted
+      // also, we ensure that deployers are inserted at the lowest possible index.  This means
+      // that they cannot be "equal to" a lower index than themselves and makes this
+      // single for-loop optimization rather than a real sort possible.
+      // Time improvement could be saved  if name ordering was removed.
+      int esize = entries.size();
+      for (int i = 0; i < esize - 1; i++)
       {
          Entry d1 = entries.get(i);
          Entry d2 = entries.get(i + 1);
@@ -286,8 +315,9 @@ public class SortedDeployers
    private boolean isIOEqual(Entry d1, Entry d2)
    {
       boolean isEqual = true;
-      if (d1.getOutputs() == null) return true;
-      for (String output : d1.getOutputs())
+      Set<String> d1Outputs = d1.getOutputs();
+      if (d1Outputs == null) return true;
+      for (String output : d1Outputs)
       {
          List<Entry> inputs = inputMap.get(output);
          if (inputs == null) continue;
