@@ -1,24 +1,24 @@
 /*
-* JBoss, Home of Professional Open Source
-* Copyright 2006, JBoss Inc., and individual contributors as indicated
-* by the @authors tag. See the copyright.txt in the distribution for a
-* full listing of individual contributors.
-*
-* This is free software; you can redistribute it and/or modify it
-* under the terms of the GNU Lesser General Public License as
-* published by the Free Software Foundation; either version 2.1 of
-* the License, or (at your option) any later version.
-*
-* This software is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-* Lesser General Public License for more details.
-*
-* You should have received a copy of the GNU Lesser General Public
-* License along with this software; if not, write to the Free
-* Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
-* 02110-1301 USA, or see the FSF site: http://www.fsf.org.
-*/
+ * JBoss, Home of Professional Open Source
+ * Copyright (c) 2009, JBoss Inc., and individual contributors as indicated
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.jboss.test.deployers.deployer.test;
 
 import org.jboss.deployers.client.spi.DeployerClient;
@@ -318,9 +318,8 @@ public abstract class AbstractDeployerFlowUnitTest extends AbstractDeployerTest
       main.addDeployment(deployment);
       main.process();
 
-      assertEquals(1, deployer1.getDeployOrder());
-      assertEquals(2, deployer2.getDeployOrder());
-      assertEquals(3, deployer3.getDeployOrder());
+      assertDeployBefore(deployer2, deployer1);
+      assertDeployBefore(deployer3, deployer1);
       assertEquals(-1, deployer1.getUndeployOrder());
       assertEquals(-1, deployer2.getUndeployOrder());
       assertEquals(-1, deployer3.getUndeployOrder());
@@ -328,22 +327,18 @@ public abstract class AbstractDeployerFlowUnitTest extends AbstractDeployerTest
       main.removeDeployment(deployment);
       main.process();
 
-      assertEquals(1, deployer1.getDeployOrder());
-      assertEquals(2, deployer2.getDeployOrder());
-      assertEquals(3, deployer3.getDeployOrder());
-      assertEquals(6, deployer1.getUndeployOrder());
-      assertEquals(5, deployer2.getUndeployOrder());
-      assertEquals(4, deployer3.getUndeployOrder());
+      assertDeployBefore(deployer2, deployer1);
+      assertDeployBefore(deployer3, deployer1);
+      assertUndeployAfter(deployer2, deployer1);
+      assertUndeployAfter(deployer3, deployer1);
 
       main.addDeployment(deployment);
       main.process();
 
-      assertEquals(7, deployer1.getDeployOrder());
-      assertEquals(8, deployer2.getDeployOrder());
-      assertEquals(9, deployer3.getDeployOrder());
-      assertEquals(6, deployer1.getUndeployOrder());
-      assertEquals(5, deployer2.getUndeployOrder());
-      assertEquals(4, deployer3.getUndeployOrder());
+      assertDeployBefore(deployer2, deployer1);
+      assertDeployBefore(deployer3, deployer1);
+      assertUndeployAfter(deployer2, deployer1);
+      assertUndeployAfter(deployer3, deployer1);
    }
 
    public void testMultipleInput() throws Exception
@@ -498,11 +493,11 @@ public abstract class AbstractDeployerFlowUnitTest extends AbstractDeployerTest
       assertDeployBefore(deployer4, deployer3);
       assertDeployBefore(deployer5, deployer4);
       assertDeployBefore(deployer6, deployer5);
-      assertUndeployBefore(deployer6, deployer1);
-      assertUndeployBefore(deployer6, deployer2);
-      assertUndeployBefore(deployer4, deployer3);
-      assertUndeployBefore(deployer5, deployer4);
-      assertUndeployBefore(deployer6, deployer5);
+      assertUndeployAfter(deployer6, deployer1);
+      assertUndeployAfter(deployer6, deployer2);
+      assertUndeployAfter(deployer4, deployer3);
+      assertUndeployAfter(deployer5, deployer4);
+      assertUndeployAfter(deployer6, deployer5);
 
       main.addDeployment(deployment);
       main.process();
@@ -512,11 +507,11 @@ public abstract class AbstractDeployerFlowUnitTest extends AbstractDeployerTest
       assertDeployBefore(deployer4, deployer3);
       assertDeployBefore(deployer5, deployer4);
       assertDeployBefore(deployer6, deployer5);
-      assertUndeployBefore(deployer6, deployer1);
-      assertUndeployBefore(deployer6, deployer2);
-      assertUndeployBefore(deployer4, deployer3);
-      assertUndeployBefore(deployer5, deployer4);
-      assertUndeployBefore(deployer6, deployer5);
+      assertUndeployAfter(deployer6, deployer1);
+      assertUndeployAfter(deployer6, deployer2);
+      assertUndeployAfter(deployer4, deployer3);
+      assertUndeployAfter(deployer5, deployer4);
+      assertUndeployAfter(deployer6, deployer5);
    }
 
    public void testIntermediateIsRelativelySorted() throws Exception
@@ -535,9 +530,8 @@ public abstract class AbstractDeployerFlowUnitTest extends AbstractDeployerTest
       main.addDeployment(deployment);
       main.process();
 
-      assertEquals(1, deployer1.getDeployOrder());
-      assertEquals(2, deployer2.getDeployOrder());
-      assertEquals(3, deployer3.getDeployOrder());
+      assertDeployBefore(deployer2, deployer1);
+      assertTrue("B doesn't deploy", deployer3.getDeployOrder() > 0);
       assertEquals(-1, deployer1.getUndeployOrder());
       assertEquals(-1, deployer2.getUndeployOrder());
       assertEquals(-1, deployer3.getUndeployOrder());
@@ -546,17 +540,17 @@ public abstract class AbstractDeployerFlowUnitTest extends AbstractDeployerTest
       main.process();
 
       assertDeployBefore(deployer2, deployer1);
-      assertTrue("C doesn't deploy", deployer1.getDeployOrder() > 0);
-      assertUndeployBefore(deployer2, deployer1);
-      assertTrue("C doesn't undeploy", deployer1.getUndeployOrder() > 0);
+      assertTrue("B doesn't deploy", deployer3.getDeployOrder() > 0);
+      assertUndeployAfter(deployer2, deployer1);
+      assertTrue("B doesn't undeploy", deployer3.getUndeployOrder() > 0);
 
       main.addDeployment(deployment);
       main.process();
 
       assertDeployBefore(deployer2, deployer1);
-      assertTrue("C doesn't deploy", deployer1.getDeployOrder() > 0);
-      assertUndeployBefore(deployer2, deployer1);
-      assertTrue("C doesn't undeploy", deployer1.getUndeployOrder() > 0);
+      assertTrue("B doesn't deploy", deployer3.getDeployOrder() > 0);
+      assertUndeployAfter(deployer2, deployer1);
+      assertTrue("B doesn't undeploy", deployer3.getUndeployOrder() > 0);
    }
 
    public void testTransitionOrdering() throws Exception
@@ -731,10 +725,10 @@ public abstract class AbstractDeployerFlowUnitTest extends AbstractDeployerTest
       assertDeployBefore(deployer2, deployer5);
       assertDeploy(deployer7);
       assertUndeploy(deployer3);
-      assertUndeployBefore(deployer6, deployer8);
-      assertUndeployBefore(deployer5, deployer1);
+      assertUndeployAfter(deployer6, deployer8);
+      assertUndeployAfter(deployer5, deployer1);
       assertUndeploy(deployer4);
-      assertUndeployBefore(deployer2, deployer5);
+      assertUndeployAfter(deployer2, deployer5);
       assertUndeploy(deployer7);
 
       main.addDeployment(deployment);
@@ -747,10 +741,10 @@ public abstract class AbstractDeployerFlowUnitTest extends AbstractDeployerTest
       assertDeployBefore(deployer2, deployer5);
       assertDeploy(deployer7);
       assertUndeploy(deployer3);
-      assertUndeployBefore(deployer6, deployer8);
-      assertUndeployBefore(deployer5, deployer1);
+      assertUndeployAfter(deployer6, deployer8);
+      assertUndeployAfter(deployer5, deployer1);
       assertUndeploy(deployer4);
-      assertUndeployBefore(deployer2, deployer5);
+      assertUndeployAfter(deployer2, deployer5);
       assertUndeploy(deployer7);
    }
 
@@ -955,17 +949,17 @@ public abstract class AbstractDeployerFlowUnitTest extends AbstractDeployerTest
 //      assertEquals(10, deployer4.getUndeployOrder());
 //      assertEquals(9, deployer5.getUndeployOrder());
 //      assertEquals(8, deployer6.getUndeployOrder());
-      assertUndeployBefore(deployer2, deployer1);
-      assertUndeployBefore(deployer3, deployer1);
-      assertUndeployBefore(deployer7, deployer2);
-      assertUndeployBefore(deployer7, deployer3);
-      assertUndeployBefore(deployer4, deployer2);
-      assertUndeployBefore(deployer4, deployer3);
-      assertUndeployBefore(deployer5, deployer4);
-      assertUndeployBefore(deployer5, deployer7);
-      assertUndeployBefore(deployer6, deployer5);
-      assertUndeployBefore(deployer6, deployer2);
-      assertUndeployBefore(deployer6, deployer3);
+      assertUndeployAfter(deployer2, deployer1);
+      assertUndeployAfter(deployer3, deployer1);
+      assertUndeployAfter(deployer7, deployer2);
+      assertUndeployAfter(deployer7, deployer3);
+      assertUndeployAfter(deployer4, deployer2);
+      assertUndeployAfter(deployer4, deployer3);
+      assertUndeployAfter(deployer5, deployer4);
+      assertUndeployAfter(deployer5, deployer7);
+      assertUndeployAfter(deployer6, deployer5);
+      assertUndeployAfter(deployer6, deployer2);
+      assertUndeployAfter(deployer6, deployer3);
 
       main.addDeployment(deployment);
       main.process();
@@ -995,17 +989,17 @@ public abstract class AbstractDeployerFlowUnitTest extends AbstractDeployerTest
 //      assertEquals(10, deployer4.getUndeployOrder());
 //      assertEquals(9, deployer5.getUndeployOrder());
 //      assertEquals(8, deployer6.getUndeployOrder());
-      assertUndeployBefore(deployer2, deployer1);
-      assertUndeployBefore(deployer3, deployer1);
-      assertUndeployBefore(deployer7, deployer2);
-      assertUndeployBefore(deployer7, deployer3);
-      assertUndeployBefore(deployer4, deployer2);
-      assertUndeployBefore(deployer4, deployer3);
-      assertUndeployBefore(deployer5, deployer4);
-      assertUndeployBefore(deployer5, deployer7);
-      assertUndeployBefore(deployer6, deployer5);
-      assertUndeployBefore(deployer6, deployer2);
-      assertUndeployBefore(deployer6, deployer3);
+      assertUndeployAfter(deployer2, deployer1);
+      assertUndeployAfter(deployer3, deployer1);
+      assertUndeployAfter(deployer7, deployer2);
+      assertUndeployAfter(deployer7, deployer3);
+      assertUndeployAfter(deployer4, deployer2);
+      assertUndeployAfter(deployer4, deployer3);
+      assertUndeployAfter(deployer5, deployer4);
+      assertUndeployAfter(deployer5, deployer7);
+      assertUndeployAfter(deployer6, deployer5);
+      assertUndeployAfter(deployer6, deployer2);
+      assertUndeployAfter(deployer6, deployer3);
 
       main.removeDeployment(deployment);
       main.process();
@@ -2050,7 +2044,7 @@ public abstract class AbstractDeployerFlowUnitTest extends AbstractDeployerTest
       assertTrue(deployer + " must undeploy", deployer.getUndeployOrder() > 0);
    }
 
-   private static void assertUndeployBefore(TestFlowDeployer deployer1, TestFlowDeployer deployer2)
+   private static void assertUndeployAfter(TestFlowDeployer deployer1, TestFlowDeployer deployer2)
    {
       assertTrue(deployer2 + " must undeploy after " + deployer1, deployer1.getUndeployOrder() < deployer2.getUndeployOrder());
    }
