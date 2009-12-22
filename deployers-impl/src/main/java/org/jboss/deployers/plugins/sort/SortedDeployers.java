@@ -9,7 +9,6 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -19,11 +18,11 @@ public class SortedDeployers
 {
    private static class Entry
    {
-      static volatile AtomicInteger added = new AtomicInteger(0);
 
       public Deployer deployer;
       public int index;
-      public final int addedOrder = added.getAndIncrement();
+
+      private String nameCache;
 
       private Entry(Deployer deployer)
       {
@@ -57,14 +56,11 @@ public class SortedDeployers
          this.index = index;
       }
 
-      public int getAddedOrder()
-      {
-         return addedOrder;
-      }
-
       public String toString()
       {
-         return deployer.toString();
+         // this speeds up things a few milliseconds :)
+         if (nameCache == null) nameCache = deployer.toString();
+         return nameCache;
       }
    }
 
@@ -230,7 +226,8 @@ public class SortedDeployers
    void insertAt(Entry n)
    {
       entries.add(n.getIndex(), n);
-      for (int i = n.getIndex() + 1; i < entries.size(); i++)
+      int esize = entries.size();
+      for (int i = n.getIndex() + 1; i < esize; i++)
       {
          entries.get(i).setIndex(i);
       }
@@ -239,15 +236,11 @@ public class SortedDeployers
    void removeAt(int index)
    {
       entries.remove(index);
-      for (int i = index; i < entries.size(); i++)
+      int esize = entries.size();
+      for (int i = index; i < esize; i++)
       {
          entries.get(i).setIndex(i);
       }
-   }
-
-   public static void main(String[] args) throws Exception
-   {
-      System.out.println("A".compareTo("G"));
    }
 
    public void relativeOrdering()
@@ -256,31 +249,20 @@ public class SortedDeployers
       {
          Entry d1 = entries.get(i);
          Entry d2 = entries.get(i + 1);
+
+         // optimization.  If relative order is the same, we don't have to do a swap
          if (d1.getRelativeOrder() == d2.getRelativeOrder())
          {
-            //if (true) continue;
-
-            // this is with added order
-            /*
-            if (d1.getAddedOrder() < d2.getAddedOrder())
-            {
-               continue;
-            }
-            */
-            if (d1.deployer.toString().compareTo(d2.deployer.toString()) < 0) continue;
-
-            /*
-            if (d1.getInputs().size() == 0 && d2.getInputs().size() > 0)
-            {
-               continue;
-            }
-            */
+            String name1 = d1.toString();
+            String name2 = d2.toString();
+            if (name1.compareTo(name2) < 0) continue;
 
             if (isIOEqual(d1, d2))
             {
                swap(i, d1, d2);
-               continue;
             }
+
+            continue;
          }
          boolean isEqual = isIOEqual(d1, d2);
          if (isEqual)
