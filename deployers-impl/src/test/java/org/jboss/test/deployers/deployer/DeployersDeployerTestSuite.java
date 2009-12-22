@@ -40,7 +40,7 @@ import org.jboss.test.deployers.deployer.test.DominoOrderingUnitTestCase;
 import org.jboss.test.deployers.deployer.test.HeuristicAllOrNothingUnitTestCase;
 import org.jboss.test.deployers.deployer.test.HeuristicRussionDollUnitTestCase;
 import org.jboss.test.deployers.deployer.test.IndexingOrderingUnitTestCase;
-import org.jboss.test.deployers.deployer.test.KhanOrderingUnitTestCase;
+import org.jboss.test.deployers.deployer.test.KahnOrderingUnitTestCase;
 import org.jboss.test.deployers.deployer.test.MultipleComponentTypeUnitTestCase;
 
 /**
@@ -77,7 +77,7 @@ public class DeployersDeployerTestSuite extends TestSuite
       // sorting tests
       suite.addTest(DeployerFlowUnitTestCase.suite());
       suite.addTest(DominoOrderingUnitTestCase.suite());
-      suite.addTest(KhanOrderingUnitTestCase.suite());
+      suite.addTest(KahnOrderingUnitTestCase.suite());
       suite.addTest(IndexingOrderingUnitTestCase.suite());
 
       // helper deployers

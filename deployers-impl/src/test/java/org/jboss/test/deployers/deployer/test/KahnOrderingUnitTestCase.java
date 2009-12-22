@@ -28,20 +28,20 @@ import org.jboss.deployers.plugins.sort.DeployerSorter;
 import org.jboss.deployers.plugins.sort.KahnDeployerSorter;
 
 /**
- * Khan topological sorting.
+ * Kahn topological sorting.
  *
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class KhanOrderingUnitTestCase extends AbstractSorterOrderingUnitTest
+public class KahnOrderingUnitTestCase extends AbstractSorterOrderingUnitTest
 {
-   public KhanOrderingUnitTestCase(String name)
+   public KahnOrderingUnitTestCase(String name)
    {
       super(name);
    }
 
    public static Test suite()
    {
-      return new TestSuite(KhanOrderingUnitTestCase.class);
+      return new TestSuite(KahnOrderingUnitTestCase.class);
    }
 
    @Override
