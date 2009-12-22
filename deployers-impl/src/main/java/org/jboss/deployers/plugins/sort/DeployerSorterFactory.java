@@ -36,6 +36,6 @@ public class DeployerSorterFactory
     */
    public static DeployerSorter newSorter()
    {
-      return new DominoDeployerSorter();      
+      return new KahnDeployerSorter();      
    }
 }

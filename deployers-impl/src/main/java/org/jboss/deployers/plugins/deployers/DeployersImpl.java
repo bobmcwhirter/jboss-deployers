@@ -21,6 +21,23 @@
  */
 package org.jboss.deployers.plugins.deployers;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.management.MBeanRegistration;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+
 import org.jboss.dependency.spi.Controller;
 import org.jboss.dependency.spi.ControllerContext;
 import org.jboss.dependency.spi.ControllerContextActions;
@@ -54,22 +71,6 @@ import org.jboss.managed.api.ManagedObject;
 import org.jboss.metadata.spi.repository.MutableMetaDataRepository;
 import org.jboss.util.collection.CollectionsFactory;
 
-import javax.management.MBeanRegistration;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /**
  * DeployersImpl.
  *
@@ -77,8 +78,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision$
  */
-public class DeployersImpl implements Deployers, ControllerContextActions,
-        DeployersImplMBean, MBeanRegistration
+public class DeployersImpl implements Deployers, ControllerContextActions, DeployersImplMBean, MBeanRegistration
 {
    /**
     * The log
@@ -151,9 +151,9 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
    private final Set<ExceptionNotificationListener<? extends Throwable>> exceptionNotificationListeners = CollectionsFactory.createLazySet();
 
    /**
-    * tracing addDeployer is *REALLY* inefficient.  Turn it on with this flag
+    * Tracing addDeployer is *REALLY* inefficient.  Turn it on with this flag
     */
-   private boolean traceAddDeployer = false;
+   private boolean traceAddDeployer;
 
    /**
     * Create a new DeployersImpl.
@@ -195,6 +195,9 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
       // Create the deployers
       if (deployers != null)
          setDeployers(deployers);
+
+      // Deployer addition logging
+      setTraceAddDeployer(log.isTraceEnabled());
    }
 
    public void shutdown()
@@ -202,11 +205,21 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
       shutdown.set(true);
    }
 
+   /**
+    * Should we trace deployer addition.
+    *
+    * @return true if we trace deployer addition
+    */
    public boolean isTraceAddDeployer()
    {
       return traceAddDeployer;
    }
 
+   /**
+    * Set the deployer addition tracing flag.
+    *
+    * @param traceAddDeployer the deployer addition tracing flag
+    */
    public void setTraceAddDeployer(boolean traceAddDeployer)
    {
       this.traceAddDeployer = traceAddDeployer;
@@ -311,12 +324,10 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
       deployersByStage.addDeployer(stageName, wrapper);
       this.deployers.add(wrapper);
 
-
-      StringBuilder builder = new StringBuilder();
-      // This string creation takes an extreme amount of time.  So dont' use it unless there are problems.
-
-      if (traceAddDeployer)
+      if (isTraceAddDeployer())
       {
+         // This string creation takes an extreme amount of time.  So dont' use it unless there are problems.
+         StringBuilder builder = new StringBuilder();
          builder.append("Added deployer ").append(deployer).append(" for stage ").append(stageName).append('\n');
          for (Deployer temp : getDeployersList(stageName))
          {
@@ -325,9 +336,8 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
             builder.append(" outputs=").append(temp.getOutputs());
             builder.append("}\n");
          }
-         log.debug(builder);
+         log.trace(builder);
       }
-
    }
 
    /**
@@ -565,7 +575,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions,
          if (deployer.getManagedObjectCreator() != null)
             mocs.add(deployer);
       }
-      // 
+      
       mgtObjectCreator.build(unit, outputs, managedObjects);
       for (ManagedObjectCreator moc : mocs)
       {

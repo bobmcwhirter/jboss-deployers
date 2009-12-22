@@ -50,16 +50,4 @@ public class IndexingOrderingUnitTestCase extends AbstractDeployerFlowUnitTest
       StagedSortedDeployers sorter = new NewStagedSortedDeployers();
       deployers.setDeployersByStage(sorter);
    }
-
-   @Override
-   public void testRealWorldAS6DeployersScenario() throws Exception
-   {
-      super.testRealWorldAS6DeployersScenario();
-   }
-
-   @Override
-   public void testDoubleCycle() throws Exception
-   {
-      super.testDoubleCycle();
-   }
 }
