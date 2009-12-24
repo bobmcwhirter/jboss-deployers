@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,7 +101,7 @@ public class TopologicalDeployerSorter implements DeployerSorter
       if (graph.getEdges().isEmpty() == false)
          throw new IllegalStateException("We have a cycle: " + newDeployer + ", previous: " + original);
 
-      // FIXME - transitive compare doesn't work here
+      // FIXME - transitive compare doesn't work here -- find a better way to map deployers onto ordered inputs/outputs
       Collections.sort(nodes, DeployerNodeComparator.INSTANCE);
       List<Deployer> sortedDeployers = new ArrayList<Deployer>();
       for (DeployerNode node : nodes)
@@ -289,6 +290,21 @@ public class TopologicalDeployerSorter implements DeployerSorter
          {
             if (overlap12 != overlap21)
                return overlap21 - overlap12;
+
+            Set<Vertex<Integer>> tail1 = new HashSet<Vertex<Integer>>(dn1.outputs);
+            tail1.retainAll(dn2.inputs);
+            Set<Vertex<Integer>> tail2 = new HashSet<Vertex<Integer>>(dn2.outputs);
+            tail2.retainAll(dn1.inputs);
+            int s1 = tail1.size();
+            int s2 = tail2.size();
+            if (s1 != s2)
+            {
+               return s2 - s1;
+            }
+            else
+            {
+               overlap12 = overlap21 = -1; // reset               
+            }
          }
 
          if (overlap12 >= 0)

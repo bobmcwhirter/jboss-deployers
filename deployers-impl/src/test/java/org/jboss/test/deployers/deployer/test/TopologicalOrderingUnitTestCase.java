@@ -63,25 +63,7 @@ public class TopologicalOrderingUnitTestCase extends AbstractSorterOrderingUnitT
    }
 
    @Override
-   public void testOrderedThenFlowWithPassThrough() throws Exception
-   {
-      // TODO - fix final DeployerNodes sort
-   }
-
-   @Override
-   public void testWebServicesDeployersOrder() throws Exception
-   {
-      // TODO - fix final DeployerNodes sort
-   }
-
-   @Override
    public void testDeployersOrder1() throws Exception
-   {
-      // TODO - fix final DeployerNodes sort
-   }
-
-   @Override
-   public void testRemovingOverlapping() throws Exception
    {
       // TODO - fix final DeployerNodes sort
    }

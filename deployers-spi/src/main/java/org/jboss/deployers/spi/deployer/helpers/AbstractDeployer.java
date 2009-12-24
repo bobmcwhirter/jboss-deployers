@@ -42,7 +42,7 @@ public abstract class AbstractDeployer implements Deployer
    protected Logger log = Logger.getLogger(getClass());
    
    /** The relative order */
-   private int relativeOrder = 0;
+   private int relativeOrder = Integer.MAX_VALUE;
    
    /** The deployment stage */
    private DeploymentStage stage = DeploymentStages.REAL;
