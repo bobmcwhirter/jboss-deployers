@@ -344,13 +344,13 @@ public abstract class AbstractDeployerFlowUnitTest extends AbstractDeployerTest
    public void testMultipleInput() throws Exception
    {
       DeployerClient main = createMainDeployer();
-      TestFlowDeployer deployer3 = new TestFlowDeployer("3");
+      TestFlowDeployer deployer3 = new TestFlowDeployer("in12");
       deployer3.setInputs("test1", "test2");
       addDeployer(main, deployer3);
-      TestFlowDeployer deployer1 = new TestFlowDeployer("1");
+      TestFlowDeployer deployer1 = new TestFlowDeployer("out1");
       deployer1.setOutputs("test1");
       addDeployer(main, deployer1);
-      TestFlowDeployer deployer2 = new TestFlowDeployer("2");
+      TestFlowDeployer deployer2 = new TestFlowDeployer("out2");
       deployer2.setOutputs("test2");
       addDeployer(main, deployer2);
 
@@ -358,8 +358,8 @@ public abstract class AbstractDeployerFlowUnitTest extends AbstractDeployerTest
       main.addDeployment(deployment);
       main.process();
 
-      assertEquals(1, deployer1.getDeployOrder());
-      assertEquals(2, deployer2.getDeployOrder());
+      assertDeployBefore(deployer3, deployer1);
+      assertDeployBefore(deployer3, deployer2);
       assertEquals(3, deployer3.getDeployOrder());
       assertEquals(-1, deployer1.getUndeployOrder());
       assertEquals(-1, deployer2.getUndeployOrder());
@@ -368,21 +368,21 @@ public abstract class AbstractDeployerFlowUnitTest extends AbstractDeployerTest
       main.removeDeployment(deployment);
       main.process();
 
-      assertEquals(1, deployer1.getDeployOrder());
-      assertEquals(2, deployer2.getDeployOrder());
+      assertDeployBefore(deployer3, deployer1);
+      assertDeployBefore(deployer3, deployer2);
       assertEquals(3, deployer3.getDeployOrder());
-      assertEquals(6, deployer1.getUndeployOrder());
-      assertEquals(5, deployer2.getUndeployOrder());
+      assertUndeployAfter(deployer3, deployer1);
+      assertUndeployAfter(deployer3, deployer2);
       assertEquals(4, deployer3.getUndeployOrder());
 
       main.addDeployment(deployment);
       main.process();
 
-      assertEquals(7, deployer1.getDeployOrder());
-      assertEquals(8, deployer2.getDeployOrder());
+      assertDeployBefore(deployer3, deployer1);
+      assertDeployBefore(deployer3, deployer2);
       assertEquals(9, deployer3.getDeployOrder());
-      assertEquals(6, deployer1.getUndeployOrder());
-      assertEquals(5, deployer2.getUndeployOrder());
+      assertUndeployAfter(deployer3, deployer1);
+      assertUndeployAfter(deployer3, deployer2);
       assertEquals(4, deployer3.getUndeployOrder());
    }
 
@@ -606,17 +606,17 @@ public abstract class AbstractDeployerFlowUnitTest extends AbstractDeployerTest
    public void testSymetricDots() throws Exception
    {
       DeployerClient main = createMainDeployer();
-      TestFlowDeployer deployer1 = new TestFlowDeployer("1");
+      TestFlowDeployer deployer1 = new TestFlowDeployer("XB");
       deployer1.setInputs("X");
       deployer1.setOutputs("B");
       addDeployer(main, deployer1);
 
-      TestFlowDeployer deployer2 = new TestFlowDeployer("2");
+      TestFlowDeployer deployer2 = new TestFlowDeployer("XX");
       deployer2.setInputs("X");
       deployer2.setOutputs("X");
       addDeployer(main, deployer2);
 
-      TestFlowDeployer deployer3 = new TestFlowDeployer("3");
+      TestFlowDeployer deployer3 = new TestFlowDeployer("AX");
       deployer3.setInputs("A");
       deployer3.setOutputs("X");
       addDeployer(main, deployer3);
@@ -806,6 +806,16 @@ public abstract class AbstractDeployerFlowUnitTest extends AbstractDeployerTest
       assertEquals(7, deployer2.getUndeployOrder());
       assertEquals(6, deployer3.getUndeployOrder());
       assertEquals(5, deployer4.getUndeployOrder());
+   }
+
+   public void testSimplePassThrough() throws Exception
+   {
+      DeployerClient main = createMainDeployer();
+
+      TestFlowDeployer postJBWMD = new TestFlowDeployer("PassThrough");
+      postJBWMD.setInputs("JBWMD", "CLMD");
+      postJBWMD.setOutputs("JBWMD", "CLMD");
+      addDeployer(main, postJBWMD);
    }
 
    public void testWebBeansOrder() throws Exception
@@ -1162,22 +1172,22 @@ public abstract class AbstractDeployerFlowUnitTest extends AbstractDeployerTest
       DeployerClient main = createMainDeployer();
 
       // "1", "2", are provided by other preceding deployers
-      TestFlowDeployer deployer1 = new TestFlowDeployer( "Deployer" );
+      TestFlowDeployer deployer1 = new TestFlowDeployer( "#1_12-2345" );
       deployer1.setInputs( "1", "2" );
       deployer1.setOutputs( "3", "5", "2", "4" );
       addDeployer(main, deployer1);
 
-      TestFlowDeployer deployer2 = new TestFlowDeployer( "Deployer" );
+      TestFlowDeployer deployer2 = new TestFlowDeployer( "#2_125-246" );
       deployer2.setInputs( "1", "5", "2" ); // depends on 5 (output of deployer1)
       deployer2.setOutputs( "6", "2", "4" );
       addDeployer(main, deployer2);
 
-      TestFlowDeployer deployer3 = new TestFlowDeployer( "Deployer" );
+      TestFlowDeployer deployer3 = new TestFlowDeployer( "#3_1256-247" );
       deployer3.setInputs( "6", "1", "5", "2" ); // depends on 6 (output of deployer2) and 5 (output of deployer1)
       deployer3.setOutputs( "7", "2", "4" );
       addDeployer( main, deployer3 );
 
-      TestFlowDeployer deployer4 = new TestFlowDeployer( "Deployer" );
+      TestFlowDeployer deployer4 = new TestFlowDeployer( "#4_124-28" );
       deployer4.setInputs( "1", "2", "4" ); // depends on 4 (output of deployer1, deployer2 and deployer3)
       deployer4.setOutputs( "8", "2" );
       addDeployer( main, deployer4 );
@@ -2034,9 +2044,9 @@ public abstract class AbstractDeployerFlowUnitTest extends AbstractDeployerTest
       assertTrue(deployer + " must deploy", deployer.getDeployOrder() > 0);
    }
 
-   private static void assertDeployBefore(TestFlowDeployer deployer1, TestFlowDeployer deployer2)
+   private static void assertDeployBefore(TestFlowDeployer after, TestFlowDeployer before)
    {
-      assertTrue(deployer2 + " must deploy before " + deployer1, deployer1.getDeployOrder() > deployer2.getDeployOrder());
+      assertTrue(before + " must deploy before " + after, after.getDeployOrder() > before.getDeployOrder());
    }
 
    private static void assertUndeploy(TestFlowDeployer deployer)
@@ -2044,8 +2054,8 @@ public abstract class AbstractDeployerFlowUnitTest extends AbstractDeployerTest
       assertTrue(deployer + " must undeploy", deployer.getUndeployOrder() > 0);
    }
 
-   private static void assertUndeployAfter(TestFlowDeployer deployer1, TestFlowDeployer deployer2)
+   private static void assertUndeployAfter(TestFlowDeployer after, TestFlowDeployer before)
    {
-      assertTrue(deployer2 + " must undeploy after " + deployer1, deployer1.getUndeployOrder() < deployer2.getUndeployOrder());
+      assertTrue(before + " must undeploy after " + after, after.getUndeployOrder() < before.getUndeployOrder());
    }
 }
