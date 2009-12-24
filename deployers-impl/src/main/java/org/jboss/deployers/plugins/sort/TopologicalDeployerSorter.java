@@ -27,10 +27,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import org.jboss.deployers.spi.Ordered;
 import org.jboss.deployers.spi.deployer.Deployer;
@@ -75,17 +76,16 @@ public class TopologicalDeployerSorter implements DeployerSorter
             }
          }
       }
-      Set<Vertex<Integer>> noIncoming = new HashSet<Vertex<Integer>>();
+      Stack<Vertex<Integer>> noIncoming = new Stack<Vertex<Integer>>();
       for (Vertex<Integer> vertex : vertices.values())
       {
          if (vertex.getIncomingEdgeCount() == 0)
-            noIncoming.add(vertex);
+            noIncoming.push(vertex);
       }
       List<Vertex<Integer>> sorted = new ArrayList<Vertex<Integer>>();
       while(noIncoming.isEmpty() == false)
       {
-         Vertex<Integer> n = noIncoming.iterator().next();
-         noIncoming.remove(n);
+         Vertex<Integer> n = noIncoming.pop();
          sorted.add(n);
          n.setData(sorted.size());
          List<Edge<Integer>> edges = new ArrayList<Edge<Integer>>(n.getOutgoingEdges());
@@ -94,7 +94,7 @@ public class TopologicalDeployerSorter implements DeployerSorter
             Vertex<Integer> m = edge.getTo();
             graph.removeEdge(n, m);
             if (m.getIncomingEdgeCount() == 0)
-               noIncoming.add(m);
+               noIncoming.push(m);
          }
       }
       if (graph.getEdges().isEmpty() == false)
@@ -110,10 +110,10 @@ public class TopologicalDeployerSorter implements DeployerSorter
 
    private static Set<Vertex<Integer>> fillVertices(Set<String> keys, Map<String, Vertex<Integer>> vertices, Graph<Integer> graph)
    {
-      Set<Vertex<Integer>> dv = new HashSet<Vertex<Integer>>();
+      Map<Vertex<Integer>, Object> dv = new IdentityHashMap<Vertex<Integer>, Object>();
       for (String key : keys)
-         dv.add(getVertex(key, vertices, graph));
-      return dv;
+         dv.put(getVertex(key, vertices, graph), 0);
+      return dv.keySet();
    }
 
    private static Vertex<Integer> getVertex(String key, Map<String, Vertex<Integer>> vertices, Graph<Integer> graph)
