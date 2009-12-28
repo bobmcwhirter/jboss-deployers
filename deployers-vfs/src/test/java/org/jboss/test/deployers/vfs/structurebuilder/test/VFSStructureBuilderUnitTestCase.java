@@ -30,6 +30,7 @@ import junit.framework.TestSuite;
 import org.jboss.deployers.client.spi.DeploymentFactory;
 import org.jboss.deployers.spi.structure.ClassPathEntry;
 import org.jboss.deployers.spi.structure.ContextInfo;
+import org.jboss.deployers.spi.structure.MetaDataEntry;
 import org.jboss.deployers.structure.spi.DeploymentContext;
 import org.jboss.deployers.vfs.plugins.client.AbstractVFSDeployment;
 import org.jboss.deployers.vfs.plugins.structure.VFSStructureBuilder;
@@ -105,7 +106,7 @@ public class VFSStructureBuilderUnitTestCase extends StructureBuilderTest
    
    protected void checkMetaDataLocation(VFSDeploymentContext context, ContextInfo contextInfo) throws Exception
    {
-      List<String> metaDataPaths = contextInfo.getMetaDataPath();
+      List<MetaDataEntry> metaDataPaths = contextInfo.getMetaDataPath();
       assertNotNull(metaDataPaths);
       List<VirtualFile> metaDataLocations = context.getMetaDataLocations();
       assertNotNull(metaDataLocations);
@@ -115,7 +116,7 @@ public class VFSStructureBuilderUnitTestCase extends StructureBuilderTest
       else
       {
          VirtualFile root = context.getRoot();
-         VirtualFile expected = root.findChild(metaDataPaths.get(0));
+         VirtualFile expected = root.findChild(metaDataPaths.get(0).getPath());
          assertEquals(1, metaDataLocations.size());
          assertEquals(expected, metaDataLocations.get(0));
       }

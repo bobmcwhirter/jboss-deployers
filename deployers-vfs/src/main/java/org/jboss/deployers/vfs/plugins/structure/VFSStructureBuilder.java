@@ -29,14 +29,15 @@ import org.jboss.deployers.client.spi.Deployment;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.structure.ClassPathEntry;
 import org.jboss.deployers.spi.structure.ContextInfo;
+import org.jboss.deployers.spi.structure.MetaDataEntry;
 import org.jboss.deployers.spi.structure.ModificationType;
 import org.jboss.deployers.spi.structure.StructureMetaData;
 import org.jboss.deployers.structure.spi.DeploymentContext;
 import org.jboss.deployers.structure.spi.helpers.AbstractStructureBuilder;
-import org.jboss.deployers.vfs.spi.client.VFSDeployment;
-import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.deployers.vfs.plugins.structure.modify.ModificationAction;
 import org.jboss.deployers.vfs.plugins.structure.modify.ModificationActions;
+import org.jboss.deployers.vfs.spi.client.VFSDeployment;
+import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.logging.Logger;
 import org.jboss.virtual.VFSUtils;
 import org.jboss.virtual.VirtualFile;
@@ -154,7 +155,7 @@ public class VFSStructureBuilder extends AbstractStructureBuilder
             log.trace("Apply context: " + context.getName() + " " + contextInfo);
          
          VFSDeploymentContext vfsContext = (VFSDeploymentContext) context;
-         List<String> metaDataPath = contextInfo.getMetaDataPath();
+         List<MetaDataEntry> metaDataPath = contextInfo.getMetaDataPath();
          if (metaDataPath != null && metaDataPath.isEmpty() == false)
             vfsContext.setMetaDataPath(contextInfo.getMetaDataPath());
          

@@ -21,9 +21,8 @@
 */
 package org.jboss.test.deployers.vfs.deployer.validate.test;
 
-import java.util.Collections;
-
 import junit.framework.Test;
+
 import org.jboss.deployers.spi.deployer.Deployer;
 import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.deployers.spi.structure.StructureMetaData;
@@ -56,7 +55,7 @@ public class ObjectMFDTestCase extends BaseDeployersVFSTest
    {
       VirtualFile file = getVirtualFile("/structure/explicit", "complex.deployer");
       VFSDeploymentContext deployment = new AbstractVFSDeploymentContext(file, "");
-      deployment.setMetaDataPath(Collections.singletonList("META-INF"));
+      deployment.setMetaDataPath(createMetaDataEntries("META-INF"));
       VFSDeploymentUnit unit = new AbstractVFSDeploymentUnit(deployment);
       Deployer deployer = new StructureOMFDeployer();
 
@@ -76,7 +75,7 @@ public class ObjectMFDTestCase extends BaseDeployersVFSTest
    {
       VirtualFile file = getVirtualFile("/structure/explicit", "comparator.jar");
       VFSDeploymentContext deployment = new AbstractVFSDeploymentContext(file, "");
-      deployment.setMetaDataPath(Collections.singletonList("META-INF"));
+      deployment.setMetaDataPath(createMetaDataEntries("META-INF"));
       VFSDeploymentUnit unit = new AbstractVFSDeploymentUnit(deployment);
       Deployer deployer = new StructureOMFDeployer();
 

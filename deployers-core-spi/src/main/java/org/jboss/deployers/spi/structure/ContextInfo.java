@@ -49,17 +49,17 @@ public interface ContextInfo extends PredeterminedManagedObjectAttachments, Seri
    /**
     * Get the logical path of the metdata location.
     * 
-    * @return the path of the metdata location.
+    * @return the paths of the metdata location.
     */
-   List<String> getMetaDataPath();
+   List<MetaDataEntry> getMetaDataPath();
 
    /**
     * Add the metaDataPath.
     *
-    * @param path the metaDataPath.
-    * @throws IllegalArgumentException for a null path
+    * @param entry the metaDataPath entry.
+    * @throws IllegalArgumentException for a null entry
     */
-   void addMetaDataPath(String path);
+   void addMetaDataPath(MetaDataEntry entry);
 
    /**
     * Get the classpath locations within the context

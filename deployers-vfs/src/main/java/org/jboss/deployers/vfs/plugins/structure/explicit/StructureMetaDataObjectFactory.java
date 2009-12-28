@@ -26,8 +26,10 @@ import java.util.LinkedHashSet;
 
 import org.jboss.deployers.plugins.structure.ClassPathEntryImpl;
 import org.jboss.deployers.plugins.structure.ContextInfoImpl;
+import org.jboss.deployers.plugins.structure.MetaDataEntryImpl;
 import org.jboss.deployers.plugins.structure.StructureMetaDataImpl;
 import org.jboss.deployers.spi.structure.ClassPathEntry;
+import org.jboss.deployers.spi.structure.MetaDataEntry;
 import org.jboss.deployers.spi.structure.ModificationType;
 import org.jboss.xb.binding.ObjectModelFactory;
 import org.jboss.xb.binding.UnmarshallingContext;
@@ -83,20 +85,21 @@ public class StructureMetaDataObjectFactory implements ObjectModelFactory
          parent.setPath(path);
       }
       else if ("metaDataPath".equals(localName))
-         child = new LinkedHashSet<String>();
+         child = new LinkedHashSet<MetaDataEntry>();
       else if (localName.equals("classpath"))
          child = new ArrayList<ClassPathEntry>();
 
       return child;
    }
 
-   public Object newChild(LinkedHashSet<String> parent, UnmarshallingContext navigator, String namespaceURI, String localName, Attributes attrs)
+   public Object newChild(LinkedHashSet<MetaDataEntry> parent, UnmarshallingContext navigator, String namespaceURI, String localName, Attributes attrs)
    {
       Object child = null;
       if("path".equals(localName))
       {
          String path = attrs.getValue("name");
-         parent.add(path);
+         MetaDataEntry entry = new MetaDataEntryImpl(path);
+         parent.add(entry);
       }
       return child;
    }
@@ -119,9 +122,9 @@ public class StructureMetaDataObjectFactory implements ObjectModelFactory
       parent.addContext(context);
    }
    
-   public void addChild(ContextInfoImpl context, LinkedHashSet<String> metaDataPath, UnmarshallingContext navigator, String namespaceURI, String localName)
+   public void addChild(ContextInfoImpl context, LinkedHashSet<MetaDataEntry> metaDataPath, UnmarshallingContext navigator, String namespaceURI, String localName)
    {
-      context.setMetaDataPath(new ArrayList<String>(metaDataPath));
+      context.setMetaDataPath(new ArrayList<MetaDataEntry>(metaDataPath));
    }
 
    public void addChild(ContextInfoImpl context, ArrayList<ClassPathEntry> classpath, UnmarshallingContext navigator, String namespaceURI, String localName)

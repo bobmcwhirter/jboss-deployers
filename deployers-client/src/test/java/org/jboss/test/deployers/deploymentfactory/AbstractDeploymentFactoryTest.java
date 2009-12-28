@@ -31,6 +31,8 @@ import org.jboss.deployers.spi.attachments.Attachments;
 import org.jboss.deployers.spi.attachments.PredeterminedManagedObjectAttachments;
 import org.jboss.deployers.spi.structure.ClassPathEntry;
 import org.jboss.deployers.spi.structure.ContextInfo;
+import org.jboss.deployers.spi.structure.MetaDataEntry;
+import org.jboss.deployers.spi.structure.MetaDataType;
 import org.jboss.deployers.spi.structure.StructureMetaData;
 import org.jboss.test.BaseTestCase;
 
@@ -72,10 +74,11 @@ public abstract class AbstractDeploymentFactoryTest extends BaseTestCase
       assertTrue(contextInfo.getMetaDataPath().isEmpty());
    }
 
-   protected static void assertDefaultMetaDataPath(List<String> metaDataPath)
+   protected static void assertDefaultMetaDataPath(List<MetaDataEntry> metaDataPath)
    {
       assertEquals(1, metaDataPath.size());
-      assertEquals("metaDataPath", metaDataPath.get(0));
+      assertEquals("metaDataPath", metaDataPath.get(0).getPath());
+      assertEquals(MetaDataType.DEFAULT, metaDataPath.get(0).getType());
    }
 
    protected static void assertDefaultClassPath(List<ClassPathEntry> classPath)

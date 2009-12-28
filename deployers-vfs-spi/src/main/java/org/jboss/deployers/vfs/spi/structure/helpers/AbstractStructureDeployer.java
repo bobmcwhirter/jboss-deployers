@@ -30,6 +30,8 @@ import java.util.Set;
 
 import org.jboss.deployers.spi.structure.ClassPathEntry;
 import org.jboss.deployers.spi.structure.ContextInfo;
+import org.jboss.deployers.spi.structure.MetaDataEntry;
+import org.jboss.deployers.spi.structure.MetaDataType;
 import org.jboss.deployers.spi.structure.StructureMetaData;
 import org.jboss.deployers.spi.structure.StructureMetaDataFactory;
 import org.jboss.deployers.vfs.spi.structure.CandidateAnnotationsCallback;
@@ -437,7 +439,7 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
 
       // Create and link the context
       if (metaDataPath != null)
-         return StructureMetaDataFactory.createContextInfo("", metaDataPath, null);
+         return StructureMetaDataFactory.createContextInfo("", createMetaDataEntry(metaDataPath), null);
       else
          return StructureMetaDataFactory.createContextInfo("", null);
    }
@@ -458,6 +460,51 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
    }
 
    /**
+    * Create metadata entry.
+    *
+    * @param path the path
+    * @return the metadata entry
+    */
+   private MetaDataEntry createMetaDataEntry(String path)
+   {
+      return StructureMetaDataFactory.createMetaDataEntry(path);
+   }
+
+   /**
+    * Create metadata entry.
+    *
+    * @param path the path
+    * @param type the type
+    * @return the metadata entry
+    */
+   private MetaDataEntry createMetaDataEntry(String path, MetaDataType type)
+   {
+      return StructureMetaDataFactory.createMetaDataEntry(path, type);
+   }
+
+   /**
+    * Create metadata entry.
+    *
+    * @param context the structure context
+    * @param info the context info
+    * @param path the path
+    * @param type the type
+    */
+   protected void addMetaDataPath(StructureContext context, ContextInfo info, String path, MetaDataType type)
+   {
+      VirtualFile root = context.getFile();
+      try
+      {
+         if (root.getChild(path) != null)
+            info.addMetaDataPath(createMetaDataEntry(path, type));
+      }
+      catch (IOException e)
+      {
+         log.warn("Not using metadata path " + path + " for " + root.getName() + " reason: " + e.getMessage());
+      }
+   }
+
+   /**
     * Apply metadata on root to create context.
     *
     * @param context the structure context
@@ -470,7 +517,7 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
          throw new IllegalArgumentException("Null context");
 
       VirtualFile root = context.getFile();
-      List<String> metaDataPath = CollectionsFactory.createLazyList();
+      List<MetaDataEntry> metaDataPath = CollectionsFactory.createLazyList();
       // Determine whether the metadata paths exists
       if (metaDataPaths != null && metaDataPaths.length > 0)
       {
@@ -480,7 +527,7 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
             {
                VirtualFile child = root.getChild(path);
                if (child != null)
-                  metaDataPath.add(path);
+                  metaDataPath.add(createMetaDataEntry(path));
             }
             catch (IOException e)
             {

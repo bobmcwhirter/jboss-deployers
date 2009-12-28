@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.structure.ContextInfo;
+import org.jboss.deployers.spi.structure.MetaDataType;
 import org.jboss.deployers.vfs.plugins.structure.AbstractVFSStructureDeployer;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
 import org.jboss.virtual.VirtualFile;
@@ -46,10 +47,10 @@ public class WARStructure extends AbstractVFSStructureDeployer
    /** The default filter which allows jars/jar directories */
    public static final VirtualFileFilter DEFAULT_WEB_INF_LIB_FILTER = new SuffixMatchFilter(".jar", VisitorAttributes.DEFAULT);
 
-   /** The web-inf/lib filter */
+   /** The WEB-INF/lib filter */
    private VirtualFileFilter webInfLibFilter = DEFAULT_WEB_INF_LIB_FILTER;
 
-   /** The web-inf/lib/[some-archive]/META-INF filter */
+   /** The WEB-INF/lib/[some-archive]/META-INF filter */
    private VirtualFileFilter webInfLibMetaDataFilter;
 
    /** Whether to include web-inf in the classpath */
@@ -178,6 +179,9 @@ public class WARStructure extends AbstractVFSStructureDeployer
                log.warn("Exception while looking for classes, " + file.getPathName() + ", " + e);
             }
 
+            // Create a context for this war file and all its metadata locations
+            context = createContext(structureContext, metaDataLocations.toArray(new String[metaDataLocations.size()]));
+
             // Check for jars in WEB-INF/lib
             List<VirtualFile> archives = null;
             try
@@ -191,7 +195,7 @@ public class WARStructure extends AbstractVFSStructureDeployer
                   {
                      // either same as plain lib filter, null or accepts the jar
                      if (webInfLibMetaDataFilter == null || webInfLibMetaDataFilter == webInfLibFilter || webInfLibMetaDataFilter.accepts(jar))
-                        metaDataLocations.add("WEB-INF/lib/" + jar.getName() + "/META-INF");
+                        addMetaDataPath(structureContext, context, "WEB-INF/lib/" + jar.getName() + "/META-INF", MetaDataType.ALTERNATIVE);
                   }
                }
             }
@@ -199,9 +203,6 @@ public class WARStructure extends AbstractVFSStructureDeployer
             {
                log.warn("Exception looking for WEB-INF/lib, " + file.getPathName() + ", " + e);
             }
-
-            // Create a context for this war file and all its metadata locations
-            context = createContext(structureContext, metaDataLocations.toArray(new String[metaDataLocations.size()]));
 
             // Add the war manifest classpath entries
             addClassPath(structureContext, file, false, true, context);

@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import org.jboss.deployers.spi.structure.ContextInfo;
+import org.jboss.deployers.spi.structure.MetaDataEntry;
 import org.jboss.virtual.VirtualFile;
 
 /**
@@ -77,7 +78,7 @@ public class FileModificationTypeMatcher extends AbstractModificationTypeMatcher
    {
       if (metadataOnly)
       {
-         List<String> metadataPaths = contextInfo.getMetaDataPath();
+         List<MetaDataEntry> metadataPaths = contextInfo.getMetaDataPath();
          if (metadataPaths == null || metadataPaths.isEmpty())
          {
             return Collections.emptyList();
@@ -85,11 +86,11 @@ public class FileModificationTypeMatcher extends AbstractModificationTypeMatcher
          else
          {
             List<VirtualFile> result = new ArrayList<VirtualFile>(metadataPaths.size());
-            for (String metadataPath : metadataPaths)
+            for (MetaDataEntry metadataPath : metadataPaths)
             {
                try
                {
-                  VirtualFile child = file.getChild(metadataPath);
+                  VirtualFile child = file.getChild(metadataPath.getPath());
                   if (child != null)
                      result.add(child);
                }

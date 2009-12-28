@@ -23,15 +23,16 @@ package org.jboss.deployers.vfs.plugins.structure;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.List;
 
 import org.jboss.deployers.client.spi.Deployment;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.Ordered;
 import org.jboss.deployers.spi.attachments.MutableAttachments;
 import org.jboss.deployers.spi.structure.ContextInfo;
+import org.jboss.deployers.spi.structure.MetaDataEntry;
 import org.jboss.deployers.spi.structure.StructureMetaData;
 import org.jboss.deployers.spi.structure.StructureMetaDataFactory;
 import org.jboss.deployers.structure.spi.helpers.AbstractStructuralDeployers;
@@ -151,7 +152,7 @@ public class VFSStructuralDeployersImpl extends AbstractStructuralDeployers impl
          
          // Create the context in the parent structure
          ContextInfo parentContextInfo;
-         List<String> metaDataPath = recognised.getMetaDataPath();
+         List<MetaDataEntry> metaDataPath = recognised.getMetaDataPath();
          if (metaDataPath == null || metaDataPath.isEmpty())
             parentContextInfo = StructureMetaDataFactory.createContextInfo(relativePath, recognised.getClassPath());
          else

@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.jboss.deployers.spi.structure.ContextInfo;
+import org.jboss.deployers.spi.structure.MetaDataEntry;
+import org.jboss.deployers.spi.structure.MetaDataType;
 import org.jboss.deployers.spi.structure.StructureMetaData;
 import org.jboss.deployers.structure.spi.main.MainDeployerInternals;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
@@ -132,11 +134,15 @@ public class MetaDataStructureModificationChecker extends AbstractStructureModif
       VirtualFile contextRoot = root.getChild(path);
       if (contextRoot != null)
       {
-         List<String> metadataPaths = contextInfo.getMetaDataPath();
+         List<MetaDataEntry> metadataPaths = contextInfo.getMetaDataPath();
          if (metadataPaths != null && metadataPaths.isEmpty() == false)
          {
-            for (String metaDataPath : metadataPaths)
+            for (MetaDataEntry entry : metadataPaths)
             {
+               if (entry.getType() != MetaDataType.DEFAULT)
+                  continue;
+
+               String metaDataPath = entry.getPath();
                VirtualFile mdpVF = contextRoot.getChild(metaDataPath);
                if (mdpVF != null)
                {

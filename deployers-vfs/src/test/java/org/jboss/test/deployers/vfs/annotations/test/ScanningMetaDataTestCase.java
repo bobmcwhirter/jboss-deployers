@@ -21,15 +21,15 @@
 */
 package org.jboss.test.deployers.vfs.annotations.test;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import junit.framework.Test;
+
 import org.jboss.deployers.plugins.annotations.AbstractScanningMetaData;
+import org.jboss.deployers.spi.annotations.PathEntryMetaData;
 import org.jboss.deployers.spi.annotations.PathMetaData;
 import org.jboss.deployers.spi.annotations.ScanningMetaData;
-import org.jboss.deployers.spi.annotations.PathEntryMetaData;
 import org.jboss.deployers.vfs.plugins.annotations.ScanningMetaDataDeployer;
 import org.jboss.deployers.vfs.plugins.structure.AbstractVFSDeploymentContext;
 import org.jboss.deployers.vfs.plugins.structure.AbstractVFSDeploymentUnit;
@@ -62,7 +62,7 @@ public class ScanningMetaDataTestCase extends BaseDeployersVFSTest
       {
          VirtualFile file = getVirtualFile("/scanning", "smoke");
          VFSDeploymentContext deployment = new AbstractVFSDeploymentContext(file, "");
-         deployment.setMetaDataPath(Collections.singletonList("META-INF"));
+         deployment.setMetaDataPath(createMetaDataEntries("META-INF"));
          VFSDeploymentUnit unit = new AbstractVFSDeploymentUnit(deployment);
          deployer.deploy(unit);
          try

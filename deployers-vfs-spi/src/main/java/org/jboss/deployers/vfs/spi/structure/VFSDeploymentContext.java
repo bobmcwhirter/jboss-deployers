@@ -23,6 +23,7 @@ package org.jboss.deployers.vfs.spi.structure;
 
 import java.util.List;
 
+import org.jboss.deployers.spi.structure.MetaDataEntry;
 import org.jboss.deployers.structure.spi.DeploymentContext;
 import org.jboss.virtual.VirtualFile;
 import org.jboss.virtual.VirtualFileFilter;
@@ -48,7 +49,7 @@ public interface VFSDeploymentContext extends DeploymentContext
     * 
     * @param paths the path
     */
-   void setMetaDataPath(List<String> paths);
+   void setMetaDataPath(List<MetaDataEntry> paths);
 
    /**
     * Get the meta data locations

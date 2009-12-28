@@ -25,6 +25,8 @@ import java.util.List;
 
 import org.jboss.deployers.spi.structure.ClassPathEntry;
 import org.jboss.deployers.spi.structure.ContextInfo;
+import org.jboss.deployers.spi.structure.MetaDataEntry;
+import org.jboss.deployers.spi.structure.MetaDataType;
 import org.jboss.deployers.spi.structure.StructureMetaData;
 import org.jboss.deployers.spi.structure.StructureMetaDataFactory;
 
@@ -32,6 +34,7 @@ import org.jboss.deployers.spi.structure.StructureMetaDataFactory;
  * DefaultStructureMetaDataFactory.
  * 
  * @author <a href="adrian@jboss.org">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public class DefaultStructureMetaDataFactory extends StructureMetaDataFactory
@@ -51,14 +54,24 @@ public class DefaultStructureMetaDataFactory extends StructureMetaDataFactory
       return new ContextInfoImpl(path, classPath);
    }
 
-   protected ContextInfo newContextInfo(String path, String metaDataPath, List<ClassPathEntry> classPath)
+   protected ContextInfo newContextInfo(String path, MetaDataEntry metaDataPath, List<ClassPathEntry> classPath)
    {
       return new ContextInfoImpl(path, metaDataPath, classPath);
    }
    
-   protected ContextInfo newContextInfo(String path, List<String> metaDataPath, List<ClassPathEntry> classPath)
+   protected ContextInfo newContextInfo(String path, List<MetaDataEntry> metaDataPath, List<ClassPathEntry> classPath)
    {
       return new ContextInfoImpl(path, metaDataPath, classPath);
+   }
+
+   protected MetaDataEntry newMetaDataPathEntry(String metaDataPath)
+   {
+      return newMetaDataPathEntry(metaDataPath, MetaDataType.DEFAULT);
+   }
+
+   protected MetaDataEntry newMetaDataPathEntry(String metaDataPath, MetaDataType type)
+   {
+      return new MetaDataEntryImpl(metaDataPath, type);
    }
 
    protected ClassPathEntry newClassPathEntry(String path, String suffixes)

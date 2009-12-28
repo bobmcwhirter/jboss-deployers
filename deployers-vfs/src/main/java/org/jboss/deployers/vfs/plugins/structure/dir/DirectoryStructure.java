@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.structure.ContextInfo;
+import org.jboss.deployers.spi.structure.MetaDataEntry;
 import org.jboss.deployers.spi.structure.StructureMetaData;
 import org.jboss.deployers.vfs.plugins.structure.AbstractVFSStructureDeployer;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
@@ -89,12 +90,12 @@ public class DirectoryStructure extends AbstractVFSStructureDeployer
 
       StructureMetaData smd = parentContext.getMetaData();
       ContextInfo info = smd.getContext("");
-      List<String> metadataPaths = info.getMetaDataPath();
+      List<MetaDataEntry> metadataPaths = info.getMetaDataPath();
       if (metadataPaths != null && metadataPaths.isEmpty() == false)
       {
          String relativePath = AbstractStructureDeployer.getRelativePath(context.getParent(), context.getFile());
-         for (String path : metadataPaths)
-            if (relativePath.equalsIgnoreCase(path))
+         for (MetaDataEntry entry : metadataPaths)
+            if (relativePath.equalsIgnoreCase(entry.getPath()))
                return true;
       }
 

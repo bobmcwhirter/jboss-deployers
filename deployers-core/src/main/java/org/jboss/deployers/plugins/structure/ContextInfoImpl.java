@@ -32,6 +32,7 @@ import java.util.List;
 import org.jboss.deployers.spi.attachments.helpers.PredeterminedManagedObjectAttachmentsImpl;
 import org.jboss.deployers.spi.structure.ClassPathEntry;
 import org.jboss.deployers.spi.structure.ContextInfo;
+import org.jboss.deployers.spi.structure.MetaDataEntry;
 import org.jboss.deployers.spi.structure.ModificationType;
 
 /**
@@ -52,8 +53,8 @@ public class ContextInfoImpl extends PredeterminedManagedObjectAttachmentsImpl
    private String path;
    
    /** The metadata path */
-   private List<String> metaDataPath;
-   
+   private List<MetaDataEntry> metaDataPath;
+
    /** The class path entries */
    private List<ClassPathEntry> classPath = ClassPathEntryImpl.DEFAULT;
 
@@ -105,7 +106,7 @@ public class ContextInfoImpl extends PredeterminedManagedObjectAttachmentsImpl
     * @param classPath the class path
     * @throws IllegalArgumentException for a null path or metadata path
     */
-   public ContextInfoImpl(String path, String metaDataPath, List<ClassPathEntry> classPath)
+   public ContextInfoImpl(String path, MetaDataEntry metaDataPath, List<ClassPathEntry> classPath)
    {
       setPath(path);
       if (metaDataPath == null)
@@ -122,7 +123,7 @@ public class ContextInfoImpl extends PredeterminedManagedObjectAttachmentsImpl
     * @param classPath the class path
     * @throws IllegalArgumentException for a null path or metadata path
     */
-   public ContextInfoImpl(String path, List<String> metaDataPath, List<ClassPathEntry> classPath)
+   public ContextInfoImpl(String path, List<MetaDataEntry> metaDataPath, List<ClassPathEntry> classPath)
    {
       setPath(path);
       setMetaDataPath(metaDataPath);
@@ -147,7 +148,7 @@ public class ContextInfoImpl extends PredeterminedManagedObjectAttachmentsImpl
       this.path = path;
    }
 
-   public List<String> getMetaDataPath()
+   public List<MetaDataEntry> getMetaDataPath()
    {
       if (metaDataPath == null)
          return Collections.emptyList();
@@ -159,27 +160,27 @@ public class ContextInfoImpl extends PredeterminedManagedObjectAttachmentsImpl
     *
     * @param metaDataPath the meta data paths
     */
-   public void setMetaDataPath(List<String> metaDataPath)
+   public void setMetaDataPath(List<MetaDataEntry> metaDataPath)
    {
       this.metaDataPath = metaDataPath;
    }
 
-   public void addMetaDataPath(String path)
+   public void addMetaDataPath(MetaDataEntry entry)
    {
-      if (path == null)
+      if (entry == null)
          throw new IllegalArgumentException("Null path");
 
       if (metaDataPath == null)
-         metaDataPath = Collections.singletonList(path);
+         metaDataPath = Collections.singletonList(entry);
       else if (metaDataPath.size() == 1)
       {
-         List<String> paths = new ArrayList<String>();
+         List<MetaDataEntry> paths = new ArrayList<MetaDataEntry>();
          paths.addAll(metaDataPath);
-         paths.add(path);
+         paths.add(entry);
          metaDataPath = paths;
       }
       else
-         metaDataPath.add(path);
+         metaDataPath.add(entry);
    }
 
    public List<ClassPathEntry> getClassPath()
@@ -282,12 +283,10 @@ public class ContextInfoImpl extends PredeterminedManagedObjectAttachmentsImpl
       ContextInfo other = (ContextInfo) obj;
       if (getPath().equals(other.getPath()) == false)
          return false;
-
-      List<String> thisMetaDataPath = getMetaDataPath();
-      List<String> otherMetaDataPath = other.getMetaDataPath();
+      List<MetaDataEntry> thisMetaDataPath = getMetaDataPath();
+      List<MetaDataEntry> otherMetaDataPath = other.getMetaDataPath();
       if (thisMetaDataPath.equals(otherMetaDataPath) == false)
          return false;
-
       List<ClassPathEntry> thisClassPath = getClassPath();
       List<ClassPathEntry> otherClassPath = other.getClassPath();
       if (thisClassPath == null)
@@ -308,7 +307,7 @@ public class ContextInfoImpl extends PredeterminedManagedObjectAttachmentsImpl
       setPath(in.readUTF());
       boolean isEmptyMetaDataPath = in.readBoolean();
       if (isEmptyMetaDataPath == false)
-         setMetaDataPath((List<String>)in.readObject());
+         setMetaDataPath((List<MetaDataEntry>)in.readObject());
       setClassPath((List) in.readObject());
       setRelativeOrder(in.readInt());
       boolean isNullComparator = in.readBoolean();
@@ -327,7 +326,7 @@ public class ContextInfoImpl extends PredeterminedManagedObjectAttachmentsImpl
    {
       super.writeExternal(out);
       out.writeUTF(getPath());
-      List<String> metaDataPath = getMetaDataPath();
+      List<MetaDataEntry> metaDataPath = getMetaDataPath();
       boolean isEmptyMetaDataPath = metaDataPath.isEmpty();
       out.writeBoolean(isEmptyMetaDataPath);
       if (isEmptyMetaDataPath == false)

@@ -22,9 +22,13 @@
 package org.jboss.test.deployers;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.jboss.deployers.client.spi.DeployerClient;
 import org.jboss.deployers.plugins.main.MainDeployerImpl;
+import org.jboss.deployers.spi.structure.MetaDataEntry;
+import org.jboss.deployers.spi.structure.StructureMetaDataFactory;
 import org.jboss.deployers.structure.spi.StructuralDeployers;
 import org.jboss.deployers.structure.spi.StructureBuilder;
 import org.jboss.deployers.vfs.plugins.structure.AbstractVFSDeploymentContext;
@@ -158,5 +162,19 @@ public abstract class BaseDeployersVFSTest extends AbstractDeployerTest
    {
       VirtualFile file = getVirtualFile(root, path);
       return new AbstractVFSDeploymentContext(file, "");
+   }
+
+   /**
+    * Create metadata path entries.
+    *
+    * @param metaDataPath the metadata paths
+    * @return the metadata path entries
+    */
+   protected List<MetaDataEntry> createMetaDataEntries(String... metaDataPath)
+   {
+      List<MetaDataEntry> entries = new ArrayList<MetaDataEntry>();
+      for (String path : metaDataPath)
+         entries.add(StructureMetaDataFactory.createMetaDataEntry(path));
+      return entries;
    }
 }

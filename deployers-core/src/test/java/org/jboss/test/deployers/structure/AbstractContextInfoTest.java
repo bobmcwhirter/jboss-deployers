@@ -25,6 +25,9 @@ import java.util.List;
 
 import org.jboss.deployers.spi.structure.ClassPathEntry;
 import org.jboss.deployers.spi.structure.ContextInfo;
+import org.jboss.deployers.spi.structure.MetaDataEntry;
+import org.jboss.deployers.spi.structure.MetaDataType;
+import org.jboss.deployers.spi.structure.StructureMetaDataFactory;
 
 /**
  * AbstractContextInfoTest.
@@ -107,10 +110,28 @@ public abstract class AbstractContextInfoTest extends AbstractStructureTest
 
    protected abstract ContextInfo createPathAndMetaDataAndClassPath(String path, List<String> metaDataPath, List<ClassPathEntry> classPath);
 
-   protected static void assertDefaultMetaDataPath(List<String> metaDataPath)
+   protected void addMetaDataPath(ContextInfo context, String path)
+   {
+      MetaDataEntry entry = StructureMetaDataFactory.createMetaDataEntry(path);
+      context.addMetaDataPath(entry);
+   }
+
+   protected static void assertDefaultMetaDataPath(List<MetaDataEntry> metaDataPath)
    {
       assertEquals(1, metaDataPath.size());
-      assertEquals("metaDataPath", metaDataPath.get(0));
+      assertEquals("metaDataPath", metaDataPath.get(0).getPath());
+      assertEquals(MetaDataType.DEFAULT, metaDataPath.get(0).getType());
+   }
+
+   protected static void assertMetaDataPaths(List<String> expected, List<MetaDataEntry> entries)
+   {
+      assertEquals(expected.size(), entries.size());
+      int i = 0;
+      for (String path : expected)
+      {
+         assertEquals(path, entries.get(i).getPath());
+         i++;
+      }
    }
 
    public void testConstructorPathAndMetaDataAndClassPath()

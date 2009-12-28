@@ -27,8 +27,12 @@ import java.io.ObjectOutput;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.jboss.deployers.spi.structure.MetaDataEntry;
+import org.jboss.deployers.spi.structure.MetaDataType;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.structure.spi.helpers.AbstractDeploymentContext;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
@@ -57,7 +61,8 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
    private VirtualFile root;
 
    /** The meta data locations */
-   private List<VirtualFile> metaDataLocations;
+   /** This map usage is simply pair notion which simplifies API */
+   private Map<VirtualFile, MetaDataType> metaDataLocations;
 
    /** The class paths */
    private List<VirtualFile> classPath;
@@ -123,7 +128,7 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
       return root;
    }
 
-   public void setMetaDataPath(List<String> paths)
+   public void setMetaDataPath(List<MetaDataEntry> paths)
    {
       if (paths == null)
       {
@@ -133,34 +138,25 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
 
       try
       {
-         List<VirtualFile> locations = new ArrayList<VirtualFile>();
-         for (String path : paths)
+         Map<VirtualFile, MetaDataType> locations = new LinkedHashMap<VirtualFile, MetaDataType>();
+         for (MetaDataEntry entry : paths)
          {
-            if (path == null)
-               throw new IllegalArgumentException("Null path in paths: " + paths);
+            if (entry == null)
+               throw new IllegalArgumentException("Null entry in paths: " + paths);
 
+            String path = entry.getPath();
             VirtualFile child = root.getChild(path);
             if (child != null)
-               locations.add(child);
+               locations.put(child, entry.getType());
             else
                log.debug("Meta data path does not exist: root=" + root.getPathName() + " path=" + path);
          }
-         setMetaDataLocations(locations);
+         setMetaDataLocationsMap(locations);
       }
       catch (IOException e)
       {
          log.warn("Exception while applying paths: root=" + root.getPathName() + " paths=" + paths);
       }
-   }
-
-   /**
-    * Get mutable metadata locations.
-    *
-    * @return the mutable metadata locations
-    */
-   protected List<VirtualFile> getMutableMetaDataLocations()
-   {
-      return metaDataLocations;
    }
 
    public List<VirtualFile> getMetaDataLocations()
@@ -171,11 +167,34 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
       }
       else
       {
-         return Collections.unmodifiableList(metaDataLocations);
+         List<VirtualFile> result = new ArrayList<VirtualFile>();
+         for(Map.Entry<VirtualFile, MetaDataType> entry : metaDataLocations.entrySet())
+         {
+            VirtualFile location = entry.getKey();
+            result.add(location);
+         }
+         return result;
       }
    }
 
    public void setMetaDataLocations(List<VirtualFile> locations)
+   {
+      Map<VirtualFile, MetaDataType> locationsMap = null;
+      if (locations != null)
+      {
+         locationsMap = new LinkedHashMap<VirtualFile, MetaDataType>();
+         for (VirtualFile file : locations)
+            locationsMap.put(file, MetaDataType.DEFAULT);
+      }
+      setMetaDataLocationsMap(locationsMap);
+   }
+
+   /**
+    * Set metadata locations map.
+    *
+    * @param locations the metadata locations
+    */
+   protected void setMetaDataLocationsMap(Map<VirtualFile, MetaDataType> locations)
    {
       this.metaDataLocations = locations;
    }
@@ -221,8 +240,9 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
    protected VirtualFile searchMetaDataLocations(String name)
    {
       VirtualFile result = null;
-      for(VirtualFile location : getMetaDataLocations())
+      for(Map.Entry<VirtualFile, MetaDataType> entry : metaDataLocations.entrySet())
       {
+         VirtualFile location = entry.getKey();
          try
          {
             result = location.getChild(name);
@@ -279,8 +299,9 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
          }
          // Look in the meta data location
          List<VirtualFile> results = new ArrayList<VirtualFile>();
-         for (VirtualFile location : metaDataLocations)
+         for(Map.Entry<VirtualFile, MetaDataType> entry : metaDataLocations.entrySet())
          {
+            VirtualFile location = entry.getKey();
             List<VirtualFile> result = location.getChildren(filter);
             if (result != null && result.isEmpty() == false)
             {
@@ -304,18 +325,20 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
       if (locations == null)
          throw new IllegalArgumentException("Null locations");
 
-      List<VirtualFile> metadataLocations = getMutableMetaDataLocations();
-      if (metadataLocations == null)
-         metadataLocations = new ArrayList<VirtualFile>();
-
+      Map<VirtualFile, MetaDataType> locationsMap = new LinkedHashMap<VirtualFile, MetaDataType>();
       for (int i = locations.length-1; i >= 0; --i)
       {
          VirtualFile location = locations[i];
          if (location == null)
             throw new IllegalArgumentException("Null virtual file in " + Arrays.toString(locations));
-         metadataLocations.add(0, location);
+         locationsMap.put(location, MetaDataType.DEFAULT);
       }
-      setMetaDataLocations(metadataLocations);
+
+      // add the old ones
+      if (metaDataLocations != null)
+         locationsMap.putAll(metaDataLocations);
+
+      setMetaDataLocationsMap(locationsMap);
    }
 
    public void appendMetaDataLocation(VirtualFile... locations)
@@ -323,17 +346,17 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
       if (locations == null)
          throw new IllegalArgumentException("Null location");
 
-      List<VirtualFile> metaDataLocations = getMutableMetaDataLocations();
-      if (metaDataLocations == null)
-         metaDataLocations = new ArrayList<VirtualFile>();
+      Map<VirtualFile, MetaDataType> locationsMap = new LinkedHashMap<VirtualFile, MetaDataType>();
+      if (metaDataLocations != null)
+         locationsMap.putAll(metaDataLocations); // add the old ones
 
       for (VirtualFile location : locations)
       {
          if (location == null)
             throw new IllegalArgumentException("Null virtual file in " + Arrays.toString(locations));
-         metaDataLocations.add(location);
+         locationsMap.put(location, MetaDataType.DEFAULT);
       }
-      setMetaDataLocations(metaDataLocations);
+      setMetaDataLocationsMap(locationsMap);
    }
 
    public void removeMetaDataLocation(VirtualFile... locations)
@@ -507,7 +530,7 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
       root = (VirtualFile) in.readObject();
       boolean isNullOrEmpty = in.readBoolean();
       if (isNullOrEmpty == false)
-         metaDataLocations = (List<VirtualFile>) in.readObject();
+         metaDataLocations = (Map<VirtualFile, MetaDataType>) in.readObject();
       classPath = (List) in.readObject();
    }
 
