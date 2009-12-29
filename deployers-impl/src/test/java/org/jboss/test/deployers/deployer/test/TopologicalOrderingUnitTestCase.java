@@ -51,20 +51,8 @@ public class TopologicalOrderingUnitTestCase extends AbstractSorterOrderingUnitT
    }
 
    @Override
-   public void testIntermediateIsRelativelySorted() throws Exception
-   {
-      // TODO - fix final DeployerNodes sort
-   }
-
-   @Override
-   public void testDoubleCycle() throws Exception
-   {
-      // TODO - fix final DeployerNodes sort
-   }
-
-   @Override
    public void testDeployersOrder1() throws Exception
    {
-      // TODO - fix final DeployerNodes sort
+      // TODO - how much do we allow pass-through to participate in ordering?
    }
 }

@@ -25,14 +25,15 @@ package org.jboss.deployers.plugins.sort;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TreeSet;
 
 import org.jboss.deployers.spi.Ordered;
 import org.jboss.deployers.spi.deployer.Deployer;
@@ -55,30 +56,44 @@ public class TopologicalDeployerSorter implements DeployerSorter
    public List<Deployer> sortDeployers(List<Deployer> original, Deployer newDeployer)
    {
       Graph<Integer> graph = new Graph<Integer>();
-      Map<String, Vertex<Integer>> vertices = new HashMap<String, Vertex<Integer>>();
+      Map<String, Set<Deployer>> output2deployer = new HashMap<String, Set<Deployer>>();
       List<Deployer> splitList = new SplitList<Deployer>(original, newDeployer);
-      List<DeployerNode> nodes = new ArrayList<DeployerNode>();
+      Set<Deployer> notUsed = new TreeSet<Deployer>(Ordered.COMPARATOR);
       for (Deployer deployer : splitList)
       {
+         boolean used = false;
+
          Set<String> inputs = deployer.getInputs();
-         Set<Vertex<Integer>> ivd = fillVertices(inputs, vertices, graph);
+         Set<Vertex<Integer>> ivd = fillVertices(inputs, graph);
          Set<String> outputs = deployer.getOutputs();
-         Set<Vertex<Integer>> ovd = fillVertices(outputs, vertices, graph);
-         nodes.add(new DeployerNode(deployer, ivd, ovd));
-         for (String input : inputs)
+         Set<Vertex<Integer>> ovd = fillVertices(outputs, graph);
+         ivd.retainAll(ovd); // intersection
+         for (String output : outputs)
          {
-            for (String output : outputs)
+            Set<Deployer> deployers = output2deployer.get(output);
+            if (deployers == null)
             {
-               Vertex<Integer> from = vertices.get(input);
-               Vertex<Integer> to = vertices.get(output);
+               deployers = new TreeSet<Deployer>(Ordered.COMPARATOR);
+               output2deployer.put(output, deployers);
+            }
+            deployers.add(deployer);
+            used = true;
+
+            for (String input : inputs)
+            {
+               Vertex<Integer> from = graph.findVertexByName(input);
+               Vertex<Integer> to = graph.findVertexByName(output);
                // ignore pass-through
-               if (from != to && ivd.contains(to) == false && ovd.contains(from) == false)
+               if (from != to && ivd.contains(from) == false)
                   graph.addEdge(from, to, 0);
             }
          }
+
+         if (used == false)
+            notUsed.add(deployer);
       }
       Stack<Vertex<Integer>> noIncoming = new Stack<Vertex<Integer>>();
-      for (Vertex<Integer> vertex : vertices.values())
+      for (Vertex<Integer> vertex : graph.getVerticies())
       {
          if (vertex.getIncomingEdgeCount() == 0)
             noIncoming.push(vertex);
@@ -101,29 +116,48 @@ public class TopologicalDeployerSorter implements DeployerSorter
       if (graph.getEdges().isEmpty() == false)
          throw new IllegalStateException("We have a cycle: " + newDeployer + ", previous: " + original);
 
-      // FIXME - transitive compare doesn't work here -- find a better way to map deployers onto ordered inputs/outputs
-      Collections.sort(nodes, DeployerNodeComparator.INSTANCE);
-      List<Deployer> sortedDeployers = new ArrayList<Deployer>();
-      for (DeployerNode node : nodes)
-         sortedDeployers.add(node.deployer);
-      return sortedDeployers;
+      Set<Deployer> sortedDeployers = new LinkedHashSet<Deployer>();
+      for (Vertex<Integer> v : sorted)
+      {
+         Set<Deployer> deployers = output2deployer.get(v.getName());
+         if (deployers != null)
+         {
+            Deployer first = deployers.iterator().next();
+            Iterator<Deployer> notUsedIter = notUsed.iterator();
+            while(notUsedIter.hasNext())
+            {
+               Deployer next = notUsedIter.next();
+               if (next.getInputs().isEmpty() && Ordered.COMPARATOR.compare(next, first) < 0)
+               {
+                  sortedDeployers.add(next);
+                  notUsedIter.remove();
+               }
+            }
+            for (Deployer deployer : deployers)
+            {
+               if (sortedDeployers.contains(deployer) == false)
+                  sortedDeployers.add(deployer);               
+            }
+         }
+      }
+      sortedDeployers.addAll(notUsed); // add the one's with no output
+      return new ArrayList<Deployer>(sortedDeployers);
    }
 
-   private static Set<Vertex<Integer>> fillVertices(Set<String> keys, Map<String, Vertex<Integer>> vertices, Graph<Integer> graph)
+   private static Set<Vertex<Integer>> fillVertices(Set<String> keys, Graph<Integer> graph)
    {
       Map<Vertex<Integer>, Object> dv = new IdentityHashMap<Vertex<Integer>, Object>();
       for (String key : keys)
-         dv.put(getVertex(key, vertices, graph), 0);
+         dv.put(getVertex(key, graph), 0);
       return dv.keySet();
    }
 
-   private static Vertex<Integer> getVertex(String key, Map<String, Vertex<Integer>> vertices, Graph<Integer> graph)
+   private static Vertex<Integer> getVertex(String key, Graph<Integer> graph)
    {
-      Vertex<Integer> vertex = vertices.get(key);
+      Vertex<Integer> vertex = graph.findVertexByName(key);
       if (vertex == null)
       {
          vertex = new Vertex<Integer>(key);
-         vertices.put(key, vertex);
          graph.addVertex(vertex);
       }
       return vertex;
@@ -136,13 +170,8 @@ public class TopologicalDeployerSorter implements DeployerSorter
 
       private SplitList(List<T> head, T tail)
       {
-         this(head, Collections.singletonList(tail));
-      }
-
-      private SplitList(List<T> head, List<T> tail)
-      {
          this.head = head;
-         this.tail = tail;
+         this.tail = Collections.singletonList(tail);
       }
 
       @Override
@@ -159,171 +188,6 @@ public class TopologicalDeployerSorter implements DeployerSorter
       public int size()
       {
          return head.size() + tail.size();
-      }
-   }
-
-   private class DeployerNode implements Ordered
-   {
-      private Deployer deployer;
-      private Set<Vertex<Integer>> inputs;
-      private Set<Vertex<Integer>> outputs;
-      private int minIn = -1;
-      private int maxIn = -1;
-      private int minOut = -1;
-      private int maxOut = -1;
-
-      private DeployerNode(Deployer deployer, Set<Vertex<Integer>> inputs, Set<Vertex<Integer>> outputs)
-      {
-         this.deployer = deployer;
-         this.inputs = inputs;
-         if (inputs.isEmpty())
-         {
-            minIn = 0;
-            maxIn = 0;
-         }
-         this.outputs = outputs;
-         if (outputs.isEmpty())
-         {
-            minOut = 0;
-            maxOut = 0;
-         }
-      }
-
-      public int getRelativeOrder()
-      {
-         return deployer.getRelativeOrder();
-      }
-
-      public void setRelativeOrder(int order)
-      {
-      }
-
-      @Override
-      public String toString()
-      {
-         return deployer.toString();
-      }
-
-      public int sizeIn()
-      {
-         return inputs.size();
-      }
-
-      public int sizeOut()
-      {
-         return outputs.size();
-      }
-
-      public int getMinIn()
-      {
-         if (minIn == -1)
-            minIn = Collections.min(inputs, VertextComparator.INSTANCE).getData();
-
-         return minIn;
-      }
-
-      public int getMaxIn()
-      {
-         if (maxIn == -1)
-            maxIn = Collections.max(inputs, VertextComparator.INSTANCE).getData();
-
-         return maxIn;
-      }
-
-      public int getMinOut()
-      {
-         if (minOut == -1)
-            minOut = Collections.min(outputs, VertextComparator.INSTANCE).getData();
-
-         return minOut;
-      }
-
-      public int getMaxOut()
-      {
-         if (maxOut == -1)
-            maxOut = Collections.max(outputs, VertextComparator.INSTANCE).getData();
-
-         return maxOut;
-      }
-   }
-
-   private static int overlap(DeployerNode dn1, DeployerNode dn2)
-   {
-      int maxOut_1 = dn1.getMaxOut();
-      int minIn_2 = dn2.getMinIn();
-
-      // not comparable
-      if (maxOut_1 == 0 || minIn_2 == 0)
-         return -1;
-
-      if (maxOut_1 < minIn_2)
-         return 0; // bigger
-
-      int minOut_1 = dn1.getMinOut();
-      int maxIn_2 = dn2.getMaxIn();
-
-      // inclusion
-      if (minOut_1 <= minIn_2 && maxOut_1 >= maxIn_2)
-         return maxIn_2 - minIn_2 + 1;
-      if (minIn_2 <= minOut_1 && maxOut_1 <= maxIn_2)
-         return maxOut_1 - minOut_1 + 1;
-
-      // overlap
-      if (minOut_1 <= minIn_2 && minIn_2 <= maxOut_1 && maxOut_1 <= maxIn_2)
-         return maxOut_1 - minIn_2 + 1;
-      if (minOut_1 >= minIn_2 && minIn_2 >= maxOut_1 && maxOut_1 >= maxIn_2)
-         return maxIn_2 - minOut_1 + 1;
-
-      return -1;
-   }
-
-   private static class DeployerNodeComparator implements Comparator<DeployerNode>
-   {
-      static final DeployerNodeComparator INSTANCE = new DeployerNodeComparator();
-
-      public int compare(DeployerNode dn1, DeployerNode dn2)
-      {
-         int overlap12 = overlap(dn1, dn2);
-         int overlap21 = overlap(dn2, dn1);
-
-         if (overlap12 > 0 && overlap21 > 0)
-         {
-            if (overlap12 != overlap21)
-               return overlap21 - overlap12;
-
-            Set<Vertex<Integer>> tail1 = new HashSet<Vertex<Integer>>(dn1.outputs);
-            tail1.retainAll(dn2.inputs);
-            Set<Vertex<Integer>> tail2 = new HashSet<Vertex<Integer>>(dn2.outputs);
-            tail2.retainAll(dn1.inputs);
-            int s1 = tail1.size();
-            int s2 = tail2.size();
-            if (s1 != s2)
-            {
-               return s2 - s1;
-            }
-            else
-            {
-               overlap12 = overlap21 = -1; // reset               
-            }
-         }
-
-         if (overlap12 >= 0)
-            return -1;
-
-         if (overlap21 >= 0)
-            return 1;
-
-         return Ordered.COMPARATOR.compare(dn1, dn2);
-      }
-   }
-
-   private static class VertextComparator implements Comparator<Vertex<Integer>>
-   {
-      static final VertextComparator INSTANCE = new VertextComparator();
-
-      public int compare(Vertex<Integer> v1, Vertex<Integer> v2)
-      {
-         return v1.getData() - v2.getData();
       }
    }
 }
