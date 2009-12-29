@@ -29,5 +29,22 @@ package org.jboss.deployers.spi.structure;
 public enum MetaDataType
 {
    DEFAULT,
-   ALTERNATIVE
+   ALTERNATIVE;
+
+   /**
+    * Get type.
+    *
+    * We accept "alternative" or "alt",
+    * anything else matches default.
+    *
+    * @param string the type string
+    * @return metadata type
+    */
+   public static final MetaDataType getMetaDataType(String string)
+   {
+      if (ALTERNATIVE.name().equalsIgnoreCase(string) || "alt".equalsIgnoreCase(string))
+         return ALTERNATIVE;
+      else
+         return DEFAULT;
+   }
 }

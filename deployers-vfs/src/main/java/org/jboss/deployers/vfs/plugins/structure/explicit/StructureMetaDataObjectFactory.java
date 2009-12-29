@@ -30,6 +30,7 @@ import org.jboss.deployers.plugins.structure.MetaDataEntryImpl;
 import org.jboss.deployers.plugins.structure.StructureMetaDataImpl;
 import org.jboss.deployers.spi.structure.ClassPathEntry;
 import org.jboss.deployers.spi.structure.MetaDataEntry;
+import org.jboss.deployers.spi.structure.MetaDataType;
 import org.jboss.deployers.spi.structure.ModificationType;
 import org.jboss.xb.binding.ObjectModelFactory;
 import org.jboss.xb.binding.UnmarshallingContext;
@@ -98,7 +99,8 @@ public class StructureMetaDataObjectFactory implements ObjectModelFactory
       if("path".equals(localName))
       {
          String path = attrs.getValue("name");
-         MetaDataEntry entry = new MetaDataEntryImpl(path);
+         String type = attrs.getValue("type");
+         MetaDataEntry entry = new MetaDataEntryImpl(path, MetaDataType.getMetaDataType(type));
          parent.add(entry);
       }
       return child;

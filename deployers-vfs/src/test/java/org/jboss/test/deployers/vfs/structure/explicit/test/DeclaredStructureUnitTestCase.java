@@ -33,6 +33,7 @@ import org.jboss.test.deployers.vfs.structure.AbstractStructureTest;
  * DeclaredStructure deployer unit tests.
  * 
  * @author Scott.Stark@jboss.org
+ * @author Ales.Justin@jboss.org
  * @version $Revision: 1.1 $
  */
 public class DeclaredStructureUnitTestCase extends AbstractStructureTest
@@ -77,5 +78,13 @@ public class DeclaredStructureUnitTestCase extends AbstractStructureTest
       VFSDeploymentContext xwar = assertChildContext(root, "x.war");
       assertMetaData(xwar, "WEB-INF");
       assertClassPath(xwar, "WEB-INF/classes", "WEB-INF/lib/w0.jar");
+   }
+
+   public void testAlternative() throws Throwable
+   {
+      VFSDeploymentContext root = assertDeploy("/structure/explicit", "alt.jar");
+      // Validate the root context info
+      assertMetaDatas(root, "META-INF", "config");
+      // TODO -- check alt usage
    }
 }
