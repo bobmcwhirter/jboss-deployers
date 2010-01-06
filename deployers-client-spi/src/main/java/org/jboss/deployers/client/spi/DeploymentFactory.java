@@ -21,7 +21,6 @@
  */
 package org.jboss.deployers.client.spi;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -110,7 +109,7 @@ public class DeploymentFactory
    public ContextInfo addContext(PredeterminedManagedObjectAttachments context, String path, List<String> metaDataPath, List<ClassPathEntry> classPath)
    {
       StructureMetaData structure = assureStructure(context);
-      ContextInfo result = StructureMetaDataFactory.createContextInfo(path, createMetaDataEntries(metaDataPath), classPath);
+      ContextInfo result = StructureMetaDataFactory.createContextInfo(path, metaDataPath, classPath);
       structure.addContext(result);
       return result;
    }
@@ -138,23 +137,6 @@ public class DeploymentFactory
    public static MetaDataEntry createMetaDataPathEntry(String path, MetaDataType type)
    {
       return StructureMetaDataFactory.createMetaDataEntry(path, type);
-   }
-
-   /**
-    * Create metadata path entries.
-    *
-    * @param metaDataPath the metadata path entries
-    * @return the entries
-    */
-   public static List<MetaDataEntry> createMetaDataEntries(List<String> metaDataPath)
-   {
-      if (metaDataPath == null)
-         throw new IllegalArgumentException("Null metadata path");
-
-      List<MetaDataEntry> entries = new ArrayList<MetaDataEntry>(metaDataPath.size());
-      for (String path : metaDataPath)
-         entries.add(createMetaDataPathEntry(path));
-      return entries;
    }
 
    /**

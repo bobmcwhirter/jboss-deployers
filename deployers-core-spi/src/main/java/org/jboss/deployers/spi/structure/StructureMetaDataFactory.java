@@ -21,12 +21,14 @@
  */
 package org.jboss.deployers.spi.structure;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * StructureFactory.
  * 
  * @author <a href="adrian@jboss.org">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public abstract class StructureMetaDataFactory
@@ -86,7 +88,7 @@ public abstract class StructureMetaDataFactory
     * @return the context info
     * @throws IllegalArgumentException for a null path or metadata path
     */
-   public static ContextInfo createContextInfo(String path, MetaDataEntry metaDataPath, List<ClassPathEntry> classPath)
+   public static ContextInfo createContextInfo(String path, String metaDataPath, List<ClassPathEntry> classPath)
    {
       return StructureMetaDataBuilder.getInstance().newContextInfo(path, metaDataPath, classPath);
    }
@@ -100,9 +102,52 @@ public abstract class StructureMetaDataFactory
     * @return the context info
     * @throws IllegalArgumentException for a null path or metadata path
     */
-   public static ContextInfo createContextInfo(String path, List<MetaDataEntry> metaDataPath, List<ClassPathEntry> classPath)
+   public static ContextInfo createContextInfo(String path, MetaDataEntry metaDataPath, List<ClassPathEntry> classPath)
    {
       return StructureMetaDataBuilder.getInstance().newContextInfo(path, metaDataPath, classPath);
+   }
+
+   /**
+    * Create a new ContextInfo.
+    *
+    * @param path the path
+    * @param metaDataPaths the metadata paths
+    * @param classPath the class path
+    * @return the context info
+    * @throws IllegalArgumentException for a null path or metadata path
+    */
+   public static ContextInfo createContextInfo(String path, List<String> metaDataPaths, List<ClassPathEntry> classPath)
+   {
+      return StructureMetaDataBuilder.getInstance().newContextInfo(path, metaDataPaths, classPath);
+   }
+
+   /**
+    * Create a new ContextInfo.
+    *
+    * @param path the path
+    * @param metaDataPaths the metadata path
+    * @param classPath the class path
+    * @return the context info
+    * @throws IllegalArgumentException for a null path or metadata path
+    */
+   public static ContextInfo createContextInfo(String path, MetaDataEntry[] metaDataPaths, List<ClassPathEntry> classPath)
+   {
+      return StructureMetaDataBuilder.getInstance().newContextInfo(path, metaDataPaths, classPath);
+   }
+
+   /**
+    * Create a new ContextInfo.
+    * Switch parameter order to allow for method override.
+    *
+    * @param classPath the class path
+    * @param metaDataPaths the metadata path
+    * @param path the path
+    * @return the context info
+    * @throws IllegalArgumentException for a null path or metadata path
+    */
+   public static ContextInfo createContextInfo(List<ClassPathEntry> classPath, List<MetaDataEntry> metaDataPaths, String path)
+   {
+      return StructureMetaDataBuilder.getInstance().newContextInfo(classPath, metaDataPaths, path);
    }
 
    /**
@@ -126,6 +171,23 @@ public abstract class StructureMetaDataFactory
    public static MetaDataEntry createMetaDataEntry(String metaDataPath, MetaDataType type)
    {
       return StructureMetaDataBuilder.getInstance().newMetaDataPathEntry(metaDataPath, type);
+   }
+
+   /**
+    * Create metadata path entries.
+    *
+    * @param metaDataPath the metadata path entries
+    * @return the entries
+    */
+   protected static List<MetaDataEntry> createMetaDataEntries(List<String> metaDataPath)
+   {
+      if (metaDataPath == null)
+         throw new IllegalArgumentException("Null metadata path");
+
+      List<MetaDataEntry> entries = new ArrayList<MetaDataEntry>(metaDataPath.size());
+      for (String path : metaDataPath)
+         entries.add(createMetaDataEntry(path));
+      return entries;
    }
 
    /**
@@ -198,7 +260,7 @@ public abstract class StructureMetaDataFactory
     * @return the context info
     * @throws IllegalArgumentException for a null path or metadata path
     */
-   protected abstract ContextInfo newContextInfo(String path, MetaDataEntry metaDataPath, List<ClassPathEntry> classPath);
+   protected abstract ContextInfo newContextInfo(String path, String metaDataPath, List<ClassPathEntry> classPath);
    
    /**
     * Create a new ContextInfo.
@@ -209,7 +271,40 @@ public abstract class StructureMetaDataFactory
     * @return the context info
     * @throws IllegalArgumentException for a null path or metadata path
     */
-   protected abstract ContextInfo newContextInfo(String path, List<MetaDataEntry> metaDataPath, List<ClassPathEntry> classPath);
+   protected abstract ContextInfo newContextInfo(String path, MetaDataEntry metaDataPath, List<ClassPathEntry> classPath);
+
+   /**
+    * Create a new ContextInfo.
+    *
+    * @param path the path
+    * @param metaDataPaths the metadata paths
+    * @param classPath the class path
+    * @return the context info
+    * @throws IllegalArgumentException for a null path or metadata path
+    */
+   protected abstract ContextInfo newContextInfo(String path, List<String> metaDataPaths, List<ClassPathEntry> classPath);
+
+   /**
+    * Create a new ContextInfo.
+    *
+    * @param classPath the class path
+    * @param metaDataPaths the metadata paths
+    * @param path the path
+    * @return the context info
+    * @throws IllegalArgumentException for a null path or metadata path
+    */
+   protected abstract ContextInfo newContextInfo(List<ClassPathEntry> classPath, List<MetaDataEntry> metaDataPaths, String path);
+
+   /**
+    * Create a new ContextInfo.
+    *
+    * @param path the path
+    * @param metaDataPaths the metadata paths
+    * @param classPath the class path
+    * @return the context info
+    * @throws IllegalArgumentException for a null path or metadata path
+    */
+   protected abstract ContextInfo newContextInfo(String path, MetaDataEntry[] metaDataPaths, List<ClassPathEntry> classPath);
 
    /**
     * Create new metadata path entry.

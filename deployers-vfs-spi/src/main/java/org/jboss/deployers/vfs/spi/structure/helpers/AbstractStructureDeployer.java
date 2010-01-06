@@ -439,7 +439,7 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
 
       // Create and link the context
       if (metaDataPath != null)
-         return StructureMetaDataFactory.createContextInfo("", createMetaDataEntry(metaDataPath), null);
+         return StructureMetaDataFactory.createContextInfo("", metaDataPath, null);
       else
          return StructureMetaDataFactory.createContextInfo("", null);
    }
@@ -457,17 +457,6 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
       ContextInfo result = applyMetadataPaths(context, metaDataPaths);
       applyStructure(context, result);
       return result;
-   }
-
-   /**
-    * Create metadata entry.
-    *
-    * @param path the path
-    * @return the metadata entry
-    */
-   private MetaDataEntry createMetaDataEntry(String path)
-   {
-      return StructureMetaDataFactory.createMetaDataEntry(path);
    }
 
    /**
@@ -517,7 +506,7 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
          throw new IllegalArgumentException("Null context");
 
       VirtualFile root = context.getFile();
-      List<MetaDataEntry> metaDataPath = CollectionsFactory.createLazyList();
+      List<String> metaDataPath = CollectionsFactory.createLazyList();
       // Determine whether the metadata paths exists
       if (metaDataPaths != null && metaDataPaths.length > 0)
       {
@@ -527,7 +516,7 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
             {
                VirtualFile child = root.getChild(path);
                if (child != null)
-                  metaDataPath.add(createMetaDataEntry(path));
+                  metaDataPath.add(path);
             }
             catch (IOException e)
             {

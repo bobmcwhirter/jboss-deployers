@@ -156,7 +156,7 @@ public class VFSStructuralDeployersImpl extends AbstractStructuralDeployers impl
          if (metaDataPath == null || metaDataPath.isEmpty())
             parentContextInfo = StructureMetaDataFactory.createContextInfo(relativePath, recognised.getClassPath());
          else
-            parentContextInfo = StructureMetaDataFactory.createContextInfo(relativePath, metaDataPath, recognised.getClassPath());
+            parentContextInfo = StructureMetaDataFactory.createContextInfo(recognised.getClassPath(), metaDataPath, relativePath);
 
          // copy the modification type information
          parentContextInfo.setModificationType(recognised.getModificationType());

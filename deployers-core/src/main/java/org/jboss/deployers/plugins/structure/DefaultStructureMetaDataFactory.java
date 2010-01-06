@@ -21,6 +21,7 @@
  */
 package org.jboss.deployers.plugins.structure;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.jboss.deployers.spi.structure.ClassPathEntry;
@@ -54,14 +55,29 @@ public class DefaultStructureMetaDataFactory extends StructureMetaDataFactory
       return new ContextInfoImpl(path, classPath);
    }
 
+   protected ContextInfo newContextInfo(String path, String metaDataPath, List<ClassPathEntry> classPath)
+   {
+      return new ContextInfoImpl(path, newMetaDataPathEntry(metaDataPath), classPath);
+   }
+
    protected ContextInfo newContextInfo(String path, MetaDataEntry metaDataPath, List<ClassPathEntry> classPath)
    {
       return new ContextInfoImpl(path, metaDataPath, classPath);
    }
-   
-   protected ContextInfo newContextInfo(String path, List<MetaDataEntry> metaDataPath, List<ClassPathEntry> classPath)
+
+   protected ContextInfo newContextInfo(String path, List<String> metaDataPaths, List<ClassPathEntry> classPath)
    {
-      return new ContextInfoImpl(path, metaDataPath, classPath);
+      return new ContextInfoImpl(path, createMetaDataEntries(metaDataPaths), classPath);
+   }
+
+   protected ContextInfo newContextInfo(String path, MetaDataEntry[] metaDataPaths, List<ClassPathEntry> classPath)
+   {
+      return new ContextInfoImpl(path, Arrays.asList(metaDataPaths), classPath);
+   }
+
+   protected ContextInfo newContextInfo(List<ClassPathEntry> classPath, List<MetaDataEntry> metaDataPaths, String path)
+   {
+      return new ContextInfoImpl(path, metaDataPaths, classPath);
    }
 
    protected MetaDataEntry newMetaDataPathEntry(String metaDataPath)

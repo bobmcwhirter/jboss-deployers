@@ -21,7 +21,6 @@
 */
 package org.jboss.test.deployers.structure.test;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.Test;
@@ -29,7 +28,6 @@ import junit.framework.TestSuite;
 
 import org.jboss.deployers.spi.structure.ClassPathEntry;
 import org.jboss.deployers.spi.structure.ContextInfo;
-import org.jboss.deployers.spi.structure.MetaDataEntry;
 import org.jboss.deployers.spi.structure.StructureMetaDataFactory;
 import org.jboss.test.deployers.structure.AbstractContextInfoTest;
 
@@ -78,10 +76,7 @@ public class StructureMetaDataFactoryContextInfoUnitTestCase extends AbstractCon
    @Override
    protected ContextInfo createPathAndMetaDataAndClassPath(String path, List<String> metaDataPath, List<ClassPathEntry> classPath)
    {
-      List<MetaDataEntry> entries = new ArrayList<MetaDataEntry>();
-      for (String mdp : metaDataPath)
-         entries.add(StructureMetaDataFactory.createMetaDataEntry(mdp));
-      return StructureMetaDataFactory.createContextInfo(path, entries, classPath);
+      return StructureMetaDataFactory.createContextInfo(path, metaDataPath, classPath);
    }
 
    @Override
