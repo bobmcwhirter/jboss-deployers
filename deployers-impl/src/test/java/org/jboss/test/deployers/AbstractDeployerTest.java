@@ -234,7 +234,7 @@ public abstract class AbstractDeployerTest extends BaseTestCase
    {
       ControllerContext context = unit.getAttachment(ControllerContext.class);
       assertNotNull("Expecting controller context attachment: " + unit, context);
-      ControllerState state = new ControllerState(stage.getName());
+      ControllerState state = ControllerState.getInstance(stage.getName());
       assertEquals(state, context.getState());
    }
 

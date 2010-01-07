@@ -78,7 +78,7 @@ public class DependenciesTestCase extends BootstrapDeployersTest
       DeploymentUnit du = addDeployment("/dependency", "bean");
       try
       {
-         assertDeployment(du, new ControllerState("PreReal"));
+         assertDeployment(du, ControllerState.getInstance("PreReal"));
          DeploymentUnit tmDU = assertDeploy("/dependency", "support");
          try
          {
@@ -123,7 +123,7 @@ public class DependenciesTestCase extends BootstrapDeployersTest
       DeploymentUnit du = addDeployment("/dependency", "nested");
       try
       {
-         assertDeployment(du, new ControllerState("PreReal"));
+         assertDeployment(du, ControllerState.getInstance("PreReal"));
          DeploymentUnit tmDU = assertDeploy("/dependency", "support");
          try
          {
@@ -145,7 +145,7 @@ public class DependenciesTestCase extends BootstrapDeployersTest
       DeploymentUnit du = addDeployment("/dependency", "bean");
       try
       {
-         assertDeployment(du, new ControllerState("PreReal"));
+         assertDeployment(du, ControllerState.getInstance("PreReal"));
          DeploymentUnit tmDU = assertDeploy("/dependency", "support");
          try
          {
@@ -153,7 +153,7 @@ public class DependenciesTestCase extends BootstrapDeployersTest
 
             undeploy(tmDU);
 
-            assertDeployment(du, new ControllerState("PreReal"));
+            assertDeployment(du, ControllerState.getInstance("PreReal"));
 
             tmDU = assertDeploy("/dependency", "support");
 

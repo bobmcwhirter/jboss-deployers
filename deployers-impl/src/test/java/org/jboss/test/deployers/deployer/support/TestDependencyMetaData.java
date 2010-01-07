@@ -38,7 +38,7 @@ import org.jboss.deployers.spi.deployer.DeploymentStages;
  */
 public class TestDependencyMetaData
 {
-   private static final ControllerState CLASSLOADER = new ControllerState(DeploymentStages.CLASSLOADER.getName());
+   private static final ControllerState CLASSLOADER = ControllerState.newState(DeploymentStages.CLASSLOADER.getName());
    
    public String name;
    
@@ -63,10 +63,10 @@ public class TestDependencyMetaData
    {
       ControllerState whenState = CLASSLOADER;
       if (whenRequired != null)
-         whenState = new ControllerState(whenRequired.getName());
+         whenState = ControllerState.getInstance(whenRequired.getName());
       ControllerState depState = ControllerState.INSTALLED;
       if (dependentState != null)
-         depState = new ControllerState(dependentState.getName()); 
+         depState = ControllerState.getInstance(dependentState.getName());
       DependencyItem item = new AbstractDependencyItem(name, iDependOn, whenState, depState);
       this.iDependOn.add(item);
       return item;

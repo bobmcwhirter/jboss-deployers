@@ -406,7 +406,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions, Deplo
          }
       }
 
-      controller.addState(new ControllerState(stageName), preceeds);
+      controller.addState(ControllerState.newState(stageName), preceeds);
       stages.put(stageName, stage);
       log.debug("Added stage " + stageName + " before " + preceeds);
    }
@@ -753,7 +753,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions, Deplo
       checkShutdown();
 
       context.setRequiredStage(stage);
-      ControllerState state = new ControllerState(stageName);
+      ControllerState state = ControllerState.getInstance(stageName);
       try
       {
          controller.change(deploymentControllerContext, state);

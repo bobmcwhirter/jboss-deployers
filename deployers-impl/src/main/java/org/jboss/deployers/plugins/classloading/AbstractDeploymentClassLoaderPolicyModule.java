@@ -44,7 +44,7 @@ public abstract class AbstractDeploymentClassLoaderPolicyModule extends ClassLoa
    private static final long serialVersionUID = 1L;
 
    /** The classloader state for deployments */
-   private static ControllerState CLASSLOADER_STATE = new ControllerState(DeploymentStages.CLASSLOADER.getName());
+   private static ControllerState CLASSLOADER_STATE = ControllerState.newState(DeploymentStages.CLASSLOADER.getName());
    
    /** The deployment unit */
    private DeploymentUnit unit;
