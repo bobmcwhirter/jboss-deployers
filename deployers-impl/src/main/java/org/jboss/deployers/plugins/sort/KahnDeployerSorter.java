@@ -32,6 +32,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.jboss.deployers.spi.Ordered;
 import org.jboss.deployers.spi.deployer.Deployer;
@@ -338,6 +339,7 @@ public class KahnDeployerSorter implements DeployerSorter
          Deployer deployer = s.remove(0);
          result.add(deployer);
          // for each node m with an edge e from n to m do
+         Set<Deployer> nextLevel = new TreeSet<Deployer>(Ordered.COMPARATOR);
          for(Edge e : findInputs(edgeCache, deployer, inputCache, deployer.getOutputs()))
          {
             // remove edge e from the graph
@@ -345,8 +347,9 @@ public class KahnDeployerSorter implements DeployerSorter
             edges.remove(e);
             // if m has no other incoming edges then insert m into S
             if(edges.isEmpty())
-               s.add(e.to);
+               nextLevel.add(e.to);
          }
+         s.addAll(nextLevel);
       }
       // if graph has edges then output error message (graph has at least one cycle)
       String message = "";
