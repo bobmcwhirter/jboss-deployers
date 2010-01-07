@@ -50,7 +50,7 @@ import org.jboss.util.graph.Vertex;
  *
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class TopologicalDeployerSorter implements DeployerSorter
+public class InOutTopologicalDeployerSorter implements DeployerSorter
 {
    @SuppressWarnings({"unchecked"})
    public List<Deployer> sortDeployers(List<Deployer> original, Deployer newDeployer)

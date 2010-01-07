@@ -52,8 +52,6 @@ public class DominoOrderingUnitTestCase extends AbstractSorterOrderingUnitTest
    
    public void testAlgorithmPerformance()
    {
-      System.out.println("------------------------------------------------------------------------");
-      System.out.println("Exhaustive deployer sorting (" + getClass().getSimpleName() +  ") took: NOT MEASURED (too slow)");
-      System.out.println("------------------------------------------------------------------------");
+      // ignored
    }
 }

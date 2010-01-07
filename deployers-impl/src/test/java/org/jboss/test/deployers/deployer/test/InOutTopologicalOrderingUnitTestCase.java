@@ -25,29 +25,29 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.jboss.deployers.plugins.sort.DeployerSorter;
-import org.jboss.deployers.plugins.sort.TopologicalDeployerSorter;
+import org.jboss.deployers.plugins.sort.InOutTopologicalDeployerSorter;
 
 /**
  * Simple topological sorting.
  *
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class TopologicalOrderingUnitTestCase extends AbstractSorterOrderingUnitTest
+public class InOutTopologicalOrderingUnitTestCase extends AbstractSorterOrderingUnitTest
 {
-   public TopologicalOrderingUnitTestCase(String name)
+   public InOutTopologicalOrderingUnitTestCase(String name)
    {
       super(name);
    }
 
    public static Test suite()
    {
-      return new TestSuite(TopologicalOrderingUnitTestCase.class);
+      return new TestSuite(InOutTopologicalOrderingUnitTestCase.class);
    }
 
    @Override
    protected DeployerSorter createSorter()
    {
-      return new TopologicalDeployerSorter();
+      return new InOutTopologicalDeployerSorter();
    }
 
    @Override
@@ -58,8 +58,6 @@ public class TopologicalOrderingUnitTestCase extends AbstractSorterOrderingUnitT
 
    public void testAlgorithmPerformance()
    {
-      System.out.println("------------------------------------------------------------------------");
-      System.out.println("Exhaustive deployer sorting (" + getClass().getSimpleName() +  ") took: NOT MEASURED (too slow)");
-      System.out.println("------------------------------------------------------------------------");
+      // ignored
    }
 }

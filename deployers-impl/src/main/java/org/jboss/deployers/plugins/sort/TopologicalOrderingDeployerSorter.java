@@ -44,7 +44,6 @@ import org.jboss.deployers.spi.deployer.Deployer;
  */
 public class TopologicalOrderingDeployerSorter implements DeployerSorter
 {
-
    /**
     * @see {@link DeployerSorter#sortDeployers(List, Deployer)}
     */
@@ -66,7 +65,6 @@ public class TopologicalOrderingDeployerSorter implements DeployerSorter
       return graph;
    }
 
-
    private static class Graph
    {
       private Map<String, Dependency> dependencies = new HashMap<String, Dependency>();
@@ -86,7 +84,7 @@ public class TopologicalOrderingDeployerSorter implements DeployerSorter
          this.vertices.add(vertex);
 
          // register dependencies
-         Dependency dependency = null;
+         Dependency dependency;
          for (final String in : inputs)
          {
             dependency = this.getDependency(in);
@@ -116,8 +114,8 @@ public class TopologicalOrderingDeployerSorter implements DeployerSorter
          Collections.sort(roots, Ordered.COMPARATOR);
 
          // while S is non-empty do
-         Vertex root = null;
-         Set<Vertex> nextLevel = null;
+         Vertex root;
+         Set<Vertex> nextLevel;
          while(!roots.isEmpty())
          {
             // remove a node n from S
@@ -190,8 +188,8 @@ public class TopologicalOrderingDeployerSorter implements DeployerSorter
 
       private void createEdges()
       {
-         boolean hasModifiers = false;
-         Dependency dependency = null;
+         boolean hasModifiers;
+         Dependency dependency;
 
          for (final String dependencyName : this.dependencies.keySet())
          {
