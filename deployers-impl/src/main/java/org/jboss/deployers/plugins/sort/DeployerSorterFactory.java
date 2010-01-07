@@ -25,6 +25,7 @@ package org.jboss.deployers.plugins.sort;
  * Sorter factory.
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
+ * @author <a href="mailto:ropalka@redhat.com">Richard Opalka</a>
  */
 public class DeployerSorterFactory
 {
@@ -36,6 +37,6 @@ public class DeployerSorterFactory
     */
    public static DeployerSorter newSorter()
    {
-      return new KahnDeployerSorter();      
+      return new TopologicalOrderingDeployerSorter();      
    }
 }

@@ -55,4 +55,11 @@ public class TopologicalOrderingUnitTestCase extends AbstractSorterOrderingUnitT
    {
       // TODO - how much do we allow pass-through to participate in ordering?
    }
+
+   public void testAlgorithmPerformance()
+   {
+      System.out.println("------------------------------------------------------------------------");
+      System.out.println("Exhaustive deployer sorting (" + getClass().getSimpleName() +  ") took: NOT MEASURED (too slow)");
+      System.out.println("------------------------------------------------------------------------");
+   }
 }

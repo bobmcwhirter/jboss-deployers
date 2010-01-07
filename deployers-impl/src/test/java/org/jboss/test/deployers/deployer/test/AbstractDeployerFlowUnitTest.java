@@ -21,6 +21,9 @@
  */
 package org.jboss.test.deployers.deployer.test;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.jboss.deployers.client.spi.DeployerClient;
 import org.jboss.deployers.client.spi.Deployment;
 import org.jboss.deployers.plugins.deployers.DeployersImpl;
@@ -1232,6 +1235,35 @@ public abstract class AbstractDeployerFlowUnitTest extends AbstractDeployerTest
 
       main.removeDeployment(deployment);
       main.process();
+   }
+   
+   public void testAlgorithmPerformance() throws Exception
+   {
+      DeployerClient main = createMainDeployer();
+      AbstractDeployer deployer;
+      final int COUNT_OF_DEPLOYERS = 500;
+
+      List<AbstractDeployer> deployers = new LinkedList<AbstractDeployer>();
+
+      for (int i = 0; i < COUNT_OF_DEPLOYERS; i++)
+      {
+         deployer = new TestDeployerAdapter( String.valueOf(i) );
+         deployer.setOutputs( String.valueOf(i) );
+         for (int j = 0; j < i; j++) deployer.addInput( String.valueOf(j) );
+         deployer.setStage(DeploymentStages.REAL);
+         deployers.add(deployer);
+      }
+      
+      long start = System.currentTimeMillis();
+      for (AbstractDeployer d : deployers)
+      {
+         addDeployer(main, d);
+      }
+      long end = System.currentTimeMillis();
+      
+      System.out.println("------------------------------------------------------------------------");
+      System.out.println("Exhaustive deployer sorting (" + getClass().getSimpleName() +  ") took: " + (end - start) + " milliseconds");
+      System.out.println("------------------------------------------------------------------------");
    }
 
    public void testRealWorldAS6DeployersScenario() throws Exception
