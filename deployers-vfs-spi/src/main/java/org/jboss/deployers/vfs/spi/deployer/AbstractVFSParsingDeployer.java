@@ -107,7 +107,9 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
       // Ignore non-vfs deployments
       if (unit instanceof VFSDeploymentUnit == false)
       {
-         log.trace("Not a vfs deployment: " + unit.getName());
+         if (log.isTraceEnabled())
+            log.trace("Not a vfs deployment: " + unit.getName());
+         
          return false;
       }
       return accepts((VFSDeploymentUnit) unit);
