@@ -1237,33 +1237,137 @@ public abstract class AbstractDeployerFlowUnitTest extends AbstractDeployerTest
       main.process();
    }
    
+   /**
+    * Tests algorithm performance on complete oriented graph.
+    * All dependencies are specified using inputs/outputs.
+    */
    public void testAlgorithmPerformance() throws Exception
    {
+       
       DeployerClient main = createMainDeployer();
-      AbstractDeployer deployer;
+      TestFlowDeployer deployer;
       final int COUNT_OF_DEPLOYERS = 500;
 
-      List<AbstractDeployer> deployers = new LinkedList<AbstractDeployer>();
+      List<TestFlowDeployer> deployers = new LinkedList<TestFlowDeployer>();
 
       for (int i = 0; i < COUNT_OF_DEPLOYERS; i++)
       {
-         deployer = new TestDeployerAdapter( String.valueOf(i) );
+         deployer = new TestFlowDeployer( String.valueOf(i) );
          deployer.setOutputs( String.valueOf(i) );
          for (int j = 0; j < i; j++) deployer.addInput( String.valueOf(j) );
-         deployer.setStage(DeploymentStages.REAL);
          deployers.add(deployer);
       }
       
       long start = System.currentTimeMillis();
-      for (AbstractDeployer d : deployers)
+      for (TestFlowDeployer d : deployers)
       {
          addDeployer(main, d);
       }
       long end = System.currentTimeMillis();
       
       System.out.println("------------------------------------------------------------------------");
-      System.out.println("Exhaustive deployer sorting (" + getClass().getSimpleName() +  ") took: " + (end - start) + " milliseconds");
+      System.out.println("Exhaustive deployer sorting 1 (" + getClass().getSimpleName() +  ") took: " + (end - start) + " milliseconds");
       System.out.println("------------------------------------------------------------------------");
+
+      // test proper deployers order
+      Deployment deployment = createSimpleDeployment( "exhaustiveDeployersOrderTest" );
+
+      main.addDeployment(deployment);
+      main.process();
+
+      for (int i = 0; i < COUNT_OF_DEPLOYERS; i++)
+      {
+         deployer = deployers.get(i);
+         assertEquals(i + 1, deployer.getDeployOrder());
+         assertEquals(-1, deployer.getUndeployOrder());
+      }
+
+      main.removeDeployment(deployment);
+      main.process();
+
+      for (int i = 0; i < COUNT_OF_DEPLOYERS; i++)
+      {
+         deployer = deployers.get(i);
+         assertEquals(i + 1, deployer.getDeployOrder());
+         assertEquals(2*COUNT_OF_DEPLOYERS - i, deployer.getUndeployOrder());
+      }
+   }
+
+   /**
+    * Tests algorithm performance on complete oriented graph
+    * where vertex in this graph is represented as set of deployers.
+    * Deployers that are in specific vertex are ordered using deployer ordering feature. 
+    */
+   public void testAlgorithmPerformance2() throws Exception
+   {
+      DeployerClient main = createMainDeployer();
+      TestFlowDeployer deployer;
+      final int COUNT_OF_DEPLOYERS = 1000; 
+      final int MODULO = 50; // count of deployers in particular vertex
+
+      List<TestFlowDeployer> deployers = new LinkedList<TestFlowDeployer>();
+
+      for (int i = 0; i < COUNT_OF_DEPLOYERS; i++)
+      {
+         deployer = new TestFlowDeployer( String.valueOf(i) );
+         deployer.setOutputs( String.valueOf(i / MODULO) );
+         deployer.setRelativeOrder(i % MODULO);
+         for (int j = 0; j < i/MODULO; j++) 
+            deployer.addInput( String.valueOf(j) );
+         
+         deployers.add(deployer);
+      }
+      
+      long start = System.currentTimeMillis();
+      for (TestFlowDeployer d : deployers)
+      {
+         addDeployer(main, d);
+      }
+      long end = System.currentTimeMillis();
+      
+      System.out.println("------------------------------------------------------------------------");
+      System.out.println("Exhaustive deployer sorting 2 (" + getClass().getSimpleName() +  ") took: " + (end - start) + " milliseconds");
+      System.out.println("------------------------------------------------------------------------");
+
+      // test proper deployers order
+      Deployment deployment = createSimpleDeployment( "exhaustiveDeployersOrderTest" );
+
+      main.addDeployment(deployment);
+      main.process();
+
+      int deployerDeployOrder;
+      int deployerUndeployOrder;
+      int deployerDeployOrderInModulo;
+      int deployerUndeployOrderInModulo;
+      int level;
+      for (int i = 0; i < COUNT_OF_DEPLOYERS; i++)
+      {
+         level = i / MODULO;
+         deployer = deployers.get(i);
+         deployerDeployOrder = deployer.getDeployOrder();
+         deployerDeployOrderInModulo = (deployerDeployOrder - 1) / MODULO;
+         deployerUndeployOrder = deployer.getUndeployOrder();
+         assertTrue("Wrong deployer(" + i + ") deploy order: " + deployerDeployOrder, level <= deployerDeployOrderInModulo && deployerDeployOrderInModulo < (level + 1));
+         assertEquals(i + 1, deployerDeployOrder); // remove if [JBDEPLOY-233] will be fixed
+         assertEquals(-1, deployerUndeployOrder);
+      }
+
+      main.removeDeployment(deployment);
+      main.process();
+
+      for (int i = 0; i < COUNT_OF_DEPLOYERS; i++)
+      {
+         level = i / MODULO;
+         deployer = deployers.get(i);
+         deployerDeployOrder = deployer.getDeployOrder();
+         deployerDeployOrderInModulo = (deployerDeployOrder - 1) / MODULO;
+         deployerUndeployOrder = deployer.getUndeployOrder();
+         deployerUndeployOrderInModulo = (deployerUndeployOrder - 1) / MODULO;
+         assertTrue("Wrong deployer(" + i + ") deploy order: " + deployerDeployOrder, level <= deployerDeployOrderInModulo && deployerDeployOrderInModulo < (level + 1));
+         assertEquals(i + 1, deployer.getDeployOrder()); // remove if [JBDEPLOY-233] will be fixed
+         assertTrue("Wrong deployer(" + i + ") undeploy order: " + deployerUndeployOrder, (2 * COUNT_OF_DEPLOYERS - level) >= deployerUndeployOrderInModulo && deployerUndeployOrderInModulo < (2 * COUNT_OF_DEPLOYERS - (level + 1)));
+         assertEquals(2 * COUNT_OF_DEPLOYERS - i, deployer.getUndeployOrder()); // remove if [JBDEPLOY-233] will be fixed
+      }
    }
 
    public void testRealWorldAS6DeployersScenario() throws Exception

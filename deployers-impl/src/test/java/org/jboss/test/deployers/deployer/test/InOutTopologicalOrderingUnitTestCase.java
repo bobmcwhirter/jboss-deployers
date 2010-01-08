@@ -54,9 +54,15 @@ public class InOutTopologicalOrderingUnitTestCase extends AbstractSorterOrdering
    public void testDeployersOrder1() throws Exception
    {
       // TODO - how much do we allow pass-through to participate in ordering?
+      // This just creates duplicit edges from vertex A to vertex B in final graph.
    }
 
    public void testAlgorithmPerformance()
+   {
+      // ignored
+   }
+
+   public void testAlgorithmPerformance2()
    {
       // ignored
    }

@@ -54,4 +54,9 @@ public class DominoOrderingUnitTestCase extends AbstractSorterOrderingUnitTest
    {
       // ignored
    }
+
+   public void testAlgorithmPerformance2()
+   {
+      // ignored
+   }
 }

@@ -25,28 +25,30 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.jboss.deployers.plugins.sort.DeployerSorter;
-import org.jboss.deployers.plugins.sort.TopologicalOrderingDeployerSorter;
+import org.jboss.deployers.plugins.sort.DependenciesTopologicalDeployerSorter;
 
 /**
  * Tests topological sorting.
  *
  * @author <a href="mailto:ropalka@redhat.com">Richard Opalka</a>
  */
-public class OptimizedTopologicalOrderingUnitTestCase extends AbstractSorterOrderingUnitTest
+public class DependenciesTopologicalOrderingUnitTestCase extends AbstractSorterOrderingUnitTest
 {
-   public OptimizedTopologicalOrderingUnitTestCase(String name)
+
+   public DependenciesTopologicalOrderingUnitTestCase(String name)
    {
       super(name);
    }
 
    public static Test suite()
    {
-      return new TestSuite(OptimizedTopologicalOrderingUnitTestCase.class);
+      return new TestSuite(DependenciesTopologicalOrderingUnitTestCase.class);
    }
 
    @Override
    protected DeployerSorter createSorter()
    {
-      return new TopologicalOrderingDeployerSorter();
+      return new DependenciesTopologicalDeployerSorter();
    }
+
 }
