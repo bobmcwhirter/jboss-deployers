@@ -26,6 +26,7 @@ import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 import org.jboss.test.deployers.vfs.matchers.test.FileMatchersTestCase;
 import org.jboss.test.deployers.vfs.matchers.test.JarExtensionsTestCase;
+import org.jboss.test.deployers.vfs.matchers.test.MetaDataTypeFilterTestCase;
 import org.jboss.test.deployers.vfs.matchers.test.NameIgnoreMechanismTestCase;
 
 /**
@@ -47,6 +48,7 @@ public class VFSMatchersTestSuite extends TestSuite
       suite.addTest(FileMatchersTestCase.suite());
       suite.addTest(JarExtensionsTestCase.suite());
       suite.addTest(NameIgnoreMechanismTestCase.suite());
+      suite.addTest(MetaDataTypeFilterTestCase.suite());
 
       return suite;
    }

@@ -1,0 +1,9 @@
+<structure>
+  <context>
+    <path name=""/>
+    <metaDataPath>
+      <path name="META-INF" type="Default"/>
+      <path name="alt" type="Alt"/>
+    </metaDataPath>
+  </context>
+</structure>
