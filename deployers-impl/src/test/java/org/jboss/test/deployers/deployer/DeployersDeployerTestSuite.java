@@ -27,6 +27,7 @@ import junit.textui.TestRunner;
 
 import org.jboss.test.deployers.deployer.helpers.test.ExactAttachmentDeployerWithVisitorTestCase;
 import org.jboss.test.deployers.deployer.test.ComponentUnitTestCase;
+import org.jboss.test.deployers.deployer.test.DependenciesTopologicalOrderingUnitTestCase;
 import org.jboss.test.deployers.deployer.test.DeployerClassLoaderUnitTestCase;
 import org.jboss.test.deployers.deployer.test.DeployerContextClassLoaderUnitTestCase;
 import org.jboss.test.deployers.deployer.test.DeployerFlowUnitTestCase;
@@ -43,7 +44,6 @@ import org.jboss.test.deployers.deployer.test.InOutTopologicalOrderingUnitTestCa
 import org.jboss.test.deployers.deployer.test.IndexingOrderingUnitTestCase;
 import org.jboss.test.deployers.deployer.test.KahnOrderingUnitTestCase;
 import org.jboss.test.deployers.deployer.test.MultipleComponentTypeUnitTestCase;
-import org.jboss.test.deployers.deployer.test.OptimizedTopologicalOrderingUnitTestCase;
 
 /**
  * Deployers Deployer Test Suite.
@@ -82,7 +82,7 @@ public class DeployersDeployerTestSuite extends TestSuite
       suite.addTest(KahnOrderingUnitTestCase.suite());
       suite.addTest(InOutTopologicalOrderingUnitTestCase.suite());
       suite.addTest(IndexingOrderingUnitTestCase.suite());
-      suite.addTest(OptimizedTopologicalOrderingUnitTestCase.suite());
+      suite.addTest(DependenciesTopologicalOrderingUnitTestCase.suite());
 
       // helper deployers
       suite.addTest(ExactAttachmentDeployerWithVisitorTestCase.suite());
