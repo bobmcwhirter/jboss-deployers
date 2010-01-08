@@ -24,6 +24,8 @@ package org.jboss.test.deployers.vfs.structure.explicit.test;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.jboss.deployers.spi.structure.MetaDataType;
+import org.jboss.deployers.spi.structure.MetaDataTypeFilter;
 import org.jboss.deployers.vfs.plugins.structure.explicit.DeclaredStructure;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
@@ -83,8 +85,14 @@ public class DeclaredStructureUnitTestCase extends AbstractStructureTest
    public void testAlternative() throws Throwable
    {
       VFSDeploymentContext root = assertDeploy("/structure/explicit", "alt.jar");
-      // Validate the root context info
-      assertMetaDatas(root, "META-INF", "config");
-      // TODO -- check alt usage
+      assertMetaData(root, "META-INF");
+      assertMetaDatas(root, MetaDataTypeFilter.ALL, "META-INF", "config");
+      assertMetaData(root, "config", new MetaDataTypeFilter()
+      {
+         public boolean accepts(MetaDataType type)
+         {
+            return MetaDataType.ALTERNATIVE == type;
+         }
+      });
    }
 }

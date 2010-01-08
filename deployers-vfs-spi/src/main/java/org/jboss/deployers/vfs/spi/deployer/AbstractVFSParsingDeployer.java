@@ -32,6 +32,7 @@ import java.util.HashMap;
 
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.helpers.AbstractParsingDeployerWithOutput;
+import org.jboss.deployers.spi.structure.MetaDataTypeFilter;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.virtual.VirtualFile;
@@ -51,6 +52,9 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
 
    /** The allow multiple fiels flag */
    private boolean allowMultipleFiles;
+
+   /** The metadata type filter */
+   private MetaDataTypeFilter filter = MetaDataTypeFilter.DEFAULT;
 
    /**
     * Create a new AbstractVFSParsingDeployer.
@@ -107,6 +111,21 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
          return false;
       }
       return accepts((VFSDeploymentUnit) unit);
+   }
+
+   /**
+    * Get metadata type filter from unit - if deployer's filter is set to null.
+    *
+    * @param unit the deployment unit
+    * @return metadata type filter
+    */
+   protected MetaDataTypeFilter getMetaDataTypeFilter(DeploymentUnit unit)
+   {
+      if (filter != null)
+         return filter;
+
+      MetaDataTypeFilter mdtf = unit.getAttachment(MetaDataTypeFilter.class);
+      return mdtf != null ? mdtf : MetaDataTypeFilter.DEFAULT;
    }
 
    /**
@@ -169,7 +188,7 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
          altMappingsMap.put(file.getName(), altExpectedClass);
       }
       if(checkMetaDataFile && file == null)
-         file = unit.getMetaDataFile(originalName);
+         file = unit.getMetaDataFile(originalName, getMetaDataTypeFilter(unit));
 
       return file;
    }
@@ -250,7 +269,7 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
          return parseAndInit(vfsDeploymentUnit, file, root, true);
 
       // try all name+suffix matches
-      List<VirtualFile> files = vfsDeploymentUnit.getMetaDataFiles(name, suffix);
+      List<VirtualFile> files = vfsDeploymentUnit.getMetaDataFiles(name, suffix, getMetaDataTypeFilter(unit));
       switch (files.size())
       {
          case 0 :
@@ -320,7 +339,7 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
             VirtualFile file = getMetadataFile(vfsDeploymentUnit, matchFileToClass(unit, name), name, false);
             if (file == null)
             {
-               List<VirtualFile> matched = vfsDeploymentUnit.getMetaDataFiles(name, suffix);
+               List<VirtualFile> matched = vfsDeploymentUnit.getMetaDataFiles(name, suffix, getMetaDataTypeFilter(unit));
                if (matched != null && matched.isEmpty() == false)
                   files.addAll(matched);
                else
@@ -431,5 +450,15 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
    public void setAllowMultipleFiles(boolean allowMultipleFiles)
    {
       this.allowMultipleFiles = allowMultipleFiles;
+   }
+
+   /**
+    * Set metadata type filter.
+    *
+    * @param filter the metadata type filter
+    */
+   public void setFilter(MetaDataTypeFilter filter)
+   {
+      this.filter = filter;
    }
 }

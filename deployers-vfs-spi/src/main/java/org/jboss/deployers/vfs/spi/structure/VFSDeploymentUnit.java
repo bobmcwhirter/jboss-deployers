@@ -23,6 +23,7 @@ package org.jboss.deployers.vfs.spi.structure;
 
 import java.util.List;
 
+import org.jboss.deployers.spi.structure.MetaDataTypeFilter;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.virtual.VirtualFile;
 import org.jboss.virtual.VirtualFileFilter;
@@ -47,6 +48,17 @@ public interface VFSDeploymentUnit extends DeploymentUnit
    VirtualFile getMetaDataFile(String name);
    
    /**
+    * Gets a metadata file. This is a file located under the deployment metadata
+    * context(s).
+    *
+    * @param name the name to exactly match
+    * @param filter the metadata type filter
+    * @return the virtual file or null if not found
+    * @throws IllegalArgumentException for a null name
+    */
+   VirtualFile getMetaDataFile(String name, MetaDataTypeFilter filter);
+
+   /**
     * Gets the metadata files for this deployment unit
     * 
     * @param name the name to exactly match
@@ -55,7 +67,18 @@ public interface VFSDeploymentUnit extends DeploymentUnit
     * @throws IllegalArgumentException if both the name and suffix are null
     */
    List<VirtualFile> getMetaDataFiles(String name, String suffix);
-   
+
+   /**
+    * Gets the metadata files for this deployment unit
+    *
+    * @param name the name to exactly match
+    * @param suffix the suffix to partially match
+    * @param filter the metadata type filter
+    * @return the virtual files that match
+    * @throws IllegalArgumentException if both the name and suffix are null
+    */
+   List<VirtualFile> getMetaDataFiles(String name, String suffix, MetaDataTypeFilter filter);
+
    /**
     * Gets the metadata files for this deployment unit
     *
@@ -64,6 +87,16 @@ public interface VFSDeploymentUnit extends DeploymentUnit
     * @throws IllegalArgumentException if both the name and suffix are null
     */
    List<VirtualFile> getMetaDataFiles(VirtualFileFilter filter);
+
+   /**
+    * Gets the metadata files for this deployment unit
+    *
+    * @param filter the file filter
+    * @param mdtf the metadata type filter
+    * @return the virtual files that match
+    * @throws IllegalArgumentException if both the name and suffix are null
+    */
+   List<VirtualFile> getMetaDataFiles(VirtualFileFilter filter, MetaDataTypeFilter mdtf);
    
    /**
     * Prepend metadata file locations.

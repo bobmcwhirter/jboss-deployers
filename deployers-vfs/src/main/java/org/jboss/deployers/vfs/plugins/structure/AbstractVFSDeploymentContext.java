@@ -33,6 +33,7 @@ import java.util.Map;
 
 import org.jboss.deployers.spi.structure.MetaDataEntry;
 import org.jboss.deployers.spi.structure.MetaDataType;
+import org.jboss.deployers.spi.structure.MetaDataTypeFilter;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.structure.spi.helpers.AbstractDeploymentContext;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
@@ -161,6 +162,14 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
 
    public List<VirtualFile> getMetaDataLocations()
    {
+      return getMetaDataLocations(MetaDataTypeFilter.DEFAULT);
+   }
+
+   public List<VirtualFile> getMetaDataLocations(MetaDataTypeFilter filter)
+   {
+      if (filter == null)
+         throw new IllegalArgumentException("Null filter");
+
       if (metaDataLocations == null || metaDataLocations.isEmpty())
       {
          return Collections.emptyList();
@@ -170,8 +179,11 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
          List<VirtualFile> result = new ArrayList<VirtualFile>();
          for(Map.Entry<VirtualFile, MetaDataType> entry : metaDataLocations.entrySet())
          {
-            VirtualFile location = entry.getKey();
-            result.add(location);
+            if (filter.accepts(entry.getValue()))
+            {
+               VirtualFile location = entry.getKey();
+               result.add(location);
+            }
          }
          return result;
       }
@@ -201,8 +213,15 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
 
    public VirtualFile getMetaDataFile(String name)
    {
+      return getMetaDataFile(name, MetaDataTypeFilter.DEFAULT);
+   }
+
+   public VirtualFile getMetaDataFile(String name, MetaDataTypeFilter filter)
+   {
       if (name == null)
          throw new IllegalArgumentException("Null name");
+      if (filter == null)
+         throw new IllegalArgumentException("Null filter");
       try
       {
          // There isn't a metadata locations so let's see whether the root matches.
@@ -220,7 +239,7 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
             return null;
          }
          // Look in the meta data locations
-         return searchMetaDataLocations(name);
+         return searchMetaDataLocations(name, filter);
       }
       catch (Exception e)
       {
@@ -239,24 +258,40 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
     */
    protected VirtualFile searchMetaDataLocations(String name)
    {
+      return searchMetaDataLocations(name, MetaDataTypeFilter.DEFAULT);
+   }
+
+   /**
+    * Search the metadata locations.
+    * In this impl the first one matching is returned.
+    *
+    * @param name the file name to find
+    * @param filter the metadata type filter
+    * @return found file or null if not found
+    */
+   protected VirtualFile searchMetaDataLocations(String name, MetaDataTypeFilter filter)
+   {
       VirtualFile result = null;
       for(Map.Entry<VirtualFile, MetaDataType> entry : metaDataLocations.entrySet())
       {
-         VirtualFile location = entry.getKey();
-         try
+         if (filter.accepts(entry.getValue()))
          {
-            result = location.getChild(name);
-            if (result != null)
+            VirtualFile location = entry.getKey();
+            try
             {
-               if (log.isTraceEnabled())
-                  log.trace("Found " + name + " in " + location.getName());
-               deployed();
-               break;
+               result = location.getChild(name);
+               if (result != null)
+               {
+                  if (log.isTraceEnabled())
+                     log.trace("Found " + name + " in " + location.getName());
+                  deployed();
+                  break;
+               }
             }
-         }
-         catch (IOException e)
-         {
-            log.debug("Search exception invocation for metafile " + name + " in " + location.getName() + ", reason: " + e);
+            catch (IOException e)
+            {
+               log.debug("Search exception invocation for metafile " + name + " in " + location.getName() + ", reason: " + e);
+            }
          }
       }
       return result;
@@ -264,20 +299,30 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
 
    public List<VirtualFile> getMetaDataFiles(String name, String suffix)
    {
+      return getMetaDataFiles(name, suffix, MetaDataTypeFilter.DEFAULT);
+   }
+
+   public List<VirtualFile> getMetaDataFiles(String name, String suffix, MetaDataTypeFilter mdtf)
+   {
       if (name == null && suffix == null)
          throw new IllegalArgumentException("Null name and suffix");
 
       VirtualFileFilter filter = new MetaDataMatchFilter(name, suffix);
-      return getMetaDataFiles(filter);
+      return getMetaDataFiles(filter, mdtf);
    }
 
    public List<VirtualFile> getMetaDataFiles(VirtualFileFilter filter)
    {
-      if (filter == null)
+      return getMetaDataFiles(filter, MetaDataTypeFilter.DEFAULT);     
+   }
+
+   public List<VirtualFile> getMetaDataFiles(VirtualFileFilter filter, MetaDataTypeFilter mdtf)
+   {
+      if (filter == null || mdtf == null)
       {
          // we don't wanna guess what needs to be filtered
          // if all is what you want, use your own ALL filter
-         throw new IllegalArgumentException("Null filter");
+         throw new IllegalArgumentException("Null filter - VFS or MetaDataType: vfs=" + filter + ", mdt=" + mdtf);
       }
 
       try
@@ -301,14 +346,17 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
          List<VirtualFile> results = new ArrayList<VirtualFile>();
          for(Map.Entry<VirtualFile, MetaDataType> entry : metaDataLocations.entrySet())
          {
-            VirtualFile location = entry.getKey();
-            List<VirtualFile> result = location.getChildren(filter);
-            if (result != null && result.isEmpty() == false)
+            if (mdtf.accepts(entry.getValue()))
             {
-               if (log.isTraceEnabled())
-                  log.trace("Found results with " + filter + " in " + location.getName());
-               results.addAll(result);
-               deployed();
+               VirtualFile location = entry.getKey();
+               List<VirtualFile> result = location.getChildren(filter);
+               if (result != null && result.isEmpty() == false)
+               {
+                  if (log.isTraceEnabled())
+                     log.trace("Found results with " + filter + " in " + location.getName());
+                  results.addAll(result);
+                  deployed();
+               }
             }
          }
          return results;

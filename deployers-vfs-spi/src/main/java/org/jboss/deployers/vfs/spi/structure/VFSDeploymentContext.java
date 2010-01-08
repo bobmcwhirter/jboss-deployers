@@ -24,6 +24,7 @@ package org.jboss.deployers.vfs.spi.structure;
 import java.util.List;
 
 import org.jboss.deployers.spi.structure.MetaDataEntry;
+import org.jboss.deployers.spi.structure.MetaDataTypeFilter;
 import org.jboss.deployers.structure.spi.DeploymentContext;
 import org.jboss.virtual.VirtualFile;
 import org.jboss.virtual.VirtualFileFilter;
@@ -59,6 +60,14 @@ public interface VFSDeploymentContext extends DeploymentContext
    List<VirtualFile> getMetaDataLocations();
    
    /**
+    * Get the meta data locations
+    *
+    * @param filter the metadata type filter
+    * @return the meta data locations
+    */
+   List<VirtualFile> getMetaDataLocations(MetaDataTypeFilter filter);
+
+   /**
     * Set the meta data locations
     * 
     * @param locations the meta data location
@@ -66,8 +75,9 @@ public interface VFSDeploymentContext extends DeploymentContext
    void setMetaDataLocations(List<VirtualFile> locations);
    
    /**
-    * Gets a metadata file
-    * 
+    * Gets a metadata file. This is a file located under the deployment metadata
+    * context(s).
+    *
     * @param name the name to exactly match
     * @return the virtual file or null if not found
     * @throws IllegalArgumentException for a null name
@@ -75,8 +85,19 @@ public interface VFSDeploymentContext extends DeploymentContext
    VirtualFile getMetaDataFile(String name);
 
    /**
-    * Gets metadata files for this deployment
-    * 
+    * Gets a metadata file. This is a file located under the deployment metadata
+    * context(s).
+    *
+    * @param name the name to exactly match
+    * @param filter the metadata type filter
+    * @return the virtual file or null if not found
+    * @throws IllegalArgumentException for a null name
+    */
+   VirtualFile getMetaDataFile(String name, MetaDataTypeFilter filter);
+
+   /**
+    * Gets the metadata files for this deployment unit
+    *
     * @param name the name to exactly match
     * @param suffix the suffix to partially match
     * @return the virtual files that match
@@ -87,11 +108,32 @@ public interface VFSDeploymentContext extends DeploymentContext
    /**
     * Gets the metadata files for this deployment unit
     *
+    * @param name the name to exactly match
+    * @param suffix the suffix to partially match
+    * @param filter the metadata type filter
+    * @return the virtual files that match
+    * @throws IllegalArgumentException if both the name and suffix are null
+    */
+   List<VirtualFile> getMetaDataFiles(String name, String suffix, MetaDataTypeFilter filter);
+
+   /**
+    * Gets the metadata files for this deployment unit
+    *
     * @param filter the file filter
     * @return the virtual files that match
     * @throws IllegalArgumentException if both the name and suffix are null
     */
    List<VirtualFile> getMetaDataFiles(VirtualFileFilter filter);
+
+   /**
+    * Gets the metadata files for this deployment unit
+    *
+    * @param filter the file filter
+    * @param mdtf the metadata type filter
+    * @return the virtual files that match
+    * @throws IllegalArgumentException if both the name and suffix are null
+    */
+   List<VirtualFile> getMetaDataFiles(VirtualFileFilter filter, MetaDataTypeFilter mdtf);
 
    /**
     * Prepend metadata file locations.

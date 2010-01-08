@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.jboss.deployers.spi.DeploymentException;
+import org.jboss.deployers.spi.structure.MetaDataTypeFilter;
 import org.jboss.deployers.structure.spi.DeploymentContext;
 import org.jboss.deployers.vfs.plugins.structure.VFSStructuralDeployersImpl;
 import org.jboss.deployers.vfs.plugins.structure.VFSStructureBuilder;
@@ -159,8 +160,13 @@ public abstract class AbstractStructureTest extends BaseTestCase
    
    protected void assertMetaData(VFSDeploymentContext context, String metaDataPath) throws Exception
    {
+      assertMetaData(context, metaDataPath, MetaDataTypeFilter.DEFAULT);
+   }
+
+   protected void assertMetaData(VFSDeploymentContext context, String metaDataPath, MetaDataTypeFilter filter) throws Exception
+   {
       VirtualFile root = context.getRoot();
-      List<VirtualFile> metaDataLocation = context.getMetaDataLocations();
+      List<VirtualFile> metaDataLocation = context.getMetaDataLocations(filter);
       VirtualFile expected = root.findChild(metaDataPath);
       assertNotNull(metaDataLocation);
       assertEquals(1, metaDataLocation.size());
@@ -169,8 +175,13 @@ public abstract class AbstractStructureTest extends BaseTestCase
    
    protected void assertMetaDatas(VFSDeploymentContext context, String... metaDataPath) throws Exception
    {
+      assertMetaDatas(context, MetaDataTypeFilter.DEFAULT, metaDataPath);  
+   }
+
+   protected void assertMetaDatas(VFSDeploymentContext context, MetaDataTypeFilter filter, String... metaDataPath) throws Exception
+   {
       VirtualFile root = context.getRoot();
-      List<VirtualFile> metaDataLocations = context.getMetaDataLocations();
+      List<VirtualFile> metaDataLocations = context.getMetaDataLocations(filter);
       assertNotNull(metaDataLocations);
       int i = 0;
       for(String path : metaDataPath)

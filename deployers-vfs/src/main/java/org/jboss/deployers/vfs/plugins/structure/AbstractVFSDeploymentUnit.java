@@ -23,6 +23,7 @@ package org.jboss.deployers.vfs.plugins.structure;
 
 import java.util.List;
 
+import org.jboss.deployers.spi.structure.MetaDataTypeFilter;
 import org.jboss.deployers.structure.spi.helpers.AbstractDeploymentUnit;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentResourceLoader;
@@ -65,14 +66,29 @@ public class AbstractVFSDeploymentUnit extends AbstractDeploymentUnit implements
       return getDeploymentContext().getMetaDataFile(name);
    }
 
+   public VirtualFile getMetaDataFile(String name, MetaDataTypeFilter filter)
+   {
+      return getDeploymentContext().getMetaDataFile(name, filter);
+   }
+
    public List<VirtualFile> getMetaDataFiles(String name, String suffix)
    {
       return getDeploymentContext().getMetaDataFiles(name, suffix);
    }
 
+   public List<VirtualFile> getMetaDataFiles(String name, String suffix, MetaDataTypeFilter filter)
+   {
+      return getDeploymentContext().getMetaDataFiles(name, suffix, filter);
+   }
+
    public List<VirtualFile> getMetaDataFiles(VirtualFileFilter filter)
    {
       return getDeploymentContext().getMetaDataFiles(filter);
+   }
+
+   public List<VirtualFile> getMetaDataFiles(VirtualFileFilter filter, MetaDataTypeFilter mdtf)
+   {
+      return getDeploymentContext().getMetaDataFiles(filter, mdtf);
    }
 
    public void prependMetaDataLocation(VirtualFile... locations)
