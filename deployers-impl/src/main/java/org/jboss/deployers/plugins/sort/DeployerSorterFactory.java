@@ -37,6 +37,6 @@ public class DeployerSorterFactory
     */
    public static DeployerSorter newSorter()
    {
-      return new TopologicalOrderingDeployerSorter();      
+      return new DependenciesTopologicalDeployerSorter();      
    }
 }

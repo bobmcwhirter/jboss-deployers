@@ -24,6 +24,7 @@ package org.jboss.deployers.plugins.sort;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -35,18 +36,17 @@ import org.jboss.deployers.spi.deployer.Deployer;
 
 /**
  * Implements <a href="http://en.wikipedia.org/wiki/Topological_sorting">topological sorting</a> for acyclic graphs.
- * The algorithm complexity is O(m+n), where <b>m</b> = count of vertices and <b>n</b> = count of edges in general.
- * However this complexity isn't true for this algorithm implementation, because there's backward compatibility
+ * The algorithm complexity is <b>O(m+n)</b>, where <b>m</b> is count of vertices and <b>n</b> is count of edges.
+ * However this complexity isn't true for this algorithm implementation because there's backward compatibility
  * requirement that deployers have to be ordered by their relative number or name if they're on the same processing level.
- * <b>IOW this backward compatible sorting requirement breaks linear algorithm complexity :(</b>.
+ * <b>IOW this backward compatible sorting requirement violates algorithm linear complexity</b>, see:
+ * <a href="https://jira.jboss.org/jira/browse/JBDEPLOY-233">JBDEPLOY-233</a>.
  *
  * @author <a href="mailto:ropalka@redhat.com">Richard Opalka</a>
  */
-public class TopologicalOrderingDeployerSorter implements DeployerSorter
+public class DependenciesTopologicalDeployerSorter implements DeployerSorter
 {
-   /**
-    * @see {@link DeployerSorter#sortDeployers(List, Deployer)}
-    */
+
    public List<Deployer> sortDeployers(List<Deployer> registeredDeployers, Deployer newDeployer)
    {
       return this.createOrientedGraph(registeredDeployers, newDeployer).sort();
@@ -148,7 +148,7 @@ public class TopologicalOrderingDeployerSorter implements DeployerSorter
          if (this.vertices.size() > 0)
          {
             // if graph has edges then graph has at least one cycle
-            throw new IllegalStateException("Cycle detected");
+            throw new IllegalStateException("Cycle detected for deployers: " + this.vertices);
          }
          else
          {
@@ -188,8 +188,8 @@ public class TopologicalOrderingDeployerSorter implements DeployerSorter
 
       private void createEdges()
       {
-         boolean hasModifiers;
          Dependency dependency;
+         boolean hasModifiers;
 
          for (final String dependencyName : this.dependencies.keySet())
          {
@@ -220,14 +220,18 @@ public class TopologicalOrderingDeployerSorter implements DeployerSorter
 
       private List<Vertex> getRoots()
       {
-         final LinkedList<Vertex> retVal = new LinkedList<Vertex>();
+         final List<Vertex> retVal = new LinkedList<Vertex>();
 
-         for (final Vertex current : this.vertices)
+         Vertex current;
+         for (final Iterator<Vertex> i = this.vertices.iterator(); i.hasNext(); )
+         {
+            current = i.next();
             if (!current.hasProducers())
+            {
                retVal.add(current);
-
-         for (final Vertex root : retVal)
-            this.remove(root);
+               i.remove();
+            }
+         }
 
          return retVal;
       }
@@ -242,15 +246,12 @@ public class TopologicalOrderingDeployerSorter implements DeployerSorter
          // Wrapped deployer
          private Deployer deployer;
          // Incoming edges
-         private int inDegree = 0;
+         private int inDegree;
          // Outgoing edges
          private List<Vertex> consumers = new LinkedList<Vertex>();
 
          public Vertex(final Deployer deployer)
          {
-            if (deployer == null)
-               throw new IllegalArgumentException();
-
             this.deployer = deployer;
          }
 
@@ -264,14 +265,14 @@ public class TopologicalOrderingDeployerSorter implements DeployerSorter
             this.inDegree--;
          }
 
-         public void addConsumer(final Vertex v)
-         {
-            this.consumers.add(v);
-         }
-
          public boolean hasProducers()
          {
             return this.inDegree > 0;
+         }
+
+         public void addConsumer(final Vertex v)
+         {
+            this.consumers.add(v);
          }
 
          public boolean hasConsumers()
@@ -307,7 +308,7 @@ public class TopologicalOrderingDeployerSorter implements DeployerSorter
          // deployers modifying this dependency
          private List<Vertex> modifiers = new LinkedList<Vertex>();
          // deployers consuming this dependency
-         private List<Vertex> consumers= new LinkedList<Vertex>();
+         private List<Vertex> consumers = new LinkedList<Vertex>();
       }
 
    }
