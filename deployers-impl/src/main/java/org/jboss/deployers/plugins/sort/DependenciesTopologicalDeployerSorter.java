@@ -148,7 +148,7 @@ public class DependenciesTopologicalDeployerSorter implements DeployerSorter
          if (this.vertices.size() > 0)
          {
             // if graph has edges then graph has at least one cycle
-            throw new IllegalStateException("Cycle detected for deployers: " + this.vertices);
+            throw new IllegalStateException("Cycle detected in subgraph: " + this.vertices);
          }
          else
          {
