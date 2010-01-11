@@ -293,6 +293,32 @@
       <groupId>org.jboss.classpool</groupId>
       <artifactId>jboss-classpool-jbosscl</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.vfs</groupId>
+          <artifactId>jboss-vfs</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jboss.man</groupId>
+          <artifactId>jboss-metatype</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jboss.cl</groupId>
+          <artifactId>jboss-classloading</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jboss.deployers</groupId>
+          <artifactId>jboss-deployers-impl</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jboss.deployers</groupId>
+          <artifactId>jboss-deployers-vfs-spi</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jboss.deployers</groupId>
+          <artifactId>jboss-deployers-vfs</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 </project>
