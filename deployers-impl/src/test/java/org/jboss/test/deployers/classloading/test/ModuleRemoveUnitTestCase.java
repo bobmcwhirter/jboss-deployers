@@ -124,6 +124,7 @@ public class ModuleRemoveUnitTestCase extends ClassLoaderDependenciesTest
 
    private class RenamingDeploymentContext extends AbstractDeploymentContext
    {
+      @SuppressWarnings("unused")
       public RenamingDeploymentContext()
       {
       }
@@ -142,6 +143,7 @@ public class ModuleRemoveUnitTestCase extends ClassLoaderDependenciesTest
 
    private class RenamingDeploymentUnit extends AbstractDeploymentUnit
    {
+      @SuppressWarnings("unused")
       public RenamingDeploymentUnit()
       {
       }

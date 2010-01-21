@@ -22,7 +22,6 @@
 package org.jboss.test.deployers.asynchronous.support;
 
 import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 
 import org.jboss.dependency.plugins.AbstractControllerContext;
 import org.jboss.dependency.plugins.AbstractControllerContextActions;

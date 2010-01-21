@@ -31,7 +31,7 @@ public class KernelControllerContextComparator implements Comparator<BeanMetaDat
    /**
     * Compares two KernelControllerContextCreators' relative orders
     * @param o1 The first KernelContextCreator
-    * @param o1 The second KernelContextCreator
+    * @param o2 The second KernelContextCreator
     * @return An integer as per the {@link Comparator#compare(Object, Object)} contract
     */
    public int compare(BeanMetaDataDeployerPlugin o1, BeanMetaDataDeployerPlugin o2)

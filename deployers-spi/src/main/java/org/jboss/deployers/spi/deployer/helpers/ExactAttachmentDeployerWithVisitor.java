@@ -41,6 +41,7 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
  * {@link #setStage(org.jboss.deployers.spi.deployer.DeploymentStage)} during the construction of the 
  * deployer
  * 
+ * @param <T> the attachement type
  * @author Jaikiran Pai
  * @author Ales Justin
  * @version $Revision: $

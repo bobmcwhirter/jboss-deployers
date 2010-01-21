@@ -77,7 +77,6 @@ public abstract class VFSClassLoaderDependenciesTest extends BaseDeployersVFSTes
    public static final List<String> XBAA = makeList(NameB, NameA, NameA);
    public static final List<String> XBABA = makeList(NameB, NameA, NameB, NameA);
 
-   @SuppressWarnings("unchecked")
    protected static <T> List<T> makeList(T... objects)
    {
       List<T> result = new ArrayList<T>();
@@ -147,7 +146,7 @@ public abstract class VFSClassLoaderDependenciesTest extends BaseDeployersVFSTes
       }
       catch (Exception e)
       {
-         checkThrowable(IllegalStateException.class, e);
+         checkThrowable(ClassNotFoundException.class, e);
       }
    }
 

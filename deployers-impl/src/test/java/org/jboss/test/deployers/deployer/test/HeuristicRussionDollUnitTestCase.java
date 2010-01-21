@@ -113,7 +113,6 @@ public class HeuristicRussionDollUnitTestCase extends AbstractDeployerTest
    private static TestComponentMetaDataContainer child1md = new TestComponentMetaDataContainer(child1md1, child1md2);
    private static TestComponentMetaDataContainer child2md = new TestComponentMetaDataContainer(child2md1, child2md2);
    
-   @SuppressWarnings("unchecked")
    private static <T> List<T> makeList(T... objects)
    {
       List<T> result = new ArrayList<T>();

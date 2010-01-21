@@ -21,9 +21,6 @@
 */ 
 package org.jboss.test.deployers.vfs.deployer.bean.support;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.jboss.beans.info.spi.BeanInfo;
 import org.jboss.beans.metadata.spi.BeanMetaData;
 import org.jboss.dependency.spi.Controller;

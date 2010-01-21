@@ -1237,7 +1237,7 @@ public abstract class AbstractDeployerFlowUnitTest extends AbstractDeployerTest
       main.process();
    }
    
-   /**
+   /*
     * Tests algorithm performance on complete oriented graph.
     * All dependencies are specified using inputs/outputs.
     */
@@ -1293,7 +1293,7 @@ public abstract class AbstractDeployerFlowUnitTest extends AbstractDeployerTest
       }
    }
 
-   /**
+   /*
     * Tests algorithm performance on complete oriented graph
     * where vertex in this graph is represented as set of deployers.
     * Deployers that are in specific vertex are ordered using deployer ordering feature. 

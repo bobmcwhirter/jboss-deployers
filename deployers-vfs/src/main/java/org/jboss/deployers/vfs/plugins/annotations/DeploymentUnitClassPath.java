@@ -32,6 +32,7 @@ import javassist.ClassPath;
 import javassist.NotFoundException;
 import org.jboss.classloader.plugins.ClassLoaderUtils;
 import org.jboss.classloader.spi.filter.ClassFilter;
+import org.jboss.classloader.spi.filter.ClassFilterUtils;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.util.collection.SoftValueHashMap;
 import org.jboss.virtual.VirtualFile;
@@ -47,7 +48,7 @@ public class DeploymentUnitClassPath implements ClassPath
    @SuppressWarnings("unchecked")
    private Map<String, VirtualFile> cache = Collections.synchronizedMap(new SoftValueHashMap());
    /** By default exclude jdk classes */
-   private ClassFilter excludeFilter = ClassFilter.JAVA_ONLY;
+   private ClassFilter excludeFilter = ClassFilterUtils.JAVA_ONLY;
 
    public DeploymentUnitClassPath(VFSDeploymentUnit unit)
    {

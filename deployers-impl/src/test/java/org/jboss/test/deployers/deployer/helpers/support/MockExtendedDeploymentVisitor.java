@@ -30,10 +30,10 @@ import org.jboss.logging.Logger;
 /**
  * MockExtendedDeploymentVisitor
  * 
- * A mock implementation of {@link ExtendedDeploymentVisitor}, to be used in testing
+ * A mock implementation of {@link DeploymentVisitor}, to be used in testing
  * the {@link org.jboss.deployers.spi.deployer.helpers.ExactAttachmentDeployerWithVisitor}
  * 
- *
+ * @param <T> the type
  * @author Jaikiran Pai
  * @version $Revision: $
  */

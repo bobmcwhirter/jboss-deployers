@@ -26,6 +26,9 @@ package org.jboss.test.deployers.exceptions.support;
  */
 public class ComplexException extends SimpleException
 {
+   /** The serialVersionUID */
+   private static final long serialVersionUID = 1L;
+
    public ComplexException(String message, Throwable cause)
    {
       super(message, cause);

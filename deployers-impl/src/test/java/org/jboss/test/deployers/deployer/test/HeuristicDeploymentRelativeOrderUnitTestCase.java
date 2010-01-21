@@ -59,7 +59,6 @@ public class HeuristicDeploymentRelativeOrderUnitTestCase extends AbstractDeploy
    private static List<String> C2C1P = makeList(C2, C1, P); 
    private static List<String> C1C2P = makeList(C1, C2, P); 
    
-   @SuppressWarnings("unchecked")
    private static <T> List<T> makeList(T... objects)
    {
       List<T> result = new ArrayList<T>();

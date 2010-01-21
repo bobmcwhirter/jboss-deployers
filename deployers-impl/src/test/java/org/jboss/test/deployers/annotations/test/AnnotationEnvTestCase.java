@@ -133,7 +133,6 @@ public class AnnotationEnvTestCase extends AnnotationsTest
       }
    }
 
-   @SuppressWarnings("unchecked")
    public void testSimpleClassUsage() throws Exception
    {
       DeployerClient deployer = getMainDeployer();

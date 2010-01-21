@@ -70,7 +70,6 @@ public class DeployerDependencyUnitTestCase extends AbstractDeployerTest
    public static List<String> CAB = makeList("A/C", "A", "B");
    public static List<String> BCA = makeList("B", "A/C", "A");
    
-   @SuppressWarnings("unchecked")
    private static <T> List<T> makeList(T... objects)
    {
       List<T> result = new ArrayList<T>();

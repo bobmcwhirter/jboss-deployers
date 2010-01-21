@@ -33,7 +33,7 @@ import org.jboss.deployers.spi.structure.MetaDataType;
  */
 public class MetaDataEntryImpl implements MetaDataEntry, Serializable
 {
-   private static long serialVersionUID = 1l;
+   private static final long serialVersionUID = 1l;
    private String path;
    private MetaDataType type;
 

@@ -59,7 +59,7 @@ public class ExactAttachmentDeployerWithVisitorTestCase extends AbstractDeployer
    }
 
    /**
-    * Tests that the {@link org.jboss.deployers.spi.deployer.helpers.ExactAttachmentDeployerWithVisitor} works correctly with an {@link ExtendedDeploymentVisitor}
+    * Tests that the {@link org.jboss.deployers.spi.deployer.helpers.ExactAttachmentDeployerWithVisitor} works correctly with an {@link DeploymentVisitor}
     * when the unit being processed contains the expected attachment
     * 
     * @throws Exception for any error

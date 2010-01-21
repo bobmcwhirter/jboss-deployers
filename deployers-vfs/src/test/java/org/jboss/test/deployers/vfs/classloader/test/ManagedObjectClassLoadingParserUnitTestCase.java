@@ -27,6 +27,7 @@ import java.util.Set;
 
 import junit.framework.Test;
 
+import org.jboss.classloader.spi.ShutdownPolicy;
 import org.jboss.classloading.spi.metadata.CapabilitiesMetaData;
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
 import org.jboss.classloading.spi.metadata.ExportAll;
@@ -93,7 +94,7 @@ public class ManagedObjectClassLoadingParserUnitTestCase extends BootstrapDeploy
          assertNotNull(mo);
          getLog().debug("ManagedObject: " + mo + " properties=" + mo.getProperties());
 
-         List<String> expectedProperties = Arrays.asList("name", "version", "domain", "parentDomain", "topLevelClassLoader", "exportAll", "included", "excluded", "excludedExport", "importAll", "parentFirst", "cache", "blackList", "capabilities", "requirements");
+         List<String> expectedProperties = Arrays.asList("name", "version", "domain", "parentDomain", "topLevelClassLoader", "exportAll", "shutdown", "included", "excluded", "excludedExport", "importAll", "parentFirst", "cache", "blackList", "capabilities", "requirements");
          Set<String> actualProperties = mo.getPropertyNames();
          for (String expected : expectedProperties)
          {
@@ -112,6 +113,7 @@ public class ManagedObjectClassLoadingParserUnitTestCase extends BootstrapDeploy
          assertManagedProperty(mo, "parentDomain", String.class, null);
          assertManagedProperty(mo, "topLevelClassLoader", boolean.class, false);
          assertManagedProperty(mo, "exportAll", ExportAll.class, null);
+         assertManagedProperty(mo, "shutdown", ShutdownPolicy.class, null);
          assertManagedProperty(mo, "included", String.class, null);
          assertManagedProperty(mo, "excluded", String.class, null);
          assertManagedProperty(mo, "excludedExport", String.class, null);

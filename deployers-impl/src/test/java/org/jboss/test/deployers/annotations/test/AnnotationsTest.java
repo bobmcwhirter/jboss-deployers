@@ -29,6 +29,7 @@ import org.jboss.classloader.plugins.filter.CombiningClassFilter;
 import org.jboss.classloader.spi.ClassLoaderSystem;
 import org.jboss.classloader.spi.ParentPolicy;
 import org.jboss.classloader.spi.filter.ClassFilter;
+import org.jboss.classloader.spi.filter.ClassFilterUtils;
 import org.jboss.classloader.spi.filter.PackageClassFilter;
 import org.jboss.classloading.spi.dependency.ClassLoading;
 import org.jboss.classloading.spi.dependency.policy.mock.MockClassLoadingMetaData;
@@ -168,8 +169,8 @@ public abstract class AnnotationsTest extends AbstractDeployerTest
       ClassLoaderSystem system = new InterceptionClassLoaderSystem();
       // we need to see javassist
       ClassFilter javassistFilter = new PackageClassFilter(new String[]{"org.jboss.reflect.plugins.javassist"});
-      ClassFilter before = new CombiningClassFilter(false, new ClassFilter[]{ClassFilter.JAVA_ONLY, javassistFilter});
-      ParentPolicy parentPolicy = new ParentPolicy(before, ClassFilter.NOTHING);
+      ClassFilter before = new CombiningClassFilter(false, new ClassFilter[]{ClassFilterUtils.JAVA_ONLY, javassistFilter});
+      ParentPolicy parentPolicy = new ParentPolicy(before, ClassFilterUtils.NOTHING);
       system.getDefaultDomain().setParentPolicy(parentPolicy);
 
       deployer1 = new MockClassLoaderDescribeDeployer();

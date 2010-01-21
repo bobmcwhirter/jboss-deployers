@@ -31,6 +31,7 @@ import org.jboss.classloader.plugins.system.DefaultClassLoaderSystem;
 import org.jboss.classloader.spi.ClassLoaderSystem;
 import org.jboss.classloader.spi.ParentPolicy;
 import org.jboss.classloader.spi.filter.ClassFilter;
+import org.jboss.classloader.spi.filter.ClassFilterUtils;
 import org.jboss.classloader.spi.filter.PackageClassFilter;
 import org.jboss.classloading.spi.dependency.ClassLoading;
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
@@ -94,8 +95,8 @@ public class BeanScanningUnitTestCase extends AbstractDeployerUnitTest
       ClassLoaderSystem system = new DefaultClassLoaderSystem();
       // allow MC annotations, so that both, deployer and tester see the same
       ClassFilter mcAnnFilter = new PackageClassFilter(new String[]{"org.jboss.beans.metadata.api.annotations"});
-      ClassFilter filter = new CombiningClassFilter(false, new ClassFilter[]{ClassFilter.JAVA_ONLY, mcAnnFilter});
-      ParentPolicy policy = new ParentPolicy(filter, ClassFilter.NOTHING);
+      ClassFilter filter = new CombiningClassFilter(false, new ClassFilter[]{ClassFilterUtils.JAVA_ONLY, mcAnnFilter});
+      ParentPolicy policy = new ParentPolicy(filter, ClassFilterUtils.NOTHING);
       system.getDefaultDomain().setParentPolicy(policy);
 
       AbstractLevelClassLoaderSystemDeployer clsd = new AbstractLevelClassLoaderSystemDeployer();

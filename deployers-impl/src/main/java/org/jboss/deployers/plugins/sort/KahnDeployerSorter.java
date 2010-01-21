@@ -254,6 +254,11 @@ public class KahnDeployerSorter implements DeployerSorter
 
    /**
     * Break the cyclic graph by processing transient deployers. Basically choosing one edge which we want removed.
+    * 
+    * @param s the deployers
+    * @param inputCache the input cache
+    * @param outputCache the output cache
+    * @param edgeCache the edge cache
     */
    public void processTransientDeployers(List<Deployer> s, Map<String, Collection<Deployer>> inputCache, Map<String, Collection<Deployer>> outputCache, Map<Deployer, Set<Edge>> edgeCache)
    {

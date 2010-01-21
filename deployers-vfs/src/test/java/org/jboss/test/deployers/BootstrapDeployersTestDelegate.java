@@ -31,6 +31,7 @@ import org.jboss.classloader.spi.ClassLoaderDomain;
 import org.jboss.classloader.spi.ClassLoaderSystem;
 import org.jboss.classloader.spi.ParentPolicy;
 import org.jboss.classloader.spi.filter.ClassFilter;
+import org.jboss.classloader.spi.filter.ClassFilterUtils;
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaData10;
 import org.jboss.classloading.spi.vfs.metadata.VFSClassLoaderFactory10;
 import org.jboss.dependency.spi.ControllerState;
@@ -63,6 +64,9 @@ public class BootstrapDeployersTestDelegate extends MicrocontainerTestDelegate
       // TODO add a negating class filter to jboss-classloader
       ClassFilter classFilter = new ClassFilter()
       {
+         /** The serialVersionUID */
+         private static final long serialVersionUID = 1L;
+         
          String packageName = BootstrapDeployersTest.class.getPackage().getName();
          String packagePath = ClassLoaderUtils.packageNameToPath(BootstrapDeployersTest.class.getName());
          ClassFilter patternFilter = new PatternClassFilter(
@@ -91,7 +95,7 @@ public class BootstrapDeployersTestDelegate extends MicrocontainerTestDelegate
          }
       };
       
-      parentPolicy = new ParentPolicy(classFilter, ClassFilter.NOTHING, "BEFORE");
+      parentPolicy = new ParentPolicy(classFilter, ClassFilterUtils.NOTHING, "BEFORE");
    }
    
    public BootstrapDeployersTestDelegate(Class<?> clazz) throws Exception

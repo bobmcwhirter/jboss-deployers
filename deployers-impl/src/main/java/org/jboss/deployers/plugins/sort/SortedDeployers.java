@@ -117,7 +117,7 @@ public class SortedDeployers
       }
 
       insertAfterInputs(n);
-      IdentityHashMap visited = new IdentityHashMap();
+      IdentityHashMap<Entry, Entry> visited = new IdentityHashMap<Entry, Entry>();
       traverseOutputs(n, visited);
       relativeOrdering();
 
@@ -177,7 +177,7 @@ public class SortedDeployers
       return deployers;
    }
 
-   private void traverseOutputs(Entry n, IdentityHashMap visited)
+   private void traverseOutputs(Entry n, IdentityHashMap<Entry, Entry> visited)
    {
       if (n.getOutputs() == null) return;
       if (visited.containsKey(n))

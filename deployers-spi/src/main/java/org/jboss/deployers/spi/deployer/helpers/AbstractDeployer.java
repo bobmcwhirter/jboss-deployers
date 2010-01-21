@@ -176,7 +176,6 @@ public abstract class AbstractDeployer implements Deployer
     * 
     * @param input the input
     */
-   @SuppressWarnings("unchecked")
    public void setInput(Class<?> input)
    {
       addInput(input);
@@ -193,7 +192,6 @@ public abstract class AbstractDeployer implements Deployer
     * 
     * @param output the outputs
     */
-   @SuppressWarnings("unchecked")
    public void setOutput(Class<?> output)
    {
       addOutput(output);

@@ -29,6 +29,9 @@ import java.util.HashSet;
  */
 public class SimpleException extends Exception
 {
+   /** The serialVersionUID */
+   private static final long serialVersionUID = 1L;
+   
    public static final Set<Object> failures = new HashSet<Object>();
    
    public SimpleException(String message, Throwable cause)

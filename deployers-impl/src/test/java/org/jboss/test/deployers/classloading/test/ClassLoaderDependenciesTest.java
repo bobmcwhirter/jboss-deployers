@@ -72,7 +72,6 @@ public abstract class ClassLoaderDependenciesTest extends AbstractDeployerTest
    public static final List<String> BAA = makeList(NameB, NameA, NameA);
    public static final List<String> BABA = makeList(NameB, NameA, NameB, NameA);
 
-   @SuppressWarnings("unchecked")
    protected static <T> List<T> makeList(T... objects)
    {
       List<T> result = new ArrayList<T>();
@@ -124,7 +123,7 @@ public abstract class ClassLoaderDependenciesTest extends AbstractDeployerTest
       }
       catch (Exception e)
       {
-         checkThrowable(IllegalStateException.class, e);
+         checkThrowable(ClassNotFoundException.class, e);
       }
    }
 
