@@ -550,7 +550,7 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
    public void setClassLoader(ClassLoader classLoader)
    {
       this.classLoader = classLoader;
-      if (classLoader != null)
+      if (classLoader != null && log.isTraceEnabled())
          log.trace("ClassLoader for " + name + " is " + classLoader);
    }
 
@@ -723,7 +723,8 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
       components.add(component);
       if (server != null)
          registerMBeans(component, true, true);
-      log.debug("Added component " + component.getName() + " to " + getName());
+      if (log.isTraceEnabled())
+         log.trace("Added component " + component.getName() + " to " + getName());
    }
 
    public boolean removeComponent(DeploymentContext component)
@@ -738,8 +739,8 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
          log.warn("Removing component " + name + " which still has components " + componentComponents);
       boolean result = components.remove(component);
       component.cleanup();
-      if (result)
-         log.debug("Removed component " + component.getName() + " from " + getName());
+      if (result && log.isTraceEnabled())
+         log.trace("Removed component " + component.getName() + " from " + getName());
       return result;
    }
 
@@ -1067,7 +1068,8 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
          }
          catch (Exception e)
          {
-            log.trace("Unable to unregister deployment mbean " + context.getName(), e);
+            if (log.isTraceEnabled())
+               log.trace("Unable to unregister deployment mbean " + context.getName(), e);
          }
       }
       if (unregisterSubDeployments)

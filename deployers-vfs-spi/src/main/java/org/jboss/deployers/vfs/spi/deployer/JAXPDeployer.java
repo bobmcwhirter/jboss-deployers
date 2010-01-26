@@ -203,7 +203,8 @@ public abstract class JAXPDeployer<T> extends UnmarshallerFactoryDeployer<T, Boo
       if (file == null)
          throw new IllegalArgumentException("Null file");
 
-      log.debug("Parsing: " + file.getName());
+      if (log.isDebugEnabled())
+         log.debug("Parsing: " + file.getName());
       
       InputSource source = new VFSInputSource(file);
       DocumentBuilderFactory factory = getDocumentBuilderFactory();

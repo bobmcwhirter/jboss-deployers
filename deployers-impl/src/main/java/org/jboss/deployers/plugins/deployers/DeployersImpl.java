@@ -362,7 +362,8 @@ public class DeployersImpl implements Deployers, ControllerContextActions, Deplo
 
       String stageName = stage.getName();
       deployersByStage.removeDeployer(stageName, wrapper);
-      log.debug("Removed deployer " + deployer + " from stage " + stageName);
+      if (isTraceAddDeployer())
+         log.trace("Removed deployer " + deployer + " from stage " + stageName);
    }
 
    /**
@@ -408,7 +409,8 @@ public class DeployersImpl implements Deployers, ControllerContextActions, Deplo
 
       controller.addState(ControllerState.newState(stageName), preceeds);
       stages.put(stageName, stage);
-      log.debug("Added stage " + stageName + " before " + preceeds);
+      if (log.isTraceEnabled())
+         log.trace("Added stage " + stageName + " before " + preceeds);
    }
 
    /**
@@ -504,7 +506,8 @@ public class DeployersImpl implements Deployers, ControllerContextActions, Deplo
    public void setMgtObjectCreator(ManagedObjectCreator mgtObjectCreator)
    {
       this.mgtObjectCreator = mgtObjectCreator;
-      log.debug("setMgtObjectCreator, " + mgtObjectCreator);
+      if (log.isTraceEnabled())
+         log.trace("setMgtObjectCreator, " + mgtObjectCreator);
    }
 
    /**
@@ -782,11 +785,13 @@ public class DeployersImpl implements Deployers, ControllerContextActions, Deplo
             DeploymentContext context = undeploy.get(i);
             if (DeploymentState.ERROR.equals(context.getState()) == false)
                context.setState(DeploymentState.UNDEPLOYING);
-            log.debug("Undeploying " + context.getName());
+            if (log.isDebugEnabled())
+               log.debug("Undeploying " + context.getName());
             DeploymentControllerContext deploymentControllerContext = context.getTransientAttachments().getAttachment(ControllerContext.class.getName(), DeploymentControllerContext.class);
             if (deploymentControllerContext == null)
             {
-               log.debug("DeploymentContext has no DeploymentControllerContext during undeploy request, ignoring: " + context);
+               if (log.isDebugEnabled())
+                  log.debug("DeploymentContext has no DeploymentControllerContext during undeploy request, ignoring: " + context);
             }
             else
             {
@@ -839,7 +844,8 @@ public class DeployersImpl implements Deployers, ControllerContextActions, Deplo
                unregisterMBean(context);
                removeClassLoader(context);
                cleanup(context);
-               log.debug("Fully Undeployed " + context.getName());
+               if (log.isDebugEnabled())
+                  log.debug("Fully Undeployed " + context.getName());
             }
             catch (Throwable t)
             {
@@ -864,7 +870,8 @@ public class DeployersImpl implements Deployers, ControllerContextActions, Deplo
             {
                controller.install(deploymentControllerContext);
                context.setState(DeploymentState.DEPLOYING);
-               log.debug("Deploying " + context.getName());
+               if (log.isDebugEnabled())
+                  log.debug("Deploying " + context.getName());
                if (scopeBuilder != null)
                   context.getTransientAttachments().addAttachment(ScopeBuilder.class, scopeBuilder);
                if (repository != null)
@@ -1348,7 +1355,8 @@ public class DeployersImpl implements Deployers, ControllerContextActions, Deplo
       {
          if (ControllerState.INSTALLED.equals(toState) && DeploymentState.DEPLOYING.equals(deploymentContext.getState()))
          {
-            log.debug("Fully Deployed " + context.getName());
+            if (log.isDebugEnabled())
+               log.debug("Fully Deployed " + context.getName());
             setState(deploymentContext, DeploymentState.DEPLOYED, null);
          }
       }
