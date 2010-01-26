@@ -113,7 +113,7 @@ public abstract class XSLDeployer<T> extends JAXPDeployer<T>
          StreamSource ss = new StreamSource(is);
          ss.setSystemId(xslPath);
          templates = tf.newTemplates(ss);
-         log.debug("Created templates: " + templates);
+         log.debugf("Created templates: %1s", templates);
       }
       finally
       {
@@ -155,7 +155,7 @@ public abstract class XSLDeployer<T> extends JAXPDeployer<T>
       
       document = (Document) r.getNode();
       String docStr = DOMWriter.printNode(document, true);
-      log.debug("Transformed " + file.getPathName() + " into " + docStr);
+      log.debugf("Transformed %1s into %2s", file.getPathName(), docStr);
       
       return parse(unit, file, document);
    }

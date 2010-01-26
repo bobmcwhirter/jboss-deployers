@@ -143,7 +143,7 @@ public class AbstractCandidateStructureVisitor extends AbstractVirtualFileVisito
          }
          catch (IOException e)
          {
-            log.debug("Ignoring " + file + " reason=" + e);
+            log.debugf("Ignoring %1s reason=%2s", file, e);
             return;
          }
          
@@ -158,7 +158,7 @@ public class AbstractCandidateStructureVisitor extends AbstractVirtualFileVisito
          }
          catch (Exception e)
          {
-            log.debug("Ignoring " + file + " reason=" + e);
+            log.debugf("Ignoring %1s reason=%2s", file, e);
          }
       }
    }

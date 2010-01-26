@@ -181,7 +181,7 @@ public class DeployerWrapper implements Deployer, ManagedObjectCreator
       }
       catch (Throwable t)
       {
-         log.debug("Error during deploy: " + unit.getName(), t);
+         log.debugf(t, "Error during deploy: %1s", unit.getName());
          throw DeploymentException.rethrowAsDeploymentException("Error during deploy: " + unit.getName(), t);
       }
       finally

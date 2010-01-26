@@ -167,7 +167,7 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
          }
          catch (Exception e)
          {
-            log.debug("Unable to retrieve classloader for deployment: " + unit.getName() + " reason=" + e.toString());
+            log.debugf("Unable to retrieve classloader for deployment: %1s reason=%2s", unit.getName(), e);
          }
       }
       KernelControllerContext context = createControllerContext(unit, deployment);

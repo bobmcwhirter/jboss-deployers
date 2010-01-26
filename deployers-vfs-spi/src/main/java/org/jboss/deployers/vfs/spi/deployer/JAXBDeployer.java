@@ -168,7 +168,7 @@ public abstract class JAXBDeployer<T> extends AbstractVFSParsingDeployer<T>
       if (file == null)
          throw new IllegalArgumentException("Null file");
 
-      log.debug("Parsing: " + file.getName());
+      log.debugf("Parsing: %1s", file.getName());
 
       Unmarshaller unmarshaller = context.createUnmarshaller();
       unmarshaller.setEventHandler(validationEventHandler);

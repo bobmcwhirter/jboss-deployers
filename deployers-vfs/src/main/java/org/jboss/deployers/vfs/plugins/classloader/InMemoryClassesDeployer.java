@@ -82,7 +82,7 @@ public class InMemoryClassesDeployer extends AbstractVFSRealDeployer
          unit.addAttachment(DYNAMIC_CLASS_URL_KEY, dynamicClassRoot);
          unit.addAttachment(DYNAMIC_CLASS_KEY, classes);
          unit.prependClassPath(classes);
-         log.debug("Dynamic class root for " + unit.getName() + " is " + dynamicClassRoot);
+         log.debugf("Dynamic class root for %1s is %2s", unit.getName(), dynamicClassRoot);
       }
       catch (Exception e)
       {
@@ -93,7 +93,7 @@ public class InMemoryClassesDeployer extends AbstractVFSRealDeployer
    @Override
    public void undeploy(VFSDeploymentUnit unit)
    {
-      log.debug("Removing dynamic class root for " + unit.getName());
+      log.debugf("Removing dynamic class root for %1s", unit.getName());
       try
       {
          VirtualFile classes = unit.removeAttachment(DYNAMIC_CLASS_KEY, VirtualFile.class);

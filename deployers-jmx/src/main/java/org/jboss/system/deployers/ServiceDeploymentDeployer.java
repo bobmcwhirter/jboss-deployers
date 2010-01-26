@@ -90,7 +90,7 @@ public class ServiceDeploymentDeployer extends AbstractComponentDeployer<Service
                Element config = deployment.getConfig();
                if (config == null)
                {
-                  log.debug("Service deployment has no services: " + deployment.getName());
+                  log.debugf("Service deployment has no services: %1s", deployment.getName());
                   return;
                }
                if (log.isDebugEnabled())

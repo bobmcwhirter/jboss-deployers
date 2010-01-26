@@ -357,8 +357,7 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure, Ma
             throw new DeploymentException("The main deployer is shutdown");
 
          String name = deployment.getName();
-         if (log.isDebugEnabled())
-            log.debug("Add deployment: " + name);
+         log.debugf("Add deployment: %1s", name);
 
          // only try to recognize non re-deployments
          if (checkExistingTopLevelDeployment(deployment, addToDeploy) == false)
@@ -386,8 +385,7 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure, Ma
       DeploymentContext previous = topLevelDeployments.get(name);
       if (previous != null)
       {
-         if (log.isDebugEnabled())
-            log.debug("Removing previous deployment: " + previous.getName());
+         log.debugf("Removing previous deployment: %1s", previous.getName());
          toRedeploy.put(name, deployment);
          return true;
       }
@@ -484,8 +482,7 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure, Ma
          if (shutdown.get())
             throw new IllegalStateException("The main deployer is shutdown");
 
-         if (log.isDebugEnabled())
-            log.debug("Remove deployment context: " + name);
+         log.debugf("Remove deployment context: %1s", name);
 
          DeploymentContext context = topLevelDeployments.remove(name);
          if (context == null)
@@ -1004,14 +1001,12 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure, Ma
       allDeployments.put(context.getName(), context);
       if (context.getState() == DeploymentState.ERROR)
       {
-         if (log.isDebugEnabled())
-            log.debug("Not scheduling addition of context already in error: " + context.getName() + " reason=" + context.getProblem());
+         log.debugf("Not scheduling addition of context already in error: %1s, reason= %2s", context.getName(), context.getProblem());
          return;
       }
       context.setState(DeploymentState.DEPLOYING);
       DeploymentContext parent = context.getParent();
-      if (log.isDebugEnabled())
-         log.debug("Scheduling deployment: " + context.getName() + " parent=" + parent);
+      log.debugf("Scheduling deployment: %1s, parent=%2s", context.getName(), parent);
 
       // Process the top level only
       if (context.isTopLevel() && addToDeploy)
@@ -1041,8 +1036,7 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure, Ma
       if (DeploymentState.ERROR.equals(context.getState()) == false)
          context.setState(DeploymentState.UNDEPLOYING);
       DeploymentContext parent = context.getParent();
-      if (log.isDebugEnabled())
-         log.debug("Scheduling undeployment: " + name + " parent=" + parent);
+      log.debugf("Scheduling undeployment: %1s, parent=%2s", name, parent);
 
       // Process the top level only
       if (context.isTopLevel() && addToUndeploy)

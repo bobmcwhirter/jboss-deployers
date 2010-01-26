@@ -60,7 +60,7 @@ public class FileModificationTypeMatcher extends AbstractModificationTypeMatcher
             }
             catch (Exception e)
             {
-               log.debug("Cannot determine modification type, cause: " + e);
+               log.debugf("Cannot determine modification type, cause: %1s", e);
             }
          }
       }

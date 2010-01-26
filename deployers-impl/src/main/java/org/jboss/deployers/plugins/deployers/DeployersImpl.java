@@ -785,13 +785,11 @@ public class DeployersImpl implements Deployers, ControllerContextActions, Deplo
             DeploymentContext context = undeploy.get(i);
             if (DeploymentState.ERROR.equals(context.getState()) == false)
                context.setState(DeploymentState.UNDEPLOYING);
-            if (log.isDebugEnabled())
-               log.debug("Undeploying " + context.getName());
+            log.debugf("Undeploying %1s", context.getName());
             DeploymentControllerContext deploymentControllerContext = context.getTransientAttachments().getAttachment(ControllerContext.class.getName(), DeploymentControllerContext.class);
             if (deploymentControllerContext == null)
             {
-               if (log.isDebugEnabled())
-                  log.debug("DeploymentContext has no DeploymentControllerContext during undeploy request, ignoring: " + context);
+               log.debugf("DeploymentContext has no DeploymentControllerContext during undeploy request, ignoring: %1s", context);
             }
             else
             {
@@ -844,8 +842,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions, Deplo
                unregisterMBean(context);
                removeClassLoader(context);
                cleanup(context);
-               if (log.isDebugEnabled())
-                  log.debug("Fully Undeployed " + context.getName());
+               log.debugf("Fully Undeployed %1s", context.getName());
             }
             catch (Throwable t)
             {
@@ -870,8 +867,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions, Deplo
             {
                controller.install(deploymentControllerContext);
                context.setState(DeploymentState.DEPLOYING);
-               if (log.isDebugEnabled())
-                  log.debug("Deploying " + context.getName());
+               log.debugf("Deploying %1s", context.getName());
                if (scopeBuilder != null)
                   context.getTransientAttachments().addAttachment(ScopeBuilder.class, scopeBuilder);
                if (repository != null)
@@ -1355,8 +1351,7 @@ public class DeployersImpl implements Deployers, ControllerContextActions, Deplo
       {
          if (ControllerState.INSTALLED.equals(toState) && DeploymentState.DEPLOYING.equals(deploymentContext.getState()))
          {
-            if (log.isDebugEnabled())
-               log.debug("Fully Deployed " + context.getName());
+            log.debugf("Fully Deployed %1s", context.getName());
             setState(deploymentContext, DeploymentState.DEPLOYED, null);
          }
       }

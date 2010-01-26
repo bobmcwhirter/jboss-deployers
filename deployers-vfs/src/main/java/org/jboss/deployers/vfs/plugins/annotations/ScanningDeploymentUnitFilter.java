@@ -52,7 +52,7 @@ public class ScanningDeploymentUnitFilter implements VFSDeploymentUnitFilter
          {
             ResourceFilter previousRecurse = unit.addAttachment(ResourceFilter.class.getName() + ".recurse", recurse, ResourceFilter.class);
             if (previousRecurse != null)
-               log.debug("Overridding previous recurse filter: " + previousRecurse);
+               log.debugf("Overridding previous recurse filter: %1s", previousRecurse);
          }
 
          // resource
@@ -61,7 +61,7 @@ public class ScanningDeploymentUnitFilter implements VFSDeploymentUnitFilter
          {
             ResourceFilter previousFilter = unit.addAttachment(ResourceFilter.class.getName() + ".resource", filter, ResourceFilter.class);
             if (previousFilter != null)
-               log.debug("Overridding previous resource filter: " + previousFilter);
+               log.debugf("Overridding previous resource filter: %1s", previousFilter);
          }
       }
       return true;

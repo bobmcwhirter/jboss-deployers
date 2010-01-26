@@ -150,7 +150,7 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
             if (child != null)
                locations.put(child, entry.getType());
             else
-               log.debug("Meta data path does not exist: root=" + root.getPathName() + " path=" + path);
+               log.debugf("Meta data path does not exist: root=%1s path=%2s", root.getPathName(), path);
          }
          setMetaDataLocationsMap(locations);
       }
@@ -290,7 +290,7 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
             }
             catch (IOException e)
             {
-               log.debug("Search exception invocation for metafile " + name + " in " + location.getName() + ", reason: " + e);
+               log.debugf("Search exception invocation for metafile %1s in %2s, reason: %3s", name, location.getName(), e);
             }
          }
       }
@@ -363,7 +363,7 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
       }
       catch (Exception e)
       {
-         log.debug("Error retrieving meta data: filter=" + filter, e);
+         log.debugf(e, "Error retrieving meta data: filter=%1s", filter);
          return Collections.emptyList();
       }
    }

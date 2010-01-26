@@ -102,7 +102,7 @@ public class ServiceMetaDataICF implements InstanceClassFactory<ServiceMetaData>
                Class<?> originalClass = moClass;
                ManagementObjectClass moc = (ManagementObjectClass)sam.getAnnotationInstance(loader);
                moClass = moc.code();
-               log.debug("Using alternate class '" + moClass + "' for class " + originalClass);
+               log.debugf("Using alternate class '%1s' for class %2s",  moClass, originalClass);
                break;
             }  
          }
@@ -169,12 +169,12 @@ public class ServiceMetaDataICF implements InstanceClassFactory<ServiceMetaData>
                }
                catch(Exception e2)
                {
-                  log.debug("Failed to get value from mbean for: "+attribute, e2);
+                  log.debugf(e2, "Failed to get value from mbean for: %1s", attribute);
                }               
             }
             catch(Exception e)
             {
-               log.debug("Failed to get value from mbean for: "+name, e);
+               log.debugf(e, "Failed to get value from mbean for: %1s", name);
             }
          }
    
@@ -198,8 +198,7 @@ public class ServiceMetaDataICF implements InstanceClassFactory<ServiceMetaData>
          }
          catch(Exception e)
          {
-            log.debug("Failed to get property value for bean: "+beanInfo.getName()
-                  +", property: "+propertyInfo.getName(), e);
+            log.debugf(e, "Failed to get property value for bean: %1s, property: %2s", beanInfo.getName(), propertyInfo.getName());
             mvalue = metaValueFactory.create(null, propertyInfo.getType());
             return mvalue;
          }

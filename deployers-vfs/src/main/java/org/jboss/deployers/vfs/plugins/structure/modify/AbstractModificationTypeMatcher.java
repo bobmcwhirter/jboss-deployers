@@ -79,7 +79,7 @@ public abstract class AbstractModificationTypeMatcher implements ModificationTyp
                   }
                   catch (Exception e)
                   {
-                     log.debug("Exception checking child context (" + child + ") for modification, cause: " + e);
+                     log.debugf("Exception checking child context (%1s) for modification, cause: %2s", child, e);
                   }
                }
             }

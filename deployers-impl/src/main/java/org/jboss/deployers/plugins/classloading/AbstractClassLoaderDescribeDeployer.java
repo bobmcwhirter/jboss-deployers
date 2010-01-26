@@ -98,16 +98,16 @@ public abstract class AbstractClassLoaderDescribeDeployer extends AbstractOption
             if (deployment.getParentDomain() == null)
             {
                deployment.setDomain(unitName);
-               log.debug("Will use synthetic domain for classloader of subdeployment: " + unitName);
+               log.debugf("Will use synthetic domain for classloader of subdeployment: %1s", unitName);
             }
             else
             {
-               log.debug("Will create top level classloader for subdeployment: " + unitName);
+               log.debugf("Will create top level classloader for subdeployment: %1s", unitName);
             }
          }
          else
          {
-            log.debug("Asked to create top level classloader for subdeployment: " + unitName);
+            log.debugf("Asked to create top level classloader for subdeployment: %1s", unitName);
          }
       }
       

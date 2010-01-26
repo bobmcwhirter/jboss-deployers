@@ -120,8 +120,7 @@ public class VFSStructuralDeployersImpl extends AbstractStructuralDeployers impl
       if (deployer == null)
          throw new IllegalArgumentException("Null deployer");
       structureDeployers.add(new StructureDeployerWrapper(deployer));
-      if (log.isDebugEnabled())
-         log.debug("Added structure deployer " + deployer);
+      log.debugf("Added structure deployer %1s", deployer);
    }
 
    /**
@@ -134,8 +133,7 @@ public class VFSStructuralDeployersImpl extends AbstractStructuralDeployers impl
       if (deployer == null)
          throw new IllegalArgumentException("Null deployer");
       structureDeployers.remove(deployer);
-      if (log.isDebugEnabled())
-         log.debug("Removed structure deployer " + deployer);
+      log.debugf("Removed structure deployer %1s", deployer);
    }
    
    public boolean determineStructure(VirtualFile file, StructureContext parentContext) throws DeploymentException

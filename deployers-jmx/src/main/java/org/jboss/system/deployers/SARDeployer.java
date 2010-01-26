@@ -115,7 +115,7 @@ public class SARDeployer extends JAXPDeployer<ServiceDeployment>
          Element config = parsed.getConfig();
          if (config == null)
          {
-            log.debug("Service deployment has no services: " + parsed.getName());
+            log.debugf("Service deployment has no services: %1s", parsed.getName());
             return parsed;
          }
          if (log.isDebugEnabled())
@@ -152,7 +152,7 @@ public class SARDeployer extends JAXPDeployer<ServiceDeployment>
          String codebase = path.getCodeBase();
          String archives = path.getArchives();
 
-         log.debug("Processing classpath: " + unit.getName() + " codebase=" + codebase + " archives=" + archives);
+         log.debugf("Processing classpath: %1s codebase=%2s archives=%3s", unit.getName(), codebase, archives);
          VirtualFile codebaseFile = unit.getRoot();
          if (".".equals(codebase) == false)
          {
@@ -168,7 +168,7 @@ public class SARDeployer extends JAXPDeployer<ServiceDeployment>
          if (archives == null)
          {
             classpath.add(codebaseFile);
-            log.debug("Using codebase as classpath: " + unit.getName());
+            log.debugf("Using codebase as classpath: %1s", unit.getName());
          }
          else
          {
