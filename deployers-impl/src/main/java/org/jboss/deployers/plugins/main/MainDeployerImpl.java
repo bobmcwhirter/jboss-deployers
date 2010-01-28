@@ -521,7 +521,7 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure, Ma
                Deployment deployment = deployments[i];
                addDeployment(deployment, false);
                DeploymentContext context = getTopLevelDeploymentContext(deployment.getName());
-               if (contexts == null)
+               if (context == null)
                   throw new DeploymentException("Deployment context not found: " + deployment.getName());
 
                deployers.process(Collections.singletonList(context), null);

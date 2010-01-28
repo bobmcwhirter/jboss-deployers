@@ -41,7 +41,7 @@ import org.jboss.managed.plugins.ManagedPropertyImpl;
  */
 public class TestManagedObjectDeployer extends AbstractDeployer implements ManagedObjectCreator
 {
-   public static TestAttachment lastAttachment;
+   public TestAttachment lastAttachment;
 
    public void deploy(DeploymentUnit unit) throws DeploymentException
    {

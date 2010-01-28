@@ -126,18 +126,16 @@ public abstract class AbstractDeploymentFactoryTest extends BaseTestCase
    
    public void testCreateClassPathEntryPath()
    {
-      DeploymentFactory factory = createDeploymentFactory();
-      ClassPathEntry entry = factory.createClassPathEntry("path");
+      ClassPathEntry entry = DeploymentFactory.createClassPathEntry("path");
       assertEquals("path", entry.getPath());
       assertNull(entry.getSuffixes());
    }
    
    public void testCreateClassPathEntryPathErrors()
    {
-      DeploymentFactory factory = createDeploymentFactory();
       try
       {
-         factory.createClassPathEntry(null);
+         DeploymentFactory.createClassPathEntry(null);
          fail("Should not be here!");
       }
       catch (Exception e)
@@ -148,22 +146,20 @@ public abstract class AbstractDeploymentFactoryTest extends BaseTestCase
    
    public void testCreateClassPathEntryPathAndSuffixes()
    {
-      DeploymentFactory factory = createDeploymentFactory();
-      ClassPathEntry entry = factory.createClassPathEntry("path", "suffixes");
+      ClassPathEntry entry = DeploymentFactory.createClassPathEntry("path", "suffixes");
       assertEquals("path", entry.getPath());
       assertEquals("suffixes", entry.getSuffixes());
 
-      entry = factory.createClassPathEntry("path", null);
+      entry = DeploymentFactory.createClassPathEntry("path", null);
       assertEquals("path", entry.getPath());
       assertNull(entry.getSuffixes());
    }
    
    public void testCreateClassPathEntryPathAndSuffixesErrors()
    {
-      DeploymentFactory factory = createDeploymentFactory();
       try
       {
-         factory.createClassPathEntry(null, "suffixes");
+         DeploymentFactory.createClassPathEntry(null, "suffixes");
          fail("Should not be here!");
       }
       catch (Exception e)
@@ -174,18 +170,16 @@ public abstract class AbstractDeploymentFactoryTest extends BaseTestCase
    
    public void testCreateClassPathPath()
    {
-      DeploymentFactory factory = createDeploymentFactory();
-      List<ClassPathEntry> expected = Collections.singletonList(factory.createClassPathEntry("path"));
-      List<ClassPathEntry> classPath = factory.createClassPath("path");
+      List<ClassPathEntry> expected = Collections.singletonList(DeploymentFactory.createClassPathEntry("path"));
+      List<ClassPathEntry> classPath = DeploymentFactory.createClassPath("path");
       assertEquals(expected, classPath);
    }
    
    public void testCreateClassPathPathErrors()
    {
-      DeploymentFactory factory = createDeploymentFactory();
       try
       {
-         factory.createClassPath(null);
+         DeploymentFactory.createClassPath(null);
          fail("Should not be here!");
       }
       catch (Exception e)
@@ -196,18 +190,16 @@ public abstract class AbstractDeploymentFactoryTest extends BaseTestCase
    
    public void testCreateClassPathPathAndSuffixes()
    {
-      DeploymentFactory factory = createDeploymentFactory();
-      List<ClassPathEntry> expected = Collections.singletonList(factory.createClassPathEntry("path", "suffixes"));
-      List<ClassPathEntry> classPath = factory.createClassPath("path", "suffixes");
+      List<ClassPathEntry> expected = Collections.singletonList(DeploymentFactory.createClassPathEntry("path", "suffixes"));
+      List<ClassPathEntry> classPath = DeploymentFactory.createClassPath("path", "suffixes");
       assertEquals(expected, classPath);
    }
    
    public void testCreateClassPathPathAndSuffixesErrors()
    {
-      DeploymentFactory factory = createDeploymentFactory();
       try
       {
-         factory.createClassPath(null, "suffixes");
+         DeploymentFactory.createClassPath(null, "suffixes");
          fail("Should not be here!");
       }
       catch (Exception e)
@@ -255,7 +247,7 @@ public abstract class AbstractDeploymentFactoryTest extends BaseTestCase
    {
       DeploymentFactory factory = createDeploymentFactory();
       Deployment deployment = createDeployment();
-      List<ClassPathEntry> classPath = factory.createClassPath("ClassPath");
+      List<ClassPathEntry> classPath = DeploymentFactory.createClassPath("ClassPath");
       ContextInfo context = factory.addContext(deployment, "path", classPath);
       assertEquals("path", context.getPath());
       assertDefaultMetaDataPath(context);
@@ -277,7 +269,7 @@ public abstract class AbstractDeploymentFactoryTest extends BaseTestCase
    {
       DeploymentFactory factory = createDeploymentFactory();
       Deployment deployment = createDeployment();
-      List<ClassPathEntry> classPath = factory.createClassPath("ClassPath");
+      List<ClassPathEntry> classPath = DeploymentFactory.createClassPath("ClassPath");
       try
       {
          factory.addContext(null, "path", classPath);
@@ -302,7 +294,7 @@ public abstract class AbstractDeploymentFactoryTest extends BaseTestCase
    {
       DeploymentFactory factory = createDeploymentFactory();
       Deployment deployment = createDeployment();
-      List<ClassPathEntry> classPath = factory.createClassPath("ClassPath");
+      List<ClassPathEntry> classPath = DeploymentFactory.createClassPath("ClassPath");
       ContextInfo context = factory.addContext(deployment, "path", "metaDataPath", classPath);
       assertEquals("path", context.getPath());
       assertDefaultMetaDataPath(context.getMetaDataPath());
@@ -324,7 +316,7 @@ public abstract class AbstractDeploymentFactoryTest extends BaseTestCase
    {
       DeploymentFactory factory = createDeploymentFactory();
       Deployment deployment = createDeployment();
-      List<ClassPathEntry> classPath = factory.createClassPath("ClassPath");
+      List<ClassPathEntry> classPath = DeploymentFactory.createClassPath("ClassPath");
       try
       {
          factory.addContext(null, "path", "metaData", classPath);
@@ -405,7 +397,7 @@ public abstract class AbstractDeploymentFactoryTest extends BaseTestCase
       DeploymentFactory factory = createDeploymentFactory();
       Deployment deployment = createDeployment();
 
-      List<ClassPathEntry> classPath = factory.createClassPath("ClassPath");
+      List<ClassPathEntry> classPath = DeploymentFactory.createClassPath("ClassPath");
       ContextInfo context1 = factory.addContext(deployment, "path1", "metaDataPath", classPath);
       assertEquals("path1", context1.getPath());
       assertDefaultMetaDataPath(context1.getMetaDataPath());

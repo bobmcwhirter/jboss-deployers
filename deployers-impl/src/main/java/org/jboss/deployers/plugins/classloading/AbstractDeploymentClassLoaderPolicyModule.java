@@ -85,7 +85,7 @@ public abstract class AbstractDeploymentClassLoaderPolicyModule extends ClassLoa
       if (contextName.equals(context.getName()) == false)
       {
          Set<Object> aliases = context.getAliases();
-         if (aliases == null || (aliases != null && aliases.contains(contextName) == false))
+         if (aliases == null || (aliases.contains(contextName) == false))
          {
             Controller controller = context.getController();
             if (addAlias)
