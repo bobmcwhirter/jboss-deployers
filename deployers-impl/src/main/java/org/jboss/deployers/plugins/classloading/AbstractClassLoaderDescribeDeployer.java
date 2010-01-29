@@ -32,6 +32,8 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
 
 /**
  * AbstractClassLoaderDescribeDeployer.
+ * 
+ * [TODO] Add meaningful javadoc. What is this suposed to do?
  *
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
  * @version $Revision: 1.1 $
@@ -88,13 +90,13 @@ public abstract class AbstractClassLoaderDescribeDeployer extends AbstractOption
       ClassLoaderPolicyModule module = (ClassLoaderPolicyModule)unit.getAttachment(Module.class);
       if (module != null)
          return;
-      
+
       // We only look at non top level deployments that have classloading metadata
       if (unit.isTopLevel() == false)
       {
          if (deployment == null)
             return;
-         
+
          // For non top level classloaders, we need to control the domain
          // since the parent is the deployment classloader
          String unitName = unit.getName();
@@ -115,7 +117,7 @@ public abstract class AbstractClassLoaderDescribeDeployer extends AbstractOption
             log.debugf("Asked to create top level classloader for subdeployment: %1s", unitName);
          }
       }
-      
+
       // Create the module
       module = createModule(unit, deployment);
       if (module != null)
@@ -128,10 +130,9 @@ public abstract class AbstractClassLoaderDescribeDeployer extends AbstractOption
    public void undeploy(DeploymentUnit unit, ClassLoadingMetaData deployment)
    {
       Module module = unit.removeAttachment(Module.class);
-      if (module == null)
-         return;
-      classLoading.removeModule(module);
+      if (module != null && classLoading != null)
+         classLoading.removeModule(module);
    }
-   
+
    protected abstract ClassLoaderPolicyModule createModule(DeploymentUnit unit, ClassLoadingMetaData metaData) throws DeploymentException;
 }
