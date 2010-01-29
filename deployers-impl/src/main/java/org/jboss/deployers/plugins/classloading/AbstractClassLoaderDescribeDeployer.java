@@ -84,6 +84,11 @@ public abstract class AbstractClassLoaderDescribeDeployer extends AbstractOption
 
    public void deploy(DeploymentUnit unit, ClassLoadingMetaData deployment) throws DeploymentException
    {
+      // Do nothing if another deployer has already created the module
+      ClassLoaderPolicyModule module = (ClassLoaderPolicyModule)unit.getAttachment(Module.class);
+      if (module != null)
+         return;
+      
       // We only look at non top level deployments that have classloading metadata
       if (unit.isTopLevel() == false)
       {
@@ -112,7 +117,7 @@ public abstract class AbstractClassLoaderDescribeDeployer extends AbstractOption
       }
       
       // Create the module
-      ClassLoaderPolicyModule module = createModule(unit, deployment);
+      module = createModule(unit, deployment);
       if (module != null)
       {
          classLoading.addModule(module);
