@@ -33,9 +33,12 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
 /**
  * AbstractClassLoaderDescribeDeployer.
  * 
- * [TODO] Add meaningful javadoc. What is this suposed to do?
+ * This deployer creates Module instance from ClassLoadingMetaData.
+ * For non top level deployments we only create Module if there is
+ * an explicit ClassLoadingMetaData attachment present.
  *
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public abstract class AbstractClassLoaderDescribeDeployer extends AbstractOptionalRealDeployer<ClassLoadingMetaData>
@@ -50,6 +53,7 @@ public abstract class AbstractClassLoaderDescribeDeployer extends AbstractOption
    {
       super(ClassLoadingMetaData.class);
       setStage(DeploymentStages.DESCRIBE);
+      addInput(Module.class); // we check for Module
       addOutput(Module.class); // we produce Module
    }
 
@@ -87,7 +91,7 @@ public abstract class AbstractClassLoaderDescribeDeployer extends AbstractOption
    public void deploy(DeploymentUnit unit, ClassLoadingMetaData deployment) throws DeploymentException
    {
       // Do nothing if another deployer has already created the module
-      ClassLoaderPolicyModule module = (ClassLoaderPolicyModule)unit.getAttachment(Module.class);
+      ClassLoaderPolicyModule module = unit.getAttachment(Module.class.getName(), ClassLoaderPolicyModule.class);
       if (module != null)
          return;
 
