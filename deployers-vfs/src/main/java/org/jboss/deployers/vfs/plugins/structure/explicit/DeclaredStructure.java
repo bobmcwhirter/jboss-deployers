@@ -27,7 +27,7 @@ import java.net.URL;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.vfs.plugins.structure.AbstractVFSStructureDeployer;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 import org.jboss.xb.binding.Unmarshaller;
 import org.jboss.xb.binding.UnmarshallerFactory;
 
@@ -62,7 +62,7 @@ public class DeclaredStructure extends AbstractVFSStructureDeployer
             try
             {
                VirtualFile jbossStructure = file.getChild("META-INF/jboss-structure.xml");
-               if (jbossStructure != null)
+               if (jbossStructure.exists())
                {
                   if (trace)
                      log.trace("... context has a META-INF/jboss-structure.xml");

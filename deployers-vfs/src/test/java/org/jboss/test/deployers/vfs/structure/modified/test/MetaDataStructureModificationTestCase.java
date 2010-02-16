@@ -30,11 +30,11 @@ import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.deployers.vfs.spi.structure.modified.MetaDataStructureModificationChecker;
 import org.jboss.deployers.vfs.spi.structure.modified.StructureCache;
 import org.jboss.deployers.vfs.spi.structure.modified.StructureModificationChecker;
+import org.jboss.test.deployers.support.AssembledDirectory;
 import org.jboss.test.deployers.vfs.structure.modified.support.XmlIncludeVirtualFileFilter;
-import org.jboss.virtual.AssembledDirectory;
-import org.jboss.virtual.VFS;
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VirtualFileFilter;
+import org.jboss.vfs.VFS;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.VirtualFileFilter;
 
 /**
  * Test StructureModificationChecker.
@@ -79,8 +79,8 @@ public class MetaDataStructureModificationTestCase extends StructureModification
       // already cached run 
       assertFalse(checker.hasStructureBeenModified(root));
 
-      AssembledDirectory jar = (AssembledDirectory)ear.getChild("simple.jar");
-      AssembledDirectory jarMD = (AssembledDirectory)jar.getChild("META-INF");
+      VirtualFile jar = ear.getChild("simple.jar");
+      VirtualFile jarMD = jar.getChild("META-INF");
 
       // 'update' web-beans.xml
       URL url = getResource("/webbeans/simple/jar/META-INF/web-beans.xml");
@@ -91,38 +91,46 @@ public class MetaDataStructureModificationTestCase extends StructureModification
       // should be the same
       assertFalse(checker.hasStructureBeenModified(root));
 
+      AssembledDirectory jarMDAssembly = createAssembledDirectory(jarMD);
+      
       // add new xml
       url = getResource("/scanning/smoke/META-INF/jboss-scanning.xml");
       assertNotNull(url);
-      jarMD.addChild(VFS.createNewRoot(url));
+      jarMDAssembly.add(VFS.getChild(url));
       assertTrue(checker.hasStructureBeenModified(root));
       // should be the same
       assertFalse(checker.hasStructureBeenModified(root));
 
       // 'remove' new xml
-      jarMD = jar.mkdir("META-INF");
+      
+      closeAssembly(jarMD);
+      jarMDAssembly = createAssembledDirectory(jarMD);
       url = getResource("/dependency/module/META-INF/jboss-dependency.xml");
       assertNotNull(url);
-      jarMD.addChild(VFS.createNewRoot(url));
+      jarMDAssembly.add(VFS.getChild(url));
       url = getResource("/webbeans/simple/ejb/META-INF/web-beans.xml");
       assertNotNull(url);
-      jarMD.addChild(VFS.createNewRoot(url));
+      jarMDAssembly.add(VFS.getChild(url));
       assertTrue(checker.hasStructureBeenModified(root));
       // should be the same
       assertFalse(checker.hasStructureBeenModified(root));
 
       // 'remove' whole metadata dir
-      jar.mkdir("META-INF");
+      closeAssembly(jarMD);
+      jarMDAssembly = createAssembledDirectory(jarMD);
       assertTrue(checker.hasStructureBeenModified(root));
    }
 
    public void testInitialEmptyDir() throws Exception
    {
-      AssembledDirectory top = createAssembledDirectory("top.jar", "top.jar");
-      AssembledDirectory metainf = top.mkdir("META-INF");
+      VirtualFile topJar = VFS.getChild(getName()).getChild("top.jar");
+      createAssembledDirectory(topJar);
+      VirtualFile metaInf = topJar.getChild("META-INF");
+      AssembledDirectory metaInfAssembly = createAssembledDirectory(metaInf);
+      
       StructureModificationChecker checker = createStructureModificationChecker();
 
-      VFSDeploymentUnit vdu = assertDeploy(top);
+      VFSDeploymentUnit vdu = assertDeploy(topJar);
       try
       {
          VirtualFile root = vdu.getRoot();
@@ -130,7 +138,7 @@ public class MetaDataStructureModificationTestCase extends StructureModification
 
          URL url = getResource("/scanning/smoke/META-INF/jboss-scanning.xml");
          assertNotNull(url);
-         metainf.addChild(VFS.createNewRoot(url));
+         metaInfAssembly.add(VFS.getChild(url));
          assertTrue(checker.hasStructureBeenModified(root));
       }
       finally
@@ -141,11 +149,13 @@ public class MetaDataStructureModificationTestCase extends StructureModification
 
    public void testMultipleChanges() throws Exception
    {
-      AssembledDirectory top = createAssembledDirectory("top.jar", "top.jar");
-      AssembledDirectory metainf = top.mkdir("META-INF");
+      VirtualFile topJar = VFS.getChild(getName()).getChild("top.jar");
+      createAssembledDirectory(topJar);
+      VirtualFile metaInf = topJar.getChild("META-INF");
+      AssembledDirectory metaInfAssembly = createAssembledDirectory(metaInf);
       StructureModificationChecker checker = createStructureModificationChecker();
 
-      VFSDeploymentUnit vdu = assertDeploy(top);
+      VFSDeploymentUnit vdu = assertDeploy(topJar);
       try
       {
          VirtualFile root = vdu.getRoot();
@@ -153,10 +163,10 @@ public class MetaDataStructureModificationTestCase extends StructureModification
 
          URL url1 = getResource("/scanning/smoke/META-INF/jboss-scanning.xml");
          assertNotNull(url1);
-         metainf.addChild(VFS.createNewRoot(url1));
+         metaInfAssembly.add(VFS.getChild(url1));
          URL url2 = getResource("/dependency/module/META-INF/jboss-dependency.xml");
          assertNotNull(url2);
-         metainf.addChild(VFS.createNewRoot(url2));
+         metaInfAssembly.add(VFS.getChild(url2));
 
          assertTrue(checker.hasStructureBeenModified(root));
          assertFalse(checker.hasStructureBeenModified(root));

@@ -26,7 +26,7 @@ import java.util.Map;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.reflect.spi.TypeInfo;
 import org.jboss.reflect.spi.TypeInfoFactory;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 import org.jboss.test.deployers.vfs.reflect.support.web.AnyServlet;
 import org.jboss.test.deployers.vfs.reflect.support.jar.PlainJavaBean;
 

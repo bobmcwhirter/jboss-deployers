@@ -21,7 +21,7 @@
 */
 package org.jboss.test.deployers.vfs.structurebuilder.test;
 
-import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
@@ -37,9 +37,10 @@ import org.jboss.deployers.vfs.plugins.structure.VFSStructureBuilder;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.client.VFSDeploymentFactory;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
+import org.jboss.deployers.vfs.spi.structure.helpers.AbstractStructureDeployer;
 import org.jboss.test.deployers.structure.structurebuilder.StructureBuilderTest;
-import org.jboss.virtual.VFS;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VFS;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * VFSStructureBuilderUnitTestCase.
@@ -69,10 +70,10 @@ public class VFSStructureBuilderUnitTestCase extends StructureBuilderTest
       URL url = getDeploymentURL();
       try
       {
-         VirtualFile file = VFS.getRoot(url);
+         VirtualFile file = VFS.getChild(url);
          return new AbstractVFSDeployment(file);
       }
-      catch (IOException e)
+      catch (URISyntaxException e)
       {
          throw new RuntimeException("Failed to get virtual file " + url + " for " + getName());
       }
@@ -116,7 +117,7 @@ public class VFSStructureBuilderUnitTestCase extends StructureBuilderTest
       else
       {
          VirtualFile root = context.getRoot();
-         VirtualFile expected = root.findChild(metaDataPaths.get(0).getPath());
+         VirtualFile expected = root.getChild(metaDataPaths.get(0).getPath());
          assertEquals(1, metaDataLocations.size());
          assertEquals(expected, metaDataLocations.get(0));
       }
@@ -139,12 +140,13 @@ public class VFSStructureBuilderUnitTestCase extends StructureBuilderTest
             ClassPathEntry entry = classPathEntries.get(i);
             VirtualFile file = (i < cpSize) ? classPath.get(i) : null;
             String path = entry.getPath();
+            String relativeFilePath = AbstractStructureDeployer.getRelativePath(context.getTopLevel().getRoot(), file);
             if ("".equals(path))
-               assertTrue(file == null || "".equals(file.getPathName()));
+               assertTrue("".equals(relativeFilePath));
             else
             {
                assertNotNull(file);
-               assertEquals(path, file.getPathName());
+               assertEquals(path, relativeFilePath);
             }
          }
       }

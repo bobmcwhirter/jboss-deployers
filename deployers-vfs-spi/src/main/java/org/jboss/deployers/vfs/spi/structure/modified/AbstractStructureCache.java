@@ -23,7 +23,7 @@ package org.jboss.deployers.vfs.spi.structure.modified;
 
 import java.util.List;
 
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * Abstract structure cache.

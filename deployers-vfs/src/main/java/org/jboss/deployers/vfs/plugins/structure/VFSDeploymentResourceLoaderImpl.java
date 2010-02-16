@@ -23,13 +23,12 @@ package org.jboss.deployers.vfs.plugins.structure;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Vector;
 
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentResourceLoader;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * VFSDeploymentResourceLoader.
@@ -57,14 +56,8 @@ public class VFSDeploymentResourceLoaderImpl implements VFSDeploymentResourceLoa
 
    public VirtualFile getFile(String path)
    {
-      try
-      {
-         return root.getChild(path);
-      }
-      catch (IOException e)
-      {
-         return null;
-      }
+      final VirtualFile virtualFile = root.getChild(path);
+      return virtualFile.exists() ? virtualFile : null;
    }
 
    public URL getResource(String name)
@@ -72,17 +65,9 @@ public class VFSDeploymentResourceLoaderImpl implements VFSDeploymentResourceLoa
       try
       {
          VirtualFile child = root.getChild(name);
-         return child != null ? child.toURL() : null;
-      }
-      catch (URISyntaxException e)
-      {
-         return null;
+         return child.exists() ? child.toURL() : null;
       }
       catch (MalformedURLException e)
-      {
-         return null;
-      }
-      catch (IOException e)
       {
          return null;
       }
@@ -93,7 +78,7 @@ public class VFSDeploymentResourceLoaderImpl implements VFSDeploymentResourceLoa
       try
       {
          VirtualFile child = root.getChild(name);
-         if (child != null)
+         if (child.exists())
          {
             Vector<URL> vector = new Vector<URL>();
             vector.add(child.toURL());
@@ -101,10 +86,6 @@ public class VFSDeploymentResourceLoaderImpl implements VFSDeploymentResourceLoa
          }
          else
             return null;
-      }
-      catch (URISyntaxException e)
-      {
-         return null;
       }
       catch (MalformedURLException e)
       {

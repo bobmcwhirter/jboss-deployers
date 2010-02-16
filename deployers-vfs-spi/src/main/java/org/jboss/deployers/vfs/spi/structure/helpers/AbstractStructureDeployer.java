@@ -41,10 +41,10 @@ import org.jboss.deployers.vfs.spi.structure.VFSStructuralDeployers;
 import org.jboss.logging.Logger;
 import org.jboss.mcann.AnnotationRepository;
 import org.jboss.util.collection.CollectionsFactory;
-import org.jboss.virtual.VFSUtils;
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VirtualFileVisitor;
-import org.jboss.virtual.VisitorAttributes;
+import org.jboss.vfs.VFSUtils;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.VirtualFileVisitor;
+import org.jboss.vfs.VisitorAttributes;
 
 /**
  * AbstractStructureDeployer.<p>
@@ -58,7 +58,7 @@ import org.jboss.virtual.VisitorAttributes;
 public abstract class AbstractStructureDeployer implements StructureDeployer
 {
    /** The log */
-   protected Logger log = Logger.getLogger(getClass());
+   protected static final Logger log = Logger.getLogger("org.jboss.deployers.vfs.structure");
    
    /** The relative order */
    private int relativeOrder = Integer.MAX_VALUE;
@@ -82,7 +82,7 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
     * @param child the child
     * @return the relative path
     */
-   public static final String getRelativePath(StructureContext context, VirtualFile child)
+   public static String getRelativePath(StructureContext context, VirtualFile child)
    {
       if (context == null)
          throw new IllegalArgumentException("Null context");
@@ -97,7 +97,7 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
     * @param child the child
     * @return the relative path
     */
-   public static final String getRelativePath(VirtualFile parent, VirtualFile child)
+   public static String getRelativePath(VirtualFile parent, VirtualFile child)
    {
       if (child == null)
          throw new IllegalArgumentException("Null child");
@@ -131,9 +131,9 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
       return relativeOrder;
    }
    
-   public void setRelativeOrder(int order)
+   public void setRelativeOrder(int relativeOrder)
    {
-      this.relativeOrder = order;
+      this.relativeOrder = relativeOrder;
    }
 
    public void setContextInfoOrder(Integer contextInfoOrder)
@@ -223,7 +223,7 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
     * @param context - the context to populate
     * @throws IOException on any IO error
     */
-   protected void addClassPath(StructureContext structureContext, VirtualFile entry, boolean includeEntry, boolean includeRootManifestCP, ContextInfo context) throws IOException
+   protected void addClassPath(StructureContext structureContext, VirtualFile entry, boolean includeEntry, boolean includeRootManifestCP, ContextInfo context)
    {
       boolean trace = log.isTraceEnabled();
       
@@ -234,7 +234,7 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
          paths.add(entry);
 
       // Add the manifest locations
-      if (includeRootManifestCP && isLeaf(entry) == false)
+      if (includeRootManifestCP && entry.isDirectory())
       {
          try
          {
@@ -376,7 +376,7 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
     * @return true when it is a leaf
     * @throws IOException for any error
     */
-   protected static boolean isLeaf(VirtualFile file) throws IOException
+   protected static boolean isLeaf(VirtualFile file)
    {
       return SecurityActions.isLeaf(file);
    }
@@ -424,17 +424,9 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
       if (metaDataPath != null)
       {
          VirtualFile root = context.getFile();
-         try
-         {
-            VirtualFile child = root.getChild(metaDataPath);
-            if (child == null)
-               metaDataPath = null;
-         }
-         catch (IOException e)
-         {
-            log.warn("Not using metadata path " + metaDataPath + " for " + root.getName() + " reason: " + e.getMessage());
+         VirtualFile child = root.getChild(metaDataPath);
+         if (! child.exists())
             metaDataPath = null;
-         }
       }
 
       // Create and link the context
@@ -482,15 +474,8 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
    protected void addMetaDataPath(StructureContext context, ContextInfo info, String path, MetaDataType type)
    {
       VirtualFile root = context.getFile();
-      try
-      {
-         if (root.getChild(path) != null)
-            info.addMetaDataPath(createMetaDataEntry(path, type));
-      }
-      catch (IOException e)
-      {
-         log.warn("Not using metadata path " + path + " for " + root.getName() + " reason: " + e.getMessage());
-      }
+      if (root.getChild(path).exists())
+         info.addMetaDataPath(createMetaDataEntry(path, type));
    }
 
    /**
@@ -512,16 +497,9 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
       {
          for(String path : metaDataPaths)
          {
-            try
-            {
-               VirtualFile child = root.getChild(path);
-               if (child != null)
-                  metaDataPath.add(path);
-            }
-            catch (IOException e)
-            {
-               log.warn("Not using metadata path " + path + " for " + root.getName() + " reason: " + e.getMessage());
-            }
+            VirtualFile child = root.getChild(path);
+            if (child.exists())
+               metaDataPath.add(path);
          }
       }
 
@@ -563,7 +541,7 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
    {
       if (result != null && contextInfoOrder != null)
       {
-         result.setRelativeOrder(contextInfoOrder);
+         result.setRelativeOrder(contextInfoOrder.intValue());
       }
    }
 }

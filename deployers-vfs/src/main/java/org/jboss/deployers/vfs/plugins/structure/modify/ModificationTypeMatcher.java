@@ -23,7 +23,7 @@ package org.jboss.deployers.vfs.plugins.structure.modify;
 
 import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.deployers.spi.structure.StructureMetaData;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * Determine if we need some modification.

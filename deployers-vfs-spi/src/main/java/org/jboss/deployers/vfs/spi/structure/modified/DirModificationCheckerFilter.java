@@ -21,9 +21,7 @@
  */
 package org.jboss.deployers.vfs.spi.structure.modified;
 
-import java.io.IOException;
-
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * Directory ModificationCheckerFilter.
@@ -42,14 +40,7 @@ public class DirModificationCheckerFilter implements ModificationCheckerFilter
 
    public boolean checkRootOnly(VirtualFile root)
    {
-      try
-      {
-         // if file or archive, no point in checking fwd
-         return root.isArchive() || root.isLeaf();
-      }
-      catch (IOException e)
-      {
-         return true; // true, as we don't wanna go fwd with broken check
-      }
+      // only proceed if root is a directory
+      return ! root.isDirectory();
    }
 }

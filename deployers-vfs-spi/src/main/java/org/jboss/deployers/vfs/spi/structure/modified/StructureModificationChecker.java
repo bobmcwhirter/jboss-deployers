@@ -23,9 +23,7 @@ package org.jboss.deployers.vfs.spi.structure.modified;
 
 import java.io.IOException;
 
-import org.jboss.deployers.vfs.spi.client.VFSDeployment;
-import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * Simple structure modification checker interface.
@@ -44,20 +42,14 @@ public interface StructureModificationChecker extends StructureListener
    boolean hasStructureBeenModified(VirtualFile root) throws IOException;
 
    /**
-    * Has structure been modified.
-    *
-    * @param deployment the vfs deployment
-    * @return true if structure has been modified, false otherwise
-    * @throws IOException for any error
+    * Has structure been modified.  This method is used for cases when the DeploymentContext name is not 
+    * guaranteed to be the root path. 
+    * 
+    * @param name context name
+    * @param root
+    * @return
+    * @throws IOException
     */
-   boolean hasStructureBeenModified(VFSDeployment deployment) throws IOException;
+   boolean hasStructureBeenModified(String deploymentName, VirtualFile root) throws IOException;
 
-   /**
-    * Has structure been modified.
-    *
-    * @param deploymentContext the vfs deployment context
-    * @return true if structure has been modified, false otherwise
-    * @throws IOException for any error
-    */
-   boolean hasStructureBeenModified(VFSDeploymentContext deploymentContext) throws IOException;
 }

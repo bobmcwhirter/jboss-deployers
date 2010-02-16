@@ -25,7 +25,7 @@ import java.util.List;
 
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.test.deployers.vfs.structure.AbstractStructureTest;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * AbstractWARStructureTest.
@@ -74,11 +74,11 @@ public abstract class AbstractWARStructureTest extends AbstractStructureTest
       assertNotNull("classpath", classpath);
       assertEquals("classpath.size = 3", 3, classpath.size());
       VirtualFile warFile = war.getRoot();
-      VirtualFile classes = warFile.findChild("WEB-INF/classes");
+      VirtualFile classes = warFile.getChild("WEB-INF/classes");
       assertTrue("WEB-INF/classes in classpath", classpath.contains(classes));
-      VirtualFile j0 = warFile.findChild("WEB-INF/lib/j0.jar");
+      VirtualFile j0 = warFile.getChild("WEB-INF/lib/j0.jar");
       assertTrue("WEB-INF/lib/j0.jar in classpath", classpath.contains(j0));
-      VirtualFile j1 = warFile.findChild("WEB-INF/lib/j1.jar");
+      VirtualFile j1 = warFile.getChild("WEB-INF/lib/j1.jar");
       assertTrue("WEB-INF/lib/j1.jar in classpath", classpath.contains(j1));
    }
 }

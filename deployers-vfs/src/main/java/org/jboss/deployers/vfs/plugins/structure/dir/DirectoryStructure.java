@@ -31,7 +31,7 @@ import org.jboss.deployers.vfs.plugins.structure.AbstractVFSStructureDeployer;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
 import org.jboss.deployers.vfs.spi.structure.VFSStructuralDeployers;
 import org.jboss.deployers.vfs.spi.structure.helpers.AbstractStructureDeployer;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * Legacy directory structure.

@@ -52,7 +52,7 @@
           <bean name="JARStructureCandidates" class="org.jboss.deployers.vfs.spi.structure.helpers.DefaultCandidateStructureVisitorFactory">
              <!-- A filter to exclude some obvious non-subdeployments -->
              <property name="filter">
-                <bean name="JARFilter" class="org.jboss.virtual.plugins.vfs.helpers.SuffixesExcludeFilter">
+                <bean name="JARFilter" class="org.jboss.vfs.util.SuffixesExcludeFilter">
                    <constructor><parameter>
                       <list elementClass="java.lang.String">
                          <!-- Exclude class files as subdeployments -->

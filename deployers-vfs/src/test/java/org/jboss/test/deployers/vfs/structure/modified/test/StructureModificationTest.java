@@ -25,8 +25,8 @@ import org.jboss.deployers.structure.spi.main.MainDeployerInternals;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.deployers.vfs.spi.structure.modified.StructureModificationChecker;
 import org.jboss.test.deployers.vfs.webbeans.test.AbstractWebBeansTest;
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VirtualFileFilter;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.VirtualFileFilter;
 
 /**
  * Test StructureModificationChecker.

@@ -40,7 +40,6 @@ import org.jboss.test.deployers.vfs.managed.VFSManagedTestSuite;
 import org.jboss.test.deployers.vfs.matchers.VFSMatchersTestSuite;
 import org.jboss.test.deployers.vfs.metadata.VFSMetaDataTestSuite;
 import org.jboss.test.deployers.vfs.parsing.test.ParsingTestSuite;
-import org.jboss.test.deployers.vfs.redeploy.RedeployTestSuite;
 import org.jboss.test.deployers.vfs.reflect.ReflectTestSuite;
 import org.jboss.test.deployers.vfs.structure.VFSStructureTestSuite;
 import org.jboss.test.deployers.vfs.structurebuilder.VFSStructureBuilderTestSuite;
@@ -85,7 +84,6 @@ public class DeployersVFSTestSuite extends TestSuite
       suite.addTest(AnnotationScanningTestSuite.suite());
       suite.addTest(DependencyTestSuite.suite());
       suite.addTest(JMXTestSuite.suite());
-      suite.addTest(RedeployTestSuite.suite());
       suite.addTest(WebBeansTestSuite.suite()); // now Weld
       suite.addTest(ReflectTestSuite.suite());
 

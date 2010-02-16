@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Collections;
 
 import org.jboss.deployers.vfs.plugins.structure.AbstractVFSDeploymentContext;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>

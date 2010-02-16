@@ -27,8 +27,8 @@ import org.jboss.deployers.vfs.plugins.structure.jar.JARStructure;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.test.deployers.vfs.structure.ear.support.MockEarStructureDeployer;
-import org.jboss.virtual.VirtualFileFilter;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFileFilter;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * Test grouping examples.

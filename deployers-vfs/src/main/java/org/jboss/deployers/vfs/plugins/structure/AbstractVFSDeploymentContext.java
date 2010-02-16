@@ -39,9 +39,10 @@ import org.jboss.deployers.structure.spi.helpers.AbstractDeploymentContext;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentResourceLoader;
 import org.jboss.logging.Logger;
-import org.jboss.virtual.VFSUtils;
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VirtualFileFilter;
+import org.jboss.vfs.VFSUtils;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.VirtualFileFilter;
+import org.jboss.vfs.util.automount.Automounter;
 
 /**
  * AbstractVFSDeploymentContext.
@@ -90,7 +91,7 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
          return root.getName();
       }
    }
-
+   
    /**
     * For serialization
     */
@@ -137,27 +138,20 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
          return;
       }
 
-      try
+      Map<VirtualFile, MetaDataType> locations = new LinkedHashMap<VirtualFile, MetaDataType>();
+      for (MetaDataEntry entry : paths)
       {
-         Map<VirtualFile, MetaDataType> locations = new LinkedHashMap<VirtualFile, MetaDataType>();
-         for (MetaDataEntry entry : paths)
-         {
-            if (entry == null)
-               throw new IllegalArgumentException("Null entry in paths: " + paths);
+         if (entry == null)
+            throw new IllegalArgumentException("Null entry in paths: " + paths);
 
-            String path = entry.getPath();
-            VirtualFile child = root.getChild(path);
-            if (child != null)
-               locations.put(child, entry.getType());
-            else
-               log.debugf("Meta data path does not exist: root=%1s path=%2s", root.getPathName(), path);
-         }
-         setMetaDataLocationsMap(locations);
+         String path = entry.getPath();
+         VirtualFile child = root.getChild(path);
+         if (child != null)
+            locations.put(child, entry.getType());
+         else
+            log.debugf("Meta data path does not exist: root=%1s path=%2s", root.getPathName(), path);
       }
-      catch (IOException e)
-      {
-         log.warn("Exception while applying paths: root=" + root.getPathName() + " paths=" + paths);
-      }
+      setMetaDataLocationsMap(locations);
    }
 
    public List<VirtualFile> getMetaDataLocations()
@@ -228,7 +222,7 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
          if (metaDataLocations == null || metaDataLocations.isEmpty())
          {
             // It has to be a plain file
-            if (root != null && SecurityActions.isLeaf(root))
+            if (root != null && root.exists() && SecurityActions.isLeaf(root))
             {
                String fileName = root.getName();
                if (fileName.equals(name))
@@ -277,24 +271,17 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
          if (filter.accepts(entry.getValue()))
          {
             VirtualFile location = entry.getKey();
-            try
+            result = location.getChild(name);
+            if (result.exists())
             {
-               result = location.getChild(name);
-               if (result != null)
-               {
-                  if (log.isTraceEnabled())
-                     log.trace("Found " + name + " in " + location.getName());
-                  deployed();
-                  break;
-               }
-            }
-            catch (IOException e)
-            {
-               log.debugf("Search exception invocation for metafile %1s in %2s, reason: %3s", name, location.getName(), e);
+	           if (log.isTraceEnabled())
+                  log.trace("Found " + name + " in " + location.getName());
+               deployed();
+               break;
             }
          }
       }
-      return result;
+      return result != null && result.exists() ? result : null;
    }
 
    public List<VirtualFile> getMetaDataFiles(String name, String suffix)
@@ -557,20 +544,14 @@ public class AbstractVFSDeploymentContext extends AbstractDeploymentContext impl
    {
       return new AbstractVFSDeploymentUnit(this);
    }
-
+   
    @Override
    public void cleanup()
    {
-      try
-      {
-         root.cleanup();
-      }
-      finally
-      {
-         super.cleanup();
-      }
+      Automounter.cleanup(root);
+      super.cleanup();
    }
-   
+
    @SuppressWarnings("unchecked")
    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException
    {

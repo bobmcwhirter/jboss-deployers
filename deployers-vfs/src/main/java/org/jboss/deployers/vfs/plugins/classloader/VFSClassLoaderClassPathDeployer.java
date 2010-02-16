@@ -21,6 +21,7 @@
 */
 package org.jboss.deployers.vfs.plugins.classloader;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -32,7 +33,8 @@ import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.vfs.spi.deployer.AbstractOptionalVFSRealDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.deployers.vfs.spi.structure.helpers.ClassPathVisitor;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.util.automount.Automounter;
 
 /**
  * VFSClassLoaderClassPathDeployer.
@@ -104,8 +106,18 @@ public class VFSClassLoaderClassPathDeployer extends AbstractOptionalVFSRealDepl
          {
             if (vfsClassPath.contains(file) == false)
             {
-               if (canSeeParent == false || (canSeeParent && parentClassPath.contains(file) == false))
+               if (canSeeParent == false || (canSeeParent && parentClassPath.contains(file) == false)) 
+               {
+                  try
+                  {
+                     Automounter.mount(unit.getRoot(), file);
+                  }
+                  catch (IOException e)
+                  {
+                     DeploymentException.rethrowAsDeploymentException("Failed to mount " + file, e);
+                  }
                   vfsClassPath.add(file);
+               }
             }
          }
       }

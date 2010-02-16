@@ -22,6 +22,7 @@
 package org.jboss.deployers.vfs.plugins.structure.file;
 
 import java.util.Set;
+import java.util.Arrays;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.jboss.beans.metadata.api.annotations.Install;
@@ -31,8 +32,8 @@ import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.deployers.vfs.plugins.structure.AbstractVFSStructureDeployer;
 import org.jboss.deployers.vfs.spi.deployer.FileMatcher;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VirtualFileFilter;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.VirtualFileFilter;
 
 /**
  * FileStructure is a simple suffix recognition structure deployer.
@@ -47,19 +48,15 @@ import org.jboss.virtual.VirtualFileFilter;
 public class FileStructure extends AbstractVFSStructureDeployer implements VirtualFileFilter
 {
    /** The file suffixes */
-   private static Set<String> fileSuffixes = new CopyOnWriteArraySet<String>();
+   private static Set<String> fileSuffixes = new CopyOnWriteArraySet<String>(Arrays.asList(new String[] {
+      "-service.xml",
+      "-beans.xml",
+      "-ds.xml",
+      "-aop.xml",
+   }));
 
    /** The file matchers */
    private Set<FileMatcher> fileMatchers = new CopyOnWriteArraySet<FileMatcher>();
-
-   // Initialise known suffixes
-   static
-   {
-      fileSuffixes.add("-service.xml");
-      fileSuffixes.add("-beans.xml");
-      fileSuffixes.add("-ds.xml");
-      fileSuffixes.add("-aop.xml");
-   }
 
    /**
     * Create a new FileStructure.

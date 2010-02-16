@@ -23,8 +23,8 @@ package org.jboss.deployers.vfs.spi.structure.modified;
 
 import java.util.List;
 
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VirtualFileFilter;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.VirtualFileFilter;
 
 /**
  * Simple structure cache.

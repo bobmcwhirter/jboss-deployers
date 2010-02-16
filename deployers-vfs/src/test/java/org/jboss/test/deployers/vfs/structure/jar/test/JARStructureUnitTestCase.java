@@ -48,6 +48,6 @@ public class JARStructureUnitTestCase extends AbstractJARStructureTest
 
    protected VFSDeploymentContext determineStructure(VFSDeployment deployment) throws Exception
    {
-      return determineStructureWithStructureDeployer(deployment, new JARStructure());
+      return determineStructureWithStructureDeployers(deployment, false, new JARStructure());
    }
 }

@@ -24,8 +24,8 @@ package org.jboss.deployers.vfs.spi.deployer;
 import java.util.jar.Manifest;
 
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
-import org.jboss.virtual.VFSUtils;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VFSUtils;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * Parse manifest.mf file.

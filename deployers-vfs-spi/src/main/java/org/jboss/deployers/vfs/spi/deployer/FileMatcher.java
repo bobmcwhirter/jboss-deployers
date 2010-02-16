@@ -21,7 +21,7 @@
 */
 package org.jboss.deployers.vfs.spi.deployer;
 
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * Matches virtual file to check if it can be deployed.

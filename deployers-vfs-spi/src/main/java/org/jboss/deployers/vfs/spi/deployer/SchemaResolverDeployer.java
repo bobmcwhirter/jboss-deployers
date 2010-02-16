@@ -22,8 +22,8 @@
 package org.jboss.deployers.vfs.spi.deployer;
 
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VFSInputSource;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.VFSInputSource;
 import org.jboss.xb.annotations.JBossXmlConstants;
 import org.jboss.xb.util.JBossXBHelper;
 import org.xml.sax.InputSource;

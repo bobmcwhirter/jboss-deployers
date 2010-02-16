@@ -42,9 +42,8 @@ import org.jboss.kernel.spi.dependency.KernelControllerContext;
 import org.jboss.test.BaseTestCase;
 import org.jboss.test.deployers.vfs.structure.file.support.BshFileMatcher;
 import org.jboss.test.deployers.vfs.structure.file.support.TmpFileStructure;
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.spi.VFSContext;
-import org.jboss.virtual.spi.VirtualFileHandler;
+import org.jboss.vfs.VFS;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * FileMatcherTestCase.
@@ -65,7 +64,7 @@ public class FileMatcherTestCase extends BaseTestCase
 
    protected VirtualFile getVirtualFile() throws Throwable
    {
-      return new MyVirtualFile();
+      return VFS.getChild("somefile.bsh");
    }
 
    public void testMatcher() throws Throwable
@@ -100,162 +99,162 @@ public class FileMatcherTestCase extends BaseTestCase
       }
    }
 
-   private static class MyVirtualFile extends VirtualFile
-   {
-      /** The serialVersionUID */
-      private static final long serialVersionUID = 1L;
-
-      public MyVirtualFile()
-      {
-         super(getVirtualFileHandler());
-      }
-
-      private static VirtualFileHandler getVirtualFileHandler()
-      {
-         return new VirtualFileHandler()
-         {
-            /** The serialVersionUID */
-            private static final long serialVersionUID = 1L;
-
-            public String getName()
-            {
-               return null;
-            }
-
-            public String getPathName()
-            {
-               return null;
-            }
-
-            public URL toVfsUrl() throws MalformedURLException, URISyntaxException
-            {
-               return null;
-            }
-
-            public URI toURI() throws URISyntaxException
-            {
-               return null;
-            }
-
-            public URL toURL() throws MalformedURLException, URISyntaxException
-            {
-               return null;
-            }
-
-            public long getLastModified() throws IOException
-            {
-               return 0;
-            }
-
-            public boolean hasBeenModified() throws IOException
-            {
-               return false;
-            }
-
-            public long getSize() throws IOException
-            {
-               return 0;
-            }
-
-            public boolean exists() throws IOException
-            {
-               return false;
-            }
-
-            public boolean isLeaf() throws IOException
-            {
-               return false;
-            }
-
-            public boolean isArchive() throws IOException
-            {
-               return false;
-            }
-
-            public boolean isHidden() throws IOException
-            {
-               return false;
-            }
-
-            public String getLocalPathName()
-            {
-               return null;
-            }
-
-            public boolean isNested() throws IOException
-            {
-               return false;
-            }
-
-            public InputStream openStream() throws IOException
-            {
-               return null;
-            }
-
-            public VirtualFileHandler getParent() throws IOException
-            {
-               return null;
-            }
-
-            public List<VirtualFileHandler> getChildren(boolean ignoreErrors) throws IOException
-            {
-               return null;
-            }
-
-            public VirtualFileHandler getChild(String path) throws IOException
-            {
-               return null;
-            }
-
-            public VFSContext getVFSContext()
-            {
-               return null;
-            }
-
-            public VirtualFile getVirtualFile()
-            {
-               return null;
-            }
-
-            public void close()
-            {
-               
-            }
-
-            public void replaceChild(VirtualFileHandler original, VirtualFileHandler replacement)
-            {
-               
-            }
-
-            public boolean removeChild(String name) throws IOException
-            {
-               return false;
-            }
-
-            public boolean delete(int gracePeriod) throws IOException
-            {
-               return false;
-            }
-
-            public URL getRealURL() throws IOException, URISyntaxException
-            {
-               return null;
-            }
-
-            public void cleanup()
-            {
-            }
-
-            public Certificate[] getCertificates()
-            {
-               return null;
-            }
-         };
-      }
-
-      public String getName()
-      {
-         return "somefile.bsh";
-      }
-   }
+//   private static class MyVirtualFile extends VirtualFile
+//   {
+//      /** The serialVersionUID */
+//      private static final long serialVersionUID = 1L;
+//
+//      public MyVirtualFile()
+//      {
+//         super(getVirtualFileHandler());
+//      }
+//
+//      private static VirtualFileHandler getVirtualFileHandler()
+//      {
+//         return new VirtualFileHandler()
+//         {
+//            /** The serialVersionUID */
+//            private static final long serialVersionUID = 1L;
+//
+//            public String getName()
+//            {
+//               return null;
+//            }
+//
+//            public String getPathName()
+//            {
+//               return null;
+//            }
+//
+//            public URL toVfsUrl() throws MalformedURLException, URISyntaxException
+//            {
+//               return null;
+//            }
+//
+//            public URI toURI() throws URISyntaxException
+//            {
+//               return null;
+//            }
+//
+//            public URL toURL() throws MalformedURLException, URISyntaxException
+//            {
+//               return null;
+//            }
+//
+//            public long getLastModified() throws IOException
+//            {
+//               return 0;
+//            }
+//
+//            public boolean hasBeenModified() throws IOException
+//            {
+//               return false;
+//            }
+//
+//            public long getSize() throws IOException
+//            {
+//               return 0;
+//            }
+//
+//            public boolean exists() throws IOException
+//            {
+//               return false;
+//            }
+//
+//            public boolean isLeaf() throws IOException
+//            {
+//               return false;
+//            }
+//
+//            public boolean isArchive() throws IOException
+//            {
+//               return false;
+//            }
+//
+//            public boolean isHidden() throws IOException
+//            {
+//               return false;
+//            }
+//
+//            public String getLocalPathName()
+//            {
+//               return null;
+//            }
+//
+//            public boolean isNested() throws IOException
+//            {
+//               return false;
+//            }
+//
+//            public InputStream openStream() throws IOException
+//            {
+//               return null;
+//            }
+//
+//            public VirtualFileHandler getParent() throws IOException
+//            {
+//               return null;
+//            }
+//
+//            public List<VirtualFileHandler> getChildren(boolean ignoreErrors) throws IOException
+//            {
+//               return null;
+//            }
+//
+//            public VirtualFileHandler getChild(String path) throws IOException
+//            {
+//               return null;
+//            }
+//
+//            public VFSContext getVFSContext()
+//            {
+//               return null;
+//            }
+//
+//            public VirtualFile getVirtualFile()
+//            {
+//               return null;
+//            }
+//
+//            public void close()
+//            {
+//               
+//            }
+//
+//            public void replaceChild(VirtualFileHandler original, VirtualFileHandler replacement)
+//            {
+//               
+//            }
+//
+//            public boolean removeChild(String name) throws IOException
+//            {
+//               return false;
+//            }
+//
+//            public boolean delete(int gracePeriod) throws IOException
+//            {
+//               return false;
+//            }
+//
+//            public URL getRealURL() throws IOException, URISyntaxException
+//            {
+//               return null;
+//            }
+//
+//            public void cleanup()
+//            {
+//            }
+//
+//            public Certificate[] getCertificates()
+//            {
+//               return null;
+//            }
+//         };
+//      }
+//
+//      public String getName()
+//      {
+//         return "somefile.bsh";
+//      }
+//   }
 }

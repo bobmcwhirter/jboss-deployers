@@ -21,7 +21,7 @@
  */
 package org.jboss.deployers.vfs.spi.structure.modified;
 
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * StructureListener.

@@ -45,10 +45,6 @@ import org.jboss.kernel.spi.dependency.KernelController;
 import org.jboss.test.deployers.vfs.deployer.AbstractDeployerUnitTest;
 import org.jboss.test.deployers.vfs.deployer.facelets.support.SearchDeployer;
 import org.jboss.test.deployers.vfs.structure.ear.support.MockEarStructureDeployer;
-import org.jboss.virtual.VFSUtils;
-import org.jboss.virtual.plugins.cache.IterableTimedVFSCache;
-import org.jboss.virtual.spi.cache.VFSCache;
-import org.jboss.virtual.spi.cache.VFSCacheFactory;
 
 /**
  * BookingUnitTestCase.
@@ -67,12 +63,6 @@ public class BookingUnitTest extends AbstractDeployerUnitTest
    protected void setUp() throws Exception
    {
       super.setUp();
-      // Uncomment this to test VFS nested jar copy handling
-      System.setProperty(VFSUtils.FORCE_COPY_KEY, "true");
-
-      VFSCache cache = new IterableTimedVFSCache();
-      cache.start();
-      VFSCacheFactory.setInstance(cache);
 
       addStructureDeployer(main, new WARStructure());
       addStructureDeployer(main, new MockEarStructureDeployer());
@@ -81,7 +71,6 @@ public class BookingUnitTest extends AbstractDeployerUnitTest
    @Override
    protected void tearDown() throws Exception
    {
-      VFSCacheFactory.setInstance(null);
       super.tearDown();
    }
 

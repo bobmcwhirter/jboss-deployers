@@ -34,8 +34,8 @@ import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.vfs.spi.deployer.AbstractOptionalVFSRealDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
-import org.jboss.virtual.VFS;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VFS;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * Integration deployer.
@@ -129,7 +129,7 @@ public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealD
          {
             for (URL integrationURL : integrationURLs)
             {
-               VirtualFile integration = VFS.getRoot(integrationURL);
+               VirtualFile integration = VFS.getChild(integrationURL);
                unit.addClassPath(integration);
                added.add(integration);
             }
@@ -153,7 +153,7 @@ public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealD
          {
             try
             {
-               VirtualFile integration = VFS.getRoot(integrationURL);
+               VirtualFile integration = VFS.getChild(integrationURL);
                unit.removeClassPath(integration);
             }
             catch (Throwable t)

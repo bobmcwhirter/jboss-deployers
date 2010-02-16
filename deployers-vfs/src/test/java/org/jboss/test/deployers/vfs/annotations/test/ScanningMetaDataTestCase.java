@@ -37,7 +37,7 @@ import org.jboss.deployers.vfs.spi.deployer.SchemaResolverDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.test.deployers.BaseDeployersVFSTest;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>

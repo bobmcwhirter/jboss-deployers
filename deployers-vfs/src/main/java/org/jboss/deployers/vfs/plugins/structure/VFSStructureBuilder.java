@@ -39,10 +39,11 @@ import org.jboss.deployers.vfs.plugins.structure.modify.ModificationActions;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.logging.Logger;
-import org.jboss.virtual.VFSUtils;
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VisitorAttributes;
-import org.jboss.virtual.plugins.vfs.helpers.SuffixMatchFilter;
+import org.jboss.vfs.VFSUtils;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.VisitorAttributes;
+import org.jboss.vfs.util.automount.Automounter;
+import org.jboss.vfs.util.SuffixMatchFilter;
 
 /**
  * VFSStructureBuilder.
@@ -88,11 +89,10 @@ public class VFSStructureBuilder extends AbstractStructureBuilder
          try
          {
             VirtualFile parentFile = vfsParent.getRoot();
-            @SuppressWarnings("deprecation")
-            VirtualFile file = parentFile.findChild(path); // leaving the findChild usage
-            return new AbstractVFSDeploymentContext(applyModification(file, child), path);
+            VirtualFile file = parentFile.getChild(path); 
+            return new AbstractVFSDeploymentContext(applyModification(file.exists() ? file : null, child), path);
          }
-         catch (Throwable t)
+         catch (RuntimeException t)
          {
             throw DeploymentException.rethrowAsDeploymentException("Unable to determine child " + path + " from parent " + vfsParent.getRoot().getName(), t);
          }
@@ -182,9 +182,9 @@ public class VFSStructureBuilder extends AbstractStructureBuilder
                {
                   try
                   {
-                     child = root.findChild(entry.getPath()); // leaving the findChild
+                     child = root.getChild(entry.getPath());
                   }
-                  catch (Throwable t)
+                  catch (RuntimeException t)
                   {
                      throw DeploymentException.rethrowAsDeploymentException("Unable to find class path entry " + entry + " from " + root.getName(), t);
                   }
@@ -208,6 +208,7 @@ public class VFSStructureBuilder extends AbstractStructureBuilder
                      // Process any Manifest Class-Path refs
                      for (VirtualFile file : matches)
                      {
+                        Automounter.mount(root, file);
                         VFSUtils.addManifestLocations(file, classPath);
                         if (classPathHadVF == false)
                            classPathHadVF = file.equals(root);
@@ -219,7 +220,9 @@ public class VFSStructureBuilder extends AbstractStructureBuilder
          
          VirtualFile file = vfsContext.getRoot();
          if (classPathHadVF == false && SecurityActions.isLeaf(file) == false)
+         {
             VFSUtils.addManifestLocations(file, classPath);
+         }
 
          if (classPath.isEmpty() == false)
             vfsContext.setClassPath(classPath);

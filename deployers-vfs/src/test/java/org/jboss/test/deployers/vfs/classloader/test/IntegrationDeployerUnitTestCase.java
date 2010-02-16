@@ -21,16 +21,21 @@
  */
 package org.jboss.test.deployers.vfs.classloader.test;
 
-import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.concurrent.Executors;
 
 import junit.framework.Test;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.test.deployers.BootstrapDeployersTest;
-import org.jboss.virtual.MemoryFileFactory;
-import org.jboss.virtual.VFS;
+import org.jboss.vfs.TempFileProvider;
+import org.jboss.vfs.VFS;
+import org.jboss.vfs.VFSUtils;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * IntegrationDeployerUnitTestCase.
@@ -39,6 +44,8 @@ import org.jboss.virtual.VFS;
  */
 public class IntegrationDeployerUnitTestCase extends BootstrapDeployersTest
 {
+   private Closeable tmpDirHandle;
+   
    public static Test suite()
    {
       return suite(IntegrationDeployerUnitTestCase.class);
@@ -51,32 +58,37 @@ public class IntegrationDeployerUnitTestCase extends BootstrapDeployersTest
 
    protected void setUp() throws Exception
    {
-      VFS.init();
-
-      URL dynamicClassRoot = new URL("vfsmemory", "integration-test", "");
-      VFS vfs = MemoryFileFactory.createRoot(dynamicClassRoot);
-      System.setProperty("integration.test.url", vfs.getRoot().toURL().toExternalForm());
-
+      VirtualFile dynamicClassRoot = VFS.getChild("/integration-test");
+      tmpDirHandle = VFS.mountTemp(dynamicClassRoot, TempFileProvider.create("test", Executors.newSingleThreadScheduledExecutor()));
+      System.setProperty("integration.test.url", dynamicClassRoot.toURL().toExternalForm());
+      
       URL file = getResource("/org/jboss/test/deployers/vfs/classloader/test/Touch.class");
       assertNotNull(file);
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+      File tempFile = dynamicClassRoot.getChild("Touch.class").getPhysicalFile();
+      
+      FileOutputStream os = new FileOutputStream(tempFile);
       InputStream is = file.openStream();
       try
       {
          int read = is.read();
          while(read >= 0)
          {
-            baos.write(read);
+            os.write(read);
             read = is.read();
          }
       }
       finally
       {
-         is.close();
+         VFSUtils.safeClose(is);
+         VFSUtils.safeClose(os);
       }
-      MemoryFileFactory.putFile(new URL(dynamicClassRoot.toExternalForm() + "/Touch.class"), baos.toByteArray());
-
       super.setUp();
+   }
+   
+   protected void tearDown() throws Exception 
+   {
+      VFSUtils.safeClose(tmpDirHandle);
    }
 
    public void testPath() throws Exception

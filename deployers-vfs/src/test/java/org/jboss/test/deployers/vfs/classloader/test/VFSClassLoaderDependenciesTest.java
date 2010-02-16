@@ -54,8 +54,8 @@ import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.client.VFSDeploymentFactory;
 import org.jboss.test.deployers.BaseDeployersVFSTest;
 import org.jboss.test.deployers.vfs.classloader.support.TestLevelClassLoaderSystemDeployer;
-import org.jboss.virtual.VFS;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VFS;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * ClassLoadersDependencies test.
@@ -103,7 +103,7 @@ public abstract class VFSClassLoaderDependenciesTest extends BaseDeployersVFSTes
    protected VFSDeployment createDeployment(String name) throws Exception
    {
       URL url = getClass().getProtectionDomain().getCodeSource().getLocation();
-      VirtualFile file = VFS.getRoot(url);
+      VirtualFile file = VFS.getChild(url);
       VFSDeployment deployment = VFSDeploymentFactory.getInstance().createVFSDeployment(file);
       DeploymentFactory factory = new DeploymentFactory();
       factory.addContext(deployment, "");

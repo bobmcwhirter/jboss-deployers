@@ -21,15 +21,17 @@
 */
 package org.jboss.test.deployers;
 
-import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.io.Closeable;
+import java.io.IOException;
 
 import junit.framework.AssertionFailedError;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.jboss.classloader.plugins.ClassLoaderUtils;
 import org.jboss.classloader.plugins.jdk.AbstractJDKChecker;
 import org.jboss.dependency.spi.ControllerContext;
@@ -41,13 +43,11 @@ import org.jboss.deployers.structure.spi.main.MainDeployerStructure;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.client.VFSDeploymentFactory;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
+import org.jboss.test.deployers.support.AssembledDirectory;
 import org.jboss.test.kernel.junit.MicrocontainerTest;
-import org.jboss.virtual.AssembledDirectory;
-import org.jboss.virtual.VFS;
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.plugins.context.file.FileSystemContext;
-import org.jboss.virtual.plugins.context.jar.JarUtils;
-import org.jboss.virtual.plugins.vfs.helpers.SuffixesExcludeFilter;
+import org.jboss.vfs.VFS;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.VirtualFileAssembly;
 
 /**
  * BootstrapDeployersTest.
@@ -57,6 +57,8 @@ import org.jboss.virtual.plugins.vfs.helpers.SuffixesExcludeFilter;
  */
 public abstract class BootstrapDeployersTest extends MicrocontainerTest
 {
+   private static Map<VirtualFile, Closeable> assemblyHandles = new HashMap<VirtualFile, Closeable>();
+   
    public static BootstrapDeployersTestDelegate getDelegate(Class<?> clazz) throws Exception
    {
       return new BootstrapDeployersTestDelegate(clazz);
@@ -95,13 +97,13 @@ public abstract class BootstrapDeployersTest extends MicrocontainerTest
       return (BootstrapDeployersTestDelegate) super.getDelegate();
    }
    
-   protected VirtualFile createDeploymentRoot(String root, String child) throws IOException
+   protected VirtualFile createDeploymentRoot(String root, String child) throws IOException, URISyntaxException
    {
       URL resourceRoot = getClass().getResource(root);
       if (resourceRoot == null)
          fail("Resource not found: " + root);
-      VirtualFile deployment = VFS.getVirtualFile(resourceRoot, child);
-      if (deployment == null)
+      VirtualFile deployment = VFS.getChild(resourceRoot).getChild(child);
+      if (! deployment.exists())
          fail("Child not found " + child + " from " + resourceRoot);
       return deployment;
    }
@@ -299,34 +301,6 @@ public abstract class BootstrapDeployersTest extends MicrocontainerTest
       }
    }
 
-   protected AssembledDirectory createAssembledDirectory(String name) throws Exception
-   {
-      return createAssembledDirectory(name, "");     
-   }
-
-   protected AssembledDirectory createAssembledDirectory(String name, String rootName) throws Exception
-   {
-      return AssembledDirectory.createAssembledDirectory(name, rootName);
-   }
-
-   protected void addPackage(AssembledDirectory dir, Class<?> reference) throws Exception
-   {
-      String packagePath = ClassLoaderUtils.packageNameToPath(reference.getName());
-      dir.addResources(reference, new String[] { packagePath + "/*.class" } , new String[0]);
-   }
-
-   protected void addPath(final AssembledDirectory dir, String path, String name) throws Exception
-   {
-      URL url = getResource(path);
-      if (url == null)
-         fail(path + " not found");
-
-      VirtualFile file = VFS.getVirtualFile(url, name);
-      // TODO - remove this filter after new VFS relase
-      SuffixesExcludeFilter noJars = new SuffixesExcludeFilter(JarUtils.getSuffixes());
-      dir.addPath(file, noJars);
-  }
-   
    protected DeploymentUnit assertChild(DeploymentUnit parent, String name)
    {
       String parentName = parent.getName();
@@ -344,15 +318,40 @@ public abstract class BootstrapDeployersTest extends MicrocontainerTest
       }
       throw new AssertionFailedError("Child " + name + " not found in " + children);
    }
+   
+   protected AssembledDirectory createAssembledDirectory(VirtualFile mountPoint) throws Exception
+   {
+      VirtualFileAssembly assembly = new VirtualFileAssembly();
+      assemblyHandles.put(mountPoint, VFS.mountAssembly(assembly, mountPoint));
+      return new AssembledDirectory(getClass(), assembly);
+   }
+   
+   protected VirtualFile getVirtualFile(String path) throws URISyntaxException 
+   {
+      URL resource = getResource(path);
+      if(resource != null)
+         return VFS.getChild(resource);
+      return null;
+   }
+
+   protected void closeAssembly(VirtualFile mountPoint) throws IOException
+   {
+      if (assemblyHandles.containsKey(mountPoint))
+         assemblyHandles.get(mountPoint).close();
+   }
 
    protected void setUp() throws Exception
    {
       super.setUp();
       // This is a hack for a hack. ;-)
       AbstractJDKChecker.getExcluded().add(BootstrapDeployersTest.class);
-
-      // Reduce the noise from the VFS
-      // FIXME add method change logging levels to AbstractTestCase
-      Logger.getLogger(FileSystemContext.class).setLevel(Level.INFO);
+   }
+   
+   protected void tearDown() throws Exception 
+   {
+      for (Closeable handle : assemblyHandles.values())
+      {
+         handle.close();
+      }
    }
 }

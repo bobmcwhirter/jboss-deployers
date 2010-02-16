@@ -34,8 +34,8 @@ import org.jboss.system.metadata.ServiceDeploymentParser;
 import org.jboss.system.metadata.ServiceMetaData;
 import org.jboss.system.metadata.ServiceMetaDataParser;
 import org.jboss.util.xml.DOMWriter;
-import org.jboss.virtual.VFS;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VFS;
+import org.jboss.vfs.VirtualFile;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -159,7 +159,7 @@ public class SARDeployer extends JAXPDeployer<ServiceDeployment>
             if (defaultCodeBaseRoot == null)
                throw new DeploymentException("No default codebase root for " + codebase + " in " + unit.getName());
             URL codeBaseURL = new URL(defaultCodeBaseRoot, codebase);
-            codebaseFile = VFS.getRoot(codeBaseURL);
+            codebaseFile = VFS.getChild(codeBaseURL);
          }
 
          if (codebaseFile == null)

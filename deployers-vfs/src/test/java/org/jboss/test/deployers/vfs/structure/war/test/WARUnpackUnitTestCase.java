@@ -23,12 +23,13 @@ package org.jboss.test.deployers.vfs.structure.war.test;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.test.deployers.vfs.structure.AbstractStructureTest;
 import org.jboss.test.deployers.vfs.structure.support.WarUnpackStructure;
-import org.jboss.virtual.VFSUtils;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.util.automount.Automounter;
 
 /**
  * WARUnpackUnitTestCase.
@@ -56,6 +57,13 @@ public class WARUnpackUnitTestCase extends AbstractStructureTest
    {
       VFSDeploymentContext root = assertDeploy("/structure/war/simple", "simple.war");
       VirtualFile file = root.getRoot();
-      assertSame(file, VFSUtils.unpack(file));
+      try {
+         Automounter.mount(file);
+         assertSame(root.getRoot(), file);
+      }
+      finally 
+      {
+         Automounter.cleanup(file);
+      }
    }
 }

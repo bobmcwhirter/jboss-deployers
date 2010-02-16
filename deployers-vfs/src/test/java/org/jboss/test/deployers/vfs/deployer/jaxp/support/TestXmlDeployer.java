@@ -2,7 +2,7 @@ package org.jboss.test.deployers.vfs.deployer.jaxp.support;
 
 import org.jboss.deployers.vfs.spi.deployer.JAXPDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 import org.w3c.dom.Document;
 
 /**

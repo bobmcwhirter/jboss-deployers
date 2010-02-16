@@ -21,24 +21,14 @@
 */
 package org.jboss.test.deployers.vfs.parsing.test;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.List;
-import java.security.cert.Certificate;
-
 import junit.framework.Test;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.vfs.plugins.structure.AbstractVFSDeploymentContext;
 import org.jboss.deployers.vfs.spi.deployer.AbstractVFSParsingDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.test.BaseTestCase;
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.spi.VFSContext;
-import org.jboss.virtual.spi.VirtualFileHandler;
+import org.jboss.vfs.VFS;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * alt-dd tests.
@@ -84,142 +74,6 @@ public class DeployersAltDDTestCase extends BaseTestCase
 
    private static VirtualFile getMockVF()
    {
-      return new VirtualFile(new VirtualFileHandler()
-      {
-         private static final long serialVersionUID = 1L;
-
-         public void close()
-         {
-         }
-
-         public boolean exists() throws IOException
-         {
-            return false;
-         }
-
-         public VirtualFileHandler getChild(String arg0) throws IOException
-         {
-            return null;
-         }
-
-         public List<VirtualFileHandler> getChildren(boolean arg0) throws IOException
-         {
-            return null;
-         }
-
-         public long getLastModified() throws IOException
-         {
-            return 0;
-         }
-
-         public String getName()
-         {
-            return null;
-         }
-
-         public VirtualFileHandler getParent() throws IOException
-         {
-            return null;
-         }
-
-         public String getPathName()
-         {
-            return null;
-         }
-
-         public long getSize() throws IOException
-         {
-            return 0;
-         }
-
-         public VFSContext getVFSContext()
-         {
-            return null;
-         }
-
-         public VirtualFile getVirtualFile()
-         {
-            return null;
-         }
-
-         public boolean hasBeenModified() throws IOException
-         {
-            return false;
-         }
-
-         public boolean isHidden() throws IOException
-         {
-            return false;
-         }
-
-         public boolean isLeaf() throws IOException
-         {
-            return false;
-         }
-
-         public boolean isArchive() throws IOException
-         {
-            return false;
-         }
-
-         public String getLocalPathName()
-         {
-            return null;
-         }
-
-         public boolean isNested() throws IOException
-         {
-            return false;
-         }
-
-         public InputStream openStream() throws IOException
-         {
-            return null;
-         }
-
-         public URI toURI() throws URISyntaxException
-         {
-            return null;
-         }
-
-         public URL toURL() throws MalformedURLException, URISyntaxException
-         {
-            return null;
-         }
-
-         public URL toVfsUrl() throws MalformedURLException, URISyntaxException
-         {
-            return null;
-         }
-
-         public void replaceChild(VirtualFileHandler original, VirtualFileHandler replacement)
-         {
-
-         }
-
-         public boolean removeChild(String name) throws IOException
-         {
-            return false;
-         }
-
-         public boolean delete(int gracePeriod) throws IOException
-         {
-            return false;
-         }
-
-         public URL getRealURL() throws IOException, URISyntaxException
-         {
-            return null;
-         }
-
-         public void cleanup()
-         {
-         }
-
-         public Certificate[] getCertificates()
-         {
-            return null;
-         }
-      });
+      return VFS.getChild("/mock/file");
    }
 }

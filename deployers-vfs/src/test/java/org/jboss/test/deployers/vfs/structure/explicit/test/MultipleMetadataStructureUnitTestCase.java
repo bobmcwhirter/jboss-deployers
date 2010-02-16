@@ -29,7 +29,7 @@ import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.plugins.structure.explicit.DeclaredStructure;
 import org.jboss.deployers.vfs.plugins.structure.jar.JARStructure;
 import org.jboss.deployers.vfs.plugins.structure.file.FileStructure;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 

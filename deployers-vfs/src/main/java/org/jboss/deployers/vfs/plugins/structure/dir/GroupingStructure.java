@@ -31,8 +31,9 @@ import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.deployers.vfs.plugins.structure.AbstractVFSStructureDeployer;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
 import org.jboss.util.collection.CollectionsFactory;
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VirtualFileFilter;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.VirtualFileFilter;
+import org.jboss.vfs.util.automount.Automounter;
 
 /**
  * Similar to jar or directory structure,
@@ -95,7 +96,7 @@ public class GroupingStructure extends AbstractVFSStructureDeployer
          for (String lib : libs)
          {
             VirtualFile libVF = file.getChild(lib);
-            if (libVF != null)
+            if (libVF.exists())
             {
                VirtualFileFilter lf = filters.get(lib);
                if (lf == null)
@@ -103,7 +104,10 @@ public class GroupingStructure extends AbstractVFSStructureDeployer
 
                List<VirtualFile> archives = libVF.getChildren(lf);
                for (VirtualFile archive : archives)
+               {
+                  Automounter.mount(file, archive);
                   addClassPath(structureContext, archive, true, true, context);
+               }
             }
             else
             {
@@ -116,7 +120,7 @@ public class GroupingStructure extends AbstractVFSStructureDeployer
          for (String group : groups)
          {
             VirtualFile groupVF = file.getChild(group);
-            if (groupVF != null)
+            if (groupVF.exists())
             {
                VirtualFileFilter gf = filters.get(group);
                if (gf == null)

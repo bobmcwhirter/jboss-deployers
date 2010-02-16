@@ -26,8 +26,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VFSInputSource;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.VFSInputSource;
 import org.jboss.xb.annotations.JBossXmlConstants;
 import org.jboss.xb.util.JBossXBHelper;
 import org.xml.sax.InputSource;

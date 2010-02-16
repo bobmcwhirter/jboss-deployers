@@ -33,7 +33,8 @@ import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.test.deployers.BootstrapDeployersTest;
 import org.jboss.test.deployers.vfs.classloader.support.a.A;
 import org.jboss.test.deployers.vfs.classloader.support.b.B;
-import org.jboss.virtual.AssembledDirectory;
+import org.jboss.vfs.VFS;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * BootstrapDeployersSmokeTestUnitTestCase.
@@ -111,9 +112,10 @@ public class BootstrapDeployersSmokeTestUnitTestCase extends BootstrapDeployersT
    
    public void testAssembledDirectory() throws Exception
    {
-      AssembledDirectory dirA = createAssembledDirectory("a");
-      addPackage(dirA, A.class);
-      addPath(dirA, "/bootstrap/test-assembled", "META-INF");
+      VirtualFile dirA = VFS.getChild(getName()).getChild("/assembly");
+      createAssembledDirectory(dirA)
+         .addPackage(A.class)
+         .addPath("/bootstrap/test-assembled");
       VFSDeploymentUnit unitA = assertDeploy(dirA);
       try
       {
@@ -132,11 +134,11 @@ public class BootstrapDeployersSmokeTestUnitTestCase extends BootstrapDeployersT
    
    public void testAssembledSubDirectory() throws Exception
    {
-      AssembledDirectory dirA = createAssembledDirectory("a");
-      addPackage(dirA, A.class);
-      AssembledDirectory dirB = dirA.mkdir("b");
-      addPackage(dirB, B.class);
-      addPath(dirB, "/bootstrap/test-assembled", "META-INF");
+      VirtualFile dirA = VFS.getChild(getName()).getChild("/assembly");
+      createAssembledDirectory(dirA)
+         .addPackage(A.class)
+         .addPackage("/b", B.class)
+         .addPath("/b", "/bootstrap/test-assembled");
       VFSDeploymentUnit unitA = assertDeploy(dirA);
       try
       {

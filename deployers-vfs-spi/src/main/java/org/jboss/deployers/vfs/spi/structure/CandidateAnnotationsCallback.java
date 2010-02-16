@@ -24,7 +24,7 @@ package org.jboss.deployers.vfs.spi.structure;
 import java.lang.annotation.Annotation;
 
 import org.jboss.mcann.AnnotationRepository;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * CandidateAnnotationsCallback.

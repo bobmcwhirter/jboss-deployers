@@ -22,7 +22,7 @@
 package org.jboss.test.deployers.vfs.structure.file.support;
 
 import org.jboss.deployers.vfs.plugins.structure.file.FileStructure;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>

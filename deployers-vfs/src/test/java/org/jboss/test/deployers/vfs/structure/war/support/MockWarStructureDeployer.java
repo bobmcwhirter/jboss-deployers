@@ -29,10 +29,11 @@ import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.deployers.vfs.plugins.structure.AbstractVFSStructureDeployer;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VirtualFileFilter;
-import org.jboss.virtual.VisitorAttributes;
-import org.jboss.virtual.plugins.vfs.helpers.SuffixMatchFilter;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.VirtualFileFilter;
+import org.jboss.vfs.VisitorAttributes;
+import org.jboss.vfs.util.automount.Automounter;
+import org.jboss.vfs.util.SuffixMatchFilter;
 
 /**
  * MockWarStructure.
@@ -116,24 +117,16 @@ public class MockWarStructureDeployer extends AbstractVFSStructureDeployer
             // We require either a WEB-INF or the name ends in .war
             if (file.getName().endsWith(".war") == false)
             {
-               try
+               VirtualFile child = file.getChild("WEB-INF");
+               if (child.exists())
                {
-                  VirtualFile child = file.getChild("WEB-INF");
-                  if (child != null)
-                  {
-                     if (trace)
-                        log.trace("... ok - directory has a WEB-INF subdirectory");
-                  }
-                  else
-                  {
-                     if (trace)
-                        log.trace("... no - doesn't look like a war and no WEB-INF subdirectory.");
-                     return false;
-                  }
+                  if (trace)
+                     log.trace("... ok - directory has a WEB-INF subdirectory");
                }
-               catch (IOException e)
+               else
                {
-                  log.warn("Exception while checking if file is a war: " + e);
+                  if (trace)
+                     log.trace("... no - doesn't look like a war and no WEB-INF subdirectory.");
                   return false;
                }
             }
@@ -147,26 +140,17 @@ public class MockWarStructureDeployer extends AbstractVFSStructureDeployer
 
             // Check for WEB-INF/classes
             VirtualFile classes = null;
-            try
-            {
-               // The classpath contains WEB-INF/classes
-               classes = file.getChild("WEB-INF/classes");
-
-               // Check for a META-INF for metadata
-               if (classes != null)
-                  metaDataLocations.add("WEB-INF/classes/META-INF");
-            }
-            catch(IOException e)
-            {
-               log.warn("Exception while looking for classes, " + file.getPathName() + ", " + e);
-            }
-
+            // The classpath contains WEB-INF/classes
+            classes = file.getChild("WEB-INF/classes");
+            // Check for a META-INF for metadata
+            if (classes.exists())
+               metaDataLocations.add("WEB-INF/classes/META-INF");
             // Check for jars in WEB-INF/lib
             List<VirtualFile> archives = null;
             try
             {
                VirtualFile webinfLib = file.getChild("WEB-INF/lib");
-               if (webinfLib != null)
+               if (webinfLib.exists())
                {
                   archives = webinfLib.getChildren(webInfLibFilter);
                   // Add the jars' META-INF for metadata
@@ -190,7 +174,7 @@ public class MockWarStructureDeployer extends AbstractVFSStructureDeployer
             addClassPath(structureContext, file, false, true, context);
 
             // Add WEB-INF/classes if present
-            if (classes != null)
+            if (classes.exists())
                addClassPath(structureContext, classes, true, false, context);
             else if (trace)
                log.trace("No WEB-INF/classes for: " + file.getPathName());
@@ -199,7 +183,10 @@ public class MockWarStructureDeployer extends AbstractVFSStructureDeployer
             if (archives != null)
             {
                for (VirtualFile jar : archives)
+               {
+                  Automounter.mount(file, jar);
                   addClassPath(structureContext, jar, true, true, context);
+               }
             }
             else if (trace)
             {

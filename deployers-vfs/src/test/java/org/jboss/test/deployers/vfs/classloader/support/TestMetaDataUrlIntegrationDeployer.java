@@ -25,7 +25,7 @@ import java.net.URL;
 
 import org.jboss.deployers.vfs.plugins.classloader.MetaDataUrlIntegrationDeployer;
 import org.jboss.kernel.spi.deployment.KernelDeployment;
-import org.jboss.virtual.VFS;
+import org.jboss.vfs.VFS;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
@@ -36,8 +36,7 @@ public class TestMetaDataUrlIntegrationDeployer extends MetaDataUrlIntegrationDe
    {
       super(KernelDeployment.class);
       setFiles(new String[]{"metadata-touch-beans.xml"});
-      VFS.init();
-      URL dynamicClassRoot = new URL("vfsmemory", "integration-test", "");
+      URL dynamicClassRoot = VFS.getChild("/integration-test").toURL();
       setIntegrationURL(dynamicClassRoot);
    }
 }

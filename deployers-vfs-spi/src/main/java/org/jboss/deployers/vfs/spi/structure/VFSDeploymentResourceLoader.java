@@ -22,7 +22,7 @@
 package org.jboss.deployers.vfs.spi.structure;
 
 import org.jboss.deployers.structure.spi.DeploymentResourceLoader;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * VFSDeploymentResourceLoader.

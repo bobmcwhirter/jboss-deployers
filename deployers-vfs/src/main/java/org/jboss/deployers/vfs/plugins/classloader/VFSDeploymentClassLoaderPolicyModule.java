@@ -37,7 +37,7 @@ import org.jboss.classloading.spi.visitor.ResourceFilter;
 import org.jboss.classloading.spi.visitor.ResourceVisitor;
 import org.jboss.deployers.plugins.classloading.AbstractDeploymentClassLoaderPolicyModule;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * VFSDeploymentClassLoaderPolicyModule.
@@ -163,7 +163,7 @@ public class VFSDeploymentClassLoaderPolicyModule extends AbstractDeploymentClas
    @Override
    public URL getDynamicClassRoot()
    {
-      return getDeploymentUnit().getAttachment(InMemoryClassesDeployer.DYNAMIC_CLASS_URL_KEY, URL.class);
+      return getDeploymentUnit().getAttachment("DYNAMIC_CLASS_URL_KEY", URL.class);
    }
 
    @Override

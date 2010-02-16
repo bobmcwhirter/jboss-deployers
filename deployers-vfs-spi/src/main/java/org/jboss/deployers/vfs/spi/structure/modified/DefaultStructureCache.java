@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VirtualFileFilter;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.VirtualFileFilter;
 
 /**
  * Default structure cache.
@@ -58,29 +58,22 @@ public class DefaultStructureCache<T> extends AbstractStructureCache<T>
 
    public List<VirtualFile> getLeaves(VirtualFile file, VirtualFileFilter filter)
    {
-      try
+      List<VirtualFile> result = null;
+      for (VirtualFile key : map.keySet())
       {
-         List<VirtualFile> result = null;
-         for (VirtualFile key : map.keySet())
+         VirtualFile parent = key.getParent();
+         if (parent != null && parent.equals(file) && (filter == null || filter.accepts(key)))
          {
-            VirtualFile parent = key.getParent();
-            if (parent != null && parent.equals(file) && (filter == null || filter.accepts(key)))
-            {
-               if (result == null)
-                  result = new ArrayList<VirtualFile>();
+            if (result == null)
+               result = new ArrayList<VirtualFile>();
 
-               result.add(key);
-            }
+            result.add(key);
          }
-         if (result != null)
-            return result;
-         else
-            return (map.containsKey(file) ? Collections.<VirtualFile>emptyList() : null);
       }
-      catch (IOException e)
-      {
-         throw new RuntimeException(e);
-      }
+      if (result != null)
+         return result;
+      else
+         return (map.containsKey(file) ? Collections.<VirtualFile>emptyList() : null);
    }
 
    public void invalidateCache(VirtualFile file)
@@ -124,21 +117,14 @@ public class DefaultStructureCache<T> extends AbstractStructureCache<T>
     */
    protected boolean isAncestorOrEquals(VirtualFile ref, VirtualFile file)
    {
-      try
+      while(file != null)
       {
-         while(file != null)
-         {
-            if (file.equals(ref))
-               return true;
+         if (file.equals(ref))
+            return true;
 
-            file = file.getParent();
-         }
-         return false;
+         file = file.getParent();
       }
-      catch (IOException e)
-      {
-         throw new RuntimeException(e);
-      }
+      return false;
    }
 
    public void flush()

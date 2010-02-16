@@ -22,7 +22,7 @@
 package org.jboss.deployers.vfs.spi.client;
 
 import org.jboss.deployers.client.spi.Deployment;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * VFSDeployment.

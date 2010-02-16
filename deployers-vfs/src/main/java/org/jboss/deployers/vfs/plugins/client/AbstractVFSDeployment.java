@@ -24,11 +24,11 @@ package org.jboss.deployers.vfs.plugins.client;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.io.Externalizable;
 
 import org.jboss.deployers.client.plugins.deployment.AbstractDeployment;
-import org.jboss.deployers.vfs.plugins.vfs.VirtualFileSerializator;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * AbstractVFSDeployment.
@@ -37,16 +37,13 @@ import org.jboss.virtual.VirtualFile;
  * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
-public class AbstractVFSDeployment extends AbstractDeployment implements VFSDeployment
+public class AbstractVFSDeployment extends AbstractDeployment implements VFSDeployment, Externalizable
 {
    /** The serialVersionUID */
    private static final long serialVersionUID = 2L;
 
-   /** The flag to do direct VF serialization */
-   private boolean directRootSerialization;
-
    /** The root */
-   private transient VirtualFile root;
+   private VirtualFile root;
 
    /**
     * Get the vfs file name safely
@@ -54,7 +51,7 @@ public class AbstractVFSDeployment extends AbstractDeployment implements VFSDepl
     * @param root the virutal file
     * @return the name
     */
-   static final String safeVirtualFileName(VirtualFile root)
+   static String safeVirtualFileName(VirtualFile root)
    {
       if (root == null)
          throw new IllegalArgumentException("Null root");
@@ -67,6 +64,7 @@ public class AbstractVFSDeployment extends AbstractDeployment implements VFSDepl
       {
          return root.getName();
       }
+
    }
 
    /**
@@ -87,6 +85,19 @@ public class AbstractVFSDeployment extends AbstractDeployment implements VFSDepl
       super(safeVirtualFileName(root));
       this.root = root;
    }
+   
+   /**
+    * Create a new VFSDeployment.
+    * 
+    * @param name the deployment name
+    * @param root the root
+    * @throws IllegalArgumentException for a null root
+    */
+   public AbstractVFSDeployment(String name, VirtualFile root)
+   {
+      super(name);
+      this.root = root;
+   }
 
    public VirtualFile getRoot()
    {
@@ -105,38 +116,17 @@ public class AbstractVFSDeployment extends AbstractDeployment implements VFSDepl
       return "AbstractVFSDeployment(" + getSimpleName() + ")";
    }
 
-   /**
-    * Should we serialize root directly.
-    * e.g. the root is memory virtual file instance
-    * @see org.jboss.virtual.plugins.context.memory.MemoryContextHandler 
-    *
-    * @param directRootSerialization the direct root serialization flag
-    */
-   public void setDirectRootSerialization(boolean directRootSerialization)
-   {
-      this.directRootSerialization = directRootSerialization;
-   }
-
+   @Override
    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException
    {
       super.readExternal(in);
-      directRootSerialization = in.readBoolean();
-      if (directRootSerialization)
-         root = (VirtualFile)in.readObject();
-      else
-      {
-         VirtualFileSerializator serializator = (VirtualFileSerializator)in.readObject();
-         root = serializator.getFile();
-      }
+      root = (VirtualFile)in.readObject();
    }
 
+   @Override
    public void writeExternal(ObjectOutput out) throws IOException
    {
       super.writeExternal(out);
-      out.writeBoolean(directRootSerialization);
-      if (directRootSerialization)
-         out.writeObject(root);
-      else
-         out.writeObject(new VirtualFileSerializator(root));
+      out.writeObject(root);
    }
 }

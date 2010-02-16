@@ -36,7 +36,8 @@ import org.jboss.test.deployers.vfs.annotations.support.util.Util;
 import org.jboss.test.deployers.vfs.annotations.support.war.WebMarkOnClass;
 import org.jboss.test.deployers.vfs.annotations.support.war.impl.WebMarkOnClassImpl;
 import org.jboss.test.deployers.vfs.annotations.support.warlib.SomeUIClass;
-import org.jboss.virtual.AssembledDirectory;
+import org.jboss.vfs.VFS;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
@@ -50,22 +51,17 @@ public abstract class AbstractAnnotationsScanningUnitTest extends BootstrapDeplo
 
    public void testBasicScanning() throws Throwable
    {
-      AssembledDirectory ear = createTopLevelWithUtil();
-
-      AssembledDirectory jar = ear.mkdir("simple.jar");
-      addPackage(jar, JarMarkOnClassImpl.class);
-      addPackage(jar, JarMarkOnClass.class);
-      addPath(jar, "/annotations/basic-scan/jar", "META-INF");
-
-      AssembledDirectory war = ear.mkdir("simple.war");
-      AssembledDirectory webinf = war.mkdir("WEB-INF");
-      AssembledDirectory classes = webinf.mkdir("classes");
-      addPackage(classes, WebMarkOnClassImpl.class);
-      addPackage(classes, WebMarkOnClass.class);
-      AssembledDirectory lib = webinf.mkdir("lib");
-      AssembledDirectory uijar = lib.mkdir("ui.jar");
-      addPackage(uijar, SomeUIClass.class);
-      addPath(war, "/annotations/basic-scan/web", "WEB-INF");
+      VirtualFile ear = createTopLevelWithUtil();
+      createAssembledDirectory(ear.getChild("simple.jar"))
+        .addPackage(JarMarkOnClassImpl.class)
+        .addPackage(JarMarkOnClass.class)
+        .addPath("/annotations/basic-scan/jar");
+      
+      createAssembledDirectory(ear.getChild("simple.war"))
+         .addPackage("WEB-INF/classes", WebMarkOnClassImpl.class)
+         .addPackage("WEB-INF/classes", WebMarkOnClass.class)
+         .addPackage("WEB-INF/lib/ui.jar", SomeUIClass.class)
+         .addPath("/annotations/basic-scan/web");
 
       enableTrace("org.jboss.deployers");
 
@@ -113,17 +109,15 @@ public abstract class AbstractAnnotationsScanningUnitTest extends BootstrapDeplo
       assertEquals(fields.toString(), onFiled, fields.size());
    }
 
-   protected AssembledDirectory createTopLevelWithUtil() throws Exception
+   protected VirtualFile createTopLevelWithUtil() throws Exception
    {
-      AssembledDirectory topLevel = createAssembledDirectory("top-level.ear", "top-level.ear");
-      addPath(topLevel, "/annotations/basic-scan", "META-INF");
-      AssembledDirectory earLib = topLevel.mkdir("lib");
-      AssembledDirectory util = earLib.mkdir("util.jar");
-      addPackage(util, Util.class);
-      AssembledDirectory ext = earLib.mkdir("ext.jar");
-      addPackage(ext, External.class);
-      AssembledDirectory ann = earLib.mkdir("ann.jar");
-      addPackage(ann, NoExtRecurseFilter.class);
+      VirtualFile topLevel = VFS.getChild(getName()).getChild("top-level.ear");
+      
+      createAssembledDirectory(topLevel)
+         .addPath("/annotations/basic-scan")
+         .addPackage("lib/util.jar", Util.class)
+         .addPackage("lib/ext.jar", External.class)
+         .addPackage("lib/ann.jar", NoExtRecurseFilter.class);
       return topLevel;
    }
 }

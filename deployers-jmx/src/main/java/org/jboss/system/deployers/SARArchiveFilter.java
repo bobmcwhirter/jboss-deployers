@@ -25,8 +25,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VirtualFileFilter;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.VirtualFileFilter;
 
 /**
  * SARArchiveFilter.

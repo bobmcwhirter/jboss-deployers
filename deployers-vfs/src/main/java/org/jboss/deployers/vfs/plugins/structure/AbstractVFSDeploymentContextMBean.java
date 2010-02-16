@@ -24,7 +24,7 @@ package org.jboss.deployers.vfs.plugins.structure;
 import java.util.List;
 
 import org.jboss.deployers.structure.spi.helpers.AbstractDeploymentContextMBean;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * AbstractVFSDeploymentContextMBean.

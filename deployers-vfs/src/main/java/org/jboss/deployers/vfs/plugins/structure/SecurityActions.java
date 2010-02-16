@@ -28,7 +28,7 @@ import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * @author Scott.Stark@jboss.org
@@ -51,7 +51,7 @@ public class SecurityActions
                {
                   public Boolean run() throws Exception
                   {
-                     return f.isLeaf();
+                     return f.isFile();
                   }
                });
             }
@@ -72,7 +72,7 @@ public class SecurityActions
       {
          public Boolean isLeaf(VirtualFile f) throws IOException
          {
-            return f.isLeaf();
+            return f.isFile();
          }
          
       };

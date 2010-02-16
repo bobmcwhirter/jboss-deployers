@@ -22,7 +22,7 @@
 package org.jboss.deployers.vfs.spi.client;
 
 import org.jboss.deployers.client.spi.DeploymentFactory;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * VFSDeploymentFactory.
@@ -54,13 +54,36 @@ public abstract class VFSDeploymentFactory extends DeploymentFactory
    {
       return VFSDeploymentBuilder.getInstance().newVFSDeployment(root);
    }
+   
+   /**
+    * Create a new VFS deployment with a specific name 
+    * 
+    * @param name deployment name
+    * @param root the root virtual file
+    * @return the deployment
+    * @throws IllegalArgumentException for a null root
+    */
+   public VFSDeployment createVFSDeployment(String name, VirtualFile root)
+   {
+      return VFSDeploymentBuilder.getInstance().newVFSDeployment(name, root);
+   }
 
    /**
-    * Create a new VFS deployment 
+    * Create a new VFS deployment with a specific name
     * 
     * @param root the root virtual file
     * @return the deployment
     * @throws IllegalArgumentException for a null root
     */
    protected abstract VFSDeployment newVFSDeployment(VirtualFile root);
+   
+   /**
+    * Create a new VFS deployment 
+    * 
+    * @param name deployment name
+    * @param root the root virtual file
+    * @return the deployment
+    * @throws IllegalArgumentException for a null root
+    */
+   protected abstract VFSDeployment newVFSDeployment(String name, VirtualFile root);
 }

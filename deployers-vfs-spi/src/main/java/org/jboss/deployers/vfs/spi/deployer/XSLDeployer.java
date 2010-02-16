@@ -34,7 +34,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.util.xml.DOMWriter;
 import org.jboss.util.xml.JBossErrorHandler;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 import org.w3c.dom.Document;
 
 /**

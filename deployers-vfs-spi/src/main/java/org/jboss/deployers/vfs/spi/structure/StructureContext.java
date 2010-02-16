@@ -28,7 +28,7 @@ import java.util.Set;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.deployers.spi.structure.StructureMetaData;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * StructureContext.

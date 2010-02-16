@@ -29,7 +29,7 @@ import org.jboss.deployers.vfs.spi.deployer.AbstractVFSParsingDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.kernel.spi.deployment.KernelDeployment;
 import org.jboss.kernel.plugins.deployment.props.DeploymentBuilder;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * Properties2BeansDeployer.<p>

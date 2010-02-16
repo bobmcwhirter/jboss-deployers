@@ -29,7 +29,7 @@ import java.util.Set;
 
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * Multiple VFS parsing deployer.

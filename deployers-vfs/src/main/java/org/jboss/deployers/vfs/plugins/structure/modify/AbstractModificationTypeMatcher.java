@@ -27,7 +27,7 @@ import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.deployers.spi.structure.ModificationType;
 import org.jboss.deployers.spi.structure.StructureMetaData;
 import org.jboss.logging.Logger;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * Abstract modification type matcher.
@@ -71,7 +71,7 @@ public abstract class AbstractModificationTypeMatcher implements ModificationTyp
                   try
                   {
                      VirtualFile file = root.getChild(path);
-                     if (file != null && isModificationDetermined(file, child))
+                     if (file.exists() && isModificationDetermined(file, child))
                      {
                         contextInfo.setModificationType(modificationType);
                         return true;

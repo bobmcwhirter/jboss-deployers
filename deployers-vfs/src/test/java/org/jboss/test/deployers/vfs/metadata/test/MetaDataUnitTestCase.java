@@ -31,8 +31,8 @@ import junit.framework.TestSuite;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.test.deployers.BaseDeployersVFSTest;
 import org.jboss.test.deployers.vfs.metadata.support.ServicesFilter;
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VirtualFileFilter;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.VirtualFileFilter;
 
 /**
  * MetaDataUnitTestCase.

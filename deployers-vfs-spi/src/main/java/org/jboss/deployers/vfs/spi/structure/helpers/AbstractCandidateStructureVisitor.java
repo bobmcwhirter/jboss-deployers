@@ -21,16 +21,14 @@
 */
 package org.jboss.deployers.vfs.spi.structure.helpers;
 
-import java.io.IOException;
-
 import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.deployers.spi.structure.StructureMetaData;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
 import org.jboss.logging.Logger;
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VirtualFileFilter;
-import org.jboss.virtual.VisitorAttributes;
-import org.jboss.virtual.plugins.vfs.helpers.AbstractVirtualFileVisitor;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.VirtualFileFilter;
+import org.jboss.vfs.VisitorAttributes;
+import org.jboss.vfs.util.AbstractVirtualFileVisitor;
 
 /**
  * Visits the structure and creates candidates
@@ -136,17 +134,8 @@ public class AbstractCandidateStructureVisitor extends AbstractVirtualFileVisito
       if (contextInfo == null)
       {
          // Ignore directories when asked
-         try
-         {
-            if (ignoreDirectories && SecurityActions.isLeaf(file) == false)
-               return;
-         }
-         catch (IOException e)
-         {
-            log.debugf("Ignoring %1s reason=%2s", file, e);
+         if (ignoreDirectories && file.isDirectory())
             return;
-         }
-         
          // Apply any filter
          if (filter != null && filter.accepts(file) == false)
             return;

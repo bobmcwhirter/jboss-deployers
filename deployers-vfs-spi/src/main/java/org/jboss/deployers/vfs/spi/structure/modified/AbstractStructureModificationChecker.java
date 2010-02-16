@@ -30,7 +30,7 @@ import org.jboss.deployers.structure.spi.main.MainDeployerInternals;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.logging.Logger;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * AbstractStructureModificationChecker.
@@ -146,10 +146,36 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
       return (VFSDeploymentContext) deploymentContext;
    }
 
+   public boolean hasStructureBeenModified(String name, VirtualFile root) throws IOException
+   {
+      return hasStructureBeenModified(root, getDeploymentContext(name));
+   }
+   
    public boolean hasStructureBeenModified(VirtualFile root) throws IOException
+   {
+      VFSDeploymentContext deploymentContext = null;
+      try
+      {
+         String name = root.toURI().toString();
+         deploymentContext = getDeploymentContext(name);
+      }
+      catch (URISyntaxException ignore)
+      {
+      }
+      if(deploymentContext == null)
+      {
+         log.trace("Falling back to root name: " + root);
+         deploymentContext = getDeploymentContext(root.getName());
+      }
+      return hasStructureBeenModified(root, deploymentContext);
+   }
+   
+   protected boolean hasStructureBeenModified(VirtualFile root, VFSDeploymentContext deploymentContext) throws IOException
    {
       if (root == null)
          throw new IllegalArgumentException("Null root");
+      if (deploymentContext == null)
+         return false;
 
       // skip vfs deployment context lookup accepted by filter
       if (getRootFilter().accepts(root))
@@ -163,76 +189,8 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
             return result;
          }
       }
-
-      VFSDeploymentContext deploymentContext;
-      try
-      {
-         String name = root.toURI().toString();
-         deploymentContext = getDeploymentContext(name);
-         if (deploymentContext != null)
-            return hasStructureBeenModified(deploymentContext, false);
-      }
-      catch (URISyntaxException ignore)
-      {
-      }
-
-      log.trace("Falling back to root name: " + root);
-      deploymentContext = getDeploymentContext(root.getName());
-      if (deploymentContext != null)
-         return hasStructureBeenModified(deploymentContext, false);
-
-      return false;
-   }
-
-   public boolean hasStructureBeenModified(VFSDeployment deployment) throws IOException
-   {
-      if (deployment == null)
-         throw new IllegalArgumentException("Null deployment");
-
-      VFSDeploymentContext deploymentContext = getDeploymentContext(deployment.getName());
-      return deploymentContext != null && hasStructureBeenModified(deploymentContext);
-   }
-
-   public boolean hasStructureBeenModified(VFSDeploymentContext deploymentContext) throws IOException
-   {
-      return hasStructureBeenModified(deploymentContext, true);
-   }
-
-   /**
-    * Has structure been modified.
-    *
-    * @param deploymentContext the deployment context
-    * @param checkRoot should we check root
-    * @return true if modifed, false otherwise
-    * @throws IOException for any error
-    */
-   protected boolean hasStructureBeenModified(VFSDeploymentContext deploymentContext, boolean checkRoot) throws IOException
-   {
-      Deployment deployment = deploymentContext.getDeployment();
-      if (deployment == null || deployment instanceof VFSDeployment == false)
-      {
-         log.warn("Deployment is not VFS or not top level.");
-         return false;
-      }
-
-      VFSDeployment vfsDeployment = VFSDeployment.class.cast(deployment);
-      VirtualFile root = vfsDeployment.getRoot();
-
-      boolean result = false;
-      boolean skip = false; // skip futher check
-
-      if (checkRoot && getRootFilter().accepts(root))
-      {
-         result = hasRootBeenModified(root);
-         if (result || getRootFilter().checkRootOnly(root))
-            skip = true;
-      }
-
-      if (skip == false)
-      {
-         result = hasStructureBeenModifed(root, deploymentContext);
-      }
-
+      
+      boolean result = hasDeploymentContextBeenModified(root, deploymentContext);
       if (result)
       {
          getCache().invalidateCache(root);
@@ -247,11 +205,7 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
     * @return true if modified, false otherwise
     * @throws IOException for any error
     */
-   protected boolean hasRootBeenModified(VirtualFile root) throws IOException
-   {
-      // for back compatibility
-      return root.hasBeenModified();
-   }
+   protected abstract boolean hasRootBeenModified(VirtualFile root) throws IOException;
 
    /**
     * Has structure been modified.
@@ -261,8 +215,9 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
     * @return true if modifed, false otherwise
     * @throws IOException for any error
     */
-   protected abstract boolean hasStructureBeenModifed(VirtualFile root, VFSDeploymentContext deploymentContext) throws IOException;
+   protected abstract boolean hasDeploymentContextBeenModified(VirtualFile root, VFSDeploymentContext deploymentContext) throws IOException;
 
+   
    public void addStructureRoot(VirtualFile root)
    {
       if (root == null)
@@ -286,14 +241,7 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
    {
       public boolean accepts(VirtualFile file)
       {
-         try
-         {
-            return file.isLeaf() || file.isArchive();
-         }
-         catch (IOException e)
-         {
-            throw new RuntimeException(e);
-         }
+         return ! file.isDirectory();
       }
 
       public boolean checkRootOnly(VirtualFile root)

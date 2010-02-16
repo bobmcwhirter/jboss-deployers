@@ -34,14 +34,16 @@ import java.util.jar.Manifest;
 
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.structure.ContextInfo;
-import org.jboss.deployers.vfs.plugins.structure.AbstractVFSStructureDeployer;
+import org.jboss.deployers.vfs.plugins.structure.AbstractVFSArchiveStructureDeployer;
 import org.jboss.deployers.vfs.spi.structure.CandidateAnnotationsCallback;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
 import org.jboss.logging.Logger;
-import org.jboss.virtual.VFSUtils;
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VirtualFileFilter;
-import org.jboss.virtual.plugins.vfs.helpers.SuffixMatchFilter;
+import org.jboss.vfs.VFSUtils;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.VirtualFileFilter;
+import org.jboss.vfs.util.automount.Automounter;
+import org.jboss.vfs.util.SuffixMatchFilter;
+import org.jboss.mcann.AnnotationRepository;
 import org.jboss.mcann.AnnotationRepository;
 
 /**
@@ -52,7 +54,7 @@ import org.jboss.mcann.AnnotationRepository;
  * @author Ales.Justin@jboss.org
  * @version $Revision:$
  */
-public class MockEarStructureDeployer extends AbstractVFSStructureDeployer
+public class MockEarStructureDeployer extends AbstractVFSArchiveStructureDeployer
 {
    /**
     * The default ear/lib filter
@@ -93,28 +95,34 @@ public class MockEarStructureDeployer extends AbstractVFSStructureDeployer
       this.earLibFilter = earLibFilter;
    }
 
-   public boolean determineStructure(StructureContext structureContext) throws DeploymentException
+   
+   @Override
+   protected boolean hasValidSuffix(String name)
+   {
+      return name.endsWith(".ear");
+   }
+
+   public boolean doDetermineStructure(StructureContext structureContext) throws DeploymentException
    {
       ContextInfo context;
       boolean valid;
       VirtualFile file = structureContext.getFile();
       try
       {
-         if (file.isLeaf() == true || file.getName().endsWith(".ear") == false)
+         if (hasValidSuffix(file.getName()) == false)
             return false;
 
          context = createContext(structureContext, "META-INF");
-
-         VirtualFile applicationProps = getMetaDataFile(file, "META-INF/application.properties");
-         VirtualFile jbossProps = getMetaDataFile(file, "META-INF/jboss-application.properties");
+         VirtualFile applicationProps = file.getChild("META-INF/application.properties");
+         VirtualFile jbossProps = file.getChild("META-INF/jboss-application.properties");
          boolean scan = true;
          List<EarModule> modules = new ArrayList<EarModule>();
-         if (applicationProps != null)
+         if (applicationProps.exists())
          {
             scan = false;
             readAppXml(applicationProps, modules);
          }
-         if (jbossProps != null)
+         if (jbossProps.exists())
          {
             readAppXml(jbossProps, modules);
          }
@@ -122,11 +130,14 @@ public class MockEarStructureDeployer extends AbstractVFSStructureDeployer
          try
          {
             VirtualFile lib = file.getChild("lib");
-            if (lib != null)
+            if (lib.exists())
             {
                List<VirtualFile> archives = lib.getChildren(earLibFilter);
                for (VirtualFile archive : archives)
+               {
+                  Automounter.mount(file, archive);
                   addClassPath(structureContext, archive, true, true, context);
+               }
             }
          }
          catch (IOException ignored)
@@ -146,28 +157,19 @@ public class MockEarStructureDeployer extends AbstractVFSStructureDeployer
             String fileName = mod.getFileName();
             if (fileName != null && (fileName = fileName.trim()).length() > 0)
             {
-               try
-               {
-                  VirtualFile module = file.getChild(fileName);
-                  if (module == null)
-                  {
-                     throw new RuntimeException(fileName
-                           + " module listed in application.xml does not exist within .ear "
-                           + file.getName());
-                  }
-                  // Ask the deployers to analyze this
-                  if (structureContext.determineChildStructure(module) == false)
-                  {
-                     throw new RuntimeException(fileName
-                           + " module listed in application.xml is not a recognized deployment, .ear: "
-                           + file.getName());
-                  }
-               }
-               catch (IOException e)
+               VirtualFile module = file.getChild(fileName);
+               if (! module.exists())
                {
                   throw new RuntimeException(fileName
                         + " module listed in application.xml does not exist within .ear "
-                        + file.getName(), e);
+                        + file.getName());
+               }
+               // Ask the deployers to analyze this
+               if (structureContext.determineChildStructure(module) == false)
+               {
+                  throw new RuntimeException(fileName
+                        + " module listed in application.xml is not a recognized deployment, .ear: "
+                        + file.getName());
                }
             }
          }
@@ -296,17 +298,17 @@ public class MockEarStructureDeployer extends AbstractVFSStructureDeployer
       else if (path.endsWith(".jar"))
       {
          // Look for a META-INF/application-client.xml
-         VirtualFile mfFile = getMetaDataFile(archive, "META-INF/MANIFEST.MF");
-         VirtualFile clientXml = getMetaDataFile(archive, "META-INF/application-client.xml");
-         VirtualFile ejbXml = getMetaDataFile(archive, "META-INF/ejb-jar.xml");
-         VirtualFile jbossXml = getMetaDataFile(archive, "META-INF/jboss.xml");
-         //VirtualFile seamXml = getMetaDataFile(archive, "META-INF/components.xml");
+         VirtualFile mfFile = archive.getChild("META-INF/MANIFEST.MF");
+         VirtualFile clientXml = archive.getChild("META-INF/application-client.xml");
+         VirtualFile ejbXml = archive.getChild("META-INF/ejb-jar.xml");
+         VirtualFile jbossXml = archive.getChild("META-INF/jboss.xml");
+         //VirtualFile seamXml = archive.getChild("META-INF/components.xml");
 
-         if (clientXml != null)
+         if (clientXml.exists())
          {
             type = J2eeModuleMetaData.CLIENT;
          }
-         else if (mfFile != null)
+         else if (mfFile.exists())
          {
             Manifest mf = VFSUtils.readManifest(mfFile);
             Attributes attrs = mf.getMainAttributes();
@@ -319,7 +321,7 @@ public class MockEarStructureDeployer extends AbstractVFSStructureDeployer
                determineType(context, archive);
             }
          }
-         else if (ejbXml != null || jbossXml != null) // || seamXml != null)
+         else if (ejbXml.exists() || jbossXml.exists()) // || seamXml.exists())
          {
             type = J2eeModuleMetaData.EJB;
          }
@@ -342,19 +344,6 @@ public class MockEarStructureDeployer extends AbstractVFSStructureDeployer
       StringBuilder tmp = new StringBuilder(pathName);
       tmp.delete(0, earPath.length());
       return tmp.toString();
-   }
-
-   private VirtualFile getMetaDataFile(VirtualFile file, String path)
-   {
-      VirtualFile metaFile = null;
-      try
-      {
-         metaFile = file.getChild(path);
-      }
-      catch (IOException ignored)
-      {
-      }
-      return metaFile;
    }
 
    private static class EarCandidateAnnotationsCallback implements CandidateAnnotationsCallback

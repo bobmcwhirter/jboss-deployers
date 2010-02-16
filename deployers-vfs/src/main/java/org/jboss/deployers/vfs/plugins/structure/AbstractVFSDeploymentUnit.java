@@ -28,8 +28,8 @@ import org.jboss.deployers.structure.spi.helpers.AbstractDeploymentUnit;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentResourceLoader;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VirtualFileFilter;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.VirtualFileFilter;
 
 /**
  * AbstractVFSDeploymentUnit.

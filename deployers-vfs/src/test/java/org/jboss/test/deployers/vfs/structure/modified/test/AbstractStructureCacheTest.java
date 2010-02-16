@@ -25,8 +25,8 @@ import java.util.List;
 
 import org.jboss.deployers.vfs.spi.structure.modified.StructureCache;
 import org.jboss.test.deployers.BootstrapDeployersTest;
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VirtualFileFilter;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.VirtualFileFilter;
 
 /**
  * AbstractStructureCache tests.

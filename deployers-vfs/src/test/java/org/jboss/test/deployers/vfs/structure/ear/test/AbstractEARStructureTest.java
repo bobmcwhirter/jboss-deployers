@@ -36,7 +36,6 @@ import org.jboss.test.deployers.vfs.structure.ear.support.MockEarStructureDeploy
 import org.jboss.test.deployers.vfs.structure.ear.support.Service;
 import org.jboss.test.deployers.vfs.structure.ear.support.Servlet;
 import org.jboss.test.deployers.vfs.structure.ear.support.Stateless;
-import org.jboss.virtual.plugins.context.jar.JarUtils;
 
 /**
  * Abstract ear structure deployer tests
@@ -64,7 +63,7 @@ public abstract class AbstractEARStructureTest extends AbstractStructureTest
 
    protected VFSDeploymentContext determineStructure(VFSDeployment deployment) throws Exception
    {
-      Set<String> defaultSuffixes = JarUtils.getSuffixes();
+      Set<String> defaultSuffixes = JARStructure.DEFAULT_JAR_SUFFIXES;
       JARStructure jarStructure = new JARStructure();
       jarStructure.setSupportsCandidateAnnotations(true);
       jarStructure.addCandidateAnnotation(Stateless.class);

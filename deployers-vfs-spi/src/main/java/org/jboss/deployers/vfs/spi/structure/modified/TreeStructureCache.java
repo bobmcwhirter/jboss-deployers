@@ -21,7 +21,6 @@
  */
 package org.jboss.deployers.vfs.spi.structure.modified;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,9 +30,9 @@ import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VirtualFileFilter;
-import org.jboss.virtual.plugins.vfs.helpers.PathTokenizer;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.VirtualFileFilter;
+import org.jboss.vfs.util.PathTokenizer;
 
 /**
  * Tree base structure cache.
@@ -189,20 +188,13 @@ public class TreeStructureCache<T> extends AbstractStructureCache<T>
     */
    protected List<VirtualFile> tokens(VirtualFile file)
    {
-      try
+      List<VirtualFile> tokens = new ArrayList<VirtualFile>();
+      while(file != null)
       {
-         List<VirtualFile> tokens = new ArrayList<VirtualFile>();
-         while(file != null)
-         {
-            tokens.add(0, file);
-            file = file.getParent();
-         }
-         return tokens;
+         tokens.add(0, file);
+         file = file.getParent();
       }
-      catch (IOException e)
-      {
-         throw new RuntimeException(e);
-      }
+      return tokens;
    }
 
    /**

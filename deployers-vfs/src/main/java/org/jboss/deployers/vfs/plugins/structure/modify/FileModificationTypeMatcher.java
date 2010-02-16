@@ -27,7 +27,7 @@ import java.util.ArrayList;
 
 import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.deployers.spi.structure.MetaDataEntry;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * File modification type matcher.
@@ -53,15 +53,8 @@ public class FileModificationTypeMatcher extends AbstractModificationTypeMatcher
       {
          for (VirtualFile file : getStartingFiles(root, contextInfo))
          {
-            try
-            {
-               if (file.getChild(path) != null)
-                  return true;
-            }
-            catch (Exception e)
-            {
-               log.debugf("Cannot determine modification type, cause: %1s", e);
-            }
+            if (file.getChild(path).exists())
+               return true;
          }
       }
       return false;
@@ -88,15 +81,9 @@ public class FileModificationTypeMatcher extends AbstractModificationTypeMatcher
             List<VirtualFile> result = new ArrayList<VirtualFile>(metadataPaths.size());
             for (MetaDataEntry metadataPath : metadataPaths)
             {
-               try
-               {
-                  VirtualFile child = file.getChild(metadataPath.getPath());
-                  if (child != null)
-                     result.add(child);
-               }
-               catch (Exception ignored)
-               {
-               }
+               VirtualFile child = file.getChild(metadataPath.getPath());
+               if (child.exists())
+                  result.add(child);
             }
             return result;
          }

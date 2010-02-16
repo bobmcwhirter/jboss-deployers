@@ -29,8 +29,8 @@ import javax.xml.bind.helpers.DefaultValidationEventHandler;
 import javax.xml.validation.Schema;
 
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
-import org.jboss.virtual.VFSInputSource;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VFSInputSource;
+import org.jboss.vfs.VirtualFile;
 import org.xml.sax.InputSource;
 
 /**

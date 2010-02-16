@@ -21,18 +21,18 @@
 */
 package org.jboss.deployers.vfs.plugins.structure.jar;
 
-import java.io.IOException;
 import java.util.Set;
+import java.util.Collections;
+import java.util.HashSet;
 
 import org.jboss.beans.metadata.api.annotations.Install;
 import org.jboss.beans.metadata.api.annotations.Uninstall;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.matchers.JarExtensionProvider;
 import org.jboss.deployers.spi.structure.ContextInfo;
-import org.jboss.deployers.vfs.plugins.structure.AbstractVFSStructureDeployer;
+import org.jboss.deployers.vfs.plugins.structure.AbstractVFSArchiveStructureDeployer;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.plugins.context.jar.JarUtils;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * JARStructure.
@@ -41,18 +41,34 @@ import org.jboss.virtual.plugins.context.jar.JarUtils;
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
-public class JARStructure extends AbstractVFSStructureDeployer
+public class JARStructure extends AbstractVFSArchiveStructureDeployer
 {
+   private final Set<String> suffixes = Collections.synchronizedSet(new HashSet<String>());
+
+   public static Set<String> DEFAULT_JAR_SUFFIXES = new HashSet<String>();
+   static
+   {
+      DEFAULT_JAR_SUFFIXES = new HashSet<String>();
+      DEFAULT_JAR_SUFFIXES.add(".zip");
+      DEFAULT_JAR_SUFFIXES.add(".ear");
+      DEFAULT_JAR_SUFFIXES.add(".jar");
+      DEFAULT_JAR_SUFFIXES.add(".rar");
+      DEFAULT_JAR_SUFFIXES.add(".war");
+      DEFAULT_JAR_SUFFIXES.add(".sar");
+      DEFAULT_JAR_SUFFIXES.add(".har");
+      DEFAULT_JAR_SUFFIXES.add(".aop");
+   }
+
    /**
     * Create a new JARStructure. with the default suffixes
     */
    public JARStructure()
    {
-      this(null);
+      this(DEFAULT_JAR_SUFFIXES);
    }
 
    /**
-    * Sets the default relative order 10000.
+    * DEFAULT_JAR_SUFFIXESs the default relative order 10000.
     *
     * @param suffixes the suffixes
     */
@@ -70,8 +86,9 @@ public class JARStructure extends AbstractVFSStructureDeployer
     */
    public Set<String> getSuffixes()
    {
-      return JarUtils.getSuffixes();
+      return suffixes;
    }
+
    /**
     * Gets the set of suffixes recognised as jars
     * 
@@ -79,7 +96,8 @@ public class JARStructure extends AbstractVFSStructureDeployer
     */
    public void setSuffixes(Set<String> suffixes)
    {
-      JarUtils.setJarSuffixes(suffixes);
+      this.suffixes.retainAll(suffixes);
+      this.suffixes.addAll(suffixes);
    }
 
    @Install
@@ -87,7 +105,7 @@ public class JARStructure extends AbstractVFSStructureDeployer
    {
       String extension = provider.getJarExtension();
       if (extension != null)
-         JarUtils.addJarSuffix(extension);
+         suffixes.add(extension);
    }
 
    @Uninstall
@@ -95,70 +113,52 @@ public class JARStructure extends AbstractVFSStructureDeployer
    {
       String extension = provider.getJarExtension();
       if (extension != null)
-         JarUtils.removeJarSuffix(extension);
+         suffixes.remove(extension);
    }
 
-   public boolean determineStructure(StructureContext structureContext) throws DeploymentException
+   protected boolean hasValidSuffix(String name)
+   {
+      int idx = name.lastIndexOf('.');
+      if (idx == -1)
+         return false;
+      return suffixes.contains(name.substring(idx).toLowerCase());
+   }
+
+   public boolean doDetermineStructure(StructureContext structureContext) throws DeploymentException
    {
       ContextInfo context = null;
       VirtualFile file = structureContext.getFile();
       try
       {
          boolean trace = log.isTraceEnabled();
-
-         if (isLeaf(file) == false)
+         // For non top level directories that don't look like jars
+         // we require a META-INF otherwise each subdirectory would be a subdeployment
+         if (hasValidSuffix(file.getName()) == false)
          {
-            // For non top level directories that don't look like jars
-            // we require a META-INF otherwise each subdirectory would be a subdeployment
-            if (JarUtils.isArchive(file.getName()) == false)
+            if (structureContext.isTopLevel() == false)
             {
-               if (structureContext.isTopLevel() == false)
+               VirtualFile child = file.getChild("META-INF");
+               if (child.exists())
                {
-                  try
-                  {
-                     VirtualFile child = file.getChild("META-INF");
-                     if (child != null)
-                     {
-                        if (trace)
-                           log.trace("... ok - non top level directory has a META-INF subdirectory");
-                     }
-                     else
-                     {
-                        if (trace)
-                           log.trace("... no - doesn't look like a jar and no META-INF subdirectory.");
-                        return false;
-                     }
-                  }
-                  catch (IOException e)
-                  {
-                     log.warn("Exception while checking if file is a jar: " + e);
-                     return false;
-                  }
+                  if (trace)
+                     log.trace("... ok - non top level directory has a META-INF subdirectory");
                }
-               else if (trace)
+               else
                {
-                  log.trace("... ok - doesn't look like a jar but it is a top level directory.");
+                  if (trace)
+                     log.trace("... no - doesn't look like a jar and no META-INF subdirectory.");
+                  return false;
                }
             }
-            else
+            else if (trace)
             {
-               log.trace("... ok - its an archive or at least pretending to be");
+               log.trace("... ok - doesn't look like a jar but it is a top level directory.");
             }
          }
-         else if (JarUtils.isArchive(file.getName()))
-         {
-            if (trace)
-               log.trace("... ok - its an archive or at least pretending to be.");
-         }
-         else
-         {
-            if (trace)
-               log.trace("... no - not a directory or an archive.");
-            return false;
-         }
+         if(trace)
+            log.trace("... ok - its an archive or at least pretending to be");
 
          boolean valid = true;
-
          if (isSupportsCandidateAnnotations())
          {
             StructureContext parentContext = structureContext.getParentContext();
@@ -186,7 +186,7 @@ public class JARStructure extends AbstractVFSStructureDeployer
       catch (Exception e)
       {
          // Remove the invalid context
-         if(context != null)
+         if (context != null)
             structureContext.removeChild(context);
 
          throw DeploymentException.rethrowAsDeploymentException("Error determining structure: " + file.getName(), e);

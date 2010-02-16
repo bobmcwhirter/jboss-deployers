@@ -31,7 +31,7 @@ import org.jboss.deployers.structure.spi.StructureProcessor;
 import org.jboss.deployers.structure.spi.DeploymentContext;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * Determine if we need some modification.

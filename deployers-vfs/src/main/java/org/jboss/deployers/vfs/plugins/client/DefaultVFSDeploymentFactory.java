@@ -24,7 +24,7 @@ package org.jboss.deployers.vfs.plugins.client;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.client.VFSDeploymentFactory;
 import org.jboss.logging.Logger;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * DefaultVFSDeploymentFactory.
@@ -42,5 +42,11 @@ public class DefaultVFSDeploymentFactory extends VFSDeploymentFactory
    protected VFSDeployment newVFSDeployment(VirtualFile root)
    {
       return new AbstractVFSDeployment(root);
+   }
+   
+   @Override
+   protected VFSDeployment newVFSDeployment(String name, VirtualFile root)
+   {
+      return new AbstractVFSDeployment(name, root);
    }
 }

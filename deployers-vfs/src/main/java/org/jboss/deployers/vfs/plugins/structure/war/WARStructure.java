@@ -28,12 +28,13 @@ import java.util.List;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.deployers.spi.structure.MetaDataType;
-import org.jboss.deployers.vfs.plugins.structure.AbstractVFSStructureDeployer;
+import org.jboss.deployers.vfs.plugins.structure.AbstractVFSArchiveStructureDeployer;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VirtualFileFilter;
-import org.jboss.virtual.VisitorAttributes;
-import org.jboss.virtual.plugins.vfs.helpers.SuffixMatchFilter;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.VirtualFileFilter;
+import org.jboss.vfs.VisitorAttributes;
+import org.jboss.vfs.util.automount.Automounter;
+import org.jboss.vfs.util.SuffixMatchFilter;
 
 /**
  * WARStructure.
@@ -42,7 +43,7 @@ import org.jboss.virtual.plugins.vfs.helpers.SuffixMatchFilter;
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  * @version $Revision: 83811 $
  */
-public class WARStructure extends AbstractVFSStructureDeployer
+public class WARStructure extends AbstractVFSArchiveStructureDeployer
 {
    /** The default filter which allows jars/jar directories */
    public static final VirtualFileFilter DEFAULT_WEB_INF_LIB_FILTER = new SuffixMatchFilter(".jar", VisitorAttributes.DEFAULT);
@@ -118,7 +119,13 @@ public class WARStructure extends AbstractVFSStructureDeployer
       this.includeWebInfInClasspath = includeWebInfInClasspath;
    }
 
-   public boolean determineStructure(StructureContext structureContext) throws DeploymentException
+   @Override
+   protected boolean hasValidSuffix(String name)
+   {
+      return name.endsWith(".war");
+   }
+
+   public boolean doDetermineStructure(StructureContext structureContext) throws DeploymentException
    {
       ContextInfo context = null;
       VirtualFile file = structureContext.getFile();
@@ -128,117 +135,94 @@ public class WARStructure extends AbstractVFSStructureDeployer
 
          // the WEB-INF
          VirtualFile webinf = null;
-
-         if (isLeaf(file) == false)
+         
+         // We require either a WEB-INF or the name ends in .war
+         if (hasValidSuffix(file.getName()) == false)
          {
-            // We require either a WEB-INF or the name ends in .war
-            if (file.getName().endsWith(".war") == false)
+           webinf = file.getChild("WEB-INF");
+           if (webinf.exists())
+           {
+              if (trace)
+                 log.trace("... ok - directory has a WEB-INF subdirectory");
+           }
+           else
+           {
+              if (trace)
+                 log.trace("... no - doesn't look like a war and no WEB-INF subdirectory.");
+              return false;
+           }
+         }
+         else if (trace)
+         {
+            log.trace("... ok - name ends in .war.");
+         }
+
+         List<String> metaDataLocations = new ArrayList<String>();
+         metaDataLocations.add("WEB-INF");
+
+         // Check for WEB-INF/classes
+         VirtualFile classes = file.getChild("WEB-INF/classes");
+
+         // Check for a META-INF for metadata
+         if (classes.exists())
+            metaDataLocations.add("WEB-INF/classes/META-INF");
+
+         // Create a context for this war file and all its metadata locations
+         context = createContext(structureContext, metaDataLocations.toArray(new String[metaDataLocations.size()]));
+
+         // Check for jars in WEB-INF/lib
+         List<VirtualFile> archives = null;
+         try
+         {
+            VirtualFile webinfLib = file.getChild("WEB-INF/lib");
+            if (webinfLib.exists())
             {
-               try
-               {
-                  webinf = file.getChild("WEB-INF");
-                  if (webinf != null)
-                  {
-                     if (trace)
-                        log.trace("... ok - directory has a WEB-INF subdirectory");
-                  }
-                  else
-                  {
-                     if (trace)
-                        log.trace("... no - doesn't look like a war and no WEB-INF subdirectory.");
-                     return false;
-                  }
-               }
-               catch (IOException e)
-               {
-                  log.warn("Exception while checking if file is a war: " + e);
-                  return false;
-               }
-            }
-            else if (trace)
-            {
-               log.trace("... ok - name ends in .war.");
-            }
-
-            List<String> metaDataLocations = new ArrayList<String>();
-            metaDataLocations.add("WEB-INF");
-
-            // Check for WEB-INF/classes
-            VirtualFile classes = null;
-            try
-            {
-               // The classpath contains WEB-INF/classes
-               classes = file.getChild("WEB-INF/classes");
-
-               // Check for a META-INF for metadata
-               if (classes != null)
-                  metaDataLocations.add("WEB-INF/classes/META-INF");
-            }
-            catch(IOException e)
-            {
-               log.warn("Exception while looking for classes, " + file.getPathName() + ", " + e);
-            }
-
-            // Create a context for this war file and all its metadata locations
-            context = createContext(structureContext, metaDataLocations.toArray(new String[metaDataLocations.size()]));
-
-            // Check for jars in WEB-INF/lib
-            List<VirtualFile> archives = null;
-            try
-            {
-               VirtualFile webinfLib = file.getChild("WEB-INF/lib");
-               if (webinfLib != null)
-               {
-                  archives = webinfLib.getChildren(webInfLibFilter);
-                  // Add the jars' META-INF for metadata
-                  for (VirtualFile jar : archives)
-                  {
-                     // either same as plain lib filter, null or accepts the jar
-                     if (webInfLibMetaDataFilter == null || webInfLibMetaDataFilter == webInfLibFilter || webInfLibMetaDataFilter.accepts(jar))
-                        addMetaDataPath(structureContext, context, "WEB-INF/lib/" + jar.getName() + "/META-INF", MetaDataType.ALTERNATIVE);
-                  }
-               }
-            }
-            catch (IOException e)
-            {
-               log.warn("Exception looking for WEB-INF/lib, " + file.getPathName() + ", " + e);
-            }
-
-            // Add the war manifest classpath entries
-            addClassPath(structureContext, file, false, true, context);
-
-            // Add WEB-INF/classes if present
-            if (classes != null)
-               addClassPath(structureContext, classes, true, false, context);
-            else if (trace)
-               log.trace("No WEB-INF/classes for: " + file.getPathName());
-
-            // and the top level jars in WEB-INF/lib
-            if (archives != null)
-            {
+               archives = webinfLib.getChildren(webInfLibFilter);
+               // Add the jars' META-INF for metadata
                for (VirtualFile jar : archives)
-                  addClassPath(structureContext, jar, true, true, context);
+               {
+                  // either same as plain lib filter, null or accepts the jar
+                  if (webInfLibMetaDataFilter == null || webInfLibMetaDataFilter == webInfLibFilter || webInfLibMetaDataFilter.accepts(jar))
+                     addMetaDataPath(structureContext, context, "WEB-INF/lib/" + jar.getName() + "/META-INF", MetaDataType.ALTERNATIVE);
+               }
             }
-            else if (trace)
-            {
-               log.trace("No WEB-INF/lib for: " + file.getPathName());
-            }
-
-            // do we include WEB-INF in classpath
-            if (includeWebInfInClasspath && webinf != null)
-            {
-               addClassPath(structureContext, webinf, true, false, context);
-            }
-
-            // There are no subdeployments for wars
-            return true;
          }
-         else
+         catch (IOException e)
          {
-            if (trace)
-               log.trace("... no - not a directory or an archive.");
-            return false;
+            log.warn("Exception looking for WEB-INF/lib, " + file.getPathName() + ", " + e);
          }
+
+         // Add the war manifest classpath entries
+         addClassPath(structureContext, file, false, true, context);
+
+         // Add WEB-INF/classes if present
+         if (classes != null)
+            addClassPath(structureContext, classes, true, false, context);
+         else if (trace)
+            log.trace("No WEB-INF/classes for: " + file.getPathName());
+
+         // and the top level jars in WEB-INF/lib
+         if (archives != null)
+         {
+            for (VirtualFile jar : archives) 
+            {
+               Automounter.mount(file, jar);
+               addClassPath(structureContext, jar, true, true, context);
+            }
+         }
+         else if (trace)
+         {
+            log.trace("No WEB-INF/lib for: " + file.getPathName());
+         }
+
+         // do we include WEB-INF in classpath
+         if (includeWebInfInClasspath && webinf != null)
+         {
+            addClassPath(structureContext, webinf, true, false, context);
+         }
+
+         // There are no subdeployments for wars
+         return true;
       }
       catch (Exception e)
       {

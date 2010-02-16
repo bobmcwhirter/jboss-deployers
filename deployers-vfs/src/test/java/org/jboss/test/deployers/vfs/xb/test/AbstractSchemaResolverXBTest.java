@@ -29,8 +29,8 @@ import org.jboss.deployers.vfs.plugins.structure.AbstractVFSDeploymentUnit;
 import org.jboss.deployers.vfs.spi.deployer.SchemaResolverDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.test.deployers.vfs.xb.XBDeployersTest;
-import org.jboss.virtual.VFS;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VFS;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * Abstract schema resolver JBossXB test.
@@ -61,7 +61,7 @@ public abstract class AbstractSchemaResolverXBTest<T> extends XBDeployersTest
       String common = "/org/jboss/test/deployers/vfs/xb/test/deployment";
       URL url = getClass().getResource(common);
       assertNotNull(url);
-      VirtualFile file = VFS.getRoot(url);
+      VirtualFile file = VFS.getChild(url);
       assertNotNull(file);
 
       VFSDeploymentContext context = new AbstractVFSDeploymentContext(file, "");

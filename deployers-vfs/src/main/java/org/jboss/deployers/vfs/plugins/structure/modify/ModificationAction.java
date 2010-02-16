@@ -24,7 +24,7 @@ package org.jboss.deployers.vfs.plugins.structure.modify;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * Execute modification on file.

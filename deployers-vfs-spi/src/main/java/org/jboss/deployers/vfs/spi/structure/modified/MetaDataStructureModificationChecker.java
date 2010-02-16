@@ -32,8 +32,8 @@ import org.jboss.deployers.spi.structure.MetaDataType;
 import org.jboss.deployers.spi.structure.StructureMetaData;
 import org.jboss.deployers.structure.spi.main.MainDeployerInternals;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VirtualFileFilter;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.VirtualFileFilter;
 
 /**
  * MetaDataStructureModificationChecker.
@@ -79,7 +79,7 @@ public class MetaDataStructureModificationChecker extends AbstractStructureModif
       }
    }
 
-   protected boolean hasStructureBeenModifed(VirtualFile root, VFSDeploymentContext deploymentContext) throws IOException
+   protected boolean hasDeploymentContextBeenModified(VirtualFile root, VFSDeploymentContext deploymentContext) throws IOException
    {
       StructureMetaData structureMetaData = deploymentContext.getTransientManagedObjects().getAttachment(StructureMetaData.class);
       return hasStructureBeenModified(root, structureMetaData, null);
@@ -132,7 +132,7 @@ public class MetaDataStructureModificationChecker extends AbstractStructureModif
    {
       String path = contextInfo.getPath();
       VirtualFile contextRoot = root.getChild(path);
-      if (contextRoot != null)
+      if (contextRoot.exists())
       {
          List<MetaDataEntry> metadataPaths = contextInfo.getMetaDataPath();
          if (metadataPaths != null && metadataPaths.isEmpty() == false)
@@ -144,7 +144,7 @@ public class MetaDataStructureModificationChecker extends AbstractStructureModif
 
                String metaDataPath = entry.getPath();
                VirtualFile mdpVF = contextRoot.getChild(metaDataPath);
-               if (mdpVF != null)
+               if (mdpVF.exists())
                {
                   List<VirtualFile> children = mdpVF.getChildren(filter);
                   List<VirtualFile> leaves = getCache().getLeaves(mdpVF, filter);

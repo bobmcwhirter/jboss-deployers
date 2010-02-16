@@ -21,7 +21,7 @@
 */
 package org.jboss.test.deployers.vfs.deploymentfactory.test;
 
-import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import junit.framework.Test;
@@ -32,8 +32,8 @@ import org.jboss.deployers.vfs.plugins.client.AbstractVFSDeployment;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.client.VFSDeploymentFactory;
 import org.jboss.test.deployers.deploymentfactory.AbstractDeploymentFactoryTest;
-import org.jboss.virtual.VFS;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VFS;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * VFSDeploymentFactoryUnitTestCase.
@@ -94,9 +94,9 @@ public class VFSDeploymentFactoryUnitTestCase extends AbstractDeploymentFactoryT
       {
          resource = getResource("/dummy");
          assertNotNull(resource);
-         return VFS.getRoot(resource);
+         return VFS.getChild(resource);
       }
-      catch (IOException e)
+      catch (URISyntaxException e)
       {
          throw new RuntimeException("Failed to get resource: " + resource, e);
       }

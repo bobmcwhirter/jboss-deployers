@@ -28,7 +28,6 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.jboss.deployers.vfs.plugins.structure.jar.JARStructure;
 import org.jboss.test.BaseTestCase;
-import org.jboss.virtual.plugins.context.jar.JarUtils;
 
 /**
  * ConfiguredSuffixJARStructureUnitTestCase.
@@ -40,8 +39,8 @@ import org.jboss.virtual.plugins.context.jar.JarUtils;
 public class ConfiguredSuffixJARStructureUnitTestCase extends BaseTestCase
 {
    /** The file structure deployer */
-   private static final Set<String> defaultSuffixes = JarUtils.getSuffixes();
-
+   private static final Set<String> defaultSuffixes = JARStructure.DEFAULT_JAR_SUFFIXES;
+   
    public static Test suite()
    {
       return new TestSuite(ConfiguredSuffixJARStructureUnitTestCase.class);
@@ -73,24 +72,17 @@ public class ConfiguredSuffixJARStructureUnitTestCase extends BaseTestCase
    
    public void testOverwriteDefaults() throws Exception
    {
-      try
-      {
-         Set<String> newSuffixes = new HashSet<String>();
-         newSuffixes.add(".bar");
-         newSuffixes.add(".tar");
-         newSuffixes.add(".far");
-         
-         JARStructure structure = new JARStructure(newSuffixes);
-         Set<String> suffixes = structure.getSuffixes();
-         assertNotNull(suffixes);
-         assertEquals(3, suffixes.size());
-         assertTrue(suffixes.contains(".bar"));
-         assertTrue(suffixes.contains(".tar"));
-         assertTrue(suffixes.contains(".far"));
-      }
-      finally
-      {
-         JarUtils.setJarSuffixes(defaultSuffixes);
-      }
+      Set<String> newSuffixes = new HashSet<String>();
+      newSuffixes.add(".bar");
+      newSuffixes.add(".tar");
+      newSuffixes.add(".far");
+      
+      JARStructure structure = new JARStructure(newSuffixes);
+      Set<String> suffixes = structure.getSuffixes();
+      assertNotNull(suffixes);
+      assertEquals(3, suffixes.size());
+      assertTrue(suffixes.contains(".bar"));
+      assertTrue(suffixes.contains(".tar"));
+      assertTrue(suffixes.contains(".far"));
    }
 }

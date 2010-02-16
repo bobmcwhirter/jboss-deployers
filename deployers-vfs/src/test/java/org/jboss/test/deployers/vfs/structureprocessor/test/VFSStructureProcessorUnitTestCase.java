@@ -37,8 +37,8 @@ import org.jboss.deployers.vfs.plugins.structure.modify.ModificationTypeMatcher;
 import org.jboss.deployers.vfs.plugins.structure.modify.ModificationTypeStructureProcessor;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
-import org.jboss.virtual.VFSUtils;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.util.automount.Automounter;
 
 /**
  * VFSStructureProcessorUnitTestCase.
@@ -109,7 +109,7 @@ public class VFSStructureProcessorUnitTestCase extends StructureProcessorUnitTes
       {
          VFSDeploymentContext vdc = getTopDeploymentContext(main, path);
          VirtualFile root = vdc.getRoot();
-         assertTrue("Should be temp", VFSUtils.isTemporaryFile(root));
+         assertTrue("Should be temp", root.isDirectory());
       }
       finally
       {
@@ -141,11 +141,11 @@ public class VFSStructureProcessorUnitTestCase extends StructureProcessorUnitTes
          VirtualFile file = root.getChild("tempchild.jar");
          try
          {
-            assertTrue("Should be temp", VFSUtils.isTemporaryFile(file));
+            assertTrue("Should be temp", file.isDirectory());
          }
          finally
          {
-            file.cleanup();
+            Automounter.cleanup(root);
          }
       }
       finally

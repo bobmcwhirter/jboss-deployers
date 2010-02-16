@@ -21,9 +21,9 @@
   */
 package org.jboss.deployers.vfs.plugins.structure;
 
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VirtualFileFilterWithAttributes;
-import org.jboss.virtual.VisitorAttributes;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.VirtualFileFilterWithAttributes;
+import org.jboss.vfs.VisitorAttributes;
 
 /**
  * Matches meta data

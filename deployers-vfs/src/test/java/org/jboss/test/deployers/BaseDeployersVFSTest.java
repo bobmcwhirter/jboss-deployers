@@ -38,9 +38,8 @@ import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.client.VFSDeploymentFactory;
 import org.jboss.deployers.vfs.spi.structure.StructureDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
-import org.jboss.virtual.VFS;
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.plugins.context.jar.JarUtils;
+import org.jboss.vfs.VFS;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * BaseDeployersVFSTest.
@@ -74,7 +73,7 @@ public abstract class BaseDeployersVFSTest extends AbstractDeployerTest
    protected VirtualFile getVirtualFile(String root, String path) throws Exception
    {
       URL url = getResource(root);
-      return VFS.getVirtualFile(url, path);
+      return VFS.getChild(url).getChild(path);
    }
    
    /**
@@ -87,7 +86,9 @@ public abstract class BaseDeployersVFSTest extends AbstractDeployerTest
    protected String getURL(String path) throws Exception
    {
       URL url = getResource(path);
-      return url.toString();
+      if (url == null)
+         throw new IllegalArgumentException("Null url");
+      return new URL("jar:" + url + "!/").toString();
    }
    /**
     * Get a vfs url string from a path
@@ -99,7 +100,7 @@ public abstract class BaseDeployersVFSTest extends AbstractDeployerTest
    protected String getVfsURL(String path) throws Exception
    {
       URL url = getResource(path);
-      return "vfs"+url.toString();
+      return url.toString();
    }
 
    /**
@@ -112,7 +113,9 @@ public abstract class BaseDeployersVFSTest extends AbstractDeployerTest
    protected String getJarURL(String path) throws Exception
    {
       URL url = getResource(path);
-      url = JarUtils.createJarURL(url);
+      if (url == null)
+         throw new IllegalArgumentException("Null url");
+      url = new URL("jar:" + url + "!/");
       return url.toString();
    }
 

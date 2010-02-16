@@ -23,7 +23,7 @@ package org.jboss.test.deployers.vfs.structure.ear.support;
 
 import java.net.URL;
 
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
@@ -43,7 +43,7 @@ public class SimpleVFSResourceLoader extends ClassLoader
       try
       {
          VirtualFile child = root.getChild(name);
-         if (child != null)
+         if (child.exists())
             return child.toURL();
          else
             return null;

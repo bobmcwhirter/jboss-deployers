@@ -36,7 +36,7 @@ import org.jboss.test.deployers.vfs.webbeans.support.ext.ExternalWebBean;
 import org.jboss.test.deployers.vfs.webbeans.support.jar.PlainJavaBean;
 import org.jboss.test.deployers.vfs.webbeans.support.ui.UIWebBean;
 import org.jboss.test.deployers.vfs.webbeans.support.web.ServletWebBean;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * WebBeanDiscoveryTestCase.

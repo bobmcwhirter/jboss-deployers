@@ -21,9 +21,9 @@
  */
 package org.jboss.test.deployers.vfs.metadata.support;
 
-import org.jboss.virtual.plugins.vfs.helpers.AbstractVirtualFileFilterWithAttributes;
-import org.jboss.virtual.VisitorAttributes;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.util.AbstractVirtualFileFilterWithAttributes;
+import org.jboss.vfs.VisitorAttributes;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>

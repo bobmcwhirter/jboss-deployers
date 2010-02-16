@@ -21,8 +21,12 @@
 */
 package org.jboss.test.deployers.vfs.deployer.validate.test;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.security.CodeSigner;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import junit.framework.Test;
@@ -35,9 +39,10 @@ import org.jboss.deployers.vfs.spi.deployer.SchemaResolverDeployer;
 import org.jboss.test.BaseTestCase;
 import org.jboss.test.deployers.vfs.deployer.nonmetadata.support.MockBshDeployer;
 import org.jboss.test.deployers.vfs.deployer.validate.support.MyVFSDeploymentContext;
-import org.jboss.test.deployers.vfs.deployer.validate.support.MyVirtualFile;
 import org.jboss.test.deployers.vfs.deployer.validate.support.TestXmlDeployer;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VFS;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.spi.FileSystem;
 import org.jboss.xb.binding.JBossXBException;
 
 /**
@@ -69,14 +74,14 @@ public class DeployersValidateInputTestCase extends BaseTestCase
       map.put(xmlDeployer, RuntimeException.class);
       map.put(new SchemaResolverDeployer<Object>(Object.class), JBossXBException.class);
 
-      VirtualFile root = new MyVirtualFile();
+      VirtualFile root = getNullStreamFile();
       AbstractVFSDeploymentContext context = new MyVFSDeploymentContext(root, "");
       DeploymentUnit unit = context.getDeploymentUnit();
 
       for(AbstractVFSParsingDeployer<?> deployer : map.keySet())
       {
          // set name to "" to match in deployment
-         deployer.setName("");
+         deployer.setName("nullfile");
          try
          {
             deployer.deploy(unit);
@@ -92,5 +97,74 @@ public class DeployersValidateInputTestCase extends BaseTestCase
             }
          }
       }
+   }
+   
+   public VirtualFile getNullStreamFile() throws IOException 
+   {
+      VirtualFile file = VFS.getChild("/nullfile");
+      
+      VFS.mount(file, new FileSystem()
+      {
+         public InputStream openInputStream(VirtualFile mountPoint, VirtualFile target) throws IOException
+         {
+            return null;
+         }
+         
+         public boolean isReadOnly()
+         {
+            return false;
+         }
+         
+         public boolean isFile(VirtualFile mountPoint, VirtualFile target)
+         {
+            return true;
+         }
+         
+         public boolean isDirectory(VirtualFile mountPoint, VirtualFile target)
+         {
+            return false;
+         }
+         
+         public long getSize(VirtualFile mountPoint, VirtualFile target)
+         {
+            return 0;
+         }
+         
+         public long getLastModified(VirtualFile mountPoint, VirtualFile target)
+         {
+            return 0;
+         }
+         
+         public File getFile(VirtualFile mountPoint, VirtualFile target) throws IOException
+         {
+            return null;
+         }
+         
+         public List<String> getDirectoryEntries(VirtualFile mountPoint, VirtualFile target)
+         {
+            return null;
+         }
+         
+         public CodeSigner[] getCodeSigners(VirtualFile mountPoint, VirtualFile target)
+         {
+            return null;
+         }
+         
+         public boolean exists(VirtualFile mountPoint, VirtualFile target)
+         {
+            return true;
+         }
+         
+         public boolean delete(VirtualFile mountPoint, VirtualFile target)
+         {
+            return false;
+         }
+         
+         public void close() throws IOException
+         {
+         }
+      });
+      
+      return file;
    }
 }

@@ -65,6 +65,6 @@ public class ModificationTypeUnitTestCase extends AbstractStructureTest
    {
       VFSDeploymentContext root = assertDeploy("/structure/explicit", "explicit.ear");
       assertChildContexts(root, "inner.war");
-      assertUnpacked(root.getRoot().findChild("inner.war"));
+      assertTrue(root.getRoot().getChild("inner.war").isDirectory());
    }
 }

@@ -42,6 +42,7 @@ import org.jboss.reflect.spi.MethodInfo;
 import org.jboss.reflect.spi.TypeInfo;
 import org.jboss.reflect.spi.TypeInfoFactory;
 import org.jboss.test.deployers.BootstrapDeployersTest;
+import org.jboss.test.deployers.support.AssembledDirectory;
 import org.jboss.test.deployers.vfs.reflect.support.crm.CrmFacade;
 import org.jboss.test.deployers.vfs.reflect.support.ejb.MySLSBean;
 import org.jboss.test.deployers.vfs.reflect.support.ext.External;
@@ -51,8 +52,8 @@ import org.jboss.test.deployers.vfs.reflect.support.service.SomeMBean;
 import org.jboss.test.deployers.vfs.reflect.support.ui.UIBean;
 import org.jboss.test.deployers.vfs.reflect.support.util.SomeUtil;
 import org.jboss.test.deployers.vfs.reflect.support.web.AnyServlet;
-import org.jboss.virtual.AssembledDirectory;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VFS;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * Abstract test for Reflect.
@@ -90,31 +91,31 @@ public abstract class ReflectTest extends BootstrapDeployersTest
 
    public void testJar() throws Exception
    {
-      AssembledDirectory directory = createJar();
+      VirtualFile directory = createJar();
       assertReflect(directory, PlainJavaBean.class);
    }
 
    public void testEjbJar() throws Exception
    {
-      AssembledDirectory directory = createEjbJar();
+      VirtualFile directory = createEjbJar();
       assertReflect(directory, MySLSBean.class);
    }
 
    public void testWar() throws Exception
    {
-      AssembledDirectory directory = createWar();
+      VirtualFile directory = createWar();
       assertReflect(directory, AnyServlet.class);
    }
 
    public void testSar() throws Exception
    {
-      AssembledDirectory directory = createSar();
+      VirtualFile directory = createSar();
       assertReflect(directory, SomeMBean.class);
    }
 
    public void testBasicEar() throws Exception
    {
-      AssembledDirectory directory = createBasicEar();
+      VirtualFile directory = createBasicEar();
       Map<Class<?>, String> classes = new HashMap<Class<?>, String>();
       classes.put(SomeUtil.class, null);
       classes.put(PlainJavaBean.class, null);
@@ -129,25 +130,25 @@ public abstract class ReflectTest extends BootstrapDeployersTest
 
    public void testTopLevelWithUtil() throws Exception
    {
-      AssembledDirectory directory = createTopLevelWithUtil("/reflect/earutil");
+      VirtualFile directory = createTopLevelWithUtil("/reflect/earutil");
       assertReflect(directory, SomeUtil.class, External.class);
    }
 
    public void testWarInEar() throws Exception
    {
-      AssembledDirectory directory = createWarInEar();
+      VirtualFile directory = createWarInEar();
       assertReflect(directory, Collections.<Class<?>, String>singletonMap(AnyServlet.class, "simple.war"));
    }
 
    public void testJarInEar() throws Exception
    {
-      AssembledDirectory directory = createJarInEar();
+      VirtualFile directory = createJarInEar();
       assertReflect(directory, PlainJavaBean.class);
    }
 
    public void testHierarchyCLUsage() throws Exception
    {
-      AssembledDirectory directory = createBasicEar();
+      VirtualFile directory = createBasicEar();
       DeploymentUnit unit = assertDeploy(directory);
       try
       {
@@ -188,29 +189,18 @@ public abstract class ReflectTest extends BootstrapDeployersTest
 
    public void testEar2War() throws Exception
    {
-      AssembledDirectory ear = createAssembledDirectory("ptd-ear-1.0-SNAPSHOT.ear", "ptd-ear-1.0-SNAPSHOT.ear");
-      addPath(ear, "/reflect/ear2war", "META-INF");
-      AssembledDirectory lib = ear.mkdir("lib");
-      AssembledDirectory common = lib.mkdir("common.jar");
-      addPackage(common, PlainJavaBean.class);
+      VirtualFile earFile = VFS.getChild(getName()).getChild("ptd-ear-1.0-SNAPSHOT.ear");
+      createAssembledDirectory(earFile)
+         .addPath("META-INF", "/reflect/ear2war/META-INF")
+         .addPackage("lib/common.jar", PlainJavaBean.class)
+         .addPath("ptd-jsf-1.0-SNAPSHOT.war", "/reflect/ear2war/war1")
+         .addPackage("ptd-jsf-1.0-SNAPSHOT.war/WEB-INF/lib/wj1.jar", AnyServlet.class)
+         .addPath("ptd-jsf-1.0-SNAPSHOT.war/WEB-INF/lib/wj1.jar", "/reflect/ear2war/manifest")
+         .addPath("ptd-ws-1.0-SNAPSHOT.war", "/reflect/ear2war/war2")
+         .addPackage("ptd-ws-1.0-SNAPSHOT.war/WEB-INF/lib/wj2.jar", AnyServlet.class)
+         .addPath("ptd-ws-1.0-SNAPSHOT.war/WEB-INF/lib/wj2.jar", "/reflect/ear2war/manifest");
 
-      AssembledDirectory war1 = ear.mkdir("ptd-jsf-1.0-SNAPSHOT.war");
-      AssembledDirectory webinf1 = war1.mkdir("WEB-INF");
-      addPath(war1, "/reflect/ear2war/war1/", "WEB-INF");
-      AssembledDirectory lib1 = webinf1.mkdir("lib");
-      AssembledDirectory wj1 = lib1.mkdir("wj1.jar");
-      addPackage(wj1, AnyServlet.class);
-      addPath(wj1, "/reflect/ear2war/manifest/", "META-INF");
-
-      AssembledDirectory war2 = ear.mkdir("ptd-ws-1.0-SNAPSHOT.war");
-      AssembledDirectory webinf2 = war2.mkdir("WEB-INF");
-      addPath(war2, "/reflect/ear2war/war2/", "WEB-INF");
-      AssembledDirectory lib2 = webinf2.mkdir("lib");
-      AssembledDirectory wj2 = lib2.mkdir("wj2.jar");
-      addPackage(wj2, AnyServlet.class);
-      addPath(wj2, "/reflect/ear2war/manifest/", "META-INF");
-
-      Deployment deployment = createVFSDeployment(ear);
+      Deployment deployment = createVFSDeployment(earFile);
       String top = deployment.getName();
       String left = top + "ptd-jsf-1.0-SNAPSHOT.war/";
       String right = top + "ptd-ws-1.0-SNAPSHOT.war/";
@@ -223,10 +213,12 @@ public abstract class ReflectTest extends BootstrapDeployersTest
       System.setProperty("jboss.tests.url", location.toExternalForm());
       try
       {
-         AssembledDirectory jar = createJar();
-         addPath(jar, "/reflect/module", "META-INF");
+         VirtualFile jarFile = VFS.getChild(getName()).getChild("simple.jar");
+         createAssembledDirectory(jarFile)
+            .addPackage(PlainJavaBean.class)
+            .addPath("/reflect/module");
 
-         Deployment deployment = createVFSDeployment(jar);
+         Deployment deployment = createVFSDeployment(jarFile);
          DeployerClient main = getDeployerClient();
          main.deploy(deployment);
          try
@@ -281,10 +273,13 @@ public abstract class ReflectTest extends BootstrapDeployersTest
       System.setProperty("jboss.tests.url", location.toExternalForm());
       try
       {
-         AssembledDirectory jar = createJar();
-         addPath(jar, "/reflect/" + name, "META-INF");
+         VirtualFile jarFile = VFS.getChild(getName()).getChild("simple.jar");
+         createAssembledDirectory(jarFile)
+            .addPackage(PlainJavaBean.class)
+            .addPath("/reflect/module")
+            .addPath("/reflect/" + name);
 
-         Deployment deployment = createVFSDeployment(jar);
+         Deployment deployment = createVFSDeployment(jarFile);
          DeployerClient main = getDeployerClient();
          main.deploy(deployment);
          try
@@ -407,127 +402,110 @@ public abstract class ReflectTest extends BootstrapDeployersTest
       return assertChild(parent, name);
    }
 
-   protected AssembledDirectory createJar() throws Exception
+   protected VirtualFile createJar() throws Exception
    {
       return createJar("simple.jar", PlainJavaBean.class);
    }
 
-   protected AssembledDirectory createJar(String name, Class<?> reference) throws Exception
+   protected VirtualFile createJar(String name, Class<?> reference) throws Exception
    {
-      AssembledDirectory jar = createAssembledDirectory(name, name);
-      addPackage(jar, reference);
-      return jar;
+      VirtualFile jarFile = VFS.getChild(getName()).getChild(name);
+      createAssembledDirectory(jarFile)
+         .addPackage(reference);
+      return jarFile;
    }
 
-   protected AssembledDirectory createEjbJar() throws Exception
+   protected VirtualFile createEjbJar() throws Exception
    {
-      AssembledDirectory jar = createAssembledDirectory("ejbs.jar", "ejbs.jar");
-      addPackage(jar, MySLSBean.class);
-
-      addPath(jar, "/reflect/ejb", "META-INF");
-      return jar;
+      VirtualFile jarFile = VFS.getChild(getName()).getChild("ejbs.jar");
+      createAssembledDirectory(jarFile)
+         .addPackage(MySLSBean.class)
+         .addPath("/reflect/ejb");
+      return jarFile;
    }
 
-   protected AssembledDirectory createWar() throws Exception
+   protected VirtualFile createWar() throws Exception
    {
-      AssembledDirectory war = createAssembledDirectory("simple.war", "simple.war");
-      AssembledDirectory webinf = war.mkdir("WEB-INF");
-      AssembledDirectory classes = webinf.mkdir("classes");
-      addPackage(classes, AnyServlet.class);
-      addPath(war, "/reflect/web", "WEB-INF");
-      return war;
+      VirtualFile warFile = VFS.getChild(getName()).getChild("simple.war");
+      createAssembledDirectory(warFile)
+         .addPackage("WEB-INF/classes", AnyServlet.class)
+         .addPath("/reflect/web");
+      return warFile;
    }
 
-   protected AssembledDirectory createSar() throws Exception
+   protected VirtualFile createSar() throws Exception
    {
-      AssembledDirectory sar = createAssembledDirectory("simple.sar", "simple.sar");
-      addPackage(sar, SomeMBean.class);
-      return sar;
+      VirtualFile sarFile = VFS.getChild(getName()).getChild( "simple.sar");
+      createAssembledDirectory(sarFile)
+         .addPackage(SomeMBean.class);
+      return sarFile;
    }
 
-   protected AssembledDirectory createBasicEar() throws Exception
+   protected VirtualFile createBasicEar() throws Exception
    {
-      AssembledDirectory ear = createTopLevelWithUtil("/reflect/simple");
+      VirtualFile ear = createTopLevelWithUtil("/reflect/simple");
+      
+      VirtualFile jarFile = ear.getChild("simple.jar");
+      createAssembledDirectory(jarFile)
+         .addPackage(PlainJavaBean.class);
 
-      AssembledDirectory jar = ear.mkdir("simple.jar");
-      addPackage(jar, PlainJavaBean.class);
+      VirtualFile ejbsFile = ear.getChild("ejbs.jar");
+      createAssembledDirectory(ejbsFile)
+         .addPackage(MySLSBean.class)
+         .addPath("/reflect/ejb");
 
-      AssembledDirectory ejbs = ear.mkdir("ejbs.jar");
-      addPackage(ejbs, MySLSBean.class);
-      addPath(ejbs, "/reflect/ejb", "META-INF");
-
-      AssembledDirectory war = ear.mkdir("simple.war");
-      AssembledDirectory webinf = war.mkdir("WEB-INF");
-      AssembledDirectory classes = webinf.mkdir("classes");
-      addPackage(classes, AnyServlet.class);
-      addPath(war, "/reflect/web", "WEB-INF");
-
-      AssembledDirectory lib = webinf.mkdir("lib");
-
-      AssembledDirectory uijar = lib.mkdir("ui.jar");
-      addPackage(uijar, UIBean.class);
+      
+      VirtualFile warFile = ear.getChild("simple.war");
+      createAssembledDirectory(warFile)
+         .addPackage("WEB-INF/classes", AnyServlet.class)
+         .addPath("/reflect/web")
+         .addPackage("WEB-INF/lib/ui.jar", UIBean.class);
 
       // another war
-      war = ear.mkdir("jsfapp.war");
-      webinf = war.mkdir("WEB-INF");
-      addPath(war, "/reflect/web", "WEB-INF");
-      classes = webinf.mkdir("classes");
-      addPackage(classes, JsfBean.class);
-
-      lib = webinf.mkdir("lib");
-
-      uijar = lib.mkdir("ui_util.jar");
-      addPackage(uijar, CrmFacade.class);
+      warFile = ear.getChild("jsfapp.war");
+      createAssembledDirectory(warFile)
+         .addPath("/reflect/web")
+         .addPackage("WEB-INF/classes", JsfBean.class)
+         .addPackage("WEB-INF/lib/ui_util.jar", CrmFacade.class);
 
       // a sar
-      AssembledDirectory sar = ear.mkdir("simple.sar");
-      addPackage(sar, SomeMBean.class);
-      addPath(war, "/reflect/sar", "META-INF");
+      VirtualFile sarFile = ear.getChild("simple.sar");
+      createAssembledDirectory(sarFile)
+         .addPackage(SomeMBean.class)
+         .addPath("/reflect/sar");
 
       enableTrace("org.jboss.deployers");
 
       return ear;
    }
 
-   protected AssembledDirectory createTopLevelWithUtil(String path) throws Exception
+   protected VirtualFile createTopLevelWithUtil(String path) throws Exception
    {
-      AssembledDirectory topLevel = createAssembledDirectory("top-level.ear", "top-level.ear");
-      addPath(topLevel, path, "META-INF");
-
-      AssembledDirectory earLib = topLevel.mkdir("lib");
-
-      AssembledDirectory util = earLib.mkdir("util.jar");
-      addPackage(util, SomeUtil.class);
-
-      AssembledDirectory ext = earLib.mkdir("ext.jar");
-      addPackage(ext, External.class);
-
-      return topLevel;
+      VirtualFile earFile = VFS.getChild(getName()).getChild("top-level.ear");
+      createAssembledDirectory(earFile)
+         .addPath(path)
+         .addPackage("lib/util.jar", SomeUtil.class)
+         .addPackage("lib/ext.jar", External.class);
+      return earFile;
    }
 
-   protected AssembledDirectory createWarInEar() throws Exception
+   protected VirtualFile createWarInEar() throws Exception
    {
-      AssembledDirectory ear = createAssembledDirectory("war-in-ear.ear", "war-in-ear.ear");
-      addPath(ear, "/reflect/warinear", "META-INF");
-
-      AssembledDirectory war = ear.mkdir("simple.war");
-      AssembledDirectory webinf = war.mkdir("WEB-INF");
-      AssembledDirectory classes = webinf.mkdir("classes");
-      addPackage(classes, AnyServlet.class);
-      addPath(war, "/reflect/web", "WEB-INF");
-
-      return ear;
+      VirtualFile earFile = VFS.getChild(getName()).getChild("war-in-ear.ear");
+      createAssembledDirectory(earFile)
+         .addPath("/reflect/warinear")
+         .addPackage("simple.war/WEB-INF/classes", AnyServlet.class)
+         .addPath("simple.war", "/reflect/web");
+      return earFile;
    }
 
-   protected AssembledDirectory createJarInEar() throws Exception
+   protected VirtualFile createJarInEar() throws Exception
    {
-      AssembledDirectory ear = createAssembledDirectory("jar-in-ear.ear", "jar-in-ear.ear");
-      addPath(ear, "/reflect/jarinear", "META-INF");
-
-      AssembledDirectory jar = ear.mkdir("simple.jar");
-      addPackage(jar, PlainJavaBean.class);
-
-      return ear;
+      VirtualFile earFile = VFS.getChild(getName()).getChild("jar-in-ear.ear"); 
+      createAssembledDirectory(earFile)
+         .addPath("/reflect/jarinear")
+         .addPackage("simple.jar", PlainJavaBean.class);
+      return earFile;
    }
 
    protected Deployment createIsolatedDeployment(String name) throws Exception
@@ -542,7 +520,7 @@ public abstract class ReflectTest extends BootstrapDeployersTest
 
    protected Deployment createIsolatedDeployment(String name, String parentDomain, Class<?> reference, ClassLoadingMetaData clmd) throws Exception
    {
-      AssembledDirectory jar = createJar(name, reference);
+      VirtualFile jar = createJar(name, reference);
       Deployment deployment = VFSDeploymentFactory.getInstance().createVFSDeployment(jar);
 
       if (clmd == null)

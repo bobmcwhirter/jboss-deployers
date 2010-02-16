@@ -27,7 +27,7 @@ import java.util.List;
 
 import org.jboss.deployers.vfs.spi.deployer.AbstractVFSParsingDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * Gather feedback from deployer units.

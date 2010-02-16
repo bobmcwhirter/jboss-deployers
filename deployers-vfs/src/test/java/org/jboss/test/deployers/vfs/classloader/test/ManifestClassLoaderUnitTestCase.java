@@ -30,7 +30,8 @@ import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.test.deployers.BootstrapDeployersTest;
 import org.jboss.test.deployers.vfs.classloader.support.a.A;
 import org.jboss.test.deployers.vfs.classloader.support.usea.UseA;
-import org.jboss.virtual.AssembledDirectory;
+import org.jboss.vfs.VFS;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * ManifestClassLoaderUnitTestCase.
@@ -52,10 +53,11 @@ public class ManifestClassLoaderUnitTestCase extends BootstrapDeployersTest
 
    public void testBasicManifest() throws Exception
    {
-      AssembledDirectory topLevel = createTopLevelWithUtil();
-      AssembledDirectory sub = topLevel.mkdir("sub.jar");
-      addPackage(sub, UseA.class);
-      addPath(sub, "/classloader/manifest/basic", "META-INF");
+      VirtualFile topLevel = createTopLevelWithUtil();
+      VirtualFile sub = topLevel.getChild("sub.jar");
+      createAssembledDirectory(sub)
+         .addPackage(UseA.class)
+         .addPath("/classloader/manifest/basic");
       VFSDeploymentUnit unit = assertDeploy(topLevel);
       try
       {
@@ -72,10 +74,11 @@ public class ManifestClassLoaderUnitTestCase extends BootstrapDeployersTest
 
    public void testScopedManifest() throws Exception
    {
-      AssembledDirectory topLevel = createTopLevelWithUtil();
-      AssembledDirectory sub = topLevel.mkdir("sub.jar");
-      addPackage(sub, UseA.class);
-      addPath(sub, "/classloader/manifest/scoped", "META-INF");
+      VirtualFile topLevel = createTopLevelWithUtil();
+      VirtualFile sub = topLevel.getChild("sub.jar");
+      createAssembledDirectory(sub)
+         .addPackage(UseA.class)
+         .addPath("/classloader/manifest/scoped");
       enableTrace("org.jboss.deployers");
       VFSDeploymentUnit unit = assertDeploy(topLevel);
       try
@@ -95,13 +98,15 @@ public class ManifestClassLoaderUnitTestCase extends BootstrapDeployersTest
 
    public void testScopedManifests() throws Exception
    {
-      AssembledDirectory topLevel = createTopLevelWithUtil();
-      AssembledDirectory sub1 = topLevel.mkdir("sub1.jar");
-      addPackage(sub1, UseA.class);
-      addPath(sub1, "/classloader/manifest/scoped", "META-INF");
-      AssembledDirectory sub2 = topLevel.mkdir("sub2.jar");
-      addPackage(sub2, UseA.class);
-      addPath(sub2, "/classloader/manifest/scoped", "META-INF");
+      VirtualFile topLevel = createTopLevelWithUtil();
+      VirtualFile sub1 = topLevel.getChild("sub1.jar");
+      createAssembledDirectory(sub1)
+         .addPackage(UseA.class)
+         .addPath("/classloader/manifest/scoped");
+      VirtualFile sub2 = topLevel.getChild("sub2.jar");
+      createAssembledDirectory(sub2)
+         .addPackage(UseA.class)
+         .addPath("/classloader/manifest/scoped");
       VFSDeploymentUnit unit = assertDeploy(topLevel);
       try
       {
@@ -125,16 +130,20 @@ public class ManifestClassLoaderUnitTestCase extends BootstrapDeployersTest
    public void testScopedManifestNotParent() throws Exception
    {
       // Dummy parent to create a different parent domain
-      AssembledDirectory dummyParent = createAssembledDirectory("dummyParent.jar");
-      addPath(dummyParent, "/classloader/manifest/dummyparent", "META-INF");
+      VirtualFile dummyParent = VFS.getChild(getName()).getChild("dummyParent.jar");
+      createAssembledDirectory(dummyParent)
+         .addPath("/classloader/manifest/dummyparent");
       VFSDeploymentUnit dummy = assertDeploy(dummyParent);
       try
       {
-         AssembledDirectory topLevel = createTopLevelWithUtil();
-         addPath(topLevel, "/classloader/manifest/topscoped", "META-INF");
-         AssembledDirectory sub = topLevel.mkdir("sub.jar");
-         addPackage(sub, UseA.class);
-         addPath(sub, "/classloader/manifest/scopednotparent", "META-INF");
+         VirtualFile topLevel = VFS.getChild(getName()).getChild("top-level.jar");
+         createAssembledDirectory(topLevel)
+            .addPackage("util.jar", A.class)
+            .addPath("/classloader/manifest/topscoped");
+         VirtualFile sub = topLevel.getChild("sub.jar");
+         createAssembledDirectory(sub)
+            .addPackage(UseA.class)
+            .addPath("/classloader/manifest/scopednotparent");
          VFSDeploymentUnit unit = assertDeploy(topLevel);
          try
          {
@@ -164,11 +173,11 @@ public class ManifestClassLoaderUnitTestCase extends BootstrapDeployersTest
       return (Class) a.get(null);
    }
    
-   protected AssembledDirectory createTopLevelWithUtil() throws Exception
+   protected VirtualFile createTopLevelWithUtil() throws Exception
    {
-      AssembledDirectory topLevel = createAssembledDirectory("top-level.jar");
-      AssembledDirectory util = topLevel.mkdir("util.jar");
-      addPackage(util, A.class);
-      return topLevel;
+      VirtualFile virtualFile = VFS.getChild(getName()).getChild("top-level.jar");
+      createAssembledDirectory(virtualFile)
+         .addPackage("util.jar", A.class);
+      return virtualFile;
    }
 }

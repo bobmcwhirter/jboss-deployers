@@ -30,9 +30,9 @@ import org.jboss.deployers.vfs.spi.structure.modified.DirModificationCheckerFilt
 import org.jboss.deployers.vfs.spi.structure.modified.MetaDataStructureModificationChecker;
 import org.jboss.deployers.vfs.spi.structure.modified.StructureCache;
 import org.jboss.deployers.vfs.spi.structure.modified.StructureModificationChecker;
-import org.jboss.virtual.VFS;
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VirtualFileFilter;
+import org.jboss.vfs.VFS;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.VirtualFileFilter;
 
 /**
  * Test JBDEPLOY-207, Rob's dir removal.
@@ -94,7 +94,7 @@ public class DirRemovalModificationTestCase extends StructureModificationTest
       File tmpParent = tmpFile.getParentFile();
       tmpDir = new File(tmpParent, "tmp-dir");
       assertTrue(tmpDir.mkdir());
-      return VFS.createNewRoot(tmpDir.toURI());
+      return VFS.getChild(tmpDir.toURI());
    }
 
    protected void testStructureModified(VirtualFile root, StructureModificationChecker checker, VFSDeploymentUnit deploymentUnit) throws Exception
@@ -107,7 +107,7 @@ public class DirRemovalModificationTestCase extends StructureModificationTest
       assertTrue(tmpDir.delete());
       tmpDir = new File(parentDir, "tmp-dir");
       assertTrue(tmpDir.mkdir());
-      root = VFS.createNewRoot(tmpDir.toURI());
+      root = VFS.getChild(tmpDir.toURI());
 
       assertTrue("We created new directory, expecting modified root.", checker.hasStructureBeenModified(root));
    }

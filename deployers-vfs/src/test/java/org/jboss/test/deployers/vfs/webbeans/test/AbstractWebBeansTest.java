@@ -31,7 +31,8 @@ import org.jboss.test.deployers.vfs.webbeans.support.ui.UIWebBean;
 import org.jboss.test.deployers.vfs.webbeans.support.util.SomeUtil;
 import org.jboss.test.deployers.vfs.webbeans.support.web.ServletWebBean;
 import org.jboss.test.deployers.vfs.webbeans.support.crm.CrmWebBean;
-import org.jboss.virtual.AssembledDirectory;
+import org.jboss.vfs.VFS;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * AbstractWebBeansTest.
@@ -66,62 +67,48 @@ public abstract class AbstractWebBeansTest extends BootstrapDeployersTest
       super.tearDown();
    }
 
-   protected AssembledDirectory createBasicEar() throws Exception
+   protected VirtualFile createBasicEar() throws Exception
    {
-      AssembledDirectory ear = createTopLevelWithUtil();
+      VirtualFile ear = createTopLevelWithUtil();
 
-      AssembledDirectory jar = ear.mkdir("simple.jar");
-      addPackage(jar, PlainJavaBean.class);
-      addPath(jar, "/webbeans/simple/jar", "META-INF");
+      VirtualFile jar = ear.getChild("simple.jar");
+      createAssembledDirectory(jar)
+         .addPackage(PlainJavaBean.class)
+         .addPath("/webbeans/simple/jar");
 
-      AssembledDirectory ejbs = ear.mkdir("ejbs.jar");
-      addPackage(ejbs, MySLSBean.class);
-      addPath(ejbs, "/webbeans/simple/ejb", "META-INF");
+      VirtualFile ejbs = ear.getChild("ejbs.jar");
+      createAssembledDirectory(ejbs)
+         .addPackage(MySLSBean.class)
+         .addPath("/webbeans/simple/ejb");
 
-      AssembledDirectory war = ear.mkdir("simple.war");
-      AssembledDirectory webinf = war.mkdir("WEB-INF");
-      AssembledDirectory classes = webinf.mkdir("classes");
-      addPackage(classes, ServletWebBean.class);
-      addPath(war, "/webbeans/simple/web", "WEB-INF");
-
-      AssembledDirectory lib = webinf.mkdir("lib");
-
-      AssembledDirectory uijar = lib.mkdir("ui.jar");
-      addPackage(uijar, UIWebBean.class);
-      addPath(uijar, "/webbeans/simple/ui", "META-INF");
+      
+      VirtualFile war = ear.getChild("simple.war");
+      createAssembledDirectory(war)
+         .addPackage("WEB-INF/classes", ServletWebBean.class)
+         .addPath("/webbeans/simple/web")
+         .addPackage("WEB-INF/lib/ui.jar", UIWebBean.class)
+         .addPath("WEB-INF/lib/ui.jar", "/webbeans/simple/ui");
 
       // war w/o web-beans.xml
-
-      war = ear.mkdir("crm.war");
-      webinf = war.mkdir("WEB-INF");
-      classes = webinf.mkdir("classes");
-      addPackage(classes, NotWBJsfBean.class);
-
-      lib = webinf.mkdir("lib");
-
-      uijar = lib.mkdir("crm.jar");
-      addPackage(uijar, CrmWebBean.class);
-      addPath(uijar, "/webbeans/simple/crm", "META-INF");
+      war = ear.getChild("crm.war");
+      createAssembledDirectory(war)
+         .addPackage("WEB-INF/classes", NotWBJsfBean.class)
+         .addPackage("WEB-INF/lib/crm.jar", CrmWebBean.class)
+         .addPath("WEB-INF/lib/crm.jar", "/webbeans/simple/crm");
 
       enableTrace("org.jboss.deployers");
 
       return ear;
    }
 
-   protected AssembledDirectory createTopLevelWithUtil() throws Exception
+   protected VirtualFile createTopLevelWithUtil() throws Exception
    {
-      AssembledDirectory topLevel = createAssembledDirectory("top-level.ear", "top-level.ear");
-      addPath(topLevel, "/webbeans/simple", "META-INF");
-
-      AssembledDirectory earLib = topLevel.mkdir("lib");
-
-      AssembledDirectory util = earLib.mkdir("util.jar");
-      addPackage(util, SomeUtil.class);
-
-      AssembledDirectory ext = earLib.mkdir("ext.jar");
-      addPackage(ext, ExternalWebBean.class);
-      addPath(ext, "/webbeans/simple/ext", "META-INF");
-
-      return topLevel;
+      VirtualFile earFile = VFS.getChild(getName()).getChild("top-level.ear");
+      createAssembledDirectory(earFile)
+         .addPath("/webbeans/simple")
+         .addPackage("lib/util.jar", SomeUtil.class)
+         .addPackage("lib/ext.jar", ExternalWebBean.class)
+         .addPath("lib/ext.jar", "/webbeans/simple/ext");
+      return earFile;
    }
 }

@@ -27,8 +27,8 @@ import javax.xml.validation.Schema;
 
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.util.xml.JBossEntityResolver;
-import org.jboss.virtual.VFSInputSource;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VFSInputSource;
+import org.jboss.vfs.VirtualFile;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 

@@ -49,6 +49,8 @@ import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.kernel.Kernel;
 import org.jboss.kernel.spi.dependency.KernelController;
 import org.jboss.test.deployers.vfs.deployer.AbstractDeployerUnitTest;
+import org.jboss.classloader.plugins.filter.JavaOnlyClassFilter;
+import org.jboss.classloader.plugins.filter.NothingClassFilter;
 
 /**
  * BeanScanningUnitTestCase.

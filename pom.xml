@@ -21,13 +21,13 @@
   </scm>
 
   <properties>
-    <version.jboss.vfs>2.2.0.Alpha2</version.jboss.vfs>
+    <version.jboss.vfs>3.0.0.CR1</version.jboss.vfs>
     <version.jboss.reflect>2.2.0.Alpha2</version.jboss.reflect>
     <version.jboss.classpool>1.0.0.Alpha2</version.jboss.classpool>
     <version.jboss.man>2.1.1.SP1</version.jboss.man>
     <version.jboss.mdr>2.2.0.Alpha1</version.jboss.mdr>
     <version.jboss.kernel>2.2.0.Alpha1</version.jboss.kernel>
-    <version.jboss.classloader>2.2.0-SNAPSHOT</version.jboss.classloader>
+    <version.jboss.classloader>2.2.0.Alpha3</version.jboss.classloader>
     <version.jboss.classloading.spi>5.1.0.SP1</version.jboss.classloading.spi>
     <version.jboss.common.core>2.2.17.GA</version.jboss.common.core>
     <version.jboss.logging.spi>2.2.0.CR1</version.jboss.logging.spi>
@@ -40,7 +40,7 @@
     <version.stax.staxapi>1.0</version.stax.staxapi>
     <version.ant.junit>1.6.5</version.ant.junit>
     <version.jboss.byteman>1.0.3.CP01</version.jboss.byteman>
-    <version.jboss.mcann>1.0.0.Alpha1</version.jboss.mcann>
+    <version.jboss.mcann>1.0.0.Alpha2</version.jboss.mcann>
   </properties>
 
   <modules>

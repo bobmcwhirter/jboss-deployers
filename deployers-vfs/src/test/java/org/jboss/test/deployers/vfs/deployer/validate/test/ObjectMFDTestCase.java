@@ -32,7 +32,7 @@ import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.test.deployers.BaseDeployersVFSTest;
 import org.jboss.test.deployers.vfs.deployer.validate.support.StructureOMFDeployer;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * Validate omfd deployer.

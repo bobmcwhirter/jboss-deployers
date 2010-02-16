@@ -23,7 +23,7 @@ package org.jboss.test.deployers.vfs.webbeans.support;
 
 import org.jboss.deployers.vfs.spi.deployer.AbstractVFSParsingDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * JBoss WBD deployer.

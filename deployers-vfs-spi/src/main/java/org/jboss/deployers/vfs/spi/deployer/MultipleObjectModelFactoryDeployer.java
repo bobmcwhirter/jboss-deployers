@@ -23,8 +23,8 @@ package org.jboss.deployers.vfs.spi.deployer;
 
 import java.util.Map;
 
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VFSInputSource;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.VFSInputSource;
 import org.jboss.xb.binding.ObjectModelFactory;
 import org.xml.sax.InputSource;
 

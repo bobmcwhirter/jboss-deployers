@@ -22,9 +22,9 @@
 package org.jboss.deployers.vfs.spi.structure.helpers;
 
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
-import org.jboss.virtual.VirtualFileFilter;
-import org.jboss.virtual.VirtualFileVisitor;
-import org.jboss.virtual.VisitorAttributes;
+import org.jboss.vfs.VirtualFileFilter;
+import org.jboss.vfs.VirtualFileVisitor;
+import org.jboss.vfs.VisitorAttributes;
 
 /**
  * DefaultCandidateStructureVisitorFactory.

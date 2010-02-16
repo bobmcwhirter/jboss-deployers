@@ -24,7 +24,7 @@ package org.jboss.test.deployers.vfs.webbeans.support;
 import java.io.Serializable;
 import java.net.URL;
 
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * JBoss WebBeans custom meta data

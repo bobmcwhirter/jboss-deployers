@@ -33,7 +33,7 @@ import org.jboss.reflect.plugins.javassist.JavassistTypeInfoFactory;
 import org.jboss.reflect.spi.TypeInfoFactory;
 import org.jboss.test.deployers.vfs.reflect.support.jar.PlainJavaBean;
 import org.jboss.test.deployers.vfs.reflect.support.web.AnyServlet;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * Abstract test for ClassPool.

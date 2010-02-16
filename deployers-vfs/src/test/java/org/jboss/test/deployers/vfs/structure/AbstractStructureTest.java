@@ -39,9 +39,9 @@ import org.jboss.deployers.vfs.spi.client.VFSDeploymentFactory;
 import org.jboss.deployers.vfs.spi.structure.StructureDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.test.BaseTestCase;
-import org.jboss.virtual.VFS;
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VFSUtils;
+import org.jboss.vfs.VFS;
+import org.jboss.vfs.VFSUtils;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * AbstractStructureUnitTestCase.
@@ -55,12 +55,6 @@ public abstract class AbstractStructureTest extends BaseTestCase
    public AbstractStructureTest(String name)
    {
       super(name);
-   }
-
-   protected void assertUnpacked(VirtualFile file) throws Exception
-   {
-      VirtualFile modified = VFSUtils.unpack(file);
-      assertTrue(VFSUtils.isTemporaryFile(modified));
    }
 
    protected void assertNoChildContexts(VFSDeploymentContext context)
@@ -167,7 +161,7 @@ public abstract class AbstractStructureTest extends BaseTestCase
    {
       VirtualFile root = context.getRoot();
       List<VirtualFile> metaDataLocation = context.getMetaDataLocations(filter);
-      VirtualFile expected = root.findChild(metaDataPath);
+      VirtualFile expected = root.getChild(metaDataPath);
       assertNotNull(metaDataLocation);
       assertEquals(1, metaDataLocation.size());
       assertEquals(expected, metaDataLocation.get(0));
@@ -186,7 +180,7 @@ public abstract class AbstractStructureTest extends BaseTestCase
       int i = 0;
       for(String path : metaDataPath)
       {
-         VirtualFile expected = root.findChild(path);
+         VirtualFile expected = root.getChild(path);
          assertEquals(expected, metaDataLocations.get(i++));
       }
    }
@@ -227,7 +221,7 @@ public abstract class AbstractStructureTest extends BaseTestCase
       for (String path : paths)
       {
          VirtualFile ref = reference.getRoot();
-         VirtualFile expected = ref.findChild(path);
+         VirtualFile expected = ref.getChild(path);
          assertTrue("Expected " + expected +" in " + classPath, classPath.contains(expected));
       }
    }
@@ -306,6 +300,7 @@ public abstract class AbstractStructureTest extends BaseTestCase
    {
       VFSDeploymentContext result = assertDeploy(context, path);
       assertNoChildContexts(result);
+      result.cleanup();
       return result;
    }
    
@@ -332,7 +327,8 @@ public abstract class AbstractStructureTest extends BaseTestCase
    protected VirtualFile getVirtualFile(String root, String path) throws Exception
    {
       URL url = getResource(root);
-      return VFS.getVirtualFile(url, path);
+      VirtualFile rootFile = VFS.getChild(url);
+      return rootFile.getChild(path);
    }
 
    @Override

@@ -21,8 +21,8 @@
  */
 package org.jboss.test.deployers.vfs.structure.modified.support;
 
-import org.jboss.virtual.VirtualFileFilter;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFileFilter;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * Include only .xml files.

@@ -34,7 +34,7 @@ import org.jboss.classloading.spi.visitor.ResourceVisitor;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.vfs.spi.deployer.AbstractOptionalVFSRealDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * WBD deployer.
@@ -72,7 +72,7 @@ public class WebBeanDiscoveryDeployer extends AbstractOptionalVFSRealDeployer<JB
          for (VirtualFile cp : classpaths)
          {
             VirtualFile wbXml = cp.getChild("META-INF/web-beans.xml");
-            if (wbXml != null)
+            if (wbXml.exists())
             {
                // add url
                wbdi.addWebBeansXmlURL(wbXml.toURL());

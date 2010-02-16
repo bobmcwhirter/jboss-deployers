@@ -32,7 +32,7 @@ import org.jboss.deployers.vfs.spi.deployer.SchemaResolverDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.kernel.plugins.deployment.AbstractKernelDeployment;
 import org.jboss.kernel.spi.deployment.KernelDeployment;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>

@@ -21,13 +21,10 @@
  */
 package org.jboss.deployers.vfs.spi.structure.helpers;
 
-import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
+import java.security.PrivilegedAction;
 
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * @author Scott.Stark@jboss.org
@@ -35,6 +32,10 @@ import org.jboss.virtual.VirtualFile;
  */
 public class SecurityActions
 {
+   private SecurityActions()
+   {
+   }
+
    /**
     * Actions for File access 
     */
@@ -42,44 +43,31 @@ public class SecurityActions
    { 
       FileActions PRIVILEGED = new FileActions() 
       { 
-         public Boolean isLeaf(final VirtualFile f) throws IOException
+         public boolean isLeaf(final VirtualFile f)
          {
-            try 
-            { 
-               return AccessController.doPrivileged(new PrivilegedExceptionAction<Boolean>()
+            return AccessController.doPrivileged(new PrivilegedAction<Boolean>()
+            {
+               public Boolean run()
                {
-                  public Boolean run() throws Exception
-                  {
-                     return f.isLeaf();
-                  }
-               });
-            }
-            catch(PrivilegedActionException e) 
-            { 
-               Exception ex = e.getException();
-               if( ex instanceof IOException ) 
-                  throw (IOException) ex; 
-               else if( ex instanceof RuntimeException )
-                  throw (RuntimeException) ex;
-               else
-                  throw new UndeclaredThrowableException(ex); 
-            } 
+                  return Boolean.valueOf(f.isFile());
+               }
+            }).booleanValue();
          }
       }; 
 
       FileActions NON_PRIVILEGED = new FileActions() 
       {
-         public Boolean isLeaf(VirtualFile f) throws IOException
+         public boolean isLeaf(VirtualFile f)
          {
-            return f.isLeaf();
+            return f.isFile();
          }
          
       };
 
-      public Boolean isLeaf(VirtualFile f) throws IOException;
+      boolean isLeaf(VirtualFile f);
    } 
 
-   static boolean isLeaf(VirtualFile f) throws IOException
+   static boolean isLeaf(VirtualFile f)
    {
       SecurityManager sm = System.getSecurityManager();
       if( sm != null )

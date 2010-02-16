@@ -25,8 +25,8 @@ import java.util.List;
 
 import org.jboss.deployers.spi.structure.MetaDataTypeFilter;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VirtualFileFilter;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.VirtualFileFilter;
 
 /**
  * VFSDeploymentUnit.

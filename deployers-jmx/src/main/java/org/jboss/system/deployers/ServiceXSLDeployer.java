@@ -25,7 +25,7 @@ import org.jboss.deployers.vfs.spi.deployer.XSLDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.system.metadata.ServiceDeployment;
 import org.jboss.system.metadata.ServiceDeploymentParser;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 import org.w3c.dom.Document;
 
 public class ServiceXSLDeployer extends XSLDeployer<ServiceDeployment>

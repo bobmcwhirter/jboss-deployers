@@ -22,7 +22,7 @@
 package org.jboss.deployers.vfs.plugins.classloader;
 
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * Checks metadata if matching integration deployment.

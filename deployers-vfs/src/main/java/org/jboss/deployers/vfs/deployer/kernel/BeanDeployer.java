@@ -24,7 +24,7 @@ package org.jboss.deployers.vfs.deployer.kernel;
 import org.jboss.deployers.vfs.spi.deployer.SchemaResolverDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.kernel.spi.deployment.KernelDeployment;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * BeanDeployer.<p>

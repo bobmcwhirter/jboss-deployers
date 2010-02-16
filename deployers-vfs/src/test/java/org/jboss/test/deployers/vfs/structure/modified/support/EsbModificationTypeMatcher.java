@@ -29,7 +29,7 @@ import org.jboss.deployers.vfs.plugins.structure.modify.ModificationTypeMatcher;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
 import org.jboss.deployers.vfs.spi.structure.StructureDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSStructuralDeployers;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * Esb use case.
@@ -48,7 +48,7 @@ public class EsbModificationTypeMatcher implements ModificationTypeMatcher
          if (root.getName().endsWith(".esb"))
          {
             VirtualFile wars = root.getChild("wars");
-            if (wars != null)
+            if (wars.exists())
             {
                List<VirtualFile> children = wars.getChildren();
                for (VirtualFile war : children)

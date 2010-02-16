@@ -22,8 +22,8 @@
 package org.jboss.deployers.vfs.spi.structure.helpers;
 
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
-import org.jboss.virtual.VirtualFile;
-import org.jboss.virtual.VirtualFileFilter;
+import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.VirtualFileFilter;
 
 /**
  * VirtualFileDeploymentUnitFilter.

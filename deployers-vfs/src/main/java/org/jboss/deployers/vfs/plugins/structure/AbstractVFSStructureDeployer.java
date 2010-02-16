@@ -21,6 +21,7 @@
 */
 package org.jboss.deployers.vfs.plugins.structure;
 
+
 import org.jboss.classloader.spi.filter.ClassFilter;
 import org.jboss.classloading.spi.visitor.ResourceFilter;
 import org.jboss.deployers.structure.spi.DeploymentResourceLoader;
@@ -29,7 +30,7 @@ import org.jboss.deployers.vfs.spi.structure.helpers.AbstractStructureDeployer;
 import org.jboss.mcann.AnnotationRepository;
 import org.jboss.mcann.repository.Configuration;
 import org.jboss.mcann.scanner.DefaultAnnotationScanner;
-import org.jboss.virtual.VirtualFile;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * VFS aware structure deployer.
