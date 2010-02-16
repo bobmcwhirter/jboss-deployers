@@ -21,7 +21,6 @@
  */
 package org.jboss.deployers.vfs.spi.structure.modified;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;

@@ -24,10 +24,8 @@ package org.jboss.deployers.vfs.spi.structure.modified;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import org.jboss.deployers.client.spi.Deployment;
 import org.jboss.deployers.structure.spi.DeploymentContext;
 import org.jboss.deployers.structure.spi.main.MainDeployerInternals;
-import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.logging.Logger;
 import org.jboss.vfs.VirtualFile;
@@ -136,7 +134,6 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
     * @param name the deployment context name
     * @return vfs deployment context or null if doesn't exist or not vfs based
     */
-   @SuppressWarnings("deprecation")
    protected VFSDeploymentContext getDeploymentContext(String name)
    {
       DeploymentContext deploymentContext = getMainDeployerInternals().getDeploymentContext(name);
