@@ -38,13 +38,12 @@ import org.jboss.deployers.vfs.plugins.structure.AbstractVFSArchiveStructureDepl
 import org.jboss.deployers.vfs.spi.structure.CandidateAnnotationsCallback;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
 import org.jboss.logging.Logger;
+import org.jboss.mcann.AnnotationRepository;
 import org.jboss.vfs.VFSUtils;
 import org.jboss.vfs.VirtualFile;
 import org.jboss.vfs.VirtualFileFilter;
-import org.jboss.vfs.util.automount.Automounter;
 import org.jboss.vfs.util.SuffixMatchFilter;
-import org.jboss.mcann.AnnotationRepository;
-import org.jboss.mcann.AnnotationRepository;
+import org.jboss.vfs.util.automount.Automounter;
 
 /**
  * A mock ear structure deployer that illustrates concepts involved with an ear
@@ -348,6 +347,7 @@ public class MockEarStructureDeployer extends AbstractVFSArchiveStructureDeploye
 
    private static class EarCandidateAnnotationsCallback implements CandidateAnnotationsCallback
    {
+      @SuppressWarnings("hiding")
       private static final Logger log = Logger.getLogger(EarCandidateAnnotationsCallback.class);
       private Integer result;
 

@@ -23,6 +23,7 @@ package org.jboss.test.deployers.vfs.deployer.bean.test;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import org.jboss.beans.metadata.api.annotations.Bean;
 import org.jboss.beans.metadata.spi.builder.BeanMetaDataBuilder;
 import org.jboss.beans.metadata.spi.factory.BeanFactory;
@@ -49,8 +50,6 @@ import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.kernel.Kernel;
 import org.jboss.kernel.spi.dependency.KernelController;
 import org.jboss.test.deployers.vfs.deployer.AbstractDeployerUnitTest;
-import org.jboss.classloader.plugins.filter.JavaOnlyClassFilter;
-import org.jboss.classloader.plugins.filter.NothingClassFilter;
 
 /**
  * BeanScanningUnitTestCase.

@@ -27,12 +27,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.net.URI;
 import java.net.URL;
 import java.util.concurrent.Executors;
-import java.util.logging.Handler;
 
 import junit.framework.Test;
+
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.deployers.vfs.spi.structure.modified.OverrideSynchAdapter;
 import org.jboss.deployers.vfs.spi.structure.modified.StructureModificationChecker;

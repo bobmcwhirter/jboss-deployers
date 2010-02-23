@@ -196,7 +196,7 @@ public class WARStructure extends AbstractVFSArchiveStructureDeployer
          addClassPath(structureContext, file, false, true, context);
 
          // Add WEB-INF/classes if present
-         if (classes != null)
+         if (classes.exists())
             addClassPath(structureContext, classes, true, false, context);
          else if (trace)
             log.trace("No WEB-INF/classes for: " + file.getPathName());

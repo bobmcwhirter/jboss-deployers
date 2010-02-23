@@ -21,17 +21,9 @@
 */
 package org.jboss.test.deployers.vfs.structure.file.test;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.List;
-import java.security.cert.Certificate;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import org.jboss.beans.metadata.plugins.AbstractBeanMetaData;
 import org.jboss.beans.metadata.spi.BeanMetaData;
 import org.jboss.dependency.spi.ControllerState;

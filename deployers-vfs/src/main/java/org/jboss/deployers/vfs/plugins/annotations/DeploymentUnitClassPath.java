@@ -30,13 +30,13 @@ import java.util.Map;
 
 import javassist.ClassPath;
 import javassist.NotFoundException;
+
 import org.jboss.classloader.plugins.ClassLoaderUtils;
 import org.jboss.classloader.spi.filter.ClassFilter;
 import org.jboss.classloader.spi.filter.ClassFilterUtils;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.util.collection.SoftValueHashMap;
 import org.jboss.vfs.VirtualFile;
-import org.jboss.classloader.plugins.filter.JavaOnlyClassFilter;
 
 /**
  * Javassist ClassPath impl based on deployment unit

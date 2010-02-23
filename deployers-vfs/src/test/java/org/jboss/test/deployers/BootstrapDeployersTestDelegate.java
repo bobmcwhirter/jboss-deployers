@@ -22,6 +22,7 @@
 package org.jboss.test.deployers;
 
 import java.net.URL;
+
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
@@ -40,7 +41,6 @@ import org.jboss.deployers.spi.deployer.Deployers;
 import org.jboss.test.kernel.junit.MicrocontainerTestDelegate;
 import org.jboss.xb.binding.resolver.MutableSchemaResolver;
 import org.jboss.xb.binding.sunday.unmarshalling.SingletonSchemaResolverFactory;
-import org.jboss.classloader.plugins.filter.NothingClassFilter;
 
 /**
  * BootstrapDeployersTestDelegate.

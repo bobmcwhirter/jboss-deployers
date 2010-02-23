@@ -45,9 +45,9 @@ public interface StructureModificationChecker extends StructureListener
     * Has structure been modified.  This method is used for cases when the DeploymentContext name is not 
     * guaranteed to be the root path. 
     * 
-    * @param name context name
+    * @param deploymentName context name
     * @param root
-    * @return
+    * @return true when the structure is modified
     * @throws IOException
     */
    boolean hasStructureBeenModified(String deploymentName, VirtualFile root) throws IOException;

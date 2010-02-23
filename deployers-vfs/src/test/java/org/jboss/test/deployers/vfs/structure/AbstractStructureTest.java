@@ -40,7 +40,6 @@ import org.jboss.deployers.vfs.spi.structure.StructureDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.test.BaseTestCase;
 import org.jboss.vfs.VFS;
-import org.jboss.vfs.VFSUtils;
 import org.jboss.vfs.VirtualFile;
 
 /**

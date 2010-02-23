@@ -21,18 +21,18 @@
  */
 package org.jboss.test.deployers.vfs.reflect.test;
 
+import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.Collections;
-import java.net.URL;
 
 import org.jboss.classloader.plugins.jdk.AbstractJDKChecker;
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
 import org.jboss.classloading.spi.metadata.ExportAll;
 import org.jboss.classloading.spi.version.Version;
-import org.jboss.deployers.client.spi.Deployment;
 import org.jboss.deployers.client.spi.DeployerClient;
+import org.jboss.deployers.client.spi.Deployment;
 import org.jboss.deployers.spi.attachments.MutableAttachments;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.vfs.deployer.kernel.BeanMetaDataFactoryVisitor;
@@ -42,7 +42,6 @@ import org.jboss.reflect.spi.MethodInfo;
 import org.jboss.reflect.spi.TypeInfo;
 import org.jboss.reflect.spi.TypeInfoFactory;
 import org.jboss.test.deployers.BootstrapDeployersTest;
-import org.jboss.test.deployers.support.AssembledDirectory;
 import org.jboss.test.deployers.vfs.reflect.support.crm.CrmFacade;
 import org.jboss.test.deployers.vfs.reflect.support.ejb.MySLSBean;
 import org.jboss.test.deployers.vfs.reflect.support.ext.External;

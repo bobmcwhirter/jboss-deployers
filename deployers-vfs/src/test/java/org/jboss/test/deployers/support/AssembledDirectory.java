@@ -32,7 +32,6 @@ import java.util.regex.Pattern;
 import org.jboss.classloader.plugins.ClassLoaderUtils;
 import org.jboss.deployers.vfs.plugins.structure.jar.JARStructure;
 import org.jboss.vfs.VFS;
-import org.jboss.vfs.VFSUtils;
 import org.jboss.vfs.VirtualFile;
 import org.jboss.vfs.VirtualFileAssembly;
 import org.jboss.vfs.VirtualFileFilter;
