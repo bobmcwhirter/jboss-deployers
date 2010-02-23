@@ -36,11 +36,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.jboss.deployers.client.spi.DeployerClientChangeExt;
 import org.jboss.deployers.client.spi.Deployment;
 import org.jboss.deployers.client.spi.main.MainDeployer;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.DeploymentState;
 import org.jboss.deployers.spi.deployer.Deployers;
+import org.jboss.deployers.spi.deployer.DeployersChangeExt;
 import org.jboss.deployers.spi.deployer.DeploymentStage;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.spi.deployer.managed.ManagedDeploymentCreator;
@@ -63,7 +65,7 @@ import org.jboss.util.graph.Vertex;
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  * @version $Revision$
  */
-public class MainDeployerImpl implements MainDeployer, MainDeployerStructure, MainDeployerInternals
+public class MainDeployerImpl implements MainDeployer, DeployerClientChangeExt, MainDeployerStructure, MainDeployerInternals
 {
    /** The log */
    private static final Logger log = Logger.getLogger(MainDeployerImpl.class);
@@ -736,6 +738,60 @@ public class MainDeployerImpl implements MainDeployer, MainDeployerStructure, Ma
          catch (Throwable t)
          {
             throw DeploymentException.rethrowAsDeploymentException("Error changing context " + deploymentName + " to stage " + stage, t);
+         }
+      }
+      finally
+      {
+         unlockRead();
+      }
+   }
+
+   public void change(DeploymentStage stage, boolean checkComplete, String... deploymentNames) throws DeploymentException
+   {
+      if (deployers == null)
+         throw new IllegalStateException("No deployers");
+
+      if (deploymentNames == null)
+         throw new IllegalArgumentException("Null deploymentNames");
+      if (deploymentNames.length == 0)
+         return;
+
+      lockRead();
+      try
+      {
+         DeploymentContext[] contexts = new DeploymentContext[deploymentNames.length];
+         for (int i = 0; i < contexts.length; ++i)
+         {
+            String deploymentName = deploymentNames[i];
+            DeploymentContext context = getTopLevelDeploymentContext(deploymentName);
+            if (context == null)
+               throw new DeploymentException("Top level deployment " + deploymentName + " not found");
+            contexts[i] = context;
+         }
+         
+         // If we have the extension
+         if (deployers instanceof DeployersChangeExt)
+         {
+            try
+            {
+               ((DeployersChangeExt) deployers).change(stage, checkComplete, contexts);
+            }
+            catch (Error e)
+            {
+               throw e;
+            }
+            catch (Throwable t)
+            {
+               throw DeploymentException.rethrowAsDeploymentException("Error changing contexts " + Arrays.asList(deploymentNames) + " to stage " + stage, t);
+            }
+         }
+         else
+         {
+            // Do it the hard way
+            for (DeploymentContext context : contexts)
+               deployers.change(context, stage);
+            if (checkComplete)
+               deployers.checkComplete(contexts);
          }
       }
       finally

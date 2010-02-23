@@ -22,6 +22,7 @@
 package org.jboss.deployers.plugins.deployers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -57,6 +58,7 @@ import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.DeploymentState;
 import org.jboss.deployers.spi.deployer.Deployer;
 import org.jboss.deployers.spi.deployer.Deployers;
+import org.jboss.deployers.spi.deployer.DeployersChangeExt;
 import org.jboss.deployers.spi.deployer.DeploymentStage;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.spi.deployer.exceptions.ExceptionNotificationListener;
@@ -78,7 +80,7 @@ import org.jboss.util.collection.CollectionsFactory;
  * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision$
  */
-public class DeployersImpl implements Deployers, ControllerContextActions, DeployersImplMBean, MBeanRegistration
+public class DeployersImpl implements Deployers, DeployersChangeExt, ControllerContextActions, DeployersImplMBean, MBeanRegistration
 {
    /**
     * The log
@@ -769,6 +771,144 @@ public class DeployersImpl implements Deployers, ControllerContextActions, Deplo
       Throwable problem = context.getProblem();
       if (problem != null)
          throw DeploymentException.rethrowAsDeploymentException("Error changing to stage " + stage + " for " + context.getName(), problem);
+   }
+
+   public void change(DeploymentStage stage, boolean checkComplete, DeploymentContext... contexts) throws DeploymentException
+   {
+      if (contexts == null)
+         throw new DeploymentException("Null contexts");
+      if (stage == null)
+         throw new DeploymentException("Null stage");
+
+      String stageName = stage.getName();
+      if (stages.containsKey(stage.getName()) == false)
+         throw new DeploymentException("Unknown deployment stage: " + stage);
+      ControllerState requiredState = ControllerState.getInstance(stageName);
+
+      if (contexts.length == 0)
+         return;
+      
+      List<DeploymentControllerContext> toRetreat = null;
+      List<DeploymentControllerContext> toAdvance = null;
+
+      boolean trace = log.isTraceEnabled();
+      
+      // Work out what we are going to do
+      ControllerStateModel states = controller.getStates();
+      for (DeploymentContext context : contexts)
+      {
+         if (context == null)
+            throw new DeploymentException("Null context in " + Arrays.asList(contexts));
+         DeploymentControllerContext deploymentControllerContext = context.getTransientAttachments().getAttachment(ControllerContext.class.getName(), DeploymentControllerContext.class);
+         if (deploymentControllerContext == null)
+            throw new DeploymentException("Deployment " + context.getName() + " has no deployment controller context");
+         ControllerState current = deploymentControllerContext.getState();
+         if (ControllerState.ERROR.equals(current))
+         {
+            // Ignore contexts in error
+            if (trace)
+               log.trace("Not moving " + deploymentControllerContext + " to state " + requiredState + " it is currently in **ERROR**.");
+         }
+         else
+         {
+            // This is beyond the required state
+            if (states.isAfterState(current, requiredState))
+            {
+               if (toRetreat == null)
+                  toRetreat = new ArrayList<DeploymentControllerContext>();
+               toRetreat.add(deploymentControllerContext);
+            }
+            // This needs advancing
+            else if (states.isBeforeState(current, requiredState))
+            {
+               if (toAdvance == null)
+                  toAdvance = new ArrayList<DeploymentControllerContext>();
+               toAdvance.add(deploymentControllerContext);
+            }
+            // It is already in the required state
+            else
+            {
+               if (trace)
+                  log.trace("Not moving " + deploymentControllerContext + " to state " + requiredState + " it is already there.");
+            }
+         }
+         context.setRequiredStage(stage);
+      }
+
+      checkShutdown();
+      
+      // First move those contexts that are beyond the required state
+      if (toRetreat != null)
+      {
+         ListIterator<ControllerState> iter = states.listIteraror();
+         while (iter.hasPrevious())
+         {
+            ControllerState state = iter.previous();
+            
+            for (DeploymentControllerContext deploymentControllerContext : toRetreat)
+            {
+               ControllerState current = deploymentControllerContext.getState();
+               if (ControllerState.ERROR.equals(current) == false && states.isAfterState(current, state))
+               {
+                  DeploymentContext context = deploymentControllerContext.getDeploymentContext();
+                  try
+                  {
+                     controller.change(deploymentControllerContext, state);
+                  }
+                  catch (Throwable t)
+                  {
+                     log.warn("Error during change for " + context, t);
+                     context.setState(DeploymentState.ERROR);
+                     context.setProblem(t);
+                  }
+               }
+               else
+               {
+                  if (trace)
+                     log.trace("Not moving " + deploymentControllerContext + " to state " + state + " it is at " + current);
+               }
+            }
+            if (requiredState.equals(state))
+               break;
+         }
+      }
+      
+      // Now move those contexts that are before the required state
+      if (toAdvance != null)
+      {
+         for (ControllerState state : states)
+         {
+            for (DeploymentControllerContext deploymentControllerContext : toAdvance)
+            {
+               ControllerState current = deploymentControllerContext.getState();
+               if (ControllerState.ERROR.equals(current) == false && states.isBeforeState(current, state))
+               {
+                  DeploymentContext context = deploymentControllerContext.getDeploymentContext();
+                  try
+                  {
+                     controller.change(deploymentControllerContext, state);
+                  }
+                  catch (Throwable t)
+                  {
+                     log.warn("Error during change for " + context, t);
+                     context.setState(DeploymentState.ERROR);
+                     context.setProblem(t);
+                  }
+               }
+               else
+               {
+                  if (trace)
+                     log.trace("Not moving " + deploymentControllerContext + " to state " + state + " it is at " + current);
+               }
+            }
+            if (requiredState.equals(state))
+               break;
+         }
+      }
+      
+      // Now do any completeness check
+      if (checkComplete)
+         checkComplete(contexts);
    }
 
    public void process(List<DeploymentContext> deploy, List<DeploymentContext> undeploy)

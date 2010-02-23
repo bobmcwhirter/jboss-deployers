@@ -67,6 +67,12 @@ public class TestSimpleDeployer extends AbstractRealDeployer
       name = super.toString();
    }
 
+   public TestSimpleDeployer(String name, DeploymentStage stage)
+   {
+      setStage(stage);
+      this.name = name;
+   }
+
    public String toString()
    {
       return name;
