@@ -42,4 +42,17 @@ public interface DeployersChangeExt
     * @throws DeploymentException for any error
     */
    void change(DeploymentStage stage, boolean checkComplete, DeploymentContext... contexts) throws DeploymentException;
+
+   /**
+    * Change the state of a number of deployments to the given stage,
+    * then return them to their original stage and optionally check the changes are complete.<p>
+    * 
+    * NOTE: This only moves things backwards.
+    * 
+    * @param stage the stage
+    * @param checkComplete whether to check the deployments are complete
+    * @param contexts the deployment contexts
+    * @throws DeploymentException for any error
+    */
+   void bounce(DeploymentStage stage, boolean checkComplete, DeploymentContext... contexts) throws DeploymentException;
 }

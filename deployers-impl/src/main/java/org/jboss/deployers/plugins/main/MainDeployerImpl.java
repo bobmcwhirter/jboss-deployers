@@ -800,6 +800,70 @@ public class MainDeployerImpl implements MainDeployer, DeployerClientChangeExt, 
       }
    }
 
+   public void bounce(DeploymentStage stage, boolean checkComplete, String... deploymentNames) throws DeploymentException
+   {
+      if (deployers == null)
+         throw new IllegalStateException("No deployers");
+
+      if (deploymentNames == null)
+         throw new IllegalArgumentException("Null deploymentNames");
+      if (deploymentNames.length == 0)
+         return;
+
+      lockRead();
+      try
+      {
+         DeploymentContext[] contexts = new DeploymentContext[deploymentNames.length];
+         for (int i = 0; i < contexts.length; ++i)
+         {
+            String deploymentName = deploymentNames[i];
+            DeploymentContext context = getTopLevelDeploymentContext(deploymentName);
+            if (context == null)
+               throw new DeploymentException("Top level deployment " + deploymentName + " not found");
+            contexts[i] = context;
+         }
+         
+         // If we have the extension
+         if (deployers instanceof DeployersChangeExt)
+         {
+            try
+            {
+               ((DeployersChangeExt) deployers).bounce(stage, checkComplete, contexts);
+            }
+            catch (Error e)
+            {
+               throw e;
+            }
+            catch (Throwable t)
+            {
+               throw DeploymentException.rethrowAsDeploymentException("Error bouncing contexts " + Arrays.asList(deploymentNames) + " to stage " + stage, t);
+            }
+         }
+         else
+         {
+            // Do it the hard way
+            DeploymentStage[] originalStages = new DeploymentStage[contexts.length];
+            for (int i = 0; i < contexts.length; ++i)
+            {
+               DeploymentContext context = contexts[i];
+               originalStages[i] = context.getRequiredStage();
+               deployers.change(context, stage);
+            }
+            for (int i = 0; i < contexts.length; ++i)
+            {
+               DeploymentContext context = contexts[i];
+               deployers.change(context, originalStages[i]);
+            }
+            if (checkComplete)
+               deployers.checkComplete(contexts);
+         }
+      }
+      finally
+      {
+         unlockRead();
+      }
+   }
+
    public void prepareShutdown()
    {
       if (deployers != null)

@@ -85,7 +85,7 @@ public class ChangeExtTestCase extends AbstractDeployerTest
       assertUndeployed(expected);
    }
 
-   public void testSimple() throws Throwable
+   public void testSimpleChange() throws Throwable
    {
       DeployerClient main = getMainDeployer();
       DeployerClientChangeExt change = getChangeExt(main);
@@ -119,7 +119,7 @@ public class ChangeExtTestCase extends AbstractDeployerTest
       assertUndeployed(NOTHING);
    }
 
-   public void testNoMove() throws Throwable
+   public void testNoMoveChange() throws Throwable
    {
       DeployerClient main = getMainDeployer();
       DeployerClientChangeExt change = getChangeExt(main);
@@ -147,7 +147,7 @@ public class ChangeExtTestCase extends AbstractDeployerTest
       assertUndeployed(NOTHING);
    }
 
-   public void testError() throws Throwable
+   public void testErrorChange() throws Throwable
    {
       DeployerClient main = getMainDeployer();
       DeployerClientChangeExt change = getChangeExt(main);
@@ -179,7 +179,7 @@ public class ChangeExtTestCase extends AbstractDeployerTest
       assertUndeployed(NOTHING, deployer5);
    }
 
-   public void testCheckComplete() throws Throwable
+   public void testCheckCompleteChange() throws Throwable
    {
       DeployerClient main = getMainDeployer();
       DeployerClientChangeExt change = getChangeExt(main);
@@ -209,7 +209,7 @@ public class ChangeExtTestCase extends AbstractDeployerTest
       }
    }
 
-   public void testMultiple() throws Throwable
+   public void testMultipleChange() throws Throwable
    {
       DeployerClient main = getMainDeployer();
       DeployerClientChangeExt change = getChangeExt(main);
@@ -267,6 +267,178 @@ public class ChangeExtTestCase extends AbstractDeployerTest
       assertUndeployed(NOTHING, deployer3);
       assertUndeployed(B, deployer4);
       assertUndeployed(B, deployer5);
+   }
+
+   public void testSimpleBounce() throws Throwable
+   {
+      DeployerClient main = getMainDeployer();
+      DeployerClientChangeExt change = getChangeExt(main);
+
+      Deployment single = createSimpleDeployment("single");
+      main.deploy(single);
+      List<String> expected = new ArrayList<String>();
+      expected.add(single.getName());
+      assertDeployed(expected);
+      assertUndeployed(NOTHING);
+      
+      DeploymentUnit unit = assertDeploymentUnit(main, single.getName());
+      assertEquals(main, unit.getMainDeployer());
+      
+      clear();
+      change.bounce(deployer1.getStage(), true, single.getName());
+      assertDeployed(NOTHING, deployer1);
+      assertDeployed(expected, deployer2);
+      assertDeployed(expected, deployer3);
+      assertDeployed(expected, deployer4);
+      assertDeployed(expected, deployer5);
+      assertUndeployed(NOTHING, deployer1);
+      assertUndeployed(expected, deployer2);
+      assertUndeployed(expected, deployer3);
+      assertUndeployed(expected, deployer4);
+      assertUndeployed(expected, deployer5);
+   }
+
+   public void testNoMoveBounce() throws Throwable
+   {
+      DeployerClient main = getMainDeployer();
+      DeployerClientChangeExt change = getChangeExt(main);
+
+      Deployment single = createSimpleDeployment("single");
+      main.deploy(single);
+      List<String> expected = new ArrayList<String>();
+      expected.add(single.getName());
+      assertDeployed(expected);
+      assertUndeployed(NOTHING);
+      
+      DeploymentUnit unit = assertDeploymentUnit(main, single.getName());
+      assertEquals(main, unit.getMainDeployer());
+      
+      change.change(deployer3.getStage(), true, single.getName());
+      
+      clear();
+      change.bounce(deployer3.getStage(), true, single.getName());
+      assertDeployed(NOTHING);
+      assertUndeployed(NOTHING);
+   }
+
+   public void testNoMovePreviousStateBounce() throws Throwable
+   {
+      DeployerClient main = getMainDeployer();
+      DeployerClientChangeExt change = getChangeExt(main);
+
+      Deployment single = createSimpleDeployment("single");
+      main.deploy(single);
+      List<String> expected = new ArrayList<String>();
+      expected.add(single.getName());
+      assertDeployed(expected);
+      assertUndeployed(NOTHING);
+      
+      DeploymentUnit unit = assertDeploymentUnit(main, single.getName());
+      assertEquals(main, unit.getMainDeployer());
+      
+      change.change(deployer1.getStage(), true, single.getName());
+      
+      clear();
+      change.bounce(deployer3.getStage(), true, single.getName());
+      assertDeployed(NOTHING);
+      assertUndeployed(NOTHING);
+   }
+
+   public void testErrorBounce() throws Throwable
+   {
+      DeployerClient main = getMainDeployer();
+      DeployerClientChangeExt change = getChangeExt(main);
+
+      Deployment single = createSimpleDeployment("single");
+      main.deploy(single);
+      List<String> expected = new ArrayList<String>();
+      expected.add(single.getName());
+      assertDeployed(expected);
+      assertUndeployed(NOTHING);
+      
+      DeploymentUnit unit = assertDeploymentUnit(main, single.getName());
+      assertEquals(main, unit.getMainDeployer());
+      
+      makeFail(single, deployer2);
+      
+      clear();
+      change.bounce(deployer1.getStage(), false, single.getName());
+      assertDeployed(NOTHING, deployer1);
+      assertDeployed(expected, deployer2);
+      assertDeployed(NOTHING, deployer3);
+      assertDeployed(NOTHING, deployer4);
+      assertDeployed(NOTHING, deployer5);
+      assertUndeployed(expected);
+   }
+
+   public void testCheckCompleteBounce() throws Throwable
+   {
+      DeployerClient main = getMainDeployer();
+      DeployerClientChangeExt change = getChangeExt(main);
+
+      Deployment single = createSimpleDeployment("single");
+      main.deploy(single);
+      List<String> expected = new ArrayList<String>();
+      expected.add(single.getName());
+      assertDeployed(expected);
+      assertUndeployed(NOTHING);
+      
+      DeploymentUnit unit = assertDeploymentUnit(main, single.getName());
+      assertEquals(main, unit.getMainDeployer());
+      
+      makeFail(single, deployer2);
+      
+      clear();
+      try
+      {
+         change.bounce(deployer1.getStage(), true, single.getName());
+         fail("Should not be here!");
+      }
+      catch (Throwable t)
+      {
+         checkThrowable(IncompleteDeploymentException.class, t);
+      }
+   }
+
+   public void testMultipleBounce() throws Throwable
+   {
+      DeployerClient main = getMainDeployer();
+      DeployerClientChangeExt change = getChangeExt(main);
+
+      Deployment a = createSimpleDeployment("A");
+      main.deploy(a);
+      Deployment b = createSimpleDeployment("B");
+      main.deploy(b);
+      Deployment c = createSimpleDeployment("C");
+      main.deploy(c);
+      List<String> all = new ArrayList<String>();
+      all.add(a.getName());
+      all.add(b.getName());
+      all.add(c.getName());
+      List<String> BC = new ArrayList<String>();
+      BC.add(b.getName());
+      BC.add(c.getName());
+      List<String> C = new ArrayList<String>();
+      C.add(c.getName());
+      assertDeployed(all);
+      assertUndeployed(NOTHING);
+      
+      change.change(deployer1.getStage(), true, a.getName());
+      change.change(deployer3.getStage(), true, b.getName());
+      change.change(deployer4.getStage(), true, c.getName());
+      
+      clear();
+      change.bounce(deployer2.getStage(), true, a.getName(), b.getName(), c.getName());
+      assertDeployed(NOTHING, deployer1);
+      assertDeployed(NOTHING, deployer2);
+      assertDeployed(BC, deployer3);
+      assertDeployed(C, deployer4);
+      assertUndeployed(NOTHING, deployer5);
+      assertUndeployed(NOTHING, deployer1);
+      assertUndeployed(NOTHING, deployer2);
+      assertUndeployed(BC, deployer3);
+      assertUndeployed(C, deployer4);
+      assertUndeployed(NOTHING, deployer5);
    }
 
    protected DeployerClient getMainDeployer()
