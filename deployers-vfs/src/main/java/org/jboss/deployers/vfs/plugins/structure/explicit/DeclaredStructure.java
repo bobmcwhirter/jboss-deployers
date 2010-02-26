@@ -57,10 +57,14 @@ public class DeclaredStructure extends AbstractVFSArchiveStructureDeployer
    
    /**
     * Set the relative order to 0 by default.
+    * 
+    * @param suffixes the suffixes
     */
    public DeclaredStructure(Set<String> suffixes)
    {
       setRelativeOrder(0);
+      if (suffixes == null)
+         throw new IllegalArgumentException("Null suffixes");
       this.suffixes = suffixes;
    }
    
