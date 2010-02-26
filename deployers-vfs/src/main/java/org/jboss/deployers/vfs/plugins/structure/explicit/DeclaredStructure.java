@@ -23,9 +23,11 @@ package org.jboss.deployers.vfs.plugins.structure.explicit;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Set;
 
 import org.jboss.deployers.spi.DeploymentException;
-import org.jboss.deployers.vfs.plugins.structure.AbstractVFSStructureDeployer;
+import org.jboss.deployers.vfs.plugins.structure.AbstractVFSArchiveStructureDeployer;
+import org.jboss.deployers.vfs.plugins.structure.jar.JARStructure;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
 import org.jboss.vfs.VirtualFile;
 import org.jboss.xb.binding.Unmarshaller;
@@ -38,17 +40,40 @@ import org.jboss.xb.binding.UnmarshallerFactory;
  * @author Scott.Stark@jboss.org
  * @version $Revision: 1.1 $
  */
-public class DeclaredStructure extends AbstractVFSStructureDeployer
+public class DeclaredStructure extends AbstractVFSArchiveStructureDeployer
 {
    /**
-    * Set the relative order to 0 by default.
+    * Set of suffixes used to determine if an archive mount is needed
+    */
+   private final Set<String> suffixes;
+   
+   /**
+    * Construct with a default jar suffixes
     */
    public DeclaredStructure()
    {
+      this(JARStructure.DEFAULT_JAR_SUFFIXES);
+   }
+   
+   /**
+    * Set the relative order to 0 by default.
+    */
+   public DeclaredStructure(Set<String> suffixes)
+   {
       setRelativeOrder(0);
+      this.suffixes = suffixes;
+   }
+   
+   @Override
+   protected boolean hasValidSuffix(String name)
+   {
+      int idx = name.lastIndexOf('.');
+      if (idx == -1)
+         return false;
+      return suffixes.contains(name.substring(idx).toLowerCase());
    }
 
-   public boolean determineStructure(StructureContext structureContext) throws DeploymentException
+   public boolean doDetermineStructure(StructureContext structureContext) throws DeploymentException
    {
       VirtualFile file = structureContext.getFile();
       try
