@@ -26,6 +26,8 @@ import java.net.URL;
 import java.util.Set;
 
 import org.jboss.deployers.spi.DeploymentException;
+import org.jboss.deployers.spi.structure.ContextInfo;
+import org.jboss.deployers.spi.structure.StructureMetaData;
 import org.jboss.deployers.vfs.plugins.structure.AbstractVFSArchiveStructureDeployer;
 import org.jboss.deployers.vfs.plugins.structure.jar.JARStructure;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
@@ -101,6 +103,7 @@ public class DeclaredStructure extends AbstractVFSArchiveStructureDeployer
                   Unmarshaller unmarshaller = factory.newUnmarshaller();
                   StructureMetaDataObjectFactory ofactory = new StructureMetaDataObjectFactory();
                   unmarshaller.unmarshal(url.toString(), ofactory, structureContext.getMetaData());
+                  mountChildren(structureContext);
                   isJBossStructure = true;
                }
             }
@@ -118,5 +121,33 @@ public class DeclaredStructure extends AbstractVFSArchiveStructureDeployer
          throw DeploymentException.rethrowAsDeploymentException("Error determining structure: " + file.getName(), e);
       }
       return false;
+   }
+
+   /**
+    * Iterate through the contexts and mount anything that looks like an archive 
+    * 
+    * @param structureContext the context
+    * @throws IOException if errors occur during mounting
+    */
+   private void mountChildren(StructureContext structureContext) throws IOException
+   {
+      final StructureMetaData structureMetaData = structureContext.getMetaData();
+      final VirtualFile structureRoot = structureContext.getRoot();
+      if(structureContext != null)
+      {
+         for(ContextInfo contextInfo : structureMetaData.getContexts()) 
+         {
+            final String contextPath = contextInfo.getPath(); 
+            if(hasValidSuffix(contextPath))
+            {
+               final VirtualFile child = structureRoot.getChild(contextPath);
+               if(child.exists() && child.isFile()) 
+               {
+                  performMount(child);
+               }
+            }
+         }
+      }
+      
    }
 }

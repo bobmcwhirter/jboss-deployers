@@ -30,6 +30,7 @@ import org.jboss.deployers.vfs.plugins.structure.explicit.DeclaredStructure;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.test.deployers.vfs.structure.AbstractStructureTest;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * DeclaredStructure deployer unit tests.
@@ -94,5 +95,14 @@ public class DeclaredStructureUnitTestCase extends AbstractStructureTest
             return MetaDataType.ALTERNATIVE == type;
          }
       });
+   }
+   
+   public void testArchiveWithStructure() throws Throwable 
+   {
+      VFSDeploymentContext root = assertDeploy("/structure/explicit", "explicit.ear");
+      assertMetaData(root, "META-INF");
+      assertChildContexts(root, "inner.war");
+      VirtualFile war = root.getRoot().getChild("inner.war");
+      assertTrue(war.exists() && war.isDirectory());
    }
 }
