@@ -40,6 +40,7 @@ import org.jboss.xb.binding.UnmarshallerFactory;
  * the defining structure.
  * 
  * @author Scott.Stark@jboss.org
+ * @author <a href="jbailey@redhat.com">John Bailey</a>
  * @version $Revision: 1.1 $
  */
 public class DeclaredStructure extends AbstractVFSArchiveStructureDeployer
@@ -74,9 +75,7 @@ public class DeclaredStructure extends AbstractVFSArchiveStructureDeployer
    protected boolean hasValidSuffix(String name)
    {
       int idx = name.lastIndexOf('.');
-      if (idx == -1)
-         return false;
-      return suffixes.contains(name.substring(idx).toLowerCase());
+      return idx != -1 && suffixes.contains(name.substring(idx).toLowerCase());
    }
 
    public boolean doDetermineStructure(StructureContext structureContext) throws DeploymentException
@@ -129,7 +128,7 @@ public class DeclaredStructure extends AbstractVFSArchiveStructureDeployer
     * @param structureContext the context
     * @throws IOException if errors occur during mounting
     */
-   private void mountChildren(StructureContext structureContext) throws IOException
+   protected void mountChildren(StructureContext structureContext) throws IOException
    {
       final StructureMetaData structureMetaData = structureContext.getMetaData();
       final VirtualFile structureRoot = structureContext.getRoot();
