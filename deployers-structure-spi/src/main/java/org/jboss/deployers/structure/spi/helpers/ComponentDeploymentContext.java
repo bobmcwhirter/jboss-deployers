@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.management.MBeanRegistration;
 import javax.management.MBeanServer;
@@ -44,12 +45,7 @@ import org.jboss.deployers.spi.deployer.DeploymentStage;
 import org.jboss.deployers.spi.attachments.Attachments;
 import org.jboss.deployers.spi.attachments.AttachmentsFactory;
 import org.jboss.deployers.spi.attachments.MutableAttachments;
-import org.jboss.deployers.structure.spi.ClassLoaderFactory;
-import org.jboss.deployers.structure.spi.DeploymentContext;
-import org.jboss.deployers.structure.spi.DeploymentContextVisitor;
-import org.jboss.deployers.structure.spi.DeploymentMBean;
-import org.jboss.deployers.structure.spi.DeploymentResourceLoader;
-import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.deployers.structure.spi.*;
 import org.jboss.deployers.structure.spi.scope.ScopeBuilder;
 import org.jboss.logging.Logger;
 import org.jboss.metadata.spi.MetaData;
@@ -64,7 +60,7 @@ import org.jboss.metadata.spi.scope.ScopeKey;
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  * @version $Revision: 59630 $
  */
-public class ComponentDeploymentContext implements DeploymentContext, ComponentDeploymentContextMBean, MBeanRegistration
+public class ComponentDeploymentContext implements DeploymentContext, DeploymentContextExt, ComponentDeploymentContextMBean, MBeanRegistration
 {
    /** The serialVersionUID */
    private static final long serialVersionUID = -5105972679660633071L;
@@ -104,7 +100,13 @@ public class ComponentDeploymentContext implements DeploymentContext, ComponentD
    
    /** The mutable scope */
    private ScopeKey mutableScope;
-   
+
+   /** The relative order */
+   private int relativeOrder;
+
+   /** The dirty flag type */
+   private Set<DirtyType> dirty = Collections.emptySet();
+
    /**
     * For serialization
     */
@@ -127,6 +129,24 @@ public class ComponentDeploymentContext implements DeploymentContext, ComponentD
          throw new IllegalArgumentException("Null parent");
       this.name = name;
       this.parent = parent;
+   }
+
+   public void changeRelativeOrder(int relativeOrder)
+   {
+      if (parent != null && parent instanceof DeploymentContextExt)
+      {
+         DeploymentContextExt ext = (DeploymentContextExt) parent;
+         ext.markDirty(DirtyType.COMPONENT);
+      }
+      setRelativeOrder(relativeOrder);
+   }
+
+   public synchronized void markDirty(DirtyType type)
+   {
+      if (dirty instanceof CopyOnWriteArraySet == false)
+         dirty = new CopyOnWriteArraySet<DirtyType>();
+
+      dirty.add(type);
    }
 
    public String getName()
@@ -189,12 +209,12 @@ public class ComponentDeploymentContext implements DeploymentContext, ComponentD
 
    public int getRelativeOrder()
    {
-      return 0;
+      return relativeOrder;
    }
 
    public void setRelativeOrder(int relativeOrder)
    {
-      // No relative ordering of components?
+      this.relativeOrder = relativeOrder;
    }
 
    public Comparator<DeploymentContext> getComparator()
@@ -379,7 +399,23 @@ public class ComponentDeploymentContext implements DeploymentContext, ComponentD
 
    public List<DeploymentContext> getComponents()
    {
-      return Collections.unmodifiableList(components);
+      if (components == null || components.isEmpty())
+         return Collections.emptyList();
+
+      synchronized (this)
+      {
+         if (dirty.remove(DirtyType.COMPONENT))
+         {
+            List<DeploymentContext> copy = new ArrayList<DeploymentContext>(components);
+            Collections.sort(copy, RelativeDeploymentContextComparator.getInstance());
+            components = copy;
+            return copy;
+         }
+         else
+         {
+            return Collections.unmodifiableList(components);
+         }
+      }
    }
 
    public List<ObjectName> getComponentNames()

@@ -26,24 +26,7 @@ import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
 import org.jboss.test.deployers.deployer.helpers.test.ExactAttachmentDeployerWithVisitorTestCase;
-import org.jboss.test.deployers.deployer.test.ComponentUnitTestCase;
-import org.jboss.test.deployers.deployer.test.DependenciesTopologicalOrderingUnitTestCase;
-import org.jboss.test.deployers.deployer.test.DeployerClassLoaderUnitTestCase;
-import org.jboss.test.deployers.deployer.test.DeployerContextClassLoaderUnitTestCase;
-import org.jboss.test.deployers.deployer.test.DeployerFlowUnitTestCase;
-import org.jboss.test.deployers.deployer.test.DeployerOrderingUnitTestCase;
-import org.jboss.test.deployers.deployer.test.DeployerProtocolUnitTestCase;
-import org.jboss.test.deployers.deployer.test.DeployerRequiredInputsUnitTestCase;
-import org.jboss.test.deployers.deployer.test.DeployerRequiredStageUnitTestCase;
-import org.jboss.test.deployers.deployer.test.DeployerWidthFirstUnitTestCase;
-import org.jboss.test.deployers.deployer.test.DeployersImplUnitTestCase;
-import org.jboss.test.deployers.deployer.test.DominoOrderingUnitTestCase;
-import org.jboss.test.deployers.deployer.test.HeuristicAllOrNothingUnitTestCase;
-import org.jboss.test.deployers.deployer.test.HeuristicRussionDollUnitTestCase;
-import org.jboss.test.deployers.deployer.test.InOutTopologicalOrderingUnitTestCase;
-import org.jboss.test.deployers.deployer.test.IndexingOrderingUnitTestCase;
-import org.jboss.test.deployers.deployer.test.KahnOrderingUnitTestCase;
-import org.jboss.test.deployers.deployer.test.MultipleComponentTypeUnitTestCase;
+import org.jboss.test.deployers.deployer.test.*;
 
 /**
  * Deployers Deployer Test Suite.
@@ -75,6 +58,7 @@ public class DeployersDeployerTestSuite extends TestSuite
       suite.addTest(DeployerContextClassLoaderUnitTestCase.suite());
       suite.addTest(DeployerRequiredStageUnitTestCase.suite());
       suite.addTest(DeployerRequiredInputsUnitTestCase.suite());
+      suite.addTest(DynamicRelativeOrderUnitTestCase.suite());
 
       // sorting tests
       suite.addTest(DeployerFlowUnitTestCase.suite());
