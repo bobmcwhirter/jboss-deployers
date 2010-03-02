@@ -223,7 +223,7 @@ public class DeploymentLifeCycle extends LifeCycle
     */
    protected MainDeployer getMainDeployer()
    {
-      MainDeployer result = getModule().getDeploymentUnit().getAttachment(MainDeployer.class);
+      MainDeployer result = getModule().getDeploymentUnit().getMainDeployer();
       if (result == null)
          throw new IllegalStateException("Unable to access main deployer");
       return result;
