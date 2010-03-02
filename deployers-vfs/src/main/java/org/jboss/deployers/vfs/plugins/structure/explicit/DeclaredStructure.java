@@ -132,21 +132,17 @@ public class DeclaredStructure extends AbstractVFSArchiveStructureDeployer
    {
       final StructureMetaData structureMetaData = structureContext.getMetaData();
       final VirtualFile structureRoot = structureContext.getRoot();
-      if(structureContext != null)
+      for(ContextInfo contextInfo : structureMetaData.getContexts()) 
       {
-         for(ContextInfo contextInfo : structureMetaData.getContexts()) 
+         final String contextPath = contextInfo.getPath(); 
+         if(hasValidSuffix(contextPath))
          {
-            final String contextPath = contextInfo.getPath(); 
-            if(hasValidSuffix(contextPath))
+            final VirtualFile child = structureRoot.getChild(contextPath);
+            if(child.exists() && child.isFile()) 
             {
-               final VirtualFile child = structureRoot.getChild(contextPath);
-               if(child.exists() && child.isFile()) 
-               {
-                  performMount(child);
-               }
+               performMount(child);
             }
          }
       }
-      
    }
 }

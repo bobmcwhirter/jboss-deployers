@@ -26,6 +26,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 import org.jboss.deployers.client.spi.DeployerClient;
 import org.jboss.deployers.client.spi.Deployment;
 import org.jboss.deployers.client.spi.DeploymentFactory;
@@ -34,11 +37,11 @@ import org.jboss.deployers.spi.attachments.MutableAttachments;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.test.deployers.AbstractDeployerTest;
-import org.jboss.test.deployers.deployer.support.*;
-import org.jboss.test.deployers.main.support.TestAttachment;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import org.jboss.test.deployers.deployer.support.ModifyComponentRelativeOrderDeployer;
+import org.jboss.test.deployers.deployer.support.ModifyRelativeOrderDeployer;
+import org.jboss.test.deployers.deployer.support.TestAttachmentDeployer;
+import org.jboss.test.deployers.deployer.support.TestSimpleDeployer3;
+import org.jboss.test.deployers.deployer.support.TestSimpleDeployer4;
 
 /**
  * Dynamic relative order.

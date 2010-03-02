@@ -21,7 +21,6 @@
 */
 package org.jboss.test.deployers.deployer.support;
 
-import java.util.Collection;
 import java.util.Set;
 
 import org.jboss.deployers.spi.DeploymentException;

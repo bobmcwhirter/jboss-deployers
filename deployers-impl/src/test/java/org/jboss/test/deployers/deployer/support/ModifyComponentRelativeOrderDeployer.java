@@ -21,8 +21,6 @@
 */
 package org.jboss.test.deployers.deployer.support;
 
-import java.util.Collection;
-
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.DeploymentStage;
 import org.jboss.deployers.spi.deployer.helpers.AbstractRealDeployer;

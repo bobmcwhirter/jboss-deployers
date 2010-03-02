@@ -372,6 +372,7 @@ public class AbstractDeploymentContext extends ManagedObjectsWithTransientAttach
       setRelativeOrder(relativeOrder);
    }
 
+   @SuppressWarnings("unchecked")
    public synchronized void markDirty(DirtyType type)
    {
       if (dirty instanceof CopyOnWriteArraySet == false)

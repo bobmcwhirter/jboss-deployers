@@ -141,6 +141,7 @@ public class ComponentDeploymentContext implements DeploymentContext, Deployment
       setRelativeOrder(relativeOrder);
    }
 
+   @SuppressWarnings("unchecked")
    public synchronized void markDirty(DirtyType type)
    {
       if (dirty instanceof CopyOnWriteArraySet == false)
