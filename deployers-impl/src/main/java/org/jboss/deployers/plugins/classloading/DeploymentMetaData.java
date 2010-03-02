@@ -22,11 +22,13 @@
 package org.jboss.deployers.plugins.classloading;
 
 import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import java.io.Serializable;
 import java.util.Set;
 
 import org.jboss.deployers.spi.deployer.DeploymentStage;
+import org.jboss.deployers.spi.deployer.DeploymentStageXmlAdapter;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.xb.annotations.JBossXmlSchema;
 
@@ -35,7 +37,7 @@ import org.jboss.xb.annotations.JBossXmlSchema;
  *
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-@JBossXmlSchema(namespace="urn:jboss:deployment:1.0", elementFormDefault= XmlNsForm.QUALIFIED)
+@JBossXmlSchema(namespace="urn:jboss:deployment:1.0", elementFormDefault=XmlNsForm.QUALIFIED)
 @XmlRootElement(name="deployment")
 @XmlType(name="deploymentType", propOrder={"filters"})
 public class DeploymentMetaData implements Serializable
@@ -53,6 +55,7 @@ public class DeploymentMetaData implements Serializable
    }
 
    @XmlAttribute(name = "required-stage")
+   @XmlJavaTypeAdapter(DeploymentStageXmlAdapter.class)
    public void setRequiredStage(DeploymentStage requiredStage)
    {
       if (requiredStage == null)
