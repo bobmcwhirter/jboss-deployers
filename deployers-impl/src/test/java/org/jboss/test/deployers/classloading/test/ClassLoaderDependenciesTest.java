@@ -40,7 +40,6 @@ import org.jboss.classloading.spi.metadata.RequirementsMetaData;
 import org.jboss.classloading.spi.version.Version;
 import org.jboss.classloading.spi.version.VersionRange;
 import org.jboss.deployers.client.spi.DeployerClient;
-import org.jboss.deployers.plugins.classloading.AbstractClassLoaderDescribeDeployer;
 import org.jboss.deployers.spi.attachments.MutableAttachments;
 import org.jboss.deployers.spi.attachments.PredeterminedManagedObjectAttachments;
 import org.jboss.deployers.spi.deployer.Deployer;
@@ -61,6 +60,8 @@ public abstract class ClassLoaderDependenciesTest extends AbstractDeployerTest
    
    private ClassLoaderSystem system;
    
+   protected ClassLoading classLoading;
+   
    public static final String NameA = "A";
    public static final String NameB = "B";
 
@@ -80,7 +81,7 @@ public abstract class ClassLoaderDependenciesTest extends AbstractDeployerTest
       return result;
    }
 
-   protected AbstractClassLoaderDescribeDeployer deployer1;
+   protected MockClassLoaderDescribeDeployer deployer1;
    protected MockLevelClassLoaderSystemDeployer deployer2;
 
    protected ClassLoaderDependenciesTest(String name)
@@ -219,7 +220,7 @@ public abstract class ClassLoaderDependenciesTest extends AbstractDeployerTest
 
    protected DeployerClient getMainDeployer(Deployer... deployers)
    {
-      ClassLoading classLoading = new ClassLoading();
+      classLoading = new ClassLoading();
       system = new DefaultClassLoaderSystem();
       system.getDefaultDomain().setParentPolicy(ParentPolicy.BEFORE_BUT_JAVA_ONLY);
 

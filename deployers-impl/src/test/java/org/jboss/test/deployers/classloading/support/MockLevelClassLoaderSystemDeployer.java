@@ -34,7 +34,7 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
  * @version $Revision: 1.1 $
  */
-public class MockLevelClassLoaderSystemDeployer extends AbstractLevelClassLoaderSystemDeployer
+public class MockLevelClassLoaderSystemDeployer extends AbstractLevelClassLoaderSystemDeployer implements MockDeployer
 {
    public List<String> deployed = new ArrayList<String>();
    public List<String> undeployed = new ArrayList<String>();
@@ -49,5 +49,27 @@ public class MockLevelClassLoaderSystemDeployer extends AbstractLevelClassLoader
    {
       undeployed.add(unit.getName());
       super.undeploy(unit);
+   }
+
+   public void clear()
+   {
+      deployed.clear();
+      undeployed.clear();
+   }
+
+   public List<String> getDeployed()
+   {
+      return deployed;
+   }
+
+   public List<String> getUnDeployed()
+   {
+      return undeployed;
+   }
+   
+   @Override
+   public String toString()
+   {
+      return getClass().getSimpleName();
    }
 }

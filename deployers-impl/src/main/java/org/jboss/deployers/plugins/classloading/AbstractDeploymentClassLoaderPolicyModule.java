@@ -25,9 +25,9 @@ import java.util.Set;
 
 import org.jboss.classloading.spi.dependency.policy.ClassLoaderPolicyModule;
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
+import org.jboss.dependency.spi.Controller;
 import org.jboss.dependency.spi.ControllerContext;
 import org.jboss.dependency.spi.ControllerState;
-import org.jboss.dependency.spi.Controller;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 
@@ -121,6 +121,7 @@ public abstract class AbstractDeploymentClassLoaderPolicyModule extends ClassLoa
       this.unit = unit;
       ControllerContext context = unit.getTopLevel().getAttachment(ControllerContext.class);
       setControllerContext(context);
+      setLifeCycle(createDeploymentLifeCycle());
    }
 
    /**
@@ -150,5 +151,15 @@ public abstract class AbstractDeploymentClassLoaderPolicyModule extends ClassLoa
       {
          determineContextName(unit, false);
       }
+   }
+   
+   /**
+    * Create the deployment lifecycle
+    * 
+    * @return the lifecycle
+    */
+   protected DeploymentLifeCycle createDeploymentLifeCycle()
+   {
+      return new DeploymentLifeCycle(this);
    }
 }

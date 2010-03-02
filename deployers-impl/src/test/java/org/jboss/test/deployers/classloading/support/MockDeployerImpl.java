@@ -1,6 +1,6 @@
 /*
 * JBoss, Home of Professional Open Source
-* Copyright 2006, JBoss Inc., and individual contributors as indicated
+* Copyright 2010, Red Hat Inc., and individual contributors as indicated
 * by the @authors tag. See the copyright.txt in the distribution for a
 * full listing of individual contributors.
 *
@@ -24,38 +24,36 @@ package org.jboss.test.deployers.classloading.support;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jboss.classloading.spi.dependency.policy.ClassLoaderPolicyModule;
-import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
-import org.jboss.deployers.plugins.classloading.AbstractClassLoaderDescribeDeployer;
 import org.jboss.deployers.spi.DeploymentException;
+import org.jboss.deployers.spi.deployer.helpers.AbstractRealDeployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 
 /**
- * MockClassLoaderDescribeDeployer.
+ * MockDeployer
  * 
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
  * @version $Revision: 1.1 $
  */
-public class MockClassLoaderDescribeDeployer extends AbstractClassLoaderDescribeDeployer implements MockDeployer
+public class MockDeployerImpl extends AbstractRealDeployer implements MockDeployer
 {
    public List<String> deployed = new ArrayList<String>();
    public List<String> undeployed = new ArrayList<String>();
 
-   protected ClassLoaderPolicyModule createModule(DeploymentUnit unit, ClassLoadingMetaData metaData) throws DeploymentException
+   String name;
+   
+   public MockDeployerImpl(String name)
    {
-      return new MockDeploymentClassLoaderPolicyModule(unit);
+      this.name = name;
    }
-
+   
    public void internalDeploy(DeploymentUnit unit) throws DeploymentException
    {
       deployed.add(unit.getName());
-      super.internalDeploy(unit);
    }
 
    public void internalUndeploy(DeploymentUnit unit)
    {
       undeployed.add(unit.getName());
-      super.internalUndeploy(unit);
    }
 
    public void clear()
@@ -77,6 +75,6 @@ public class MockClassLoaderDescribeDeployer extends AbstractClassLoaderDescribe
    @Override
    public String toString()
    {
-      return getClass().getSimpleName();
+      return name;
    }
 }
