@@ -1,0 +1,7 @@
+<deployment xmlns="urn:jboss:deployment:1.0" required-stage="PRE_DESCRIBE" lazy-resolve="true">
+
+    <lazy-start-filter recurse="false">org.foo.bar</lazy-start-filter>
+    <lazy-start-filter recurse="true">com.acme.somepackage</lazy-start-filter>
+
+</deployment>
+

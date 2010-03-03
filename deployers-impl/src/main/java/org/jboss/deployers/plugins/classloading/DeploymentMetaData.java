@@ -30,6 +30,8 @@ import java.util.Set;
 import org.jboss.deployers.spi.deployer.DeploymentStage;
 import org.jboss.deployers.spi.deployer.DeploymentStageXmlAdapter;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
+import org.jboss.xb.annotations.JBossXmlAdaptedType;
+import org.jboss.xb.annotations.JBossXmlAttribute;
 import org.jboss.xb.annotations.JBossXmlSchema;
 
 /**
@@ -47,22 +49,23 @@ public class DeploymentMetaData implements Serializable
    private DeploymentStage requiredStage = DeploymentStages.DESCRIBE;
    private boolean lazyResolve;
    private boolean lazyStart;
-   private Set<String> filters;
+   private Set<FilterMetaData> filters;
 
+   @XmlTransient // TODO -- fix this once XB support it
    public DeploymentStage getRequiredStage()
    {
       return requiredStage;
    }
 
-   @XmlAttribute(name = "required-stage")
-   @XmlJavaTypeAdapter(DeploymentStageXmlAdapter.class)
-   public void setRequiredStage(DeploymentStage requiredStage)
-   {
-      if (requiredStage == null)
-         requiredStage = DeploymentStages.DESCRIBE;
-      
-      this.requiredStage = requiredStage;
-   }
+//   @XmlAttribute(name = "required-stage")
+//   @XmlJavaTypeAdapter(DeploymentStageXmlAdapter.class)
+//   public void setRequiredStage(DeploymentStage requiredStage)
+//   {
+//      if (requiredStage == null)
+//         requiredStage = DeploymentStages.DESCRIBE;
+//
+//      this.requiredStage = requiredStage;
+//   }
 
    public boolean isLazyResolve()
    {
@@ -86,14 +89,14 @@ public class DeploymentMetaData implements Serializable
       this.lazyStart = lazyStart;
    }
 
-   public Set<String> getFilters()
+   public Set<FilterMetaData> getFilters()
    {
       return filters;
    }
 
-   @XmlElement(name = "lazy-start-filter")
-   public void setFilters(Set<String> filters)
+   @XmlElement(name = "lazy-start-filter", type = FilterMetaData.class)
+   public void setFilters(Set<FilterMetaData> filters)
    {
       this.filters = filters;
-   }
+   }      
 }

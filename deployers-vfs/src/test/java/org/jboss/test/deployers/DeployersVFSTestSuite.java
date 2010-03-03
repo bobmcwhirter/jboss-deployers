@@ -27,6 +27,7 @@ import junit.textui.TestRunner;
 
 import org.jboss.test.deployers.vfs.annotations.AnnotationScanningTestSuite;
 import org.jboss.test.deployers.vfs.classloader.ClassLoaderTestSuite;
+import org.jboss.test.deployers.vfs.classloading.ClassLoadingTestSuite;
 import org.jboss.test.deployers.vfs.dependency.DependencyTestSuite;
 import org.jboss.test.deployers.vfs.deployer.bean.BeanDeployerTestSuite;
 import org.jboss.test.deployers.vfs.deployer.facelets.FaceletsTestSuite;
@@ -76,6 +77,7 @@ public class DeployersVFSTestSuite extends TestSuite
       suite.addTest(VFSManagedTestSuite.suite());
       suite.addTest(NonMetadataDeployersTestSuite.suite());
       suite.addTest(ClassLoaderTestSuite.suite());
+      suite.addTest(ClassLoadingTestSuite.suite());
       suite.addTest(VFSMatchersTestSuite.suite());
       suite.addTest(JBossXBDeployersTestSuite.suite());
       suite.addTest(MergeDeployerTestSuite.suite());
