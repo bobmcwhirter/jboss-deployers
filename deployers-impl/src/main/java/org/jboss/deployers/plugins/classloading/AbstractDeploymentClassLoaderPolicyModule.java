@@ -23,6 +23,10 @@ package org.jboss.deployers.plugins.classloading;
 
 import java.util.Set;
 
+import org.jboss.classloader.plugins.filter.CombiningClassFilter;
+import org.jboss.classloader.spi.filter.ClassFilter;
+import org.jboss.classloader.spi.filter.PackageClassFilter;
+import org.jboss.classloader.spi.filter.RecursivePackageClassFilter;
 import org.jboss.classloading.spi.dependency.policy.ClassLoaderPolicyModule;
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
 import org.jboss.dependency.spi.Controller;
@@ -160,6 +164,27 @@ public abstract class AbstractDeploymentClassLoaderPolicyModule extends ClassLoa
     */
    protected DeploymentLifeCycle createDeploymentLifeCycle()
    {
-      return new DeploymentLifeCycle(this);
+      DeploymentLifeCycle lifecycle = new DeploymentLifeCycle(this);
+      DeploymentMetaData dmd = unit.getAttachment(DeploymentMetaData.class);
+      if (dmd != null)
+      {
+         lifecycle.setLazyResolve(dmd.isLazyResolve());
+         lifecycle.setLazyStart(dmd.isLazyStart());
+         Set<FilterMetaData> filters = dmd.getFilters();
+         if (filters != null && filters.isEmpty() == false)
+         {
+            ClassFilter[] cfs = new ClassFilter[filters.size()];
+            int i = 0;
+            for (FilterMetaData fmd : filters)
+            {
+               cfs[i++] = fmd.isRecurse() ?
+                     RecursivePackageClassFilter.createRecursivePackageClassFilterFromString(fmd.getValue()) :
+                     PackageClassFilter.createPackageClassFilterFromString(fmd.getValue());
+            }
+            ClassFilter filter = new CombiningClassFilter(false, cfs);
+            lifecycle.setLazyStartFilter(filter);
+         }
+      }
+      return lifecycle;
    }
 }
