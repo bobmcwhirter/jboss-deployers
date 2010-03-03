@@ -21,19 +21,7 @@
 */
 package org.jboss.test.deployers.vfs.classloader;
 
-import org.jboss.test.deployers.vfs.classloader.test.BootstrapDeployersSmokeTestUnitTestCase;
-import org.jboss.test.deployers.vfs.classloader.test.DeploymentDependsOnDeploymentClassLoaderUnitTestCase;
-import org.jboss.test.deployers.vfs.classloader.test.DeploymentDependsOnManualClassLoaderUnitTestCase;
-import org.jboss.test.deployers.vfs.classloader.test.ManagedObjectClassLoadingParserUnitTestCase;
-import org.jboss.test.deployers.vfs.classloader.test.ManifestClassLoaderUnitTestCase;
-import org.jboss.test.deployers.vfs.classloader.test.ManualDependsOnDeploymentClassLoaderUnitTestCase;
-import org.jboss.test.deployers.vfs.classloader.test.NotVFSClassLoaderUnitTestCase;
-import org.jboss.test.deployers.vfs.classloader.test.SubDeploymentClassLoaderUnitTestCase;
-import org.jboss.test.deployers.vfs.classloader.test.SubDeploymentClassLoaderVisitorUnitTestCase;
-import org.jboss.test.deployers.vfs.classloader.test.VFSClassLoaderDependenciesUnitTestCase;
-import org.jboss.test.deployers.vfs.classloader.test.VFSUndeployOrderClassLoaderUnitTestCase;
-import org.jboss.test.deployers.vfs.classloader.test.IntegrationDeployerUnitTestCase;
-import org.jboss.test.deployers.vfs.classloader.test.RequirementsIntegrationUnitTestCase;
+import org.jboss.test.deployers.vfs.classloader.test.*;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -43,6 +31,7 @@ import junit.textui.TestRunner;
  * BeanDeployerTestSuite.
  * 
  * @author <a href="adrian@jboss.org">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public class ClassLoaderTestSuite extends TestSuite
@@ -59,6 +48,7 @@ public class ClassLoaderTestSuite extends TestSuite
       suite.addTest(BootstrapDeployersSmokeTestUnitTestCase.suite());
       suite.addTest(VFSClassLoaderDependenciesUnitTestCase.suite());
       suite.addTest(VFSUndeployOrderClassLoaderUnitTestCase.suite());
+      suite.addTest(InMemoryClasesUnitTestCase.suite());
       suite.addTest(DeploymentDependsOnManualClassLoaderUnitTestCase.suite());
       suite.addTest(ManualDependsOnDeploymentClassLoaderUnitTestCase.suite());
       suite.addTest(DeploymentDependsOnDeploymentClassLoaderUnitTestCase.suite());

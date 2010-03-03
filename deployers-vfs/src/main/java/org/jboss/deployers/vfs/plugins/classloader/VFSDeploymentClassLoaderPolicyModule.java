@@ -163,7 +163,7 @@ public class VFSDeploymentClassLoaderPolicyModule extends AbstractDeploymentClas
    @Override
    public URL getDynamicClassRoot()
    {
-      return getDeploymentUnit().getAttachment("DYNAMIC_CLASS_URL_KEY", URL.class);
+      return getDeploymentUnit().getAttachment(InMemoryClassesDeployer.DYNAMIC_CLASS_URL_KEY, URL.class);
    }
 
    @Override
