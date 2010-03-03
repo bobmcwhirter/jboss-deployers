@@ -52,7 +52,6 @@ public class DeploymentValidationDeployer extends AbstractSimpleRealDeployer<Dep
       this.states = controller.getStates();
 
       setStage(DeploymentStages.POST_PARSE);
-      setTopLevelOnly(true);
    }
 
    @Override
@@ -66,7 +65,10 @@ public class DeploymentValidationDeployer extends AbstractSimpleRealDeployer<Dep
       if (throwException && deployment.isLazyStart() && states.isAfterState(state, REAL))
          throw new DeploymentException("Required stage is after REAL with lazy start enabled: " + requiredStage);
 
-      unit.setRequiredStage(requiredStage);
+      if (unit.isTopLevel())
+         unit.setRequiredStage(requiredStage);
+      else if (DeploymentStages.DESCRIBE.equals(requiredStage) == false)
+         log.warnf("Ignoring non-default required stage (%1s) for sub-deployment: %2s", requiredStage, unit);
    }
 
    public void setThrowException(boolean throwException)
