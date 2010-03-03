@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.jboss.deployers.plugins.classloading.DeploymentMetaData;
 import org.jboss.deployers.plugins.classloading.FilterMetaData;
+import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.test.deployers.BootstrapDeployersTest;
 
@@ -54,6 +55,7 @@ public class DeploymentMetaDataUnitTestCase extends BootstrapDeployersTest
       {
          DeploymentMetaData dmd = du.getAttachment(DeploymentMetaData.class);
          assertNotNull(dmd);
+         assertEquals(DeploymentStages.DESCRIBE, dmd.getRequiredStage()); // TODO - fix this to PRE_
          assertTrue(dmd.isLazyResolve());
          assertTrue(dmd.isLazyStart());
          Set<FilterMetaData> filters = dmd.getFilters();
