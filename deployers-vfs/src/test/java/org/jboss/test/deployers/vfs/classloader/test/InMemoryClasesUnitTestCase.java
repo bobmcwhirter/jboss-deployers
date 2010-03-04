@@ -24,7 +24,6 @@ package org.jboss.test.deployers.vfs.classloader.test;
 import java.io.IOException;
 import java.net.URL;
 
-import junit.framework.Test;
 import org.jboss.classloader.plugins.jdk.AbstractJDKChecker;
 import org.jboss.classloader.plugins.system.DefaultClassLoaderSystem;
 import org.jboss.classloader.spi.ClassLoaderSystem;
@@ -36,16 +35,18 @@ import org.jboss.deployers.client.spi.DeployerClient;
 import org.jboss.deployers.client.spi.Deployment;
 import org.jboss.deployers.spi.deployer.Deployer;
 import org.jboss.deployers.structure.spi.main.MainDeployerStructure;
+import org.jboss.deployers.vfs.plugins.classloader.DeploymentHostNameCreator;
 import org.jboss.deployers.vfs.plugins.classloader.InMemoryClassesDeployer;
 import org.jboss.deployers.vfs.plugins.classloader.VFSClassLoaderClassPathDeployer;
 import org.jboss.deployers.vfs.plugins.classloader.VFSClassLoaderDescribeDeployer;
-import org.jboss.deployers.vfs.plugins.classloader.DeploymentHostNameCreator;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.test.deployers.vfs.classloader.support.TestLevelClassLoaderSystemDeployer;
 import org.jboss.test.deployers.vfs.classloader.support.a.A;
 import org.jboss.vfs.VFS;
 import org.jboss.vfs.VFSUtils;
 import org.jboss.vfs.VirtualFile;
+
+import junit.framework.Test;
 
 /**
  * InMemoryClasesUnitTestCase.
@@ -125,7 +126,8 @@ public class InMemoryClasesUnitTestCase extends VFSClassLoaderDependenciesTest
          VFSDeploymentUnit unit = (VFSDeploymentUnit) main.getDeploymentUnit("A");
          URL root = unit.getAttachment(InMemoryClassesDeployer.DYNAMIC_CLASS_URL_KEY, URL.class);
          assertNotNull(root);
-         assertEquals("file:/in-memory-test-classes", root.toExternalForm());
+         // TODO -- changed this, but what's the consistent way of doing this?
+         assertTrue(root.toExternalForm().endsWith("in-memory-test-classes"));
       }
       finally
       {
