@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.jboss.classloading.spi.dependency.LifeCycle;
 import org.jboss.deployers.client.spi.DeployerClientChangeExt;
+import org.jboss.deployers.client.spi.IncompleteDeploymentException;
 import org.jboss.deployers.client.spi.main.MainDeployer;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 
@@ -74,14 +75,18 @@ public class DeploymentLifeCycle extends LifeCycle
    }
 
    @Override
-   public void resolve() throws Exception
+   public boolean resolve() throws Exception
    {
       if (isResolved() == false)
+      {
          getMainDeployer().change(getModule().getDeploymentUnit().getName(), DeploymentStages.CLASSLOADER);
+         return isResolved();
+      }
+      return true;
    }
 
    @Override
-   public void resolve(LifeCycle... lifecycles) throws Exception
+   public boolean resolve(LifeCycle... lifecycles) throws Exception
    {
       DeployerClientChangeExt changer = getChanger();
       Set<DeploymentLifeCycle> deploymentLifeCycles = null;
@@ -89,8 +94,7 @@ public class DeploymentLifeCycle extends LifeCycle
          deploymentLifeCycles = getDeploymentLifeCycles(lifecycles);
       if (deploymentLifeCycles == null)
       {
-         super.resolve(lifecycles);
-         return;
+         return super.resolve(lifecycles);
       }
       Set<String> names = new LinkedHashSet<String>(lifecycles.length);
       for (DeploymentLifeCycle lifeCycle : deploymentLifeCycles)
@@ -99,7 +103,17 @@ public class DeploymentLifeCycle extends LifeCycle
             names.add(lifeCycle.getModule().getDeploymentUnit().getName());
       }
       if (names.isEmpty() == false)
-         changer.change(DeploymentStages.CLASSLOADER, false, names.toArray(new String[names.size()]));
+      {
+         try
+         {
+            changer.change(DeploymentStages.CLASSLOADER, true, names.toArray(new String[names.size()]));
+         }
+         catch (IncompleteDeploymentException e)
+         {
+            return false;
+         }
+      }
+      return true;
    }
 
    @Override
