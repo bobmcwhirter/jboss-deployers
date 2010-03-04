@@ -31,12 +31,7 @@ import org.jboss.classloader.spi.ClassLoaderSystem;
 import org.jboss.classloader.spi.ParentPolicy;
 import org.jboss.classloading.spi.dependency.ClassLoading;
 import org.jboss.classloading.spi.dependency.policy.mock.MockClassLoadingMetaData;
-import org.jboss.classloading.spi.metadata.CapabilitiesMetaData;
-import org.jboss.classloading.spi.metadata.Capability;
-import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
-import org.jboss.classloading.spi.metadata.ClassLoadingMetaDataFactory;
-import org.jboss.classloading.spi.metadata.Requirement;
-import org.jboss.classloading.spi.metadata.RequirementsMetaData;
+import org.jboss.classloading.spi.metadata.*;
 import org.jboss.classloading.spi.version.Version;
 import org.jboss.classloading.spi.version.VersionRange;
 import org.jboss.deployers.client.spi.DeployerClient;
@@ -202,10 +197,15 @@ public abstract class ClassLoaderDependenciesTest extends AbstractDeployerTest
 
    protected static void addMetaData(PredeterminedManagedObjectAttachments attachments, ClassLoadingMetaData md)
    {
-      MutableAttachments mutable = (MutableAttachments) attachments.getPredeterminedManagedObjects();
-      mutable.addAttachment(ClassLoadingMetaData.class, md);
+      addMetaData(attachments, md,  ClassLoadingMetaData.class);
    }
    
+   protected static <T> void addMetaData(PredeterminedManagedObjectAttachments attachments, T md, Class<T> expectedType)
+   {
+      MutableAttachments mutable = (MutableAttachments) attachments.getPredeterminedManagedObjects();
+      mutable.addAttachment(expectedType, md);
+   }
+
    protected ClassLoaderDomain assertDomain(String name) throws Exception
    {
       ClassLoaderDomain result = system.getDomain(name);

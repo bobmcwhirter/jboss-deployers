@@ -105,6 +105,18 @@
       <property name="name">jboss-classloading.xml</property>
       <property name="buildManagedObject">true</property>
    </bean>
+   <bean name="DeploymentMetaDataParser" class="org.jboss.deployers.vfs.spi.deployer.SchemaResolverDeployer">
+      <constructor>
+         <parameter>org.jboss.deployers.plugins.classloading.DeploymentMetaData</parameter>
+      </constructor>
+      <property name="name">jboss-deployment.xml</property>
+      <property name="registerWithJBossXB">true</property>
+   </bean>
+   <bean name="DeploymentMetaDataValidation" class="org.jboss.deployers.plugins.classloading.DeploymentValidationDeployer">
+      <constructor>
+         <parameter><inject bean="jboss.kernel:service=KernelController"/></parameter>
+      </constructor>
+   </bean>
    <bean name="ClassLoadingDefaultDeployer" class="org.jboss.deployers.plugins.classloading.ClassLoadingDefaultDeployer">
       <property name="defaultMetaData">
          <classloading xmlns="urn:jboss:classloading:1.0" export-all="NON_EMPTY" import-all="true"/>

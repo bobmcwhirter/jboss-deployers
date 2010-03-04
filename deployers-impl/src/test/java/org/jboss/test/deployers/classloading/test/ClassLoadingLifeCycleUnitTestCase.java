@@ -21,16 +21,18 @@
 */
 package org.jboss.test.deployers.classloading.test;
 
+import java.util.Collections;
 import java.util.List;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
 import org.jboss.classloading.spi.dependency.LifeCycle;
 import org.jboss.classloading.spi.dependency.Module;
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
+import org.jboss.dependency.spi.Controller;
 import org.jboss.deployers.client.spi.DeployerClient;
 import org.jboss.deployers.client.spi.Deployment;
+import org.jboss.deployers.plugins.classloading.DeploymentMetaData;
+import org.jboss.deployers.plugins.classloading.DeploymentValidationDeployer;
+import org.jboss.deployers.plugins.classloading.FilterMetaData;
 import org.jboss.deployers.spi.deployer.Deployer;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
@@ -39,17 +41,21 @@ import org.jboss.test.deployers.classloading.support.MockDeployerImpl;
 import org.jboss.test.deployers.classloading.support.a.A;
 import org.jboss.test.deployers.classloading.support.b.B;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 /**
  * ClassLoadingLifeCycleUnitTestCase
  *
  * TODO test multiples
  * TODO test non deployment lifecycles
  * @author adrian@jboss.org
+ * @author ales.justin@jboss.org
  */
 public class ClassLoadingLifeCycleUnitTestCase extends ClassLoaderDependenciesTest
 {
    MockDeployerImpl deployer3 = new MockDeployerImpl("Real");
-   
+
    public static Test suite()
    {
       return new TestSuite(ClassLoadingLifeCycleUnitTestCase.class);
@@ -63,7 +69,9 @@ public class ClassLoadingLifeCycleUnitTestCase extends ClassLoaderDependenciesTe
    @Override
    protected DeployerClient getMainDeployer(Deployer... deployers)
    {
-      return super.getMainDeployer(deployer3);
+      Controller controller = getController();
+      DeploymentValidationDeployer dvd = new DeploymentValidationDeployer(controller);
+      return super.getMainDeployer(deployer3, dvd);
    }
 
    public void testSmoke() throws Exception
@@ -698,7 +706,54 @@ public class ClassLoadingLifeCycleUnitTestCase extends ClassLoaderDependenciesTe
       assertFalse(lifeCycleB.isResolved());
       assertFalse(lifeCycleB.isStarted());
    }
-   
+
+   public void testDeploymentMetaData() throws Exception
+   {
+      DeployerClient deployer = getMainDeployer();
+
+      Deployment deploymentA = createSimpleDeployment(NameA);
+      addClassLoadingMetaData(deploymentA, deploymentA.getName(), null, A.class);
+      DeploymentMetaData dmd = new DeploymentMetaData();
+      dmd.setLazyResolve(true);
+      dmd.setLazyStart(true);
+      FilterMetaData data = new FilterMetaData();
+      data.setValue(A.class.getPackage().getName());
+      dmd.setFilters(Collections.singleton(data));
+      addMetaData(deploymentA, dmd, DeploymentMetaData.class);
+
+      DeploymentUnit unitA = assertDeploy(deployer, deploymentA);
+      LifeCycle lifeCycleA = assertLifeCycle(unitA);
+      assertFalse(lifeCycleA.isResolved());
+      assertFalse(lifeCycleA.isStarted());
+
+      Deployment deploymentB = createSimpleDeployment(NameB);
+      ClassLoadingMetaData clmdB = addClassLoadingMetaData(deploymentB, deploymentB.getName(), null, B.class);
+      addRequireModule(clmdB, deploymentA.getName(), null);
+
+      DeploymentUnit unitB = assertDeploy(deployer, deploymentB);
+      LifeCycle lifeCycleB = assertLifeCycle(unitB);
+      assertTrue(lifeCycleB.isResolved());
+      assertTrue(lifeCycleA.isResolved());
+      assertTrue(lifeCycleB.isStarted());
+      assertFalse(lifeCycleA.isStarted());
+
+      ClassLoader clA = unitA.getClassLoader();
+      ClassLoader clB = unitB.getClassLoader();
+      assertLoadClass(clB, A.class, clA);
+
+      assertTrue(lifeCycleA.isResolved());
+      assertTrue(lifeCycleA.isStarted());
+      assertTrue(lifeCycleB.isResolved());
+      assertTrue(lifeCycleB.isStarted());
+
+      assertUndeploy(deployer, deploymentB);
+      assertUndeploy(deployer, deploymentA);
+      assertFalse(lifeCycleA.isResolved());
+      assertFalse(lifeCycleA.isStarted());
+      assertFalse(lifeCycleB.isResolved());
+      assertFalse(lifeCycleB.isStarted());
+   }
+
    protected LifeCycle assertLifeCycle(DeploymentUnit unit)
    {
       Module module = assertModule(unit);

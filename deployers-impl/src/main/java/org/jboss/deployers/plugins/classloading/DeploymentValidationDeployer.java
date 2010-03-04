@@ -37,8 +37,8 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
  */
 public class DeploymentValidationDeployer extends AbstractSimpleRealDeployer<DeploymentMetaData>
 {
-   private static final ControllerState DESCRIBED = ControllerState.getInstance(DeploymentStages.DESCRIBE.getName());
-   private static final ControllerState REAL = ControllerState.getInstance(DeploymentStages.REAL.getName());
+   private static final ControllerState DESCRIBED = ControllerState.newState(DeploymentStages.DESCRIBE.getName());
+   private static final ControllerState REAL = ControllerState.newState(DeploymentStages.REAL.getName());
 
    private ControllerStateModel states;
    private boolean throwException = true;
@@ -54,7 +54,6 @@ public class DeploymentValidationDeployer extends AbstractSimpleRealDeployer<Dep
       setStage(DeploymentStages.POST_PARSE);
    }
 
-   @Override
    public void deploy(DeploymentUnit unit, DeploymentMetaData deployment) throws DeploymentException
    {
       DeploymentStage requiredStage = deployment.getRequiredStage();
