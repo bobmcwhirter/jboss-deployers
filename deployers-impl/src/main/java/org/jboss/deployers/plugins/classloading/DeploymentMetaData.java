@@ -30,8 +30,6 @@ import java.util.Set;
 import org.jboss.deployers.spi.deployer.DeploymentStage;
 import org.jboss.deployers.spi.deployer.DeploymentStageXmlAdapter;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
-import org.jboss.xb.annotations.JBossXmlAdaptedType;
-import org.jboss.xb.annotations.JBossXmlAttribute;
 import org.jboss.xb.annotations.JBossXmlSchema;
 
 /**
@@ -51,21 +49,20 @@ public class DeploymentMetaData implements Serializable
    private boolean lazyStart;
    private Set<FilterMetaData> filters;
 
-   @XmlTransient // TODO -- fix this once XB support it
    public DeploymentStage getRequiredStage()
    {
       return requiredStage;
    }
 
-//   @XmlAttribute(name = "required-stage")
-//   @XmlJavaTypeAdapter(DeploymentStageXmlAdapter.class)
-//   public void setRequiredStage(DeploymentStage requiredStage)
-//   {
-//      if (requiredStage == null)
-//         requiredStage = DeploymentStages.DESCRIBE;
-//
-//      this.requiredStage = requiredStage;
-//   }
+   @XmlAttribute(name = "required-stage")
+   @XmlJavaTypeAdapter(DeploymentStageXmlAdapter.class)
+   public void setRequiredStage(DeploymentStage requiredStage)
+   {
+      if (requiredStage == null)
+         requiredStage = DeploymentStages.DESCRIBE;
+
+      this.requiredStage = requiredStage;
+   }
 
    public boolean isLazyResolve()
    {

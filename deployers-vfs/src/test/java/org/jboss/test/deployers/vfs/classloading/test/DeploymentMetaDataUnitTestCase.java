@@ -55,7 +55,7 @@ public class DeploymentMetaDataUnitTestCase extends BootstrapDeployersTest
       {
          DeploymentMetaData dmd = du.getAttachment(DeploymentMetaData.class);
          assertNotNull(dmd);
-         assertEquals(DeploymentStages.DESCRIBE, dmd.getRequiredStage()); // TODO - fix this to PRE_
+         assertEquals(DeploymentStages.PRE_DESCRIBE, dmd.getRequiredStage());
          assertTrue(dmd.isLazyResolve());
          assertTrue(dmd.isLazyStart());
          Set<FilterMetaData> filters = dmd.getFilters();
