@@ -1,6 +1,7 @@
-<classloading xmlns="urn:jboss:classloading:1.0" export-all="NON_EMPTY">
+<classloading xmlns="urn:jboss:classloading:1.0">
    <capabilities>
       <module name="test5"/>
+      <package name="a.b.c"/>
    </capabilities>
 </classloading>
       

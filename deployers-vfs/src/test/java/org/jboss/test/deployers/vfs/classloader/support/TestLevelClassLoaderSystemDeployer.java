@@ -21,8 +21,8 @@
  */
 package org.jboss.test.deployers.vfs.classloader.support;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.jboss.deployers.plugins.classloading.AbstractLevelClassLoaderSystemDeployer;
 import org.jboss.deployers.spi.DeploymentException;
@@ -36,8 +36,8 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
  */
 public class TestLevelClassLoaderSystemDeployer extends AbstractLevelClassLoaderSystemDeployer
 {
-   public List<String> deployed = new ArrayList<String>();
-   public List<String> undeployed = new ArrayList<String>();
+   public Set<String> deployed = new HashSet<String>();
+   public Set<String> undeployed = new HashSet<String>();
 
    public void deploy(DeploymentUnit unit) throws DeploymentException
    {

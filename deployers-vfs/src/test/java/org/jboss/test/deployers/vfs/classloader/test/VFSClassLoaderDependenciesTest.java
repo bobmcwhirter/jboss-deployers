@@ -22,9 +22,9 @@
 package org.jboss.test.deployers.vfs.classloader.test;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.jboss.classloader.plugins.jdk.AbstractJDKChecker;
 import org.jboss.classloader.plugins.system.DefaultClassLoaderSystem;
@@ -69,17 +69,17 @@ public abstract class VFSClassLoaderDependenciesTest extends BaseDeployersVFSTes
    public static final String NameA = "A";
    public static final String NameB = "B";
 
-   public static final List<String> NONE = Collections.emptyList();
-   public static final List<String> XA = makeList(NameA);
-   public static final List<String> XB = makeList(NameB);
-   public static final List<String> XAB = makeList(NameA, NameB);
-   public static final List<String> XBA = makeList(NameB, NameA);
-   public static final List<String> XBAA = makeList(NameB, NameA, NameA);
-   public static final List<String> XBABA = makeList(NameB, NameA, NameB, NameA);
+   public static final Set<String> NONE = Collections.emptySet();
+   public static final Set<String> XA = makeSet(NameA);
+   public static final Set<String> XB = makeSet(NameB);
+   public static final Set<String> XAB = makeSet(NameA, NameB);
+   public static final Set<String> XBA = makeSet(NameB, NameA);
+   public static final Set<String> XBAA = makeSet(NameB, NameA, NameA);
+   public static final Set<String> XBABA = makeSet(NameB, NameA, NameB, NameA);
 
-   protected static <T> List<T> makeList(T... objects)
+   protected static <T> Set<T> makeSet(T... objects)
    {
-      List<T> result = new ArrayList<T>();
+      Set<T> result = new HashSet<T>();
       for (T object : objects)
          result.add(object);
       return result;
