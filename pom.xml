@@ -26,7 +26,7 @@
     <version.jboss.classpool>1.0.0.Alpha2</version.jboss.classpool>
     <version.jboss.man>2.1.1.SP1</version.jboss.man>
     <version.jboss.mdr>2.2.0.Alpha1</version.jboss.mdr>
-    <version.jboss.kernel>2.2.0.Alpha1</version.jboss.kernel>
+    <version.jboss.kernel>2.2.0-SNAPSHOT</version.jboss.kernel>
     <version.jboss.classloader>2.2.0-SNAPSHOT</version.jboss.classloader>
     <version.jboss.classloading.spi>5.1.0.SP1</version.jboss.classloading.spi>
     <version.jboss.common.core>2.2.17.GA</version.jboss.common.core>

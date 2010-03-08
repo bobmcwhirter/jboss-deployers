@@ -234,4 +234,45 @@ public class MockClassLoaderDependenciesUnitTestCase extends ClassLoaderDependen
       assertEquals(BABA, deployer2.deployed);
       assertEquals(AB, deployer2.undeployed);
    }
+   
+
+   public void testCircular() throws Exception
+   {
+      DeployerClient deployer = getMainDeployer();
+
+      Deployment deploymentB = createSimpleDeployment(NameB);
+      ClassLoadingMetaData classLoadingMetaData = addClassLoadingMetaData(deploymentB, deploymentB.getName(), null, B.class);
+      addRequireModule(classLoadingMetaData, "A", null);
+      DeploymentUnit unitB = addDeployment(deployer, deploymentB);
+
+      assertEquals(NONE, deployer2.deployed);
+      assertEquals(NONE, deployer2.undeployed);
+
+      Deployment deploymentA = createSimpleDeployment(NameA);
+      classLoadingMetaData = addClassLoadingMetaData(deploymentA, deploymentA.getName(), null, A.class);
+      addRequireModule(classLoadingMetaData, "B", null);
+      DeploymentUnit unitA = assertDeploy(deployer, deploymentA);
+      
+      ClassLoader clA = unitA.getClassLoader();
+      ClassLoader clB = unitB.getClassLoader();
+      assertLoadClass(clB, B.class);
+      assertLoadClass(clA, B.class, clB);
+      assertLoadClass(clB, A.class, clA);
+      assertLoadClass(clA, A.class);
+
+      assertEquals(AB, deployer2.deployed);
+      assertEquals(NONE, deployer2.undeployed);
+      
+      assertUndeploy(deployer, deploymentA);
+      assertLoadClassIllegal(clA, B.class);
+      assertLoadClassIllegal(clB, A.class);
+
+      assertEquals(AB, deployer2.deployed);
+      assertEquals(AB, deployer2.undeployed);
+      
+      assertUndeploy(deployer, deploymentB);
+      assertLoadClass(clA, A.class);
+      assertLoadClass(clB, B.class);
+   }
+
 }

@@ -21,8 +21,8 @@
  */
 package org.jboss.test.deployers.classloading.support;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.jboss.deployers.plugins.classloading.AbstractLevelClassLoaderSystemDeployer;
 import org.jboss.deployers.spi.DeploymentException;
@@ -36,8 +36,8 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
  */
 public class MockLevelClassLoaderSystemDeployer extends AbstractLevelClassLoaderSystemDeployer implements MockDeployer
 {
-   public List<String> deployed = new ArrayList<String>();
-   public List<String> undeployed = new ArrayList<String>();
+   public Set<String> deployed = new HashSet<String>();
+   public Set<String> undeployed = new HashSet<String>();
 
    public void deploy(DeploymentUnit unit) throws DeploymentException
    {
@@ -57,12 +57,12 @@ public class MockLevelClassLoaderSystemDeployer extends AbstractLevelClassLoader
       undeployed.clear();
    }
 
-   public List<String> getDeployed()
+   public Set<String> getDeployed()
    {
       return deployed;
    }
 
-   public List<String> getUnDeployed()
+   public Set<String> getUnDeployed()
    {
       return undeployed;
    }

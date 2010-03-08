@@ -21,8 +21,8 @@
 */
 package org.jboss.test.deployers.classloading.test;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
@@ -55,6 +55,8 @@ public class SubDeploymentMockClassLoaderUnitTestCase extends ClassLoaderDepende
       super(name);
    }
 
+   static Set<String> topsub = makeSet("top", "top/sub");
+   
    public void testNoSubDeploymentClassLoader() throws Exception
    {
       DeployerClient deployer = getMainDeployer();
@@ -92,7 +94,7 @@ public class SubDeploymentMockClassLoaderUnitTestCase extends ClassLoaderDepende
       DeploymentUnit unit = assertDeploy(deployer, deployment);
       assertDomain("top/sub");
       
-      assertEquals(Arrays.asList("top", "top/sub"), deployer2.deployed);
+      assertEquals(topsub, deployer2.deployed);
       assertEquals(NONE, deployer2.undeployed);
       
       ClassLoader cl = unit.getClassLoader();
@@ -107,8 +109,8 @@ public class SubDeploymentMockClassLoaderUnitTestCase extends ClassLoaderDepende
       assertUndeploy(deployer, deployment);
       assertNoDomain("top/sub");
 
-      assertEquals(Arrays.asList("top", "top/sub"), deployer2.deployed);
-      assertEquals(Arrays.asList("top/sub", "top"), deployer2.undeployed);
+      assertEquals(topsub, deployer2.deployed);
+      assertEquals(topsub, deployer2.undeployed);
    }
 
    public void testSubDeploymentClassLoaderSpecifiedDefaultDomain() throws Exception
@@ -127,7 +129,7 @@ public class SubDeploymentMockClassLoaderUnitTestCase extends ClassLoaderDepende
       
       DeploymentUnit unit = assertDeploy(deployer, deployment);
       
-      assertEquals(Arrays.asList("top", "top/sub"), deployer2.deployed);
+      assertEquals(topsub, deployer2.deployed);
       assertEquals(NONE, deployer2.undeployed);
       
       ClassLoader cl = unit.getClassLoader();
@@ -143,8 +145,8 @@ public class SubDeploymentMockClassLoaderUnitTestCase extends ClassLoaderDepende
       assertUndeploy(deployer, deployment);
       assertNoDomain("top/sub");
 
-      assertEquals(Arrays.asList("top", "top/sub"), deployer2.deployed);
-      assertEquals(Arrays.asList("top/sub", "top"), deployer2.undeployed);
+      assertEquals(topsub, deployer2.deployed);
+      assertEquals(topsub, deployer2.undeployed);
    }
 
    public void testSubDeploymentClassLoaderSpecifiedOtherDomain() throws Exception
@@ -164,7 +166,7 @@ public class SubDeploymentMockClassLoaderUnitTestCase extends ClassLoaderDepende
       DeploymentUnit unit = assertDeploy(deployer, deployment);
       assertDomain("TestDomain");
       
-      assertEquals(Arrays.asList("top", "top/sub"), deployer2.deployed);
+      assertEquals(topsub, deployer2.deployed);
       assertEquals(NONE, deployer2.undeployed);
       
       ClassLoader cl = unit.getClassLoader();
@@ -179,8 +181,8 @@ public class SubDeploymentMockClassLoaderUnitTestCase extends ClassLoaderDepende
       assertUndeploy(deployer, deployment);
       assertNoDomain("top/sub");
 
-      assertEquals(Arrays.asList("top", "top/sub"), deployer2.deployed);
-      assertEquals(Arrays.asList("top/sub", "top"), deployer2.undeployed);
+      assertEquals(topsub, deployer2.deployed);
+      assertEquals(topsub, deployer2.undeployed);
    }
 
    public void testSubDeploymentClassLoaderSpecifiedTopLevel() throws Exception
@@ -199,7 +201,7 @@ public class SubDeploymentMockClassLoaderUnitTestCase extends ClassLoaderDepende
       
       DeploymentUnit unit = assertDeploy(deployer, deployment);
       
-      assertEquals(Arrays.asList("top", "top/sub"), deployer2.deployed);
+      assertEquals(topsub, deployer2.deployed);
       assertEquals(NONE, deployer2.undeployed);
       
       ClassLoader cl = unit.getClassLoader();
@@ -215,8 +217,8 @@ public class SubDeploymentMockClassLoaderUnitTestCase extends ClassLoaderDepende
       assertUndeploy(deployer, deployment);
       assertNoDomain("top/sub");
 
-      assertEquals(Arrays.asList("top", "top/sub"), deployer2.deployed);
-      assertEquals(Arrays.asList("top/sub", "top"), deployer2.undeployed);
+      assertEquals(topsub, deployer2.deployed);
+      assertEquals(topsub, deployer2.undeployed);
    }
 
    public void testMultipleSubDeploymentClassLoader() throws Exception
@@ -284,8 +286,8 @@ public class SubDeploymentMockClassLoaderUnitTestCase extends ClassLoaderDepende
       assertUndeploy(deployer, deployment);
       assertNoDomain("top/sub");
 
-      assertEquals(Arrays.asList("top", "top/sub"), deployer2.deployed);
-      assertEquals(Arrays.asList("top/sub", "top"), deployer2.undeployed);
+      assertEquals(topsub, deployer2.deployed);
+      assertEquals(topsub, deployer2.undeployed);
    }
 
    public void testMultipleSubDeploymentClassLoaderSpecifiedDomain() throws Exception

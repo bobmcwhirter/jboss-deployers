@@ -22,7 +22,10 @@
 package org.jboss.test.deployers.classloading.test;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 import org.jboss.classloading.spi.dependency.LifeCycle;
 import org.jboss.classloading.spi.dependency.Module;
@@ -40,9 +43,6 @@ import org.jboss.test.deployers.classloading.support.MockDeployer;
 import org.jboss.test.deployers.classloading.support.MockDeployerImpl;
 import org.jboss.test.deployers.classloading.support.a.A;
 import org.jboss.test.deployers.classloading.support.b.B;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
 /**
  * ClassLoadingLifeCycleUnitTestCase
@@ -776,26 +776,26 @@ public class ClassLoadingLifeCycleUnitTestCase extends ClassLoaderDependenciesTe
       deployer3.clear();
    }
    
-   protected void assertDeployed(List<String> expected)
+   protected void assertDeployed(Set<String> expected)
    {
       assertDeployed(expected, deployer1);
       assertDeployed(expected, deployer2);
       assertDeployed(expected, deployer3);
    }
    
-   protected void assertDeployed(List<String> expected, MockDeployer deployer)
+   protected void assertDeployed(Set<String> expected, MockDeployer deployer)
    {
       assertEquals(deployer.toString(), expected, deployer.getDeployed());
    }
    
-   protected void assertUndeployed(List<String> expected)
+   protected void assertUndeployed(Set<String> expected)
    {
       assertUndeployed(expected, deployer1);
       assertUndeployed(expected, deployer2);
       assertUndeployed(expected, deployer3);
    }
    
-   protected void assertUndeployed(List<String> expected, MockDeployer deployer)
+   protected void assertUndeployed(Set<String> expected, MockDeployer deployer)
    {
       assertEquals(deployer.toString(), expected, deployer.getUnDeployed());
    }

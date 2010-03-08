@@ -21,8 +21,8 @@
 */
 package org.jboss.test.deployers.classloading.support;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.jboss.classloading.spi.dependency.policy.ClassLoaderPolicyModule;
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
@@ -38,8 +38,8 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
  */
 public class MockClassLoaderDescribeDeployer extends AbstractClassLoaderDescribeDeployer implements MockDeployer
 {
-   public List<String> deployed = new ArrayList<String>();
-   public List<String> undeployed = new ArrayList<String>();
+   public Set<String> deployed = new HashSet<String>();
+   public Set<String> undeployed = new HashSet<String>();
 
    protected ClassLoaderPolicyModule createModule(DeploymentUnit unit, ClassLoadingMetaData metaData) throws DeploymentException
    {
@@ -64,12 +64,12 @@ public class MockClassLoaderDescribeDeployer extends AbstractClassLoaderDescribe
       undeployed.clear();
    }
 
-   public List<String> getDeployed()
+   public Set<String> getDeployed()
    {
       return deployed;
    }
 
-   public List<String> getUnDeployed()
+   public Set<String> getUnDeployed()
    {
       return undeployed;
    }

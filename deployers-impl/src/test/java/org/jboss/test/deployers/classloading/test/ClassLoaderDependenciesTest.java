@@ -21,9 +21,9 @@
 */
 package org.jboss.test.deployers.classloading.test;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.jboss.classloader.plugins.system.DefaultClassLoaderSystem;
 import org.jboss.classloader.spi.ClassLoaderDomain;
@@ -31,7 +31,12 @@ import org.jboss.classloader.spi.ClassLoaderSystem;
 import org.jboss.classloader.spi.ParentPolicy;
 import org.jboss.classloading.spi.dependency.ClassLoading;
 import org.jboss.classloading.spi.dependency.policy.mock.MockClassLoadingMetaData;
-import org.jboss.classloading.spi.metadata.*;
+import org.jboss.classloading.spi.metadata.CapabilitiesMetaData;
+import org.jboss.classloading.spi.metadata.Capability;
+import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
+import org.jboss.classloading.spi.metadata.ClassLoadingMetaDataFactory;
+import org.jboss.classloading.spi.metadata.Requirement;
+import org.jboss.classloading.spi.metadata.RequirementsMetaData;
 import org.jboss.classloading.spi.version.Version;
 import org.jboss.classloading.spi.version.VersionRange;
 import org.jboss.deployers.client.spi.DeployerClient;
@@ -60,17 +65,17 @@ public abstract class ClassLoaderDependenciesTest extends AbstractDeployerTest
    public static final String NameA = "A";
    public static final String NameB = "B";
 
-   public static final List<String> NONE = Collections.emptyList();
-   public static final List<String> A = makeList(NameA);
-   public static final List<String> B = makeList(NameB);
-   public static final List<String> AB = makeList(NameA, NameB);
-   public static final List<String> BA = makeList(NameB, NameA);
-   public static final List<String> BAA = makeList(NameB, NameA, NameA);
-   public static final List<String> BABA = makeList(NameB, NameA, NameB, NameA);
+   public static final Set<String> NONE = Collections.emptySet();
+   public static final Set<String> A = makeSet(NameA);
+   public static final Set<String> B = makeSet(NameB);
+   public static final Set<String> AB = makeSet(NameA, NameB);
+   public static final Set<String> BA = makeSet(NameB, NameA);
+   public static final Set<String> BAA = makeSet(NameB, NameA, NameA);
+   public static final Set<String> BABA = makeSet(NameB, NameA, NameB, NameA);
 
-   protected static <T> List<T> makeList(T... objects)
+   protected static <T> Set<T> makeSet(T... objects)
    {
-      List<T> result = new ArrayList<T>();
+      Set<T> result = new HashSet<T>();
       for (T object : objects)
          result.add(object);
       return result;

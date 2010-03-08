@@ -21,7 +21,7 @@
 */
 package org.jboss.test.deployers.classloading.support;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * MockDeployer.
@@ -31,7 +31,7 @@ import java.util.List;
  */
 public interface MockDeployer
 {
-   List<String> getDeployed();
-   List<String> getUnDeployed();
+   Set<String> getDeployed();
+   Set<String> getUnDeployed();
    void clear();
 }
