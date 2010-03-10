@@ -26,11 +26,12 @@ import java.util.Map;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
-import javassist.scopedpool.ScopedClassPoolRepository;
 
+import org.jboss.classpool.scoped.ScopedClassPoolRepository;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.reflect.plugins.javassist.JavassistTypeInfoFactory;
 import org.jboss.reflect.spi.TypeInfoFactory;
+import org.jboss.test.deployers.vfs.reflect.support.JavassistTestDelegate;
 import org.jboss.test.deployers.vfs.reflect.support.jar.PlainJavaBean;
 import org.jboss.test.deployers.vfs.reflect.support.web.AnyServlet;
 import org.jboss.vfs.VirtualFile;
@@ -50,6 +51,11 @@ public abstract class ClassPoolTest extends ReflectTest
    protected ClassPoolTest(String name)
    {
       super(name);
+   }
+   
+   public static JavassistTestDelegate getDelegate(Class<?> clazz) throws Exception
+   {
+      return new JavassistTestDelegate(clazz);
    }
 
    @Override

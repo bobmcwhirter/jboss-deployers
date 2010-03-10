@@ -22,8 +22,8 @@
 
   <properties>
     <version.jboss.vfs>3.0.0.CR3</version.jboss.vfs>
-    <version.jboss.reflect>2.2.0.Alpha2</version.jboss.reflect>
-    <version.jboss.classpool>1.0.0.Alpha2</version.jboss.classpool>
+    <version.jboss.reflect>2.2.0.Alpha4</version.jboss.reflect>
+    <version.jboss.classpool>1.0.0.Alpha4</version.jboss.classpool>
     <version.jboss.man>2.1.1.SP1</version.jboss.man>
     <version.jboss.mdr>2.2.0.Alpha1</version.jboss.mdr>
     <version.jboss.kernel>2.2.0-SNAPSHOT</version.jboss.kernel>

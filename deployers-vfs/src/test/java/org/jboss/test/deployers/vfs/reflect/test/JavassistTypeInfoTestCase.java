@@ -25,6 +25,7 @@ import junit.framework.Test;
 
 import org.jboss.reflect.plugins.javassist.JavassistTypeInfoFactory;
 import org.jboss.reflect.spi.TypeInfoFactory;
+import org.jboss.test.deployers.vfs.reflect.support.JavassistTestDelegate;
 
 /**
  * Javassist test case for TypeInfo.
@@ -38,6 +39,11 @@ public class JavassistTypeInfoTestCase extends TypeInfoTest
    public JavassistTypeInfoTestCase(String name)
    {
       super(name);
+   }
+
+   public static JavassistTestDelegate getDelegate(Class<?> clazz) throws Exception
+   {
+      return new JavassistTestDelegate(clazz);
    }
 
    public static Test suite()

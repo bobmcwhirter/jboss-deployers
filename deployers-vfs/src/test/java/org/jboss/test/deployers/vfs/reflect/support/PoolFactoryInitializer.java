@@ -21,7 +21,7 @@
  */
 package org.jboss.test.deployers.vfs.reflect.support;
 
-import javassist.scopedpool.ScopedClassPoolRepository;
+import org.jboss.classpool.scoped.ScopedClassPoolRepository;
 
 import org.jboss.reflect.plugins.javassist.JavassistTypeInfoFactoryImpl;
 import org.jboss.reflect.plugins.javassist.classpool.ClassPoolFactory;
