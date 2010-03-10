@@ -28,14 +28,12 @@ import java.util.List;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.vfs.spi.deployer.JAXPDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
-import org.jboss.system.metadata.ServiceDeployment;
-import org.jboss.system.metadata.ServiceDeploymentClassPath;
-import org.jboss.system.metadata.ServiceDeploymentParser;
-import org.jboss.system.metadata.ServiceMetaData;
-import org.jboss.system.metadata.ServiceMetaDataParser;
+import org.jboss.system.metadata.*;
 import org.jboss.util.xml.DOMWriter;
 import org.jboss.vfs.VFS;
 import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.VirtualFileFilter;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -57,7 +55,7 @@ public class SARDeployer extends JAXPDeployer<ServiceDeployment>
 {
    /** The default codebase root */
    private URL defaultCodeBaseRoot;
-   
+
    /**
     * Create a new SARDeployer.
     * 
@@ -145,7 +143,7 @@ public class SARDeployer extends JAXPDeployer<ServiceDeployment>
     */
    private void processXMLClasspath(VFSDeploymentUnit unit, List<ServiceDeploymentClassPath> classpaths) throws Exception
    {
-      ArrayList<VirtualFile> classpath = new ArrayList<VirtualFile>();
+      List<VirtualFile> classpath = new ArrayList<VirtualFile>();
 
       for (ServiceDeploymentClassPath path : classpaths)
       {
@@ -172,7 +170,7 @@ public class SARDeployer extends JAXPDeployer<ServiceDeployment>
          }
          else
          {
-            SARArchiveFilter filter = new SARArchiveFilter(archives);
+            VirtualFileFilter filter = new SARArchiveFilter(archives);
             List<VirtualFile> archiveFiles = codebaseFile.getChildren(filter);
             classpath.addAll(archiveFiles);
          }
