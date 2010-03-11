@@ -31,6 +31,7 @@ import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.vfs.spi.deployer.AbstractOptionalVFSRealDeployer;
+import org.jboss.deployers.vfs.spi.deployer.ArchiveMatcher;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.deployers.vfs.spi.structure.helpers.ClassPathVisitor;
 import org.jboss.vfs.VirtualFile;
@@ -40,6 +41,7 @@ import org.jboss.vfs.util.automount.Automounter;
  * VFSClassLoaderClassPathDeployer.
  * 
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public class VFSClassLoaderClassPathDeployer extends AbstractOptionalVFSRealDeployer<ClassLoadingMetaData>
@@ -49,7 +51,10 @@ public class VFSClassLoaderClassPathDeployer extends AbstractOptionalVFSRealDepl
 
    /** The vfs excluded */
    public static String VFS_EXCLUDES = "org.jboss.deployers.vfs.plugins.classloader.VFS_EXCLUDES";  
-   
+
+   /** The archive matcher */
+   private ArchiveMatcher archiveMatcher;
+
    /**
     * Create a new VFSClassLoaderClassPathDeployer.
     */
@@ -104,7 +109,7 @@ public class VFSClassLoaderClassPathDeployer extends AbstractOptionalVFSRealDepl
       {
          for (VirtualFile file : rawClassPath)
          {
-            if (vfsClassPath.contains(file) == false)
+            if ((archiveMatcher == null || archiveMatcher.hasArchiveSuffix(file)) && vfsClassPath.contains(file) == false)
             {
                if (canSeeParent == false || (canSeeParent && parentClassPath.contains(file) == false)) 
                {
@@ -114,7 +119,7 @@ public class VFSClassLoaderClassPathDeployer extends AbstractOptionalVFSRealDepl
                   }
                   catch (IOException e)
                   {
-                     DeploymentException.rethrowAsDeploymentException("Failed to mount " + file, e);
+                     throw DeploymentException.rethrowAsDeploymentException("Failed to mount " + file, e);
                   }
                   vfsClassPath.add(file);
                }
@@ -144,5 +149,15 @@ public class VFSClassLoaderClassPathDeployer extends AbstractOptionalVFSRealDepl
    {
       unit.removeAttachment(VFS_CLASS_PATH);
       unit.removeAttachment(VFS_EXCLUDES);
+   }
+
+   /**
+    * Set the archive matcher.
+    *
+    * @param archiveMatcher the archive matcher
+    */
+   public void setArchiveMatcher(ArchiveMatcher archiveMatcher)
+   {
+      this.archiveMatcher = archiveMatcher;
    }
 }

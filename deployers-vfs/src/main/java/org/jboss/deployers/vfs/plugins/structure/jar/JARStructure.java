@@ -21,9 +21,9 @@
 */
 package org.jboss.deployers.vfs.plugins.structure.jar;
 
-import java.util.Set;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.jboss.beans.metadata.api.annotations.Install;
 import org.jboss.beans.metadata.api.annotations.Uninstall;
@@ -31,6 +31,7 @@ import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.matchers.JarExtensionProvider;
 import org.jboss.deployers.spi.structure.ContextInfo;
 import org.jboss.deployers.vfs.plugins.structure.AbstractVFSArchiveStructureDeployer;
+import org.jboss.deployers.vfs.spi.deployer.ArchiveMatcher;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
 import org.jboss.vfs.VirtualFile;
 
@@ -41,7 +42,7 @@ import org.jboss.vfs.VirtualFile;
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
-public class JARStructure extends AbstractVFSArchiveStructureDeployer
+public class JARStructure extends AbstractVFSArchiveStructureDeployer implements ArchiveMatcher
 {
    private final Set<String> suffixes = Collections.synchronizedSet(new HashSet<String>());
 
@@ -116,12 +117,28 @@ public class JARStructure extends AbstractVFSArchiveStructureDeployer
          suffixes.remove(extension);
    }
 
+   public boolean isArchive(VirtualFile file)
+   {
+      return shouldMount(file);
+   }
+
+   public boolean hasArchiveSuffix(VirtualFile file)
+   {
+      return file != null && hasArchiveSuffix(file.getName());
+   }
+
+   public boolean hasArchiveSuffix(String fileName)
+   {
+      return hasValidSuffix(fileName);
+   }
+
    protected boolean hasValidSuffix(String name)
    {
-      int idx = name.lastIndexOf('.');
-      if (idx == -1)
+      if (name == null)
          return false;
-      return suffixes.contains(name.substring(idx).toLowerCase());
+
+      int idx = name.lastIndexOf('.');
+      return (idx != -1) && suffixes.contains(name.substring(idx).toLowerCase());
    }
 
    public boolean doDetermineStructure(StructureContext structureContext) throws DeploymentException
