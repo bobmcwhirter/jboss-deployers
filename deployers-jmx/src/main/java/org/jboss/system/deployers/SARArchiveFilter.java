@@ -24,6 +24,7 @@ package org.jboss.system.deployers;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 import org.jboss.vfs.VirtualFile;
 import org.jboss.vfs.VirtualFileFilter;
@@ -32,15 +33,22 @@ import org.jboss.vfs.VirtualFileFilter;
  * SARArchiveFilter.
  * 
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision$
  */
 public class SARArchiveFilter implements VirtualFileFilter
 {
+   /** The regexp= marker const */
+   private static final String REGEXP = "regexp=";
+
+   /** The regexp pattern */
+   private Pattern regexp;
+
    /** The patterns */
-   private final Set<String> patterns;
+   private Set<String> patterns;
    
    /** Whether there is the accept all wildcard */
-   private final boolean allowAll;
+   private boolean allowAll = false;
    
    /**
     * Create a new SARArchiveFilter.
@@ -53,20 +61,32 @@ public class SARArchiveFilter implements VirtualFileFilter
       if (patternsString == null)
          throw new IllegalArgumentException("Null patternsString");
 
-      StringTokenizer tokens = new StringTokenizer (patternsString, ",");
-      patterns = new HashSet<String>(tokens.countTokens());
-      for (int i=0; tokens.hasMoreTokens (); ++i)
+      if (patternsString.startsWith(REGEXP))
       {
-         String token = tokens.nextToken();
-         patterns.add(token.trim());
+         regexp = Pattern.compile(patternsString.substring(REGEXP.length()));
       }
-      allowAll = patterns.contains("*");
+      else
+      {
+         StringTokenizer tokens = new StringTokenizer (patternsString, ",");
+         patterns = new HashSet<String>(tokens.countTokens());
+         while (tokens.hasMoreTokens ())
+         {
+            String token = tokens.nextToken();
+            patterns.add(token.trim());
+         }
+         allowAll = patterns.contains("*");
+      }
    }
    
    public boolean accepts(VirtualFile file)
    {
       if (allowAll)
          return true;
-      return patterns.contains(file.getName());
+
+      String fileName = file.getName();
+      if (regexp != null)
+         return regexp.matcher(fileName).matches();
+      else
+         return patterns.contains(file.getName());
    }
 }
