@@ -87,6 +87,6 @@ public class SARArchiveFilter implements VirtualFileFilter
       if (regexp != null)
          return regexp.matcher(fileName).matches();
       else
-         return patterns.contains(file.getName());
+         return patterns.contains(fileName);
    }
 }
