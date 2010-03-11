@@ -21,11 +21,11 @@
  */
 package org.jboss.test.deployers.vfs.reflect.test;
 
-import junit.framework.Test;
-
 import org.jboss.reflect.plugins.javassist.JavassistTypeInfoFactory;
 import org.jboss.reflect.spi.TypeInfoFactory;
-import org.jboss.test.deployers.vfs.reflect.support.JavassistTestDelegate;
+import org.jboss.test.deployers.vfs.reflect.support.ClassPoolTestDelegate;
+
+import junit.framework.Test;
 
 /**
  * Javassist test case for TypeInfo.
@@ -41,9 +41,10 @@ public class JavassistTypeInfoTestCase extends TypeInfoTest
       super(name);
    }
 
-   public static JavassistTestDelegate getDelegate(Class<?> clazz) throws Exception
+   // we need custom classpool handling
+   public static ClassPoolTestDelegate getDelegate(Class<?> clazz) throws Exception
    {
-      return new JavassistTestDelegate(clazz);
+      return new ClassPoolTestDelegate(clazz);
    }
 
    public static Test suite()

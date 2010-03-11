@@ -21,10 +21,10 @@
 */
 package org.jboss.test.deployers;
 
-import java.net.URL;
-
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+
+import java.net.URL;
 
 import org.jboss.classloader.plugins.ClassLoaderUtils;
 import org.jboss.classloader.plugins.filter.PatternClassFilter;
@@ -46,6 +46,7 @@ import org.jboss.xb.binding.sunday.unmarshalling.SingletonSchemaResolverFactory;
  * BootstrapDeployersTestDelegate.
  * 
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public class BootstrapDeployersTestDelegate extends MicrocontainerTestDelegate
@@ -62,43 +63,27 @@ public class BootstrapDeployersTestDelegate extends MicrocontainerTestDelegate
       resolver.mapURIToClass("urn:jboss:classloader:1.0", VFSClassLoaderFactory10.class);
       resolver.mapURIToClass("urn:jboss:classloading:1.0", ClassLoadingMetaData10.class);
 
-      // TODO add a negating class filter to jboss-classloader
-      ClassFilter classFilter = new ClassFilter()
-      {
-         /** The serialVersionUID */
-         private static final long serialVersionUID = 1L;
-         
-         String packageName = BootstrapDeployersTest.class.getPackage().getName();
-         String packagePath = ClassLoaderUtils.packageNameToPath(BootstrapDeployersTest.class.getName());
-         ClassFilter patternFilter = new PatternClassFilter(
-               new String[] { packageName + "\\..+" }, 
-               new String[] { packagePath + "/.+" },
-               new String[] { packageName, packageName + "\\..*"}
-         ); 
-         public boolean matchesClassName(String className)
-         {
-            return patternFilter.matchesClassName(className) == false;
-         }
-
-         public boolean matchesPackageName(String packageName)
-         {
-            return patternFilter.matchesPackageName(packageName) == false;
-         }
-
-         public boolean matchesResourcePath(String resourcePath)
-         {
-            return patternFilter.matchesResourcePath(resourcePath) == false;
-         }
-         
-         public String toString()
-         {
-            return "EXCLUDE " + patternFilter;
-         }
-      };
-      
+      ClassFilter classFilter = createNegatingClassFilter();
       parentPolicy = new ParentPolicy(classFilter, ClassFilterUtils.NOTHING, "BEFORE");
    }
-   
+
+   protected static ClassFilter createNegatingClassFilter()
+   {
+      return createNegatingClassFilter(BootstrapDeployersTest.class);
+   }
+
+   protected static ClassFilter createNegatingClassFilter(Class<?> clazz)
+   {
+      String packageName = clazz.getPackage().getName();
+      String packagePath = ClassLoaderUtils.packageNameToPath(clazz.getName());
+      ClassFilter patternFilter = new PatternClassFilter(
+            new String[] { packageName + "\\..+" },
+            new String[] { packagePath + "/.+" },
+            new String[] { packageName, packageName + "\\..*"}
+      );
+      return ClassFilterUtils.negatingClassFilter(patternFilter);
+   }
+
    public BootstrapDeployersTestDelegate(Class<?> clazz) throws Exception
    {
       super(clazz);
