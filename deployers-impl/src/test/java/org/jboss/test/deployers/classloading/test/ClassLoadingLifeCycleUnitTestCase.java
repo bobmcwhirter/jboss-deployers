@@ -24,18 +24,15 @@ package org.jboss.test.deployers.classloading.test;
 import java.util.Collections;
 import java.util.Set;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import org.jboss.classloading.spi.dependency.LifeCycle;
 import org.jboss.classloading.spi.dependency.Module;
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
 import org.jboss.dependency.spi.Controller;
 import org.jboss.deployers.client.spi.DeployerClient;
 import org.jboss.deployers.client.spi.Deployment;
-import org.jboss.deployers.plugins.classloading.DeploymentMetaData;
 import org.jboss.deployers.plugins.classloading.DeploymentValidationDeployer;
-import org.jboss.deployers.plugins.classloading.FilterMetaData;
+import org.jboss.deployers.spi.classloading.DeploymentMetaData;
+import org.jboss.deployers.spi.classloading.FilterMetaData;
 import org.jboss.deployers.spi.deployer.Deployer;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
@@ -43,6 +40,9 @@ import org.jboss.test.deployers.classloading.support.MockDeployer;
 import org.jboss.test.deployers.classloading.support.MockDeployerImpl;
 import org.jboss.test.deployers.classloading.support.a.A;
 import org.jboss.test.deployers.classloading.support.b.B;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 /**
  * ClassLoadingLifeCycleUnitTestCase

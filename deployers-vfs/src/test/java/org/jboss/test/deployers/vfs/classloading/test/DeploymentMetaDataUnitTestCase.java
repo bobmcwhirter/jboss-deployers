@@ -23,8 +23,8 @@ package org.jboss.test.deployers.vfs.classloading.test;
 
 import java.util.Set;
 
-import org.jboss.deployers.plugins.classloading.DeploymentMetaData;
-import org.jboss.deployers.plugins.classloading.FilterMetaData;
+import org.jboss.deployers.spi.classloading.DeploymentMetaData;
+import org.jboss.deployers.spi.classloading.FilterMetaData;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.test.deployers.BootstrapDeployersTest;

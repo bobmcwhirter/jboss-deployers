@@ -25,6 +25,7 @@ import org.jboss.dependency.spi.Controller;
 import org.jboss.dependency.spi.ControllerState;
 import org.jboss.dependency.spi.ControllerStateModel;
 import org.jboss.deployers.spi.DeploymentException;
+import org.jboss.deployers.spi.classloading.DeploymentMetaData;
 import org.jboss.deployers.spi.deployer.DeploymentStage;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.spi.deployer.helpers.AbstractSimpleRealDeployer;

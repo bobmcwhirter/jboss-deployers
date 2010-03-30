@@ -107,7 +107,7 @@
    </bean>
    <bean name="DeploymentMetaDataParser" class="org.jboss.deployers.vfs.spi.deployer.SchemaResolverDeployer">
       <constructor>
-         <parameter>org.jboss.deployers.plugins.classloading.DeploymentMetaData</parameter>
+         <parameter>org.jboss.deployers.spi.classloading.DeploymentMetaData</parameter>
       </constructor>
       <property name="name">jboss-deployment.xml</property>
       <property name="registerWithJBossXB">true</property>

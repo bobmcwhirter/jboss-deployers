@@ -32,6 +32,8 @@ import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
 import org.jboss.dependency.spi.Controller;
 import org.jboss.dependency.spi.ControllerContext;
 import org.jboss.dependency.spi.ControllerState;
+import org.jboss.deployers.spi.classloading.DeploymentMetaData;
+import org.jboss.deployers.spi.classloading.FilterMetaData;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 
