@@ -28,8 +28,8 @@ import org.jboss.classloading.spi.visitor.ResourceContext;
 import org.jboss.classloading.spi.visitor.ResourceFilter;
 import org.jboss.deployers.spi.annotations.PathMetaData;
 import org.jboss.deployers.spi.annotations.ScanningMetaData;
-import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
-import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnitFilter;
+import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.deployers.vfs.spi.structure.helpers.VFS2BaseBridgeDeploymentUnitFilter;
 import org.jboss.logging.Logger;
 
 /**
@@ -37,11 +37,11 @@ import org.jboss.logging.Logger;
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class ScanningDeploymentUnitFilter implements VFSDeploymentUnitFilter
+public class ScanningDeploymentUnitFilter extends VFS2BaseBridgeDeploymentUnitFilter
 {
    private Logger log = Logger.getLogger(getClass());
 
-   public boolean accepts(VFSDeploymentUnit unit)
+   protected boolean doAccepts(DeploymentUnit unit)
    {
       ScanningMetaData smd = unit.getAttachment(ScanningMetaData.class);
       if (smd != null)
