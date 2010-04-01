@@ -19,7 +19,7 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.deployers.plugins.annotations;
+package org.jboss.deployers.spi.annotations;
 
 import org.jboss.classloader.spi.filter.ClassFilter;
 

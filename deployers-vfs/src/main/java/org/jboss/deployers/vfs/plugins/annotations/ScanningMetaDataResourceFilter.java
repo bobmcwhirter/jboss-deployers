@@ -29,10 +29,10 @@ import org.jboss.classloader.spi.filter.ClassFilter;
 import org.jboss.classloader.spi.filter.PackageClassFilter;
 import org.jboss.classloading.spi.visitor.ResourceContext;
 import org.jboss.classloading.spi.visitor.ResourceFilter;
+import org.jboss.deployers.spi.annotations.FilterablePathEntry;
 import org.jboss.deployers.spi.annotations.PathEntryMetaData;
 import org.jboss.deployers.spi.annotations.PathMetaData;
 import org.jboss.deployers.spi.annotations.ScanningMetaData;
-import org.jboss.deployers.plugins.annotations.FilterablePathEntry;
 
 /**
  * ScanningMetaDataResourceFilter

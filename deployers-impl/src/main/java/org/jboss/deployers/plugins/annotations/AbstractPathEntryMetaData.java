@@ -21,13 +21,15 @@
 */
 package org.jboss.deployers.plugins.annotations;
 
-import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import java.io.Serializable;
+
 import org.jboss.classloader.spi.filter.ClassFilter;
 import org.jboss.classloader.spi.filter.PackageClassFilter;
+import org.jboss.deployers.spi.annotations.FilterablePathEntry;
 import org.jboss.deployers.spi.annotations.PathEntryMetaData;
 
 /**
