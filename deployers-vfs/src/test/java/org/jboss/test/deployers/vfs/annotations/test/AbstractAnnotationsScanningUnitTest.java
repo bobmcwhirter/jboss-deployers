@@ -66,9 +66,10 @@ public abstract class AbstractAnnotationsScanningUnitTest extends BootstrapDeplo
       enableTrace("org.jboss.deployers");
 
       DeploymentUnit unit = assertDeploy(ear);
-      assertEar(unit);
       try
       {
+         assertEar(unit);
+         
          AnnotationRepository env = unit.getAttachment(AnnotationRepository.class);
          assertNotNull(env);
          Set<Element<Annotation, Class<?>>> annotations = env.classIsAnnotatedWith("org.jboss.test.deployers.vfs.annotations.support.MarkedAnnotation");
