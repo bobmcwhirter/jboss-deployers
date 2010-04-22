@@ -24,6 +24,7 @@ package org.jboss.test.deployers.vfs.reflect.support;
 import org.jboss.classloader.spi.filter.ClassFilter;
 import org.jboss.classpool.base.IsLocalResourcePluginFactoryRegistry;
 import org.jboss.classpool.spi.AbstractClassPoolFactory;
+import org.jboss.classpool.spi.SystemClassPool;
 import org.jboss.test.deployers.BootstrapDeployersTestDelegate;
 import org.jboss.util.loading.Translatable;
 
@@ -57,5 +58,12 @@ public class ClassPoolTestDelegate extends BootstrapDeployersTestDelegate
    {
       super.deploy();
       AbstractClassPoolFactory.setSystemClassPool(defaultClassPool);
+   }
+
+   @Override
+   protected void undeploy()
+   {
+      AbstractClassPoolFactory.setSystemClassPool(SystemClassPool.getInstance());
+      super.undeploy();      
    }
 }

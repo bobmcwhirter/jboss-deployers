@@ -21,6 +21,8 @@
 */
 package org.jboss.test.deployers;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.CodeSource;
@@ -28,10 +30,7 @@ import java.security.ProtectionDomain;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.io.Closeable;
-import java.io.IOException;
 
-import junit.framework.AssertionFailedError;
 import org.jboss.classloader.plugins.ClassLoaderUtils;
 import org.jboss.classloader.plugins.jdk.AbstractJDKChecker;
 import org.jboss.dependency.spi.ControllerContext;
@@ -49,10 +48,13 @@ import org.jboss.vfs.VFS;
 import org.jboss.vfs.VirtualFile;
 import org.jboss.vfs.VirtualFileAssembly;
 
+import junit.framework.AssertionFailedError;
+
 /**
  * BootstrapDeployersTest.
  * 
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public abstract class BootstrapDeployersTest extends MicrocontainerTest
@@ -349,9 +351,16 @@ public abstract class BootstrapDeployersTest extends MicrocontainerTest
    
    protected void tearDown() throws Exception 
    {
-      for (Closeable handle : assemblyHandles.values())
+      try
       {
-         handle.close();
+         for (Closeable handle : assemblyHandles.values())
+         {
+            handle.close();
+         }
+      }
+      finally
+      {
+         super.tearDown();
       }
    }
 }
