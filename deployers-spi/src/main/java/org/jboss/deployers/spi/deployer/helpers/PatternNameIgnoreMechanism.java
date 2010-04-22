@@ -21,8 +21,8 @@
  */
 package org.jboss.deployers.spi.deployer.helpers;
 
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jboss.deployers.spi.deployer.matchers.NameIgnoreMechanism;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
@@ -45,9 +45,19 @@ public class PatternNameIgnoreMechanism implements NameIgnoreMechanism
       ignored = Pattern.compile(regexp);
    }
 
-   public boolean ignore(DeploymentUnit unit, String name)
+   public boolean ignoreName(DeploymentUnit unit, String name)
    {
-      Matcher matcher = ignored.matcher(name);
+      return ignore(unit, name);
+   }
+
+   public boolean ignorePath(DeploymentUnit unit, String path)
+   {
+      return ignore(unit, path);
+   }
+
+   protected boolean ignore(DeploymentUnit unit, String input)
+   {
+      Matcher matcher = ignored.matcher(input);
       return (match) ? matcher.matches() : matcher.find();
    }
 

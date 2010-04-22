@@ -380,7 +380,7 @@ public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsi
    protected boolean ignoreName(DeploymentUnit unit, String name)
    {
       NameIgnoreMechanism mechanism = unit.getAttachment(NameIgnoreMechanism.class);
-      return mechanism != null && mechanism.ignore(unit, name);
+      return mechanism != null && mechanism.ignoreName(unit, name);
    }
 
    /**

@@ -1,0 +1,2 @@
+META-INF/jboss-ignore.txt
+META-INF/fst.txt

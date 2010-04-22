@@ -22,18 +22,19 @@
 package org.jboss.test.deployers.vfs.matchers.test;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import junit.framework.Test;
 import org.jboss.deployers.client.spi.DeployerClient;
 import org.jboss.deployers.client.spi.Deployment;
-import org.jboss.deployers.spi.deployer.helpers.CollectionNameIgnoreMechanism;
 import org.jboss.deployers.vfs.plugins.structure.jar.JARStructure;
+import org.jboss.deployers.vfs.spi.deployer.AbstractIgnoreFilesDeployer;
 import org.jboss.test.deployers.BaseDeployersVFSTest;
 import org.jboss.test.deployers.vfs.matchers.support.FeedbackDeployer;
 import org.jboss.test.deployers.vfs.matchers.support.NIMDeployer;
+import org.jboss.test.deployers.vfs.matchers.support.SingleNIM;
+
+import junit.framework.Test;
 
 /**
  * Name ignore mechanism tests.
@@ -54,7 +55,7 @@ public class NameIgnoreMechanismTestCase extends BaseDeployersVFSTest
 
    protected void testNameIgnoreMechanism(FeedbackDeployer fbd, int size) throws Throwable
    {
-      NIMDeployer nimd = new NIMDeployer(new CollectionNameIgnoreMechanism(Collections.singleton("fst.txt")));
+      NIMDeployer nimd = new NIMDeployer(new SingleNIM("fst.txt"));
 
       DeployerClient main = createMainDeployer(fbd, nimd);
       addStructureDeployer(main, new JARStructure());
@@ -72,7 +73,7 @@ public class NameIgnoreMechanismTestCase extends BaseDeployersVFSTest
       fbd1.setName("empty.txt");
       FeedbackDeployer fbd2 = new FeedbackDeployer();
       fbd2.setName("fst.txt");
-      NIMDeployer nimd = new NIMDeployer(new CollectionNameIgnoreMechanism(Collections.singleton("fst.txt")));
+      NIMDeployer nimd = new NIMDeployer(new SingleNIM("fst.txt"));
 
       DeployerClient main = createMainDeployer(fbd1, fbd2, nimd);
       addStructureDeployer(main, new JARStructure());
@@ -99,7 +100,7 @@ public class NameIgnoreMechanismTestCase extends BaseDeployersVFSTest
       fbd.setSuffix(".txt");
       fbd.setAllowMultipleFiles(true);
 
-      testNameIgnoreMechanism(fbd, 2);
+      testNameIgnoreMechanism(fbd, 3);
    }
 
    public void testNamesWithSuffix() throws Throwable
@@ -110,5 +111,23 @@ public class NameIgnoreMechanismTestCase extends BaseDeployersVFSTest
       fbd.setSuffix(".tmp");
 
       testNameIgnoreMechanism(fbd, 3);
+   }
+
+   public void testRealNIMDeployer() throws Throwable
+   {
+      FeedbackDeployer fbd = new FeedbackDeployer();
+      fbd.setSuffix(".txt");
+      fbd.setAllowMultipleFiles(true);
+
+      AbstractIgnoreFilesDeployer nimd = new AbstractIgnoreFilesDeployer();
+
+      DeployerClient main = createMainDeployer(fbd, nimd);
+      addStructureDeployer(main, new JARStructure());
+
+      Deployment deployment = createDeployment("/matchers", "ignore");
+      main.deploy(deployment);
+
+      assertEquals(2, fbd.getFiles().size());
+      assertFalse(fbd.getFiles().contains("fst.txt"));
    }
 }

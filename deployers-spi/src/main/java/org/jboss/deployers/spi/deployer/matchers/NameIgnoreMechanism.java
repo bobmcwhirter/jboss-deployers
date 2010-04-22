@@ -37,5 +37,14 @@ public interface NameIgnoreMechanism
     * @param name the name to check
     * @return true if we should ignore this name, false otherwise
     */
-   boolean ignore(DeploymentUnit unit, String name);
+   boolean ignoreName(DeploymentUnit unit, String name);
+
+   /**
+    * Do we ignore this relative path.
+    *
+    * @param unit the deployment unit
+    * @param path the relative path to check
+    * @return true if we should ignore this path, false otherwise
+    */
+   boolean ignorePath(DeploymentUnit unit, String path);
 }

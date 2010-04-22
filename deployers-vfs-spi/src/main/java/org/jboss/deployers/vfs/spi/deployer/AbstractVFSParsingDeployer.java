@@ -23,15 +23,11 @@ package org.jboss.deployers.vfs.spi.deployer;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.HashMap;
+import java.util.*;
 
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.helpers.AbstractParsingDeployerWithOutput;
+import org.jboss.deployers.spi.deployer.matchers.NameIgnoreMechanism;
 import org.jboss.deployers.spi.structure.MetaDataTypeFilter;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
@@ -208,6 +204,25 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
       return altMappingsMap != null ? altMappingsMap.get(fileName) : null;
    }
 
+   /**
+    * Ignore file.
+    *
+    * @param unit the unit
+    * @param file the file
+    * @return true if we should ignore the file, false otherwise
+    */
+   protected boolean ignoreFile(VFSDeploymentUnit unit, VirtualFile file)
+   {
+      NameIgnoreMechanism mechanism = unit.getAttachment(NameIgnoreMechanism.class);
+      if (mechanism != null)
+      {
+         VirtualFile root = unit.getRoot();
+         String path = file.getPathNameRelativeTo(root);
+         return mechanism.ignorePath(unit, path);
+      }
+      return false;
+   }
+
    @Override
    protected T parse(DeploymentUnit unit, String name, T root) throws Exception
    {
@@ -218,7 +233,7 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
       VFSDeploymentUnit vfsDeploymentUnit = (VFSDeploymentUnit) unit;
 
       VirtualFile file = getMetadataFile(vfsDeploymentUnit, getOutput(), name, true);
-      return (file != null) ? parseAndInit(vfsDeploymentUnit, file, root) : null;
+      return (file != null && ignoreFile(vfsDeploymentUnit, file) == false) ? parseAndInit(vfsDeploymentUnit, file, root) : null;
    }
 
    protected T parse(DeploymentUnit unit, Set<String> names, T root) throws Exception
@@ -242,9 +257,16 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
          {
             VirtualFile file = getMetadataFile(vfsDeploymentUnit, matchFileToClass(unit, name), name, true);
             if (file != null)
-               files.add(file);
+            {
+               if (ignoreFile(vfsDeploymentUnit, file))
+                  ignoredFiles.add(file.getName());
+               else
+                  files.add(file);
+            }
             else
+            {
                missingFiles.add(name);
+            }
          }
       }
 
@@ -309,7 +331,7 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
     */
    protected T parseAndInit(VFSDeploymentUnit unit, VirtualFile file, T root, boolean checkIgnore) throws Exception
    {
-      if (checkIgnore && ignoreName(unit, file.getName()))
+      if (checkIgnore && ignoreFile(unit, file))
          return null;
 
       T result = parse(unit, file, root);
@@ -343,9 +365,21 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
             {
                List<VirtualFile> matched = vfsDeploymentUnit.getMetaDataFiles(name, suffix, getMetaDataTypeFilter(unit));
                if (matched != null && matched.isEmpty() == false)
-                  files.addAll(matched);
+               {
+                  for (VirtualFile m : matched)
+                  {
+                     if (ignoreFile(vfsDeploymentUnit, m))
+                        ignoredFiles.add(m.getName());
+                     else
+                        files.add(m);
+                  }
+               }
                else
                   missingFiles.add(name);
+            }
+            else if (ignoreFile(vfsDeploymentUnit, file))
+            {
+               ignoredFiles.add(file.getName());
             }
             else
             {
@@ -392,7 +426,7 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
 
       for (VirtualFile file : files)
       {
-         if (ignoreName(unit, file.getName()) == false)
+         if (ignoreFile(unit, file) == false)
          {
             T result = parse(unit, file, root);
             if (result != null)

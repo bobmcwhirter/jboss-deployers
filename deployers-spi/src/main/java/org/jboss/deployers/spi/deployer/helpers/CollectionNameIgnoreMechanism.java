@@ -27,21 +27,28 @@ import org.jboss.deployers.spi.deployer.matchers.NameIgnoreMechanism;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 
 /**
- * Ignore a collection of names.
+ * Ignore a collection of names and paths.
  *
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 public class CollectionNameIgnoreMechanism implements NameIgnoreMechanism
 {
-   private Collection<String> ignored;
+   private final Collection<String> ignoredNames;
+   private final Collection<String> ignoredPaths;
 
-   public CollectionNameIgnoreMechanism(Collection<String> ignored)
+   public CollectionNameIgnoreMechanism(Collection<String> ignoredNames, Collection<String> ignoredPaths)
    {
-      this.ignored = ignored;
+      this.ignoredNames = ignoredNames;
+      this.ignoredPaths = ignoredPaths;
    }
 
-   public boolean ignore(DeploymentUnit unit, String name)
+   public boolean ignoreName(DeploymentUnit unit, String name)
    {
-      return ignored != null && ignored.contains(name);
+      return ignoredNames != null && ignoredNames.contains(name);
+   }
+
+   public boolean ignorePath(DeploymentUnit unit, String path)
+   {
+      return ignoredPaths != null && ignoredPaths.contains(path);
    }
 }
