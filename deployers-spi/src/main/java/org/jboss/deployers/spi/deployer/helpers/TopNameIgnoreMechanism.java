@@ -31,7 +31,7 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
  */
 public class TopNameIgnoreMechanism implements NameIgnoreMechanism
 {
-   private boolean reportError;
+   private boolean reportCycle;
 
    /**
     * Get top NIM.
@@ -42,7 +42,7 @@ public class TopNameIgnoreMechanism implements NameIgnoreMechanism
    protected NameIgnoreMechanism getTop(DeploymentUnit unit)
    {
       if (unit.isTopLevel())
-         if (reportError)
+         if (reportCycle)
             throw new IllegalArgumentException("Potential cyclic usage: " + unit);
          else
             return null;
@@ -66,10 +66,10 @@ public class TopNameIgnoreMechanism implements NameIgnoreMechanism
    /**
     * Should we report error on cyclic usage.
     *
-    * @param reportError the report error flag
+    * @param reportCycle the report error flag
     */
-   public void setReportError(boolean reportError)
+   public void setReportCycle(boolean reportCycle)
    {
-      this.reportError = reportError;
+      this.reportCycle = reportCycle;
    }
 }
