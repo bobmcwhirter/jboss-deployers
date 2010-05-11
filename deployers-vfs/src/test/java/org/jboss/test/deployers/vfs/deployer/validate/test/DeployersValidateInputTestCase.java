@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.Test;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.vfs.deployer.kernel.Properties2BeansDeployer;
@@ -44,6 +43,8 @@ import org.jboss.vfs.VFS;
 import org.jboss.vfs.VirtualFile;
 import org.jboss.vfs.spi.FileSystem;
 import org.jboss.xb.binding.JBossXBException;
+
+import junit.framework.Test;
 
 /**
  * Validate deployers.
@@ -162,6 +163,11 @@ public class DeployersValidateInputTestCase extends BaseTestCase
          
          public void close() throws IOException
          {
+         }
+
+         public File getMountSource()
+         {
+            return null;
          }
       });
       

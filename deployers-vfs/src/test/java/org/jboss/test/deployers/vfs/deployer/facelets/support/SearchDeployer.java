@@ -21,9 +21,7 @@
 */
 package org.jboss.test.deployers.vfs.deployer.facelets.support;
 
-import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,6 +29,8 @@ import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.spi.deployer.helpers.AbstractDeployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.vfs.VFS;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * This deployer's purpose is to trigger
@@ -66,10 +66,16 @@ public class SearchDeployer extends AbstractDeployer
          URL[] foundUrls = Classpath.search(unit.getClassLoader(), prefix, suffix);
          if (foundUrls != null)
          {
-            urls.addAll(Arrays.asList(foundUrls));
+            Set<VirtualFile> files = new HashSet<VirtualFile>();
+            for (URL url : foundUrls)
+            {
+               VirtualFile file = VFS.getChild(url);
+               if (files.add(file))
+                  urls.add(url);
+            }
          }
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          DeploymentException.rethrowAsDeploymentException("Error doing facelets search, prefix=" + prefix + ", suffix=" + suffix, e);
       }

@@ -90,17 +90,19 @@ public abstract class BaseDeployersVFSTest extends AbstractDeployerTest
          throw new IllegalArgumentException("Null url");
       return new URL("jar:" + url + "!/").toString();
    }
+
    /**
     * Get a vfs url string from a path
     * 
-    * @param path
+    * @param path the path
     * @return the url
-    * @throws Exception
+    * @throws Exception for any error
     */
    protected String getVfsURL(String path) throws Exception
    {
       URL url = getResource(path);
-      return url.toString();
+      VirtualFile file = VFS.getChild(url);
+      return file.toURL().toString();
    }
 
    /**

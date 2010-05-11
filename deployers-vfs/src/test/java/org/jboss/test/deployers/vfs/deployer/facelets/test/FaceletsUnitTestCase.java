@@ -24,8 +24,6 @@ package org.jboss.test.deployers.vfs.deployer.facelets.test;
 import java.net.URL;
 import java.util.Set;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
 import org.jboss.beans.metadata.spi.builder.BeanMetaDataBuilder;
 import org.jboss.classloader.plugins.system.DefaultClassLoaderSystem;
 import org.jboss.classloader.spi.ClassLoaderSystem;
@@ -42,6 +40,9 @@ import org.jboss.kernel.Kernel;
 import org.jboss.kernel.spi.dependency.KernelController;
 import org.jboss.test.deployers.vfs.deployer.AbstractDeployerUnitTest;
 import org.jboss.test.deployers.vfs.deployer.facelets.support.SearchDeployer;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 /**
  * FaceletsUnitTestCase.
@@ -65,8 +66,6 @@ public class FaceletsUnitTestCase extends AbstractDeployerUnitTest
    protected void setUp() throws Exception
    {
       super.setUp();
-      // Uncomment this to test VFS nested jar copy handling
-      //System.setProperty(VFSUtils.FORCE_COPY_KEY, "true");
       addStructureDeployer(main, new WARStructure());
    }
 
@@ -130,6 +129,7 @@ public class FaceletsUnitTestCase extends AbstractDeployerUnitTest
 
    public void testExplodedFacelets() throws Throwable
    {
+      // TODO -- getting duplicates with exploded deployment
       testFacelets("exploded.jar", 3);
    }
 
