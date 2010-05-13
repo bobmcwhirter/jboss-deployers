@@ -20,34 +20,26 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.jboss.test.deployers.vfs.classloading;
-
-import org.jboss.test.deployers.vfs.classloading.test.ClassLoaderCachingTestCase;
-import org.jboss.test.deployers.vfs.classloading.test.DeploymentMetaDataUnitTestCase;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
+package org.jboss.test.deployers.vfs.classloading.support;
 
 /**
- * ClassLoading test suite.
- * 
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class ClassLoadingTestSuite
+public class MockServlet
 {
-   public static void main(String[] args)
+   private String className;
+
+   public MockServlet(String className)
    {
-      TestRunner.run(suite());
+      if (className == null)
+         throw new IllegalArgumentException("Null class name");
+      this.className = className;
    }
 
-   public static Test suite()
+   public void ping() throws Exception
    {
-      TestSuite suite = new TestSuite("VFS ClassLoading Tests");
-
-      suite.addTest(DeploymentMetaDataUnitTestCase.suite());
-      suite.addTest(ClassLoaderCachingTestCase.suite());
-
-      return suite;
+      ClassLoader cl = getClass().getClassLoader();
+      Class<?> clazz = cl.loadClass(className);
+      System.out.println("clazz = " + clazz);
    }
 }

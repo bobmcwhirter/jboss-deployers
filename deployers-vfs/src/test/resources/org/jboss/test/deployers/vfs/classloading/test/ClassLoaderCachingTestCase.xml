@@ -1,0 +1,7 @@
+<deployment xmlns="urn:jboss:bean-deployer:2.0">
+
+  <bean name="EarStructure" class="org.jboss.test.deployers.vfs.structure.ear.support.MockEarStructureDeployer"/>
+  <bean name="WarStructure" class="org.jboss.test.deployers.vfs.structure.war.support.MockWarStructureDeployer"/>
+  <bean name="WarClassLoader" class="org.jboss.test.deployers.vfs.reflect.support.MockWarClassLoaderDeployer"/>
+
+</deployment>
