@@ -53,6 +53,7 @@ public class FromDeploymentTestCase extends BootstrapDeployersTest
    }
 
    @Override
+   @SuppressWarnings("deprecation")
    protected void setUp() throws Exception
    {
       super.setUp();
@@ -60,6 +61,7 @@ public class FromDeploymentTestCase extends BootstrapDeployersTest
    }
 
    @Override
+   @SuppressWarnings("deprecation")
    protected void tearDown() throws Exception
    {
       JBossXBHelper.removeClassBinding("urn:jboss:bean-deployer:deployment:2.0");
@@ -88,7 +90,7 @@ public class FromDeploymentTestCase extends BootstrapDeployersTest
       }
    }
 
-   protected void assertFromDeployment(Object test, DeploymentUnit unit, String appName) throws Exception
+   protected static void assertFromDeployment(Object test, DeploymentUnit unit, String appName) throws Exception
    {
       Class<?> clazz = test.getClass();
       Method u = clazz.getMethod("getUnit");
