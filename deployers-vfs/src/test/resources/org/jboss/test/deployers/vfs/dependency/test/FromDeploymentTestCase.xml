@@ -1,0 +1,12 @@
+<deployment xmlns="urn:jboss:bean-deployer:2.0">
+
+  <bean name="DURegistry" class="org.jboss.deployers.structure.spi.helpers.AbstractDeploymentRegistry">
+      <install bean="BeanMetaDataDeployer" method="setDeploymentRegistry">
+          <parameter><this/></parameter>
+      </install>
+      <uninstall bean="BeanMetaDataDeployer" method="setDeploymentRegistry">
+          <parameter><null/></parameter>
+      </uninstall>
+  </bean>
+
+</deployment>

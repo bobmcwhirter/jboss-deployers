@@ -35,7 +35,7 @@ public enum FromDeployment
    DEPLOYMENT(new DefaultFromDeploymentDelegate()),
    SIMPLE_NAME(new SimpleNameFromDeploymentDelegate()),
    TOP_DEPLOYMENT(new TopDeploymentDelegate()),
-   TOP_DEPLOYMENT_SIMPLE_NAME(new TopSimpleNameDeploymentDelegate());
+   TOP_SIMPLE_NAME(new TopSimpleNameDeploymentDelegate());
 
    private FromDeploymentDelegate delegate;
 

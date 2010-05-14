@@ -35,8 +35,8 @@ import org.jboss.beans.metadata.spi.BeanMetaData;
 import org.jboss.beans.metadata.spi.ClassLoaderMetaData;
 import org.jboss.beans.metadata.spi.ValueMetaData;
 import org.jboss.dependency.spi.Controller;
-import org.jboss.dependency.spi.ScopeInfo;
 import org.jboss.dependency.spi.ControllerContext;
+import org.jboss.dependency.spi.ScopeInfo;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.helpers.AbstractSimpleRealDeployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
@@ -177,11 +177,13 @@ public class BeanMetaDataDeployer extends AbstractSimpleRealDeployer<BeanMetaDat
       
       try
       {
-         controller.install(context);
+         // move this before install, so FromDeployment can access it
          putContext(context, unit.getParent()); // we're a component, use parent
+         controller.install(context);
       }
       catch (Throwable t)
       {
+         removeContext(context, unit.getParent());
          throw DeploymentException.rethrowAsDeploymentException("Error deploying: " + deployment.getName(), t);
       }
    }

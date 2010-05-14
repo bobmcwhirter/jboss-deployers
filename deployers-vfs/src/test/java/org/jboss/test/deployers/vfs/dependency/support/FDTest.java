@@ -19,34 +19,35 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.test.deployers.vfs.dependency;
+package org.jboss.test.deployers.vfs.dependency.support;
 
-import org.jboss.test.deployers.vfs.dependency.test.DependenciesTestCase;
-import org.jboss.test.deployers.vfs.dependency.test.FromDeploymentTestCase;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
+import org.jboss.deployers.structure.spi.DeploymentUnit;
 
 /**
- * DependencyTestSuite.
- * 
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class DependencyTestSuite extends TestSuite
+public class FDTest
 {
-   public static void main(String[] args)
+   private String appName;
+   private DeploymentUnit unit;
+
+   public String getAppName()
    {
-      TestRunner.run(suite());
+      return appName;
    }
 
-   public static Test suite()
+   public void setAppName(String appName)
    {
-      TestSuite suite = new TestSuite("VFS Dependency Scanning Tests");
+      this.appName = appName;
+   }
 
-      suite.addTest(DependenciesTestCase.suite());
-      suite.addTest(FromDeploymentTestCase.suite());
+   public DeploymentUnit getUnit()
+   {
+      return unit;
+   }
 
-      return suite;
+   public void setUnit(DeploymentUnit unit)
+   {
+      this.unit = unit;
    }
 }

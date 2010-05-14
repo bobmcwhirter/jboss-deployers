@@ -1,0 +1,13 @@
+<deployment xmlns="urn:jboss:bean-deployer:2.0">
+
+    <bean name="Test1" class="org.jboss.test.deployers.vfs.dependency.support.FDTest">
+        <property name="unit"><from-deployment xmlns="urn:jboss:bean-deployer:deployment:2.0" type="deployment"/></property>
+        <property name="appName"><from-deployment xmlns="urn:jboss:bean-deployer:deployment:2.0" type="simple_name"/></property>
+    </bean>
+
+    <bean name="Test2" class="org.jboss.test.deployers.vfs.dependency.support.FDTest">
+        <property name="unit"><from-deployment xmlns="urn:jboss:bean-deployer:deployment:2.0" type="top_deployment"/></property>
+        <property name="appName"><from-deployment xmlns="urn:jboss:bean-deployer:deployment:2.0" type="top_simple_name"/></property>
+    </bean>
+
+</deployment>
