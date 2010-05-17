@@ -27,19 +27,22 @@ package org.jboss.test.deployers.vfs.classloading.support;
  */
 public class MockServlet
 {
-   private String className;
+   private String[] classNames;
 
-   public MockServlet(String className)
+   public MockServlet(String... classNames)
    {
-      if (className == null)
-         throw new IllegalArgumentException("Null class name");
-      this.className = className;
+      if (classNames == null)
+         throw new IllegalArgumentException("Null class names");
+      this.classNames = classNames;
    }
 
    public void ping() throws Exception
    {
-      ClassLoader cl = getClass().getClassLoader();
-      Class<?> clazz = cl.loadClass(className);
-      System.out.println("clazz = " + clazz);
+      for (String className : classNames)
+      {
+         ClassLoader cl = getClass().getClassLoader();
+         Class<?> clazz = cl.loadClass(className);
+         System.out.println("clazz = " + clazz);
+      }
    }
 }

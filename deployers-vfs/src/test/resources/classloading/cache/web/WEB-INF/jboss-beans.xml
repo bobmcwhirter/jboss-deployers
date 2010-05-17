@@ -4,7 +4,7 @@
 
     <bean name="Servlet" class="org.jboss.test.deployers.vfs.classloading.support.MockServlet">
         <constructor>
-            <parameter>org.jboss.dependency.spi.Controller</parameter>
+            <parameter>javax.xml.parsers.DocumentBuilder</parameter>
         </constructor>
     </bean>
 
