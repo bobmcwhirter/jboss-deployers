@@ -21,8 +21,8 @@
  */
 package org.jboss.deployers.vfs.plugins.structure.file;
 
-import java.util.Set;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.jboss.beans.metadata.api.annotations.Install;
@@ -48,12 +48,12 @@ import org.jboss.vfs.VirtualFileFilter;
 public class FileStructure extends AbstractVFSStructureDeployer implements VirtualFileFilter
 {
    /** The file suffixes */
-   private static Set<String> fileSuffixes = new CopyOnWriteArraySet<String>(Arrays.asList(new String[] {
-      "-service.xml",
-      "-beans.xml",
-      "-ds.xml",
-      "-aop.xml",
-   }));
+   private static Set<String> fileSuffixes = new CopyOnWriteArraySet<String>(Arrays.asList(
+         "-service.xml",
+         "-beans.xml",
+         "-ds.xml",
+         "-aop.xml")
+   );
 
    /** The file matchers */
    private Set<FileMatcher> fileMatchers = new CopyOnWriteArraySet<FileMatcher>();
