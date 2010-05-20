@@ -31,12 +31,7 @@ import org.jboss.classloader.spi.ClassLoaderSystem;
 import org.jboss.classloader.spi.ParentPolicy;
 import org.jboss.classloading.spi.dependency.ClassLoading;
 import org.jboss.classloading.spi.dependency.policy.mock.MockClassLoadingMetaData;
-import org.jboss.classloading.spi.metadata.CapabilitiesMetaData;
-import org.jboss.classloading.spi.metadata.Capability;
-import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
-import org.jboss.classloading.spi.metadata.ClassLoadingMetaDataFactory;
-import org.jboss.classloading.spi.metadata.Requirement;
-import org.jboss.classloading.spi.metadata.RequirementsMetaData;
+import org.jboss.classloading.spi.metadata.*;
 import org.jboss.classloading.spi.version.Version;
 import org.jboss.classloading.spi.version.VersionRange;
 import org.jboss.deployers.client.spi.DeployerClient;
@@ -52,6 +47,7 @@ import org.jboss.test.deployers.classloading.support.MockLevelClassLoaderSystemD
  * ClassLoaderDependenciesTest.
  * 
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public abstract class ClassLoaderDependenciesTest extends AbstractDeployerTest
@@ -192,12 +188,22 @@ public abstract class ClassLoaderDependenciesTest extends AbstractDeployerTest
       requirements.addRequirement(requirement);
    }
 
-   protected static void addRequirePackage(ClassLoadingMetaData classLoadingMetaData, Class<?> pck, VersionRange versionRange)
+   protected static void addRequirePackage(ClassLoadingMetaData classLoadingMetaData, Requirement requirement)
    {
       RequirementsMetaData requirements = classLoadingMetaData.getRequirements();
-
-      Requirement requirement = classLoadingMetaDataFactory.createRequirePackage(pck.getPackage().getName(), versionRange);
       requirements.addRequirement(requirement);
+   }
+
+   protected static void addRequirePackage(ClassLoadingMetaData classLoadingMetaData, Class<?> pck, VersionRange versionRange)
+   {
+      Requirement requirement = classLoadingMetaDataFactory.createRequirePackage(pck.getPackage().getName(), versionRange);
+      addRequirePackage(classLoadingMetaData, requirement);
+   }
+
+   protected static void addRequireWildcard(ClassLoadingMetaData classLoadingMetaData, Class<?> pck, VersionRange versionRange)
+   {
+      Requirement requirement = classLoadingMetaDataFactory.createWildcardPackage(pck.getPackage().getName(), versionRange);
+      addRequirePackage(classLoadingMetaData, requirement);
    }
 
    protected static void addMetaData(PredeterminedManagedObjectAttachments attachments, ClassLoadingMetaData md)

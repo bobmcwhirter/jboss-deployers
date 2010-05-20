@@ -21,20 +21,22 @@
 */
 package org.jboss.test.deployers.classloading.test;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
 import org.jboss.deployers.client.spi.DeployerClient;
 import org.jboss.deployers.client.spi.Deployment;
+import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.test.deployers.classloading.support.a.A;
 import org.jboss.test.deployers.classloading.support.b.B;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 /**
  * MockClassLoaderDependenciesUnitTestCase.
  * 
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public class MockClassLoaderDependenciesUnitTestCase extends ClassLoaderDependenciesTest
@@ -275,4 +277,49 @@ public class MockClassLoaderDependenciesUnitTestCase extends ClassLoaderDependen
       assertLoadClass(clB, B.class);
    }
 
+   public void testWildcard() throws Exception
+   {
+      DeployerClient deployer = getMainDeployer();
+
+      Deployment deploymentB = createSimpleDeployment(NameB);
+      addClassLoadingMetaData(deploymentB, deploymentB.getName(), null, B.class);
+      DeploymentUnit unitB = assertDeploy(deployer, deploymentB);
+
+      ClassLoader clB = unitB.getClassLoader();
+      assertLoadClass(clB, B.class);
+
+      assertEquals(B, deployer2.deployed);
+      assertEquals(NONE, deployer2.undeployed);
+
+      Deployment deploymentA = createSimpleDeployment(NameA);
+      ClassLoadingMetaData classLoadingMetaData = addClassLoadingMetaData(deploymentA, deploymentA.getName(), null, A.class);
+      addRequireWildcard(classLoadingMetaData, B.class, null);
+      DeploymentUnit unitA = assertDeploy(deployer, deploymentA);
+
+      ClassLoader clA = unitA.getClassLoader();
+      assertLoadClass(clA, B.class, clB);
+
+      assertEquals(BA, deployer2.deployed);
+      assertEquals(NONE, deployer2.undeployed);
+
+      assertUndeploy(deployer, deploymentB);
+      assertLoadClassIllegal(clA, B.class);
+
+      assertEquals(BA, deployer2.deployed);
+      assertEquals(BA, deployer2.undeployed); // we bounced
+      assertDeploymentStage(getDeploymentUnit(deployer, deploymentA.getName()), DeploymentStages.INSTALLED);
+      clA = unitA.getClassLoader(); // re-get classloader
+
+      assertLoadClassFail(clA, B.class); // no match found
+
+      unitB = assertDeploy(deployer, deploymentB); // new B matching deployment
+      assertLoadClass(clA, B.class, unitB.getClassLoader()); // find the new one
+      assertUndeploy(deployer, deploymentB);
+
+      assertUndeploy(deployer, deploymentA);
+      assertLoadClassFail(clA, B.class);
+
+      assertEquals(BA, deployer2.deployed);
+      assertEquals(AB, deployer2.undeployed);
+   }
 }
