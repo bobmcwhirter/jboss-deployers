@@ -21,6 +21,8 @@
 */
 package org.jboss.test.deployers.classloading.test;
 
+import org.jboss.classloader.spi.ShutdownPolicy;
+import org.jboss.classloading.spi.dependency.Module;
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
 import org.jboss.deployers.client.spi.DeployerClient;
 import org.jboss.deployers.client.spi.Deployment;
@@ -277,7 +279,7 @@ public class MockClassLoaderDependenciesUnitTestCase extends ClassLoaderDependen
       assertLoadClass(clB, B.class);
    }
 
-   public void testWildcard() throws Exception
+   public void testWildcardWithCascade() throws Exception
    {
       DeployerClient deployer = getMainDeployer();
 
@@ -311,6 +313,57 @@ public class MockClassLoaderDependenciesUnitTestCase extends ClassLoaderDependen
       clA = unitA.getClassLoader(); // re-get classloader
 
       assertLoadClassFail(clA, B.class); // no match found
+
+      unitB = assertDeploy(deployer, deploymentB); // new B matching deployment
+      assertLoadClass(clA, B.class, unitB.getClassLoader()); // find the new one
+      assertUndeploy(deployer, deploymentB);
+
+      assertUndeploy(deployer, deploymentA);
+      assertLoadClassFail(clA, B.class);
+
+      assertEquals(BA, deployer2.deployed);
+      assertEquals(AB, deployer2.undeployed);
+   }
+
+   public void testWildcardWithGC() throws Exception
+   {
+      DeployerClient deployer = getMainDeployer();
+
+      Deployment deploymentB = createSimpleDeployment(NameB);
+      ClassLoadingMetaData clmd = addClassLoadingMetaData(deploymentB, deploymentB.getName(), null, B.class);
+      clmd.setShutdownPolicy(ShutdownPolicy.GARBAGE_COLLECTION);
+      DeploymentUnit unitB = assertDeploy(deployer, deploymentB);
+
+      ClassLoader clB = unitB.getClassLoader();
+      assertLoadClass(clB, B.class);
+
+      assertEquals(B, deployer2.deployed);
+      assertEquals(NONE, deployer2.undeployed);
+
+      Deployment deploymentA = createSimpleDeployment(NameA);
+      ClassLoadingMetaData classLoadingMetaData = addClassLoadingMetaData(deploymentA, deploymentA.getName(), null, A.class);
+      addRequireWildcard(classLoadingMetaData, B.class, null);
+      DeploymentUnit unitA = assertDeploy(deployer, deploymentA);
+
+      ClassLoader clA = unitA.getClassLoader();
+      assertLoadClass(clA, B.class, clB);
+
+      assertEquals(BA, deployer2.deployed);
+      assertEquals(NONE, deployer2.undeployed);
+
+      assertUndeploy(deployer, deploymentB); //, DeploymentStages.NOT_INSTALLED);
+      assertLoadClass(clA, B.class, clB); // we should still be able to see the B resources
+
+      assertEquals(BA, deployer2.deployed);
+      assertEquals(B, deployer2.undeployed);
+
+      Module.refreshModules(); // A should be refreshed as well
+
+      assertDeploymentStage(getDeploymentUnit(deployer, deploymentA.getName()), DeploymentStages.INSTALLED);
+      clA = unitA.getClassLoader(); // re-get classloader
+      assertLoadClassFail(clA, B.class); // no match found
+
+      Module.refreshModules(); // make sure we cleaned up
 
       unitB = assertDeploy(deployer, deploymentB); // new B matching deployment
       assertLoadClass(clA, B.class, unitB.getClassLoader()); // find the new one

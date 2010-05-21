@@ -55,6 +55,7 @@ import org.jboss.test.BaseTestCase;
  * AbstractDeployerTest.
  * 
  * @author <a href="adrian@jboss.org">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public abstract class AbstractDeployerTest extends BaseTestCase
@@ -207,6 +208,16 @@ public abstract class AbstractDeployerTest extends BaseTestCase
       main.undeploy(deployment);
    }
    
+   protected void assertChange(DeployerClient main, Deployment deployment, DeploymentStage stage) throws Exception
+   {
+      main.change(deployment.getName(), stage);
+      DeploymentUnit unit = assertDeploymentUnit(main, deployment.getName());
+      ControllerContext context = unit.getTopLevel().getAttachment(ControllerContext.class);
+      assertNotNull(context);
+      ControllerState state = context.getState();
+      assertEquals(ControllerState.getInstance(stage.getName()), state);
+   }
+
    protected Deployment createSimpleDeployment(String name)
    {
       AbstractDeployment unit = createAbstractDeployment(name);
