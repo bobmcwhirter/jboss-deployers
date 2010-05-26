@@ -34,7 +34,6 @@ import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnitFilter;
 import org.jboss.scanning.annotations.plugins.AnnotationsScanningPlugin;
 import org.jboss.scanning.annotations.spi.AnnotationRepository;
 import org.jboss.scanning.plugins.DeploymentUnitScanner;
-import org.jboss.scanning.spi.helpers.AbstractScanner;
 
 /**
  * A POST_CLASSLOADER deployer which creates AnnotationRepository for sub-deployments.
@@ -79,8 +78,10 @@ public class AnnotationRepositoryDeployer extends AbstractOptionalVFSRealDeploye
       try
       {
          URL[] urls = ClasspathUtils.getUrls(unit);
-         AbstractScanner scanner = new DeploymentUnitScanner(unit, urls);
+         DeploymentUnitScanner scanner = new DeploymentUnitScanner(unit, urls);
          AnnotationsScanningPlugin plugin = createPlugin(unit);
+
+         configureScanner(scanner);
 
          scanner.scan();
 
