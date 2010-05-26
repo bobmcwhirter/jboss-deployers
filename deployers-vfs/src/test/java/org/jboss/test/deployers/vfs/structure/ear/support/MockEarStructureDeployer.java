@@ -24,11 +24,7 @@ package org.jboss.test.deployers.vfs.structure.ear.support;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -38,7 +34,7 @@ import org.jboss.deployers.vfs.plugins.structure.AbstractVFSArchiveStructureDepl
 import org.jboss.deployers.vfs.spi.structure.CandidateAnnotationsCallback;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
 import org.jboss.logging.Logger;
-import org.jboss.mcann.AnnotationRepository;
+import org.jboss.scanning.annotations.spi.AnnotationRepository;
 import org.jboss.vfs.VFSUtils;
 import org.jboss.vfs.VirtualFile;
 import org.jboss.vfs.VirtualFileFilter;

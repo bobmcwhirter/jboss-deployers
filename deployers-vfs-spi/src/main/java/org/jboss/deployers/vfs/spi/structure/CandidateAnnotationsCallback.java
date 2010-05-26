@@ -23,7 +23,7 @@ package org.jboss.deployers.vfs.spi.structure;
 
 import java.lang.annotation.Annotation;
 
-import org.jboss.mcann.AnnotationRepository;
+import org.jboss.scanning.annotations.spi.AnnotationRepository;
 import org.jboss.vfs.VirtualFile;
 
 /**

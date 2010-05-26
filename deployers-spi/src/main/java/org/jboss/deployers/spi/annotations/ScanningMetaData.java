@@ -28,6 +28,7 @@ import java.util.List;
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
+@Deprecated
 public interface ScanningMetaData
 {
    /**

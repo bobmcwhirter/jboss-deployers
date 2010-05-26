@@ -31,22 +31,19 @@ import org.jboss.deployers.vfs.plugins.util.ClasspathUtils;
 import org.jboss.deployers.vfs.spi.deployer.AbstractOptionalVFSRealDeployer;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnitFilter;
-import org.jboss.mcann.AnnotationRepository;
-import org.jboss.mcann.repository.Configuration;
-import org.jboss.mcann.repository.DefaultConfiguration;
-import org.jboss.mcann.repository.AbstractSettings;
-import org.jboss.mcann.repository.AbstractConfiguration;
-import org.jboss.mcann.scanner.DefaultAnnotationScanner;
-import org.jboss.mcann.scanner.ModuleAnnotationScanner;
+import org.jboss.scanning.annotations.plugins.AnnotationsScanningPlugin;
+import org.jboss.scanning.annotations.spi.AnnotationRepository;
+import org.jboss.scanning.plugins.DeploymentUnitScanner;
+import org.jboss.scanning.spi.helpers.AbstractScanner;
 
 /**
  * A POST_CLASSLOADER deployer which creates AnnotationRepository for sub-deployments.
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
+@Deprecated
 public class AnnotationRepositoryDeployer extends AbstractOptionalVFSRealDeployer<Module>
 {
-   private Configuration configuration;
    private VFSDeploymentUnitFilter filter;
 
    public AnnotationRepositoryDeployer()
@@ -56,16 +53,6 @@ public class AnnotationRepositoryDeployer extends AbstractOptionalVFSRealDeploye
       addInput(ScanningMetaData.class);
       addInput(AnnotationRepository.class);
       setOutput(AnnotationRepository.class);
-   }
-
-   /**
-    * Set configuration.
-    *
-    * @param configuration the configuration
-    */
-   public void setConfiguration(Configuration configuration)
-   {
-      this.configuration = configuration;
    }
 
    /**
@@ -85,23 +72,19 @@ public class AnnotationRepositoryDeployer extends AbstractOptionalVFSRealDeploye
     * before we visit it.
     *
     * @param unit the deployment unit
-    * @param module the module
     * @throws DeploymentException for any error
     */
-   protected void visitModule(VFSDeploymentUnit unit, Module module) throws DeploymentException
+   protected void visitModule(VFSDeploymentUnit unit) throws DeploymentException
    {
       try
       {
          URL[] urls = ClasspathUtils.getUrls(unit);
-         DefaultAnnotationScanner scanner = new ModuleAnnotationScanner(module);
+         AbstractScanner scanner = new DeploymentUnitScanner(unit, urls);
+         AnnotationsScanningPlugin plugin = createPlugin(unit);
 
-         AbstractConfiguration config = new DefaultConfiguration();
-         configureScanner(unit, scanner, config);
-         if (configuration != null)
-            config.merge(configuration); // override with custom config
-         scanner.setConfiguration(config);
+         scanner.scan();
 
-         AnnotationRepository repository = scanner.scan(unit.getClassLoader(), urls);
+         AnnotationRepository repository = unit.getAttachment(plugin.getAttachmentKey(), AnnotationRepository.class);
          unit.addAttachment(AnnotationRepository.class, repository);
       }
       catch (Exception e)
@@ -110,25 +93,29 @@ public class AnnotationRepositoryDeployer extends AbstractOptionalVFSRealDeploye
       }
    }
 
-   protected AbstractConfiguration createConfiguration(VFSDeploymentUnit unit)
+   /**
+    * Configure scanner and plugin.
+    *
+    * @param scanner the annotation scanner
+    */
+   protected void configureScanner(DeploymentUnitScanner scanner)
    {
-      return new DefaultConfiguration();
    }
 
    /**
-    * Configure scanner.
+    * Create and configure annotation plugin.
     *
     * @param unit the deployment unit
-    * @param scanner the annotation scanner
-    * @param settings the settings
+    * @return new annotation plugin
     */
-   protected void configureScanner(VFSDeploymentUnit unit, DefaultAnnotationScanner scanner, AbstractSettings settings)
+   protected AnnotationsScanningPlugin createPlugin(VFSDeploymentUnit unit)
    {
+      return new AnnotationsScanningPlugin(unit.getClassLoader());
    }
 
    public void deploy(VFSDeploymentUnit unit, Module module) throws DeploymentException
    {
-      // we already used McAnn or some other mechanism to create repo
+      // we already used mc scanning or some other mechanism to create repo
       if (unit.isAttachmentPresent(AnnotationRepository.class))
          return;
 
@@ -136,21 +123,9 @@ public class AnnotationRepositoryDeployer extends AbstractOptionalVFSRealDeploye
       if (filter != null && filter.accepts(unit) == false)
          return;
 
-      if (module == null)
-      {
-         VFSDeploymentUnit parent = unit.getParent();
-         while(parent != null && module == null)
-         {
-            module = parent.getAttachment(Module.class);
-            parent = parent.getParent();
-         }
-         if (module == null)
-            throw new IllegalArgumentException("No module in deployment unit's hierarchy: " + unit.getName());
-      }
-
       if (log.isTraceEnabled())
-         log.trace("Creating AnnotationRepository for " + unit.getName() + ", module: " + module + ", configuration: " + configuration);
+         log.trace("Creating AnnotationRepository for " + unit.getName() + ", module: " + module);
 
-      visitModule(unit, module);
+      visitModule(unit);
    }
 }

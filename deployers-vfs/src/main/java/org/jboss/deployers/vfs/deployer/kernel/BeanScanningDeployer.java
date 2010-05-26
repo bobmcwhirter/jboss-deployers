@@ -32,7 +32,7 @@ import org.jboss.beans.metadata.spi.AliasMetaData;
 import org.jboss.beans.metadata.spi.BeanMetaData;
 import org.jboss.beans.metadata.spi.builder.BeanMetaDataBuilder;
 import org.jboss.beans.metadata.spi.factory.GenericBeanFactoryMetaData;
-import org.jboss.deployers.spi.deployer.helpers.AbstractAnnotationDeployer;
+import org.jboss.deployers.plugins.annotations.AbstractAnnotationDeployer;
 import org.jboss.deployers.spi.deployer.helpers.AbstractAnnotationProcessor;
 
 /**

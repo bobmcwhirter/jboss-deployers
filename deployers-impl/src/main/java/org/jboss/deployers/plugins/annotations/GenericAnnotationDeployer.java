@@ -26,10 +26,10 @@ import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.spi.deployer.helpers.AbstractSimpleRealDeployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
-import org.jboss.mcann.AnnotationRepository;
-import org.jboss.mcann.repository.Configuration;
-import org.jboss.mcann.scanner.DefaultAnnotationScanner;
-import org.jboss.mcann.scanner.ModuleAnnotationScanner;
+import org.jboss.scanning.annotations.plugins.AnnotationsScanningPlugin;
+import org.jboss.scanning.annotations.spi.AnnotationRepository;
+import org.jboss.scanning.plugins.DeploymentUnitScanner;
+import org.jboss.scanning.spi.helpers.AbstractScanner;
 
 /**
  * Generic annotation scanner deployer.
@@ -38,8 +38,6 @@ import org.jboss.mcann.scanner.ModuleAnnotationScanner;
  */
 public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module>
 {
-   private Configuration configuration;
-
    public GenericAnnotationDeployer()
    {
       super(Module.class);
@@ -51,26 +49,18 @@ public class GenericAnnotationDeployer extends AbstractSimpleRealDeployer<Module
    {
       try
       {
-         DefaultAnnotationScanner scanner = new ModuleAnnotationScanner(deployment);
-         if (configuration != null)
-            scanner.setConfiguration(configuration);
-         
-         AnnotationRepository repository = scanner.scan(unit.getClassLoader());
+         AbstractScanner scanner = new DeploymentUnitScanner(unit);
+         AnnotationsScanningPlugin plugin = new AnnotationsScanningPlugin(unit.getClassLoader());
+         scanner.addPlugin(plugin);
+
+         scanner.scan();
+
+         AnnotationRepository repository = unit.getAttachment(plugin.getAttachmentKey(), AnnotationRepository.class);
          unit.addAttachment(AnnotationRepository.class, repository);
       }
       catch (Exception e)
       {
          throw DeploymentException.rethrowAsDeploymentException("Cannot create AR", e);
       }
-   }
-
-   /**
-    * Set configuration.
-    *
-    * @param configuration the configuration creator
-    */
-   public void setConfiguration(Configuration configuration)
-   {
-      this.configuration = configuration;
    }
 }

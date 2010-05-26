@@ -26,6 +26,7 @@ package org.jboss.deployers.spi.annotations;
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
+@Deprecated
 public interface PathEntryMetaData
 {
    /**

@@ -151,9 +151,13 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.jboss.mcann</groupId>
-      <artifactId>mcann-core</artifactId>
+      <groupId>org.jboss.scanning</groupId>
+      <artifactId>scanning-plugins</artifactId>
       <exclusions>
+        <exclusion>
+          <groupId>org.jboss.deployers</groupId>
+          <artifactId>jboss-deployers-spi</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>org.jboss.vfs</groupId>
           <artifactId>jboss-vfs</artifactId>
@@ -182,6 +186,34 @@
           <groupId>org.jboss.cl</groupId>
           <artifactId>jboss-classloading</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.jboss.cl</groupId>
+          <artifactId>jboss-classloading-vfs</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>org.jboss.weld.integration</groupId>
+            <artifactId>weld-jboss-int-deployer</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.jboss.mc-int</groupId>
+            <artifactId>jboss-mc-int-servlet</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.faces</groupId>
+            <artifactId>jsf-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.faces</groupId>
+            <artifactId>jsf-impl</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javassist</groupId>
+            <artifactId>javassist</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+          </exclusion>
       </exclusions>
     </dependency>
     <dependency>

@@ -21,11 +21,6 @@
 */
 package org.jboss.test.deployers;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
-
-import org.jboss.test.deployers.vfs.annotations.AnnotationScanningTestSuite;
 import org.jboss.test.deployers.vfs.classloader.ClassLoaderTestSuite;
 import org.jboss.test.deployers.vfs.classloading.ClassLoadingTestSuite;
 import org.jboss.test.deployers.vfs.dependency.DependencyTestSuite;
@@ -47,6 +42,10 @@ import org.jboss.test.deployers.vfs.structurebuilder.VFSStructureBuilderTestSuit
 import org.jboss.test.deployers.vfs.structureprocessor.VFSStructureProcessorTestSuite;
 import org.jboss.test.deployers.vfs.webbeans.WebBeansTestSuite;
 import org.jboss.test.deployers.vfs.xb.JBossXBDeployersTestSuite;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 /**
  * Deployers VFS Test Suite.
@@ -83,7 +82,6 @@ public class DeployersVFSTestSuite extends TestSuite
       suite.addTest(MergeDeployerTestSuite.suite());
       suite.addTest(FaceletsTestSuite.suite());
       suite.addTest(ValidateDeployerTestSuite.suite());
-      suite.addTest(AnnotationScanningTestSuite.suite());
       suite.addTest(DependencyTestSuite.suite());
       suite.addTest(JMXTestSuite.suite());
       suite.addTest(WebBeansTestSuite.suite()); // now Weld

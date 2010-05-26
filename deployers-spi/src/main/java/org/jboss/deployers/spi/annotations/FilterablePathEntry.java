@@ -28,6 +28,7 @@ import org.jboss.classloader.spi.filter.ClassFilter;
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
+@Deprecated
 public interface FilterablePathEntry
 {
    /**

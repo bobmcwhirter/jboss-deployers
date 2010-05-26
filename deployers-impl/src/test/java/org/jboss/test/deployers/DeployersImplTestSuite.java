@@ -21,16 +21,16 @@
 */
 package org.jboss.test.deployers;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
-import org.jboss.test.deployers.annotations.DeployersAnnotationsTestSuite;
 import org.jboss.test.deployers.classloading.DeployersClassLoadingTestSuite;
 import org.jboss.test.deployers.deployer.DeployersDeployerTestSuite;
 import org.jboss.test.deployers.exceptions.DeployersExceptionsTestSuite;
 import org.jboss.test.deployers.main.DeployersMainTestSuite;
 import org.jboss.test.deployers.managed.DeployersManagedTestSuite;
 import org.jboss.test.deployers.scope.DeployersScopeTestSuite;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 /**
  * Deployers Impl Test Suite.
@@ -55,7 +55,6 @@ public class DeployersImplTestSuite extends TestSuite
       suite.addTest(DeployersClassLoadingTestSuite.suite());
       suite.addTest(DeployersScopeTestSuite.suite());
       suite.addTest(DeployersMainTestSuite.suite());
-      suite.addTest(DeployersAnnotationsTestSuite.suite());
       suite.addTest(DeployersExceptionsTestSuite.suite());
 
       return suite;

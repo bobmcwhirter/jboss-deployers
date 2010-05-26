@@ -21,9 +21,6 @@
 */
 package org.jboss.test.deployers.vfs.deployer.bean.test;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import org.jboss.beans.metadata.api.annotations.Bean;
 import org.jboss.beans.metadata.spi.builder.BeanMetaDataBuilder;
 import org.jboss.beans.metadata.spi.factory.BeanFactory;
@@ -48,9 +45,11 @@ import org.jboss.deployers.vfs.plugins.classloader.VFSClassLoaderClassPathDeploy
 import org.jboss.deployers.vfs.plugins.classloader.VFSClassLoaderDescribeDeployer;
 import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.kernel.Kernel;
-import org.jboss.kernel.spi.config.KernelConfigurator;
 import org.jboss.kernel.spi.dependency.KernelController;
 import org.jboss.test.deployers.vfs.deployer.AbstractDeployerUnitTest;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 /**
  * BeanScanningUnitTestCase.
@@ -97,9 +96,9 @@ public class BeanScanningUnitTestCase extends AbstractDeployerUnitTest
       ClassLoaderSystem system = new DefaultClassLoaderSystem();
       // allow MC annotations and classes used by GenericBeanFactory constructor (needed for the jboss-reflect javassist
       //implementation), so that both, deployer and tester see the same
-      ClassFilter mcAnnFilter = new PackageClassFilter(new String[]{"org.jboss.beans.metadata.api.annotations", 
+      ClassFilter scanFilter = new PackageClassFilter(new String[]{"org.jboss.beans.metadata.api.annotations",
             "org.jboss.kernel.spi.config", "org.jboss.beans.metadata.spi.factory"});
-      ClassFilter filter = new CombiningClassFilter(false, new ClassFilter[]{ClassFilterUtils.JAVA_ONLY, mcAnnFilter});
+      ClassFilter filter = new CombiningClassFilter(false, new ClassFilter[]{ClassFilterUtils.JAVA_ONLY, scanFilter});
       ParentPolicy policy = new ParentPolicy(filter, ClassFilterUtils.NOTHING);
       system.getDefaultDomain().setParentPolicy(policy);
 

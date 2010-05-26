@@ -21,12 +21,11 @@
 */
 package org.jboss.deployers.vfs.plugins.annotations;
 
+import org.jboss.classloading.spi.visitor.ClassFilter;
 import org.jboss.classloading.spi.visitor.ResourceFilter;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
-import org.jboss.mcann.repository.AbstractSettings;
-import org.jboss.mcann.repository.AbstractConfiguration;
-import org.jboss.mcann.scanner.DefaultAnnotationScanner;
+import org.jboss.scanning.annotations.plugins.AnnotationsScanningPlugin;
 
 /**
  * Filtered annotation environment deployer.
@@ -37,9 +36,10 @@ import org.jboss.mcann.scanner.DefaultAnnotationScanner;
  *
  * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
+@Deprecated
 public class FilteredAnnotationRepositoryDeployer extends AnnotationRepositoryDeployer
 {
-   private ResourceFilter resourceFilter;
+   private ResourceFilter resourceFilter = ClassFilter.INSTANCE;
    private ResourceFilter recurseFilter;
 
    public FilteredAnnotationRepositoryDeployer()
@@ -68,30 +68,22 @@ public class FilteredAnnotationRepositoryDeployer extends AnnotationRepositoryDe
    }
 
    @Override
-   protected AbstractConfiguration createConfiguration(VFSDeploymentUnit unit)
+   protected AnnotationsScanningPlugin createPlugin(final VFSDeploymentUnit unit)
    {
-      return getAttachment(unit, AbstractConfiguration.class, null, super.createConfiguration(unit)); 
-   }
+      return new AnnotationsScanningPlugin(unit.getClassLoader())
+      {
+         @Override
+         public ResourceFilter getFilter()
+         {
+            return getAttachment(unit, ResourceFilter.class, "resource", resourceFilter);
+         }
 
-   /**
-    * We look for filter attachments:
-    * * org.jboss.classloading.spi.visitor.ResourceFilter.resource - plain resource filter
-    * * org.jboss.classloading.spi.visitor.ResourceFilter.recurse  - recurse resource filter
-    *
-    * @param unit the deployment unit
-    * @param scanner the annotation scanner
-    * @param settings the settings
-    */
-   @Override
-   protected void configureScanner(VFSDeploymentUnit unit, DefaultAnnotationScanner scanner, AbstractSettings settings)
-   {
-      super.configureScanner(unit, scanner, settings);
-
-      ResourceFilter filter = getAttachment(unit, ResourceFilter.class, "resource", resourceFilter);
-      settings.setResourceFilter(filter);
-
-      ResourceFilter recurse = getAttachment(unit, ResourceFilter.class, "recurse", recurseFilter);
-      scanner.setRecurseFilter(recurse);
+         @Override
+         public ResourceFilter getRecurseFilter()
+         {
+            return getAttachment(unit, ResourceFilter.class, "recurse", recurseFilter);
+         }
+      };
    }
 
    /**
