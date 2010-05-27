@@ -80,6 +80,7 @@ public class AnnotationRepositoryDeployer extends AbstractOptionalVFSRealDeploye
          URL[] urls = ClasspathUtils.getUrls(unit);
          DeploymentUnitScanner scanner = new DeploymentUnitScanner(unit, urls);
          AnnotationsScanningPlugin plugin = createPlugin(unit);
+         scanner.addPlugin(plugin);
 
          configureScanner(scanner);
 

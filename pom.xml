@@ -28,6 +28,7 @@
     <version.jboss.mdr>2.2.0.Alpha3</version.jboss.mdr>
     <version.jboss.kernel>2.2.0.Alpha10</version.jboss.kernel>
     <version.jboss.classloader>2.2.0.Alpha5</version.jboss.classloader>
+    <version.jboss.scanning>1.0.0.Alpha1</version.jboss.scanning>
     <version.jboss.classloading.spi>6.0.0-Alpha8</version.jboss.classloading.spi>
     <version.jboss.common.core>2.2.17.GA</version.jboss.common.core>
     <version.jboss.logging.spi>2.2.0.CR1</version.jboss.logging.spi>
@@ -40,7 +41,6 @@
     <version.stax.staxapi>1.0</version.stax.staxapi>
     <version.ant.junit>1.6.5</version.ant.junit>
     <version.jboss.byteman>1.0.3.CP01</version.jboss.byteman>
-    <version.jboss.mcscan>1.0.0.Alpha1</version.jboss.mcscan>
   </properties>
 
   <modules>
@@ -354,17 +354,17 @@
       <dependency>
           <groupId>org.jboss.scanning</groupId>
           <artifactId>scanning-spi</artifactId>
-          <version>${version.jboss.mcscan}</version>
+          <version>${version.jboss.scanning}</version>
       </dependency>
       <dependency>
           <groupId>org.jboss.scanning</groupId>
           <artifactId>scanning-impl</artifactId>
-          <version>${version.jboss.mcscan}</version>
+          <version>${version.jboss.scanning}</version>
       </dependency>
       <dependency>
           <groupId>org.jboss.scanning</groupId>
           <artifactId>scanning-plugins</artifactId>
-          <version>${version.jboss.mcscan}</version>
+          <version>${version.jboss.scanning}</version>
       </dependency>
       <dependency>
           <groupId>org.jboss.scanning</groupId>
