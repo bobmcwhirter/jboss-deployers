@@ -59,7 +59,7 @@ public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsi
    private boolean buildManagedObject = false;
 
    /** The name ignore mechanism */
-   private NameIgnoreMechanism nameIgnoreMechanism = DelegateNameIgnoreMechanism.INSTANCE;
+   private NameIgnoreMechanism nameIgnoreMechanism = NameIgnoreMechanismFactory.create();
 
    /**
     * Create a new AbstractParsingDeployerWithOutput.
