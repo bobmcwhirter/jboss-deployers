@@ -27,6 +27,7 @@ import java.util.*;
 
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.helpers.AbstractParsingDeployerWithOutput;
+import org.jboss.deployers.spi.deployer.matchers.LazyPath;
 import org.jboss.deployers.spi.deployer.matchers.NameIgnoreMechanism;
 import org.jboss.deployers.spi.structure.MetaDataTypeFilter;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
@@ -211,13 +212,19 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
     * @param file the file
     * @return true if we should ignore the file, false otherwise
     */
-   protected boolean ignoreFile(VFSDeploymentUnit unit, VirtualFile file)
+   protected boolean ignoreFile(final VFSDeploymentUnit unit, final VirtualFile file)
    {
-      NameIgnoreMechanism mechanism = unit.getAttachment(NameIgnoreMechanism.class);
+      NameIgnoreMechanism mechanism = getNameIgnoreMechanism();
       if (mechanism != null)
       {
-         VirtualFile root = unit.getRoot();
-         String path = file.getPathNameRelativeTo(root);
+         LazyPath path = new LazyPath()
+         {
+            public String buildPath()
+            {
+               VirtualFile root = unit.getRoot();
+               return file.getPathNameRelativeTo(root);
+            }
+         };
          return mechanism.ignorePath(unit, path);
       }
       return false;

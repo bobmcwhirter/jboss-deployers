@@ -57,7 +57,10 @@ public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsi
 
    /** Should the ManagedObjects be created for the output metadata */
    private boolean buildManagedObject = false;
-   
+
+   /** The name ignore mechanism */
+   private NameIgnoreMechanism nameIgnoreMechanism = DelegateNameIgnoreMechanism.INSTANCE;
+
    /**
     * Create a new AbstractParsingDeployerWithOutput.
     * 
@@ -202,6 +205,21 @@ public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsi
    public void setBuildManagedObject(boolean buildManagedObject)
    {
       this.buildManagedObject = buildManagedObject;
+   }
+
+   /**
+    * Get name ignore mechanism.
+    *
+    * @return the name ignore mechanism
+    */
+   public NameIgnoreMechanism getNameIgnoreMechanism()
+   {
+      return nameIgnoreMechanism;
+   }
+
+   public void setNameIgnoreMechanism(NameIgnoreMechanism nameIgnoreMechanism)
+   {
+      this.nameIgnoreMechanism = nameIgnoreMechanism;
    }
 
    /**
@@ -379,8 +397,7 @@ public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsi
     */
    protected boolean ignoreName(DeploymentUnit unit, String name)
    {
-      NameIgnoreMechanism mechanism = unit.getAttachment(NameIgnoreMechanism.class);
-      return mechanism != null && mechanism.ignoreName(unit, name);
+      return nameIgnoreMechanism != null && nameIgnoreMechanism.ignoreName(unit, name);
    }
 
    /**

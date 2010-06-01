@@ -19,44 +19,21 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.deployers.spi.deployer.matchers;
+package org.jboss.deployers.spi.deployer.helpers;
 
+import org.jboss.deployers.spi.deployer.matchers.LazyPath;
+import org.jboss.deployers.spi.deployer.matchers.NameIgnoreMechanism;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 
 /**
- * Name ignore mechanism.
- * 
+ * Abstract NIM.
+ *
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public interface NameIgnoreMechanism
+public abstract class AbstractNameIgnoreMechanism implements NameIgnoreMechanism
 {
-   /**
-    * Do we ignore this file name.
-    *
-    * @param unit the deployment unit
-    * @param name the name to check
-    * @return true if we should ignore this name, false otherwise
-    */
-   boolean ignoreName(DeploymentUnit unit, String name);
-
-   /**
-    * Do we ignore this relative path.
-    *
-    * @param unit the deployment unit
-    * @param path the relative path to check
-    * @return true if we should ignore this path, false otherwise
-    */
-   boolean ignorePath(DeploymentUnit unit, String path);
-
-   /**
-    * Do we ignore this relative path.
-    * 
-    * Building a path might be expensive, hence the lazy path interface,
-    * as we can mostly short circuit before we actually need the real path.
-    *
-    * @param unit the deployment unit
-    * @param path the lazy path builder
-    * @return true if we should ignore this path, false otherwise
-    */
-   boolean ignorePath(DeploymentUnit unit, LazyPath path);
+   public boolean ignorePath(DeploymentUnit unit, LazyPath path)
+   {
+      return ignorePath(unit, path.buildPath());
+   }
 }

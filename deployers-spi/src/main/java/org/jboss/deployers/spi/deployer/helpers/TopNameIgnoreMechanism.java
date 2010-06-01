@@ -21,7 +21,6 @@
  */
 package org.jboss.deployers.spi.deployer.helpers;
 
-import org.jboss.deployers.spi.deployer.matchers.NameIgnoreMechanism;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 
 /**
@@ -29,47 +28,11 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
  *
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class TopNameIgnoreMechanism implements NameIgnoreMechanism
+public class TopNameIgnoreMechanism extends DelegateNameIgnoreMechanism
 {
-   private boolean reportCycle;
-
-   /**
-    * Get top NIM.
-    *
-    * @param unit the current deployment
-    * @return top NIM or null if not found / top unit
-    */
-   protected NameIgnoreMechanism getTop(DeploymentUnit unit)
+   @Override
+   protected DeploymentUnit adjustDeploymentUnit(DeploymentUnit unit)
    {
-      if (unit.isTopLevel())
-         if (reportCycle)
-            throw new IllegalArgumentException("Potential cyclic usage: " + unit);
-         else
-            return null;
-
-      DeploymentUnit top = unit.getTopLevel();
-      return top.getAttachment(NameIgnoreMechanism.class);
-   }
-
-   public boolean ignoreName(DeploymentUnit unit, String name)
-   {
-      NameIgnoreMechanism top = getTop(unit);
-      return top != null && top.ignoreName(unit, name);
-   }
-
-   public boolean ignorePath(DeploymentUnit unit, String path)
-   {
-      NameIgnoreMechanism top = getTop(unit);
-      return top != null && top.ignorePath(unit, path);
-   }
-
-   /**
-    * Should we report error on cyclic usage.
-    *
-    * @param reportCycle the report error flag
-    */
-   public void setReportCycle(boolean reportCycle)
-   {
-      this.reportCycle = reportCycle;
+      return unit.getTopLevel();
    }
 }

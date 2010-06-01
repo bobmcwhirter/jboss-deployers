@@ -22,13 +22,13 @@
 
 package org.jboss.test.deployers.vfs.matchers.support;
 
-import org.jboss.deployers.spi.deployer.matchers.NameIgnoreMechanism;
+import org.jboss.deployers.spi.deployer.helpers.AbstractNameIgnoreMechanism;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class SingleNIM implements NameIgnoreMechanism
+public class SingleNIM extends AbstractNameIgnoreMechanism
 {
    private String ignore;
 

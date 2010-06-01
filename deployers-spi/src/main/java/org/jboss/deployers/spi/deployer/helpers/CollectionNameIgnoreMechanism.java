@@ -23,7 +23,6 @@ package org.jboss.deployers.spi.deployer.helpers;
 
 import java.util.Collection;
 
-import org.jboss.deployers.spi.deployer.matchers.NameIgnoreMechanism;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 
 /**
@@ -31,7 +30,7 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
  *
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class CollectionNameIgnoreMechanism implements NameIgnoreMechanism
+public class CollectionNameIgnoreMechanism extends AbstractNameIgnoreMechanism
 {
    private final Collection<String> ignoredNames;
    private final Collection<String> ignoredPaths;
