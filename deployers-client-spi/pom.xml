@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.jboss.deployers</groupId>
     <artifactId>jboss-deployers-parent</artifactId>
-    <version>2.2.0-SNAPSHOT</version>
+    <version>2.2.0.Alpha5</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>jboss-deployers-client-spi</artifactId>
