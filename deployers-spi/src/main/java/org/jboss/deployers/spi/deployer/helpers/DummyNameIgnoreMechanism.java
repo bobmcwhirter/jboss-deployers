@@ -21,6 +21,7 @@
  */
 package org.jboss.deployers.spi.deployer.helpers;
 
+import org.jboss.deployers.spi.deployer.matchers.LazyPath;
 import org.jboss.deployers.spi.deployer.matchers.NameIgnoreMechanism;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 
@@ -29,7 +30,7 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
  *
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class DummyNameIgnoreMechanism extends AbstractNameIgnoreMechanism
+public class DummyNameIgnoreMechanism implements NameIgnoreMechanism
 {
    public static final NameIgnoreMechanism INSTANCE = new DummyNameIgnoreMechanism();
 
@@ -41,5 +42,10 @@ public class DummyNameIgnoreMechanism extends AbstractNameIgnoreMechanism
    public boolean ignorePath(DeploymentUnit unit, String path)
    {
       return false;
+   }
+
+   public boolean ignorePath(DeploymentUnit unit, LazyPath path)
+   {
+      return false;      
    }
 }
