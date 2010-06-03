@@ -221,8 +221,16 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
          {
             public String buildPath()
             {
-               VirtualFile root = unit.getRoot();
-               return file.getPathNameRelativeTo(root);
+               try
+               {
+                  VirtualFile root = unit.getRoot();
+                  return file.getPathNameRelativeTo(root);
+               }
+               catch (IllegalArgumentException e)
+               {
+                  // most probably alt-dd file, let's take it's full path
+                  return file.getPathName();
+               }
             }
          };
          return mechanism.ignorePath(unit, path);
