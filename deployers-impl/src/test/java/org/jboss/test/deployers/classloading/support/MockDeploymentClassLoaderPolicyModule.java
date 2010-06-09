@@ -46,6 +46,7 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
  * MockDeploymentClassLoaderPolicyModule.
  * 
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public class MockDeploymentClassLoaderPolicyModule extends AbstractDeploymentClassLoaderPolicyModule
@@ -122,6 +123,7 @@ public class MockDeploymentClassLoaderPolicyModule extends AbstractDeploymentCla
       policy.setExcluded(metaData.getExcludedClasses());
       policy.setImportAll(isImportAll());
       policy.setDelegates(getDelegates());
+      policy.setShutdownPolicy(metaData.getShutdownPolicy());
       return policy;
    }
 

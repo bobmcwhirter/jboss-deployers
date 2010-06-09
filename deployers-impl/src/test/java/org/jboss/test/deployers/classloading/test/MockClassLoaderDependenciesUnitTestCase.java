@@ -308,8 +308,9 @@ public class MockClassLoaderDependenciesUnitTestCase extends ClassLoaderDependen
       assertLoadClassIllegal(clA, B.class);
 
       assertEquals(BA, deployer2.deployed);
-      assertEquals(BA, deployer2.undeployed); // we bounced
-      assertDeploymentStage(getDeploymentUnit(deployer, deploymentA.getName()), DeploymentStages.INSTALLED);
+      assertEquals(BA, deployer2.undeployed); // we got undeployed as per dynamic binding
+      assertDeploymentStage(getDeploymentUnit(deployer, deploymentA.getName()), DeploymentStages.DESCRIBE);
+      assertChange(deployer, deploymentA, DeploymentStages.INSTALLED); // move back to installed, we're dynamic so np
       clA = unitA.getClassLoader(); // re-get classloader
 
       assertLoadClassFail(clA, B.class); // no match found

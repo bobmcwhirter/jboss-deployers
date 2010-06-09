@@ -228,7 +228,7 @@ public abstract class AbstractVFSParsingDeployer<T> extends AbstractParsingDeplo
                }
                catch (IllegalArgumentException e)
                {
-                  // most probably alt-dd file, let's take it's full path
+                  // most probably alt-dd file, let's take its full path
                   return file.getPathName();
                }
             }
