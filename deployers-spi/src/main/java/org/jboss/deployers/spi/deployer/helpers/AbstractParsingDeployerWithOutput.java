@@ -72,7 +72,10 @@ public abstract class AbstractParsingDeployerWithOutput<T> extends AbstractParsi
       if (output == null)
          throw new IllegalArgumentException("Null output");
       setOutput(output);
-      setAttachmentKey(output.getName());
+      // check for attachment key 
+      AttachmentKey ak = output.getAnnotation(AttachmentKey.class);
+      String aks = ak != null ? ak.value() : output.getName();
+      setAttachmentKey(aks);
    }
    
    @SuppressWarnings("unchecked")
