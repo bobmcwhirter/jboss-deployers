@@ -1,0 +1,9 @@
+<deployment xmlns="urn:jboss:bean-deployer:2.0">
+
+  <bean name="RLDeployer" class="org.jboss.deployers.plugins.classloading.AbstractResourceLookupDeployer">
+     <constructor>
+        <value>META-INF/beans.xml</value>
+     </constructor>
+  </bean>
+
+</deployment>
