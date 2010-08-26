@@ -35,6 +35,7 @@ import org.jboss.classloading.spi.visitor.ResourceFilter;
 import org.jboss.classloading.spi.visitor.ResourceVisitor;
 import org.jboss.classloading.spi.visitor.RootAwareResource;
 import org.jboss.deployers.spi.DeploymentException;
+import org.jboss.deployers.spi.classloading.ResourceLookupProvider;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.spi.deployer.helpers.AbstractSimpleRealDeployer;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
@@ -47,7 +48,7 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
  *
  * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  */
-public class AbstractResourceLookupDeployer extends AbstractSimpleRealDeployer<Module>
+public class AbstractResourceLookupDeployer extends AbstractSimpleRealDeployer<Module> implements ResourceLookupProvider<Module>
 {
    private String resourceName;
    private String[] dir;
@@ -79,11 +80,11 @@ public class AbstractResourceLookupDeployer extends AbstractSimpleRealDeployer<M
       matchingModules = new ConcurrentHashMap<Module, Set<URL>>();
    }
 
-   /**
-    * Get matching modules and urls which own matching resources.
-    *
-    * @return the matching modules and urls which own matching resources.
-    */
+   public String getResourceName()
+   {
+      return resourceName;
+   }
+
    public Map<Module, Set<URL>> getMatchingModules()
    {
       return Collections.unmodifiableMap(matchingModules);
