@@ -113,6 +113,18 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
             if (childPath.startsWith(parentPath))
                 return childPath.substring(parentPath.length());
          }
+         // Assuming that child and parent don't have a parent -> child relationship
+         // but instead, have a common path with different suffixes
+         VirtualFile tempFile = parent;
+         StringBuilder relativePath = new StringBuilder();
+         // find the prefix that child shares with parent (in tempFile)
+         while(!childPath.startsWith(tempFile.getPathName()))
+         {
+            relativePath.append("/.."); // for every level we need to go up in the file system 
+            tempFile = tempFile.getParent();
+         }
+         relativePath.append(childPath.substring(tempFile.getPathName().length()));
+         childPath = relativePath.toString().substring(1);
       }
       
       if (childPath.endsWith("/"))
