@@ -54,6 +54,7 @@ public class FilesStructureBuilderUnitTestCase extends VFSStructureBuilderUnitTe
       super(name);
    }
 
+   @Override
    protected DeploymentContext build(Deployment deployment) throws DeploymentException
    {
       return deployment.getPredeterminedManagedObjects().getAttachment(DeploymentContext.class);
@@ -84,32 +85,44 @@ public class FilesStructureBuilderUnitTestCase extends VFSStructureBuilderUnitTe
       return createDeployment(new DeclaredStructure(), new ChildFileStructure(), new JARStructure());
    }
 
+   @Override
    protected Deployment createSimple() throws Exception
    {
       return createDefaultDeployment();
    }
 
+   @Override
    protected Deployment createSimpleWithAttachment() throws Exception
    {
       return createDefaultDeployment();
    }
 
+   @Override
    protected Deployment createOneChild() throws Exception
    {
       return createDefaultDeployment();
    }
 
+   @Override
    protected Deployment createManyChildren() throws Exception
    {
       return createDefaultDeployment();
    }
 
+   @Override
    protected Deployment createMetaDataLocation() throws Exception
    {
       return createDefaultDeployment();
    }
 
+   @Override
    protected Deployment createClasspathEntries() throws Exception
+   {
+      return createDefaultDeployment();
+   }
+
+   @Override
+   protected Deployment createClasspathEntriesWithExternalJar() throws Exception
    {
       return createDefaultDeployment();
    }

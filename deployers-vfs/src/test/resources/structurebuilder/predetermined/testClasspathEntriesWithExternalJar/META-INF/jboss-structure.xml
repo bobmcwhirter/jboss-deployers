@@ -1,0 +1,9 @@
+<structure>
+	<context>
+		<path name=""/>
+      <classpath>
+			<path name="cp.txt"/>
+			<path name="../external_cp.txt"/>
+		</classpath>
+	</context>
+</structure>

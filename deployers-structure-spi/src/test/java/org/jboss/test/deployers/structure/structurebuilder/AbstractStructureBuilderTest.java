@@ -198,6 +198,23 @@ public abstract class AbstractStructureBuilderTest extends BaseTestCase
       return deployment;
    }
 
+   public void testClasspathEntriesWithExternalJar() throws Exception
+   {
+      Deployment deployment = createClasspathEntriesWithExternalJar();
+      DeploymentContext context = build(deployment);
+      checkDeployment(context, deployment);
+   }
+
+   protected Deployment createClasspathEntriesWithExternalJar() throws Exception
+   {
+      DeploymentFactory factory = getDeploymentFactory();
+      Deployment deployment = createDeployment();
+      ContextInfo contextInfo = factory.addContext(deployment, "");
+      contextInfo.addClassPathEntry(DeploymentFactory.createClassPathEntry("cp.txt"));
+      contextInfo.addClassPathEntry(DeploymentFactory.createClassPathEntry("../external_cp.txt"));
+      return deployment;
+   }
+
    protected void checkDeployment(DeploymentContext context, Deployment deployment) throws Exception
    {
       assertNotNull(context);
