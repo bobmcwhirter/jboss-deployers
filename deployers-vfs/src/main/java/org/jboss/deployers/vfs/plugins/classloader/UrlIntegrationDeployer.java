@@ -22,12 +22,12 @@
 package org.jboss.deployers.vfs.plugins.classloader;
 
 import java.net.URL;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.security.ProtectionDomain;
-import java.security.CodeSource;
 
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
 import org.jboss.deployers.spi.DeploymentException;
@@ -48,7 +48,7 @@ import org.jboss.vfs.VirtualFile;
 public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealDeployer<T>
 {
    /** The is integration cached flag key */
-   public static final String IS_INTEGRATION_FLAG_KEY = UrlIntegrationDeployer.class.getSimpleName() + "::isIntegrationDeployment";
+   private String isIntegrationFlagKey = getClass().getSimpleName() + "::isIntegrationDeployment_" + hashCode();
 
    /** Location of integration jar */
    private Set<URL> integrationURLs;
@@ -122,7 +122,7 @@ public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealD
       if (isIntegrationDeployment(unit, metaData))
       {
          // mark as integration deployment
-         unit.addAttachment(IS_INTEGRATION_FLAG_KEY, true, Boolean.class);
+         unit.addAttachment(isIntegrationFlagKey, true, Boolean.class);
 
          List<VirtualFile> added = new ArrayList<VirtualFile>();
          try
@@ -146,7 +146,7 @@ public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealD
    @Override
    public void undeploy(VFSDeploymentUnit unit, T metaData)
    {
-      Boolean isIntegrationDeployment = unit.getAttachment(IS_INTEGRATION_FLAG_KEY, Boolean.class);
+      Boolean isIntegrationDeployment = unit.getAttachment(isIntegrationFlagKey, Boolean.class);
       if (isIntegrationDeployment != null && isIntegrationDeployment)
       {
          for (URL integrationURL : integrationURLs)
@@ -162,7 +162,7 @@ public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealD
             }
          }
          // remove integration flag
-         unit.removeAttachment(IS_INTEGRATION_FLAG_KEY);
+         unit.removeAttachment(isIntegrationFlagKey);
       }
    }
 
@@ -199,4 +199,15 @@ public abstract class UrlIntegrationDeployer<T> extends AbstractOptionalVFSRealD
     * @return true if the unit is integration deployment
     */
    protected abstract boolean isIntegrationDeployment(VFSDeploymentUnit unit);
+
+   /**
+    * Set the integration flag key.
+    *
+    * @param integrationFlagKey the integration flag key
+    */
+   public void setIntegrationFlagKey(String integrationFlagKey)
+   {
+      if (integrationFlagKey != null) // leave default otherwise
+         isIntegrationFlagKey = integrationFlagKey;
+   }
 }
