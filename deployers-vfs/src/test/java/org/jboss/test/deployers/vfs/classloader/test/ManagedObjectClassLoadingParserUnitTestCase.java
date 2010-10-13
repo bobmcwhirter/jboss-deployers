@@ -25,12 +25,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import junit.framework.Test;
-
 import org.jboss.classloader.spi.ShutdownPolicy;
 import org.jboss.classloading.spi.metadata.CapabilitiesMetaData;
 import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
 import org.jboss.classloading.spi.metadata.ExportAll;
+import org.jboss.classloading.spi.metadata.ParentPolicyMetaData;
 import org.jboss.classloading.spi.metadata.RequirementsMetaData;
 import org.jboss.classloading.spi.version.Version;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentUnit;
@@ -43,10 +42,13 @@ import org.jboss.metatype.api.values.MetaValue;
 import org.jboss.metatype.api.values.MetaValueFactory;
 import org.jboss.test.deployers.BootstrapDeployersTest;
 
+import junit.framework.Test;
+
 /**
  * ManagedObjectClassLoadingParserUnitTestCase.
  *
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public class ManagedObjectClassLoadingParserUnitTestCase extends BootstrapDeployersTest
@@ -94,7 +96,7 @@ public class ManagedObjectClassLoadingParserUnitTestCase extends BootstrapDeploy
          assertNotNull(mo);
          getLog().debug("ManagedObject: " + mo + " properties=" + mo.getProperties());
 
-         List<String> expectedProperties = Arrays.asList("name", "version", "domain", "parentDomain", "topLevelClassLoader", "exportAll", "shutdown", "included", "excluded", "excludedExport", "importAll", "parentFirst", "cache", "blackList", "capabilities", "requirements");
+         List<String> expectedProperties = Arrays.asList("name", "version", "domain", "parentDomain", "topLevelClassLoader", "exportAll", "shutdown", "included", "excluded", "excludedExport", "importAll", "parentFirst", "cache", "blackList", "capabilities", "requirements", "parentPolicy");
          Set<String> actualProperties = mo.getPropertyNames();
          for (String expected : expectedProperties)
          {
@@ -121,7 +123,7 @@ public class ManagedObjectClassLoadingParserUnitTestCase extends BootstrapDeploy
          assertManagedProperty(mo, "parentFirst", boolean.class, true);
          assertManagedProperty(mo, "capabilities", CapabilitiesMetaData.class, new CapabilitiesMetaData());
          assertManagedProperty(mo, "requirements", RequirementsMetaData.class, new RequirementsMetaData());
-
+         assertManagedProperty(mo, "parentPolicy", ParentPolicyMetaData.class, null);
       }
       finally
       {
