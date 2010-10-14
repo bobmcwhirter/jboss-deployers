@@ -110,6 +110,8 @@ public class ClassLoadingDomainUnitTestCase extends ClassLoaderDependenciesTest
          DeploymentUnit unitB = assertDeploy(mainDeployer, deploymentB);
          try
          {
+            assertDomain(unitB.getName());
+
             ClassLoader clB = unitB.getClassLoader();
             assertLoadClass(clB, A.class, clA);
             assertLoadClassFail(clB, B.class);
@@ -123,7 +125,10 @@ public class ClassLoadingDomainUnitTestCase extends ClassLoaderDependenciesTest
       {
          mainDeployer.undeploy(deploymentA);
       }
+   }
 
-
+   public void testNested() throws Exception
+   {
+      // TODO
    }
 }
