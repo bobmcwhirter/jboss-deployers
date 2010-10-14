@@ -31,7 +31,12 @@ import org.jboss.classloader.spi.ClassLoaderSystem;
 import org.jboss.classloader.spi.ParentPolicy;
 import org.jboss.classloading.spi.dependency.ClassLoading;
 import org.jboss.classloading.spi.dependency.policy.mock.MockClassLoadingMetaData;
-import org.jboss.classloading.spi.metadata.*;
+import org.jboss.classloading.spi.metadata.CapabilitiesMetaData;
+import org.jboss.classloading.spi.metadata.Capability;
+import org.jboss.classloading.spi.metadata.ClassLoadingMetaData;
+import org.jboss.classloading.spi.metadata.ClassLoadingMetaDataFactory;
+import org.jboss.classloading.spi.metadata.Requirement;
+import org.jboss.classloading.spi.metadata.RequirementsMetaData;
 import org.jboss.classloading.spi.version.Version;
 import org.jboss.classloading.spi.version.VersionRange;
 import org.jboss.deployers.client.spi.DeployerClient;
@@ -83,6 +88,11 @@ public abstract class ClassLoaderDependenciesTest extends AbstractDeployerTest
    protected ClassLoaderDependenciesTest(String name)
    {
       super(name);
+   }
+
+   protected ClassLoaderSystem getSystem()
+   {
+      return system;
    }
 
    protected Class<?> assertLoadClass(ClassLoader start, Class<?> reference) throws Exception

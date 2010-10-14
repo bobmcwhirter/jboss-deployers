@@ -21,21 +21,17 @@
 */
 package org.jboss.test.deployers.classloading;
 
+import org.jboss.test.deployers.classloading.test.*;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
-
-import org.jboss.test.deployers.classloading.test.ClassLoadingLifeCycleUnitTestCase;
-import org.jboss.test.deployers.classloading.test.MockClassLoaderDependenciesUnitTestCase;
-import org.jboss.test.deployers.classloading.test.ModuleRemoveUnitTestCase;
-import org.jboss.test.deployers.classloading.test.SubDeploymentMockClassLoaderUnitTestCase;
-import org.jboss.test.deployers.classloading.test.UndeployOrderClassLoaderUnitTestCase;
-import org.jboss.test.deployers.classloading.test.MockResourceVisitorDeployerUnitTestCase;
 
 /**
  * Deployers Deployer Test Suite.
  * 
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 37459 $
  */
 public class DeployersClassLoadingTestSuite extends TestSuite
@@ -55,6 +51,7 @@ public class DeployersClassLoadingTestSuite extends TestSuite
       suite.addTest(MockResourceVisitorDeployerUnitTestCase.suite());
       suite.addTest(ModuleRemoveUnitTestCase.suite());
       suite.addTest(ClassLoadingLifeCycleUnitTestCase.suite());
+      suite.addTest(ClassLoadingDomainUnitTestCase.suite());
 
       return suite;
    }

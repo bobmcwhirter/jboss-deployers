@@ -105,6 +105,13 @@
       <property name="name">jboss-classloading.xml</property>
       <property name="buildManagedObject">true</property>
    </bean>
+   <bean name="ClassLoadingDomainMetaDataParser" class="org.jboss.deployers.vfs.spi.deployer.SchemaResolverDeployer">
+      <constructor>
+         <parameter>org.jboss.classloading.spi.metadata.ClassLoadingDomainMetaData</parameter>
+      </constructor>
+      <property name="name">jboss-classloading-domain.xml</property>
+      <property name="buildManagedObject">true</property>
+   </bean>
    <bean name="DeploymentMetaDataParser" class="org.jboss.deployers.vfs.spi.deployer.SchemaResolverDeployer">
       <constructor>
          <parameter>org.jboss.deployers.spi.classloading.DeploymentMetaData</parameter>
@@ -125,6 +132,9 @@
    <bean name="ClassLoaderClassPathDeployer" class="org.jboss.deployers.vfs.plugins.classloader.VFSClassLoaderClassPathDeployer"/>
    <bean name="ClassLoaderDescribeDeployer" class="org.jboss.deployers.vfs.plugins.classloader.VFSClassLoaderDescribeDeployer">
       <property name="classLoading"><inject bean="ClassLoading"/></property>
+   </bean>
+   <bean name="ClassLoadingDomainDeployer" class="org.jboss.deployers.plugins.classloading.AbstractClassLoadingDomainDeployer">
+      <property name="system"><inject bean="ClassLoaderSystem"/></property>
    </bean>
    <bean name="ClassLoaderDeployer" class="org.jboss.deployers.plugins.classloading.AbstractLevelClassLoaderSystemDeployer">
       <property name="classLoading"><inject bean="ClassLoading"/></property>

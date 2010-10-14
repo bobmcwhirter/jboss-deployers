@@ -62,7 +62,7 @@ public class AbstractClassLoadingDomainDeployer extends AbstractSimpleRealDeploy
    public void deploy(DeploymentUnit unit, ClassLoadingDomainMetaData deployment) throws DeploymentException
    {
       String name = deployment.getName();
-      if (name == null)
+      if (name == null || "<unknown>".equals(name))
          name = unit.getName();
 
       ParentPolicyMetaData ppmd = deployment.getParentPolicy();
@@ -92,7 +92,7 @@ public class AbstractClassLoadingDomainDeployer extends AbstractSimpleRealDeploy
    public void undeploy(DeploymentUnit unit, ClassLoadingDomainMetaData deployment)
    {
       String name = deployment.getName();
-      if (name == null)
+      if (name == null || "<unknown>".equals(name))
          name = unit.getName();
 
       // should be already removed, but let's make sure
