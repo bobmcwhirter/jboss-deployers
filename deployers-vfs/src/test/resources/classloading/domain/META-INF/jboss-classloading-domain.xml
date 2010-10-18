@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<classloading-domain xmlns="urn:jboss:classloading-domain:1.0" name="test">
+   <parent-policy>
+      <before-filter>org.jboss.classloader.spi.base</before-filter>
+      <description>Qwert</description>
+   </parent-policy>
+</classloading-domain>

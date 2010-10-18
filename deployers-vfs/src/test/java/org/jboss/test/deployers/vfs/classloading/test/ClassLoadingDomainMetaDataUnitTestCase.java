@@ -21,9 +21,13 @@
 */
 package org.jboss.test.deployers.vfs.classloading.test;
 
+import org.jboss.classloader.spi.ClassLoaderSystem;
+import org.jboss.classloader.spi.base.BaseClassLoader;
+import org.jboss.classloader.spi.jdk.JDKChecker;
 import org.jboss.classloading.spi.metadata.ClassLoadingDomainMetaData;
 import org.jboss.classloading.spi.metadata.FilterMetaData;
 import org.jboss.classloading.spi.metadata.ParentPolicyMetaData;
+import org.jboss.dependency.spi.ControllerState;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.test.deployers.BootstrapDeployersTest;
 
@@ -65,6 +69,23 @@ public class ClassLoadingDomainMetaDataUnitTestCase extends BootstrapDeployersTe
          value = af.getValue();
          assertInstanceOf(value, String[].class);
          assertEquals(new String[]{"org.jboss.foobar", "com.redhat.foobar"}, (String[]) value);
+      }
+      finally
+      {
+         undeploy(du);
+      }
+   }
+
+   public void testDeployer() throws Exception
+   {
+      DeploymentUnit du = addDeployment("/classloading", "domain");
+      try
+      {
+         ClassLoaderSystem system = (ClassLoaderSystem) getBean("ClassLoaderSystem", ControllerState.INSTALLED);
+         assertNotNull(system.getDomain("test"));
+         ClassLoader cl = du.getClassLoader();
+         assertLoadClassFail(JDKChecker.class.getName(), cl);
+         assertLoadClass(BaseClassLoader.class.getName(), cl, BaseClassLoader.class.getClassLoader());
       }
       finally
       {
