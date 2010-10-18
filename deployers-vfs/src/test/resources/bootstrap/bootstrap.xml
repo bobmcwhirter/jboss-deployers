@@ -107,10 +107,12 @@
    </bean>
    <bean name="ClassLoadingDomainMetaDataParser" class="org.jboss.deployers.vfs.spi.deployer.SchemaResolverDeployer">
       <constructor>
-         <parameter>org.jboss.classloading.spi.metadata.ClassLoadingDomainMetaData</parameter>
+         <parameter>org.jboss.classloading.spi.metadata.ClassLoadingDomainMetaData10</parameter>
       </constructor>
+      <property name="attachmentKey">org.jboss.classloading.spi.metadata.ClassLoadingDomainMetaData</property>
       <property name="name">jboss-classloading-domain.xml</property>
       <property name="buildManagedObject">true</property>
+      <property name="registerWithJBossXB">true</property>
    </bean>
    <bean name="DeploymentMetaDataParser" class="org.jboss.deployers.vfs.spi.deployer.SchemaResolverDeployer">
       <constructor>

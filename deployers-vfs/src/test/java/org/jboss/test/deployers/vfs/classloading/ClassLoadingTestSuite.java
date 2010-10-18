@@ -23,6 +23,7 @@
 package org.jboss.test.deployers.vfs.classloading;
 
 import org.jboss.test.deployers.vfs.classloading.test.ClassLoaderCachingTestCase;
+import org.jboss.test.deployers.vfs.classloading.test.ClassLoadingDomainMetaDataUnitTestCase;
 import org.jboss.test.deployers.vfs.classloading.test.DeploymentMetaDataUnitTestCase;
 import org.jboss.test.deployers.vfs.classloading.test.ResourceLookupUnitTestCase;
 
@@ -47,6 +48,7 @@ public class ClassLoadingTestSuite
       TestSuite suite = new TestSuite("VFS ClassLoading Tests");
 
       suite.addTest(DeploymentMetaDataUnitTestCase.suite());
+      suite.addTest(ClassLoadingDomainMetaDataUnitTestCase.suite());
       suite.addTest(ClassLoaderCachingTestCase.suite());
       suite.addTest(ResourceLookupUnitTestCase.suite());
 

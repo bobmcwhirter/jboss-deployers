@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<classloading-domain xmlns="urn:jboss:classloading-domain:1.0" name="test">
+   <parent-policy>
+      <before-filter>org.jboss.acme,com.redhat.acme</before-filter>
+      <after-filter>org.jboss.foobar,com.redhat.foobar</after-filter>
+      <description>Qwert</description>
+   </parent-policy>
+</classloading-domain>
