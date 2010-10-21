@@ -59,6 +59,7 @@ public class ClassLoaderTestSuite extends TestSuite
       suite.addTest(ManifestClassLoaderUnitTestCase.suite());
       suite.addTest(IntegrationDeployerUnitTestCase.suite());
       suite.addTest(RequirementsIntegrationUnitTestCase.suite());
+      suite.addTest(ResourcesUnitTestCase.suite());
 
       return suite;
    }

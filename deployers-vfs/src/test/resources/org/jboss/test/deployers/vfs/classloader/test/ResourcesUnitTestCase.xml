@@ -1,0 +1,5 @@
+<deployment xmlns="urn:jboss:bean-deployer:2.0">
+
+  <bean name="ExtCLPathDeployer" class="org.jboss.test.deployers.vfs.classloader.support.ExtCLPathDeployer"/>
+
+</deployment>
