@@ -41,7 +41,10 @@ public class TopNameIgnoreMechanism extends DelegateNameIgnoreMechanism
    {
       DeploymentUnit top = adjustDeploymentUnit(unit);
       if (top != unit)
-         path = unit.getRelativePath() + path;
+      {
+         String prefix = unit.getRelativePath();
+         path = prefix + (prefix.endsWith("/") == false && path.startsWith("/") == false ? "/" : "") + path;
+      }
       return super.ignorePath(unit, path);
    }
 
