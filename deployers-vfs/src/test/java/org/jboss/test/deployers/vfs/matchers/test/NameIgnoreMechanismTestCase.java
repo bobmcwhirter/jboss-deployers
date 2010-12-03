@@ -27,6 +27,7 @@ import java.util.Set;
 
 import org.jboss.deployers.client.spi.DeployerClient;
 import org.jboss.deployers.client.spi.Deployment;
+import org.jboss.deployers.spi.deployer.helpers.TopNameIgnoreMechanism;
 import org.jboss.deployers.vfs.plugins.structure.jar.JARStructure;
 import org.jboss.deployers.vfs.spi.deployer.AbstractIgnoreFilesDeployer;
 import org.jboss.test.deployers.BaseDeployersVFSTest;
@@ -62,9 +63,15 @@ public class NameIgnoreMechanismTestCase extends BaseDeployersVFSTest
 
       Deployment deployment = createDeployment("/matchers", "ignore");
       main.deploy(deployment);
-
-      assertEquals(size, fbd.getFiles().size());
-      assertFalse(fbd.getFiles().contains("fst.txt"));
+      try
+      {
+         assertEquals(size, fbd.getFiles().size());
+         assertFalse(fbd.getFiles().contains("fst.txt"));
+      }
+      finally
+      {
+         main.undeploy(deployment);
+      }
    }
 
    public void testSingleNameNoSuffix() throws Throwable
@@ -100,7 +107,7 @@ public class NameIgnoreMechanismTestCase extends BaseDeployersVFSTest
       fbd.setSuffix(".txt");
       fbd.setAllowMultipleFiles(true);
 
-      testNameIgnoreMechanism(fbd, 3);
+      testNameIgnoreMechanism(fbd, 4);
    }
 
    public void testNamesWithSuffix() throws Throwable
@@ -126,8 +133,39 @@ public class NameIgnoreMechanismTestCase extends BaseDeployersVFSTest
 
       Deployment deployment = createDeployment("/matchers", "ignore");
       main.deploy(deployment);
+      try
+      {
+         assertEquals(3, fbd.getFiles().size());
+         assertFalse(fbd.getFiles().contains("fst.txt"));
+      }
+      finally
+      {
+         main.undeploy(deployment);
+      }
+   }
 
-      assertEquals(2, fbd.getFiles().size());
-      assertFalse(fbd.getFiles().contains("fst.txt"));
+   public void testTopNIM() throws Throwable
+   {
+      FeedbackDeployer fbd = new FeedbackDeployer();
+      fbd.setSuffix(".txt");
+      fbd.setAllowMultipleFiles(true);
+      fbd.setNameIgnoreMechanism(new TopNameIgnoreMechanism());
+
+      AbstractIgnoreFilesDeployer nimd = new AbstractIgnoreFilesDeployer();
+
+      DeployerClient main = createMainDeployer(fbd, nimd);
+      addStructureDeployer(main, new JARStructure());
+
+      Deployment deployment = createDeployment("/matchers", "ignore");
+      main.deploy(deployment);
+      try
+      {
+         assertEquals(2, fbd.getFiles().size());
+         assertFalse(fbd.getFiles().contains("fst.txt"));
+      }
+      finally
+      {
+         main.undeploy(deployment);
+      }
    }
 }

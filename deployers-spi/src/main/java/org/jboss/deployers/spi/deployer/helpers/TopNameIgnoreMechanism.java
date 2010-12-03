@@ -21,6 +21,7 @@
  */
 package org.jboss.deployers.spi.deployer.helpers;
 
+import org.jboss.deployers.spi.deployer.matchers.LazyPath;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 
 /**
@@ -34,5 +35,32 @@ public class TopNameIgnoreMechanism extends DelegateNameIgnoreMechanism
    protected DeploymentUnit adjustDeploymentUnit(DeploymentUnit unit)
    {
       return unit.getTopLevel();
+   }
+
+   public boolean ignorePath(DeploymentUnit unit, String path)
+   {
+      DeploymentUnit top = adjustDeploymentUnit(unit);
+      if (top != unit)
+         path = unit.getRelativePath() + path;
+      return super.ignorePath(unit, path);
+   }
+
+   public boolean ignorePath(final DeploymentUnit unit, LazyPath path)
+   {
+      DeploymentUnit top = adjustDeploymentUnit(unit);
+      if (top != unit)
+      {
+         final LazyPath lp = path;
+         path = new LazyPath()
+         {
+            public String buildPath()
+            {
+               String prefix = unit.getRelativePath();
+               String suffix = lp.buildPath();
+               return prefix + (prefix.endsWith("/") == false && suffix.startsWith("/") == false ? "/" : "") + suffix;
+            }
+         };
+      }
+      return super.ignorePath(unit, path);
    }
 }
