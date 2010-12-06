@@ -124,4 +124,26 @@ public abstract class JBossXBDeployer<T> extends UnmarshallerFactoryDeployer<T, 
    {
       getHelper().setUseValidation(useValidation);
    }
+
+   /**
+    * This property controls whether the (underlying) parser errors should be
+    * logged as warnings or should they terminate parsing with errors.
+    * The default is to terminate parsing by re-throwing parser errors.
+    *
+    * @return false if parser errors should be logged as warnings, true otherwise
+    */
+   public boolean isWarnOnParserErrors()
+   {
+      return false; // getHelper().isWarnOnParserErrors();
+   }
+
+   /**
+    * Set warn on errors flag.
+    *
+    * @param warnOnParserErrors the warn on errors flag
+    */
+   public void setWarnOnParserErrors(boolean warnOnParserErrors)
+   {
+      // getHelper().setWarnOnParserErrors(warnOnParserErrors);
+   }
 }
