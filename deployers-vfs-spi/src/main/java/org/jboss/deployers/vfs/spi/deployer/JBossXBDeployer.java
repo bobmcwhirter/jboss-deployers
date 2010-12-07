@@ -134,7 +134,7 @@ public abstract class JBossXBDeployer<T> extends UnmarshallerFactoryDeployer<T, 
     */
    public boolean isWarnOnParserErrors()
    {
-      return false; // getHelper().isWarnOnParserErrors();
+      return getHelper().isWarnOnParserErrors();
    }
 
    /**
@@ -144,6 +144,6 @@ public abstract class JBossXBDeployer<T> extends UnmarshallerFactoryDeployer<T, 
     */
    public void setWarnOnParserErrors(boolean warnOnParserErrors)
    {
-      // getHelper().setWarnOnParserErrors(warnOnParserErrors);
+      getHelper().setWarnOnParserErrors(warnOnParserErrors);
    }
 }
