@@ -21,13 +21,18 @@
  */
 package org.jboss.system.deployers.managed;
 
-import java.io.Serializable;
-import java.util.List;
-
 import javax.management.AttributeNotFoundException;
 import javax.management.InstanceNotFoundException;
+import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanInfo;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+
+import java.beans.PropertyEditor;
+import java.io.Serializable;
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.List;
 
 import org.jboss.beans.info.spi.BeanInfo;
 import org.jboss.beans.info.spi.PropertyInfo;
@@ -35,20 +40,24 @@ import org.jboss.logging.Logger;
 import org.jboss.managed.api.ManagedProperty;
 import org.jboss.managed.spi.factory.InstanceClassFactory;
 import org.jboss.metadata.spi.MetaData;
+import org.jboss.metatype.api.types.MetaType;
 import org.jboss.metatype.api.values.MetaValue;
 import org.jboss.metatype.api.values.MetaValueFactory;
-import org.jboss.system.metadata.ServiceAnnotationMetaData;
-import org.jboss.system.metadata.ServiceAttributeMetaData;
-import org.jboss.system.metadata.ServiceDependencyValueMetaData;
-import org.jboss.system.metadata.ServiceMetaData;
-import org.jboss.system.metadata.ServiceTextValueMetaData;
-import org.jboss.system.metadata.ServiceValueMetaData;
+import org.jboss.metatype.spi.values.MetaMapper;
+import org.jboss.mx.util.JMXExceptionDecoder;
+import org.jboss.system.ServiceController;
+import org.jboss.system.metadata.*;
+import org.jboss.util.propertyeditor.PropertyEditors;
+
+import org.w3c.dom.Element;
 
 /**
  * The InstanceClassFactory implementation for ServiceMetaData.
- * 
+ *
  * @author Scott.Stark@jboss.org
  * @author Dimitris.Andreadis@jboss.org
+ * @author <a href="mailto:emuckenh@redhat.com">Emanuel Muckenhuber</a>
+ * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision$
  */
 public class ServiceMetaDataICF implements InstanceClassFactory<ServiceMetaData>
@@ -56,11 +65,12 @@ public class ServiceMetaDataICF implements InstanceClassFactory<ServiceMetaData>
    private static final Logger log = Logger.getLogger(ServiceMetaDataICF.class);
 
    private static final String MOCLASS_ANNOTATION = '@' + ManagementObjectClass.class.getName();
-   
+
    private MBeanServer mbeanServer;
-   
+   private ServiceController controller;
+
    /** The meta value factory */
-   private MetaValueFactory metaValueFactory = MetaValueFactory.getInstance(); 
+   private MetaValueFactory metaValueFactory = MetaValueFactory.getInstance();
 
    public MBeanServer getMbeanServer()
    {
@@ -72,12 +82,20 @@ public class ServiceMetaDataICF implements InstanceClassFactory<ServiceMetaData>
       this.mbeanServer = mbeanServer;
    }
 
+   public ServiceController getController()
+   {
+      return controller;
+   }
+   public void setController(ServiceController controller)
+   {
+      this.controller = controller;
+   }
+
    public Class<ServiceMetaData> getType()
    {
       return ServiceMetaData.class;
    }
 
-   @SuppressWarnings("unchecked")
    public Class<? extends Serializable> getManagedObjectClass(ServiceMetaData md)
       throws ClassNotFoundException
    {
@@ -102,9 +120,9 @@ public class ServiceMetaDataICF implements InstanceClassFactory<ServiceMetaData>
                Class<?> originalClass = moClass;
                ManagementObjectClass moc = (ManagementObjectClass)sam.getAnnotationInstance(loader);
                moClass = moc.code();
-               log.debugf("Using alternate class '%1s' for class %2s",  moClass, originalClass);
+               log.debug("Using alternate class '" + moClass + "' for class " + originalClass);
                break;
-            }  
+            }
          }
          return moClass;
       }
@@ -129,7 +147,11 @@ public class ServiceMetaDataICF implements InstanceClassFactory<ServiceMetaData>
 
       ClassLoader prevLoader = SecurityActions.getContextClassLoader();
       Object value = null;
+      MetaType metaType = property.getMetaType();
       MetaValue mvalue = null;
+      ObjectName mbean = md.getObjectName();
+      String attrName = null;
+
       try
       {
          ClassLoader loader = getServiceMetaDataCL(md);
@@ -143,17 +165,16 @@ public class ServiceMetaDataICF implements InstanceClassFactory<ServiceMetaData>
             if (amd.getName().equalsIgnoreCase(name))
             {
                value = amd.getValue();
+               attrName = amd.getName();
                break;
             }
          }
          // If the value is null, look to mbean for the value
-         if (value == null)
+         if (value == null && getMbeanServer() != null)
          {
-            ObjectName mbean = md.getObjectName();
             try
             {
-               if(getMbeanServer() != null)
-                  value = getMbeanServer().getAttribute(mbean, name);
+               value = getMbeanServer().getAttribute(mbean, name);
             }
             catch (AttributeNotFoundException e)
             {
@@ -169,36 +190,70 @@ public class ServiceMetaDataICF implements InstanceClassFactory<ServiceMetaData>
                }
                catch(Exception e2)
                {
-                  log.debugf(e2, "Failed to get value from mbean for: %1s", attribute);
-               }               
+                  log.debug("Failed to get value from mbean for: "+attribute, e2);
+               }
             }
             catch(Exception e)
             {
-               log.debugf(e, "Failed to get value from mbean for: %1s", name);
+               log.debug("Failed to get value from mbean for: "+name, e);
             }
          }
-   
+
          // Unwrap the ServiceValueMetaData types
-         if (value instanceof ServiceTextValueMetaData)
-         {
-            ServiceTextValueMetaData text = (ServiceTextValueMetaData) value;
-            value = text.getText();
-         }
-         else if (value instanceof ServiceDependencyValueMetaData)
-         {
-            ServiceDependencyValueMetaData depends = (ServiceDependencyValueMetaData) value;
-            value = depends.getDependency();
-         }
-         // TODO: unwrap other ServiceValueMetaData types
-   
-         PropertyInfo propertyInfo = beanInfo.getProperty(name);
          try
          {
-            mvalue = metaValueFactory.create(value, propertyInfo.getType());
+            if (value instanceof ServiceTextValueMetaData)
+            {
+               ServiceTextValueMetaData text = (ServiceTextValueMetaData) value;
+               try
+               {
+                  // TODO: cache this somehow
+                  HashMap<String, MBeanAttributeInfo> attrs = getAttributeMap(mbeanServer, mbean);
+                  MBeanAttributeInfo mbi = attrs.get(attrName);
+                  ServiceValueContext svc = new ServiceValueContext(mbeanServer, controller, mbi, loader);
+                  value = text.getValue(svc);
+               }
+               catch(Exception e)
+               {
+                  // TODO: better way to determine if the bean was installed, as this does not make much sense
+                  PropertyEditor editor = PropertyEditors.getEditor(metaType.getTypeName());
+                  editor.setAsText(text.getText());
+                  value = editor.getValue();
+               }
+            }
+            else if (value instanceof ServiceDependencyValueMetaData)
+            {
+               ServiceDependencyValueMetaData depends = (ServiceDependencyValueMetaData) value;
+               value = depends.getObjectName();
+            }
+            else if (value instanceof ServiceElementValueMetaData)
+            {
+               value = ((ServiceElementValueMetaData)value).getElement();
+            }
+            // TODO: unwrap other ServiceValueMetaData types
          }
          catch(Exception e)
          {
-            log.debugf(e, "Failed to get property value for bean: %1s, property: %2s", beanInfo.getName(), propertyInfo.getName());
+            log.debug("Failed to get value from mbean for: "+name, e);
+         }
+
+         PropertyInfo propertyInfo = beanInfo.getProperty(name);
+         MetaMapper metaMapper = property.getTransientAttachment(MetaMapper.class);
+         try
+         {
+            if(metaMapper != null)
+            {
+               mvalue = metaMapper.createMetaValue(property.getMetaType(), value);
+            }
+            else
+            {
+               mvalue = metaValueFactory.create(value, propertyInfo.getType());
+            }
+         }
+         catch(Exception e)
+         {
+            log.debug("Failed to get property value for bean: "+beanInfo.getName()
+                  +", property: "+propertyInfo.getName(), e);
             mvalue = metaValueFactory.create(null, propertyInfo.getType());
             return mvalue;
          }
@@ -226,8 +281,8 @@ public class ServiceMetaDataICF implements InstanceClassFactory<ServiceMetaData>
          // First look to the mapped name
          String name = property.getMappedName();
          if (name == null)
-            property.getName();
-   
+            name = property.getName();
+
          // Get the attribute value
          ServiceValueMetaData attributeValue = null;
          for (ServiceAttributeMetaData amd : md.getAttributes())
@@ -239,25 +294,52 @@ public class ServiceMetaDataICF implements InstanceClassFactory<ServiceMetaData>
                break;
             }
          }
-
-         // Unwrap
-         PropertyInfo propertyInfo = beanInfo.getProperty(name);
-         Object plainValue = metaValueFactory.unwrap(value, propertyInfo.getType());
-         
          // There may not be an attribute value, see if there is a matching property
+
+         // Unwrap the value before, so that we can recreate empty values
+         Object plainValue = null;
+         // Look for a MetaMapper
+         MetaType propertyType = property.getMetaType();
+         MetaMapper metaMapper = property.getTransientAttachment(MetaMapper.class);
+         Type mappedType = null;
+         if(metaMapper != null)
+         {
+            mappedType = metaMapper.mapToType();
+            plainValue = metaMapper.unwrapMetaValue(value);
+         }
+         else
+         {
+            PropertyInfo propertyInfo = beanInfo.getProperty(name);
+            plainValue = metaValueFactory.unwrap(value, propertyInfo.getType());
+         }
+
          if (attributeValue == null)
          {
-            // FIXME ignore null values
-            if(plainValue == null) return;
-            
             String aname = mapAttributeName(md, name);
             if(aname != null)
             {
                ServiceAttributeMetaData attr = new ServiceAttributeMetaData();
                attr.setName(aname);
-               md.addAttribute(attr);
-               attributeValue = new ServiceTextValueMetaData("");
+               // Check if this is mapped to a Element
+               if(mappedType != null && mappedType.equals(Element.class))
+               {
+                  attributeValue = new ServiceElementValueMetaData();
+               }
+               else if(plainValue != null)
+               {
+                  // Create a text value
+                  String textValue = String.valueOf(plainValue);
+                  // Don't create a empty value
+                  if(textValue.trim().length() > 0 )
+                     attributeValue = new ServiceTextValueMetaData(textValue);
+               }
+               // Don't create a null serviceAttribute
+               if(attributeValue == null)
+                  return;
+
+               // Add
                attr.setValue(attributeValue);
+               md.addAttribute(attr);
             }
          }
          if (attributeValue != null)
@@ -265,18 +347,27 @@ public class ServiceMetaDataICF implements InstanceClassFactory<ServiceMetaData>
             // Unwrap the ServiceValueMetaData types
             if (attributeValue instanceof ServiceTextValueMetaData)
             {
+               String textValue = plainValue != null ? String.valueOf(plainValue) : null;
                ServiceTextValueMetaData text = (ServiceTextValueMetaData) attributeValue;
-               text.setText(String.valueOf(plainValue));
+               text.setText(textValue);
             }
-            else if (value instanceof ServiceDependencyValueMetaData)
+            else if (attributeValue instanceof ServiceElementValueMetaData)
+            {
+               if(plainValue != null)
+                  ((ServiceElementValueMetaData) attributeValue).setElement((Element) plainValue);
+            }
+            else if (attributeValue instanceof ServiceDependencyValueMetaData)
             {
                ServiceDependencyValueMetaData depends = (ServiceDependencyValueMetaData) attributeValue;
-               depends.setDependency(String.valueOf(plainValue));
+               if (plainValue instanceof ObjectName)
+                  depends.setObjectName((ObjectName) plainValue);
+               else
+                  depends.setDependency(String.valueOf(plainValue));
             }
             // TODO: unwrap other ServiceValueMetaData types
             else
             {
-               throw new IllegalArgumentException("Unhandled attribute value type: " + name + "/" + md+", class="+attributeValue.getClass());               
+               throw new IllegalArgumentException("Unhandled attribute value type: " + name + "/" + md+", class="+attributeValue.getClass());
             }
          }
          else
@@ -292,17 +383,20 @@ public class ServiceMetaDataICF implements InstanceClassFactory<ServiceMetaData>
       }
    }
 
+   /**
+    * The service context uses the canonical object name string
+    * @return the service metadata canonical object name string
+    */
    public Object getComponentName(BeanInfo beanInfo, ManagedProperty property, ServiceMetaData md, MetaValue value)
    {
       ObjectName objectName = md.getObjectName();
-      String canonicalName = objectName.getCanonicalName();
-      return canonicalName;
+      return objectName.getCanonicalName();
    }
 
    /**
     * Obtains the ServiceMetaData class loader from the
     * getClassLoaderName value if there is an mbeanServer.
-    * 
+    *
     * @param md - the mbean metadata
     * @return the ServiceMetaData.ClassLoaderName class loader if
     *    the mbeanServer has been set, the current TCL otherwise.
@@ -323,8 +417,10 @@ public class ServiceMetaDataICF implements InstanceClassFactory<ServiceMetaData>
 
    /**
     * Try to find a matching mbean attribute
-    * @param name
-    * @return
+    *
+    * @param  md the smd
+    * @param name the name
+    * @return map atribute name
     */
    private String mapAttributeName(ServiceMetaData md, String name)
    {
@@ -347,17 +443,53 @@ public class ServiceMetaDataICF implements InstanceClassFactory<ServiceMetaData>
             mbeanServer.getAttribute(mbean, name);
             attrName = name;
          }
-         catch(Exception e2)
+         catch(Exception ignored)
          {
          }
       }
-      // FIXME 
-      if(attrName == null) 
+      // FIXME
+      if(attrName == null)
       {
          char c = name.charAt(0);
          name = Character.toUpperCase(c) + name.substring(1);
          return name;
       }
       return attrName;
+   }
+
+   /**
+    * Get an attribute map for the MBean
+    *
+    * @param server the server
+    * @param objectName the object name
+    * @return a map of attribute name to attribute info
+    * @throws Exception for any error
+    */
+   private static HashMap<String, MBeanAttributeInfo> getAttributeMap(MBeanServer server, ObjectName objectName) throws Exception
+   {
+      MBeanInfo info;
+      try
+      {
+         info = server.getMBeanInfo(objectName);
+      }
+      catch (InstanceNotFoundException e)
+      {
+         // The MBean is no longer available
+         throw new RuntimeException("Trying to configure nonexistent mbean: " + objectName);
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException("Could not get mbeanInfo", JMXExceptionDecoder.decode(e));
+      }
+      if (info == null)
+         throw new RuntimeException("MBeanInfo is null for mbean: " + objectName);
+      MBeanAttributeInfo[] attributes = info.getAttributes();
+      HashMap<String, MBeanAttributeInfo> attributeMap = new HashMap<String, MBeanAttributeInfo>();
+      for (MBeanAttributeInfo attr : attributes)
+      {
+         attributeMap.put(attr.getName(), attr);
+      }
+
+      return attributeMap;
    }
 }
