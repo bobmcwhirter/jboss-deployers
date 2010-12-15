@@ -27,7 +27,7 @@
      </constructor>
   </bean>
 
-  <bean name="ClassPoolRepository" class="org.jboss.classpool.plugins.jbosscl.JBossClDelegatingClassPoolRepository">
+  <bean name="ClassPoolRepository" class="org.jboss.classpool.spi.ClassPoolRepository">
      <constructor factoryMethod="getInstance"/>
      <property name="classPoolFactory"><inject bean="ClassPoolFactory"/></property>
   </bean>

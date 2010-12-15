@@ -22,13 +22,13 @@
 
   <properties>
     <version.jboss.vfs>3.0.0.CR5</version.jboss.vfs>
-    <version.jboss.reflect>2.2.0.Alpha5</version.jboss.reflect>
-    <version.jboss.classpool>1.0.0.Alpha4</version.jboss.classpool>
+    <version.jboss.reflect>2.2.0.Alpha9</version.jboss.reflect>
+    <version.jboss.classpool>1.0.0.Alpha6</version.jboss.classpool>
     <version.jboss.man>2.1.1.SP2</version.jboss.man>
     <version.jboss.mdr>2.2.0.Alpha3</version.jboss.mdr>
     <version.jboss.kernel>2.2.0.Alpha10</version.jboss.kernel>
     <version.jboss.classloader>2.2.0.Alpha9</version.jboss.classloader>
-    <version.jboss.scanning>1.0.0.Alpha4</version.jboss.scanning>
+    <version.jboss.scanning>1.0.0.Alpha6</version.jboss.scanning>
     <version.jboss.classloading.spi>6.0.0-Alpha8</version.jboss.classloading.spi>
     <version.jboss.common.core>2.2.17.GA</version.jboss.common.core>
     <version.jboss.logging.spi>2.2.0.CR1</version.jboss.logging.spi>
@@ -113,7 +113,7 @@
       </plugins>
     </pluginManagement>
   </build>
-  <repositories>
+  <!-- repositories>
     <repository>
       <id>repository.jboss.org</id>
       <name>JBoss Repository</name>
@@ -135,7 +135,7 @@
         <enabled>false</enabled>
       </releases>
     </repository>
-  </repositories>
+  </repositories -->
   <reporting>
     <plugins>
       <plugin>
