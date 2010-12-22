@@ -21,23 +21,23 @@
   </scm>
 
   <properties>
-    <version.jboss.vfs>3.0.0.CR5</version.jboss.vfs>
-    <version.jboss.reflect>2.2.0.Alpha9</version.jboss.reflect>
-    <version.jboss.classpool>1.0.0.Alpha6</version.jboss.classpool>
+    <version.jboss.vfs>3.0.0.GA</version.jboss.vfs>
+    <version.jboss.reflect>2.2.0.GA</version.jboss.reflect>
+    <version.jboss.classpool>1.0.0.GA</version.jboss.classpool>
     <version.jboss.man>2.1.1.SP2</version.jboss.man>
-    <version.jboss.mdr>2.2.0.Alpha3</version.jboss.mdr>
-    <version.jboss.kernel>2.2.0.Alpha10</version.jboss.kernel>
-    <version.jboss.classloader>2.2.0.Alpha9</version.jboss.classloader>
+    <version.jboss.mdr>2.2.0.GA</version.jboss.mdr>
+    <version.jboss.kernel>2.2.0.GA</version.jboss.kernel>
+    <version.jboss.classloader>2.2.0.GA</version.jboss.classloader>
     <version.jboss.scanning>1.0.0.Alpha6</version.jboss.scanning>
     <version.jboss.classloading.spi>6.0.0-Alpha8</version.jboss.classloading.spi>
     <version.jboss.common.core>2.2.17.GA</version.jboss.common.core>
     <version.jboss.logging.spi>2.2.0.CR1</version.jboss.logging.spi>
     <version.jboss.logging.log4j>2.2.0.CR1</version.jboss.logging.log4j>
-    <version.jbossxb>2.0.2.GA</version.jbossxb>
-    <version.jboss.aop>2.1.0.CR3</version.jboss.aop>
-    <version.org.jboss.test>1.1.1.GA</version.org.jboss.test>
+    <version.jbossxb>2.0.3.GA</version.jbossxb>
+    <version.jboss.aop>2.2.1.GA</version.jboss.aop>
+    <version.org.jboss.test>1.1.5.GA</version.org.jboss.test>
     <version.junit>4.4</version.junit>
-    <version.javassist>3.12.0.GA</version.javassist>
+    <version.javassist>3.12.1.GA</version.javassist>
     <version.stax.staxapi>1.0</version.stax.staxapi>
     <version.ant.junit>1.6.5</version.ant.junit>
     <version.jboss.byteman>1.0.3.CP01</version.jboss.byteman>
@@ -113,29 +113,36 @@
       </plugins>
     </pluginManagement>
   </build>
-  <!-- repositories>
-    <repository>
-      <id>repository.jboss.org</id>
-      <name>JBoss Repository</name>
-      <layout>default</layout>
-      <url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>snapshots.jboss.org</id>
-      <name>JBoss Snapshots Repository</name>
-      <layout>default</layout>
-      <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-    </repository>
-  </repositories -->
+  <repositories>
+     <repository>
+         <id>jboss-public-repository-group</id>
+         <name>JBoss Public Maven Repository Group</name>
+         <url>https://repository.jboss.org/nexus/content/groups/public</url>
+         <layout>default</layout>
+         <releases>
+           <enabled>true</enabled>
+           <updatePolicy>never</updatePolicy>
+         </releases>
+         <snapshots>
+           <enabled>false</enabled>
+           <updatePolicy>never</updatePolicy>
+         </snapshots>
+     </repository>
+     <repository>
+         <id>jboss-deprecated-repository</id>
+         <name>JBoss Deprecated Maven Repository</name>
+         <url>https://repository.jboss.org/nexus/content/repositories/deprecated</url>
+         <layout>default</layout>
+         <releases>
+           <enabled>true</enabled>
+           <updatePolicy>never</updatePolicy>
+         </releases>
+         <snapshots>
+           <enabled>false</enabled>
+           <updatePolicy>never</updatePolicy>
+         </snapshots>
+     </repository>
+  </repositories>
   <reporting>
     <plugins>
       <plugin>
