@@ -44,6 +44,9 @@ public class AbstractClassLoadingDomainDeployer extends AbstractSimpleRealDeploy
    /** The classloader system */
    private ClassLoaderSystem system;
 
+   /** The parent usage flag */
+   private boolean useDefaultDomain = true;
+
    public AbstractClassLoadingDomainDeployer()
    {
       super(ClassLoadingDomainMetaData.class);
@@ -83,6 +86,9 @@ public class AbstractClassLoadingDomainDeployer extends AbstractSimpleRealDeploy
          parent = system.getDomain(parentDomain);
       }
 
+      if (parent == null && isUseDefaultDomain())
+         parent = system.getDefaultDomain();
+
       ShutdownPolicy shutdownPolicy = deployment.getShutdownPolicy();
       Boolean useLoadClassForParent = deployment.getUseLoadClassForParent();
 
@@ -119,5 +125,25 @@ public class AbstractClassLoadingDomainDeployer extends AbstractSimpleRealDeploy
    public void setSystem(ClassLoaderSystem system)
    {
       this.system = system;
+   }
+
+   /**
+    * Do we use default domain by default as parent.
+    *
+    * @return true if default domain is used as default parent
+    */
+   public boolean isUseDefaultDomain()
+   {
+      return useDefaultDomain;
+   }
+
+   /**
+    * Set use-default-domain as default parent flag.
+    *
+    * @param useDefaultDomain the use-default-domain
+    */
+   public void setUseDefaultDomain(boolean useDefaultDomain)
+   {
+      this.useDefaultDomain = useDefaultDomain;
    }
 }
