@@ -23,9 +23,12 @@ package org.jboss.deployers.vfs.spi.structure.modified;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Collection;
 
+import org.jboss.deployers.client.spi.Deployment;
 import org.jboss.deployers.structure.spi.DeploymentContext;
 import org.jboss.deployers.structure.spi.main.MainDeployerInternals;
+import org.jboss.deployers.vfs.spi.client.VFSDeployment;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
 import org.jboss.logging.Logger;
 import org.jboss.vfs.VirtualFile;
@@ -49,6 +52,9 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
 
    /** The structure cache */
    private volatile StructureCache<T> cache;
+
+   /** The missing deployments check */
+   private boolean checkMissingDeployments = true;
 
    protected AbstractStructureModificationChecker()
    {
@@ -171,7 +177,8 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
    {
       if (root == null)
          throw new IllegalArgumentException("Null root");
-      if (deploymentContext == null)
+
+      if (deploymentContext == null && checkMissingDeployments == false)
          return false;
 
       // skip vfs deployment context lookup accepted by filter
@@ -186,7 +193,31 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
             return result;
          }
       }
-      
+
+      if (deploymentContext == null && checkMissingDeployments)
+      {
+         Collection<Deployment> missing = getMainDeployerInternals().getMissingDeployer();
+         if (missing != null && missing.isEmpty() == false)
+         {
+            for (Deployment deployment : missing)
+            {
+               if (deployment instanceof VFSDeployment)
+               {
+                  VFSDeployment vfsd = (VFSDeployment) deployment;
+                  VirtualFile deploymentRoot = vfsd.getRoot();
+                  if (root.equals(deploymentRoot))
+                  {
+                     boolean modified = hasRootBeenModified(root);
+                     if (modified)
+                        getCache().invalidateCache(root);
+                     return modified;
+                  }
+               }
+            }
+         }
+         return false;
+      }
+
       boolean result = hasDeploymentContextBeenModified(root, deploymentContext);
       if (result)
       {
@@ -232,13 +263,23 @@ public abstract class AbstractStructureModificationChecker<T> implements Structu
    }
 
    /**
+    * Set missing deployments check flag.
+    *
+    * @param checkMissingDeployments the missing deployments check flag
+    */
+   public void setCheckMissingDeployments(boolean checkMissingDeployments)
+   {
+      this.checkMissingDeployments = checkMissingDeployments;
+   }
+
+   /**
     * Default root check constraints.
     */
    private static class DefaultRootFilter implements ModificationCheckerFilter
    {
       public boolean accepts(VirtualFile file)
       {
-         return ! file.isDirectory();
+         return file.isDirectory() == false;
       }
 
       public boolean checkRootOnly(VirtualFile root)
