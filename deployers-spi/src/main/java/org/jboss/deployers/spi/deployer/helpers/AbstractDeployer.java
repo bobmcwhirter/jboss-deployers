@@ -21,15 +21,16 @@
  */
 package org.jboss.deployers.spi.deployer.helpers;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import org.jboss.deployers.spi.attachments.LocalAttachments;
 import org.jboss.deployers.spi.deployer.Deployer;
 import org.jboss.deployers.spi.deployer.DeploymentStage;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.deployers.structure.spi.DeploymentUnitExt;
 import org.jboss.logging.Logger;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * AbstractDeployer.
@@ -79,6 +80,9 @@ public abstract class AbstractDeployer implements Deployer
    /** Whether to process parents first */
    private boolean parentFirst = true;
    
+   /** The force hierarchy lookup flag */
+   private boolean forceHierarchyLookup;
+
    public int getRelativeOrder()
    {
       return relativeOrder;
@@ -448,6 +452,16 @@ public abstract class AbstractDeployer implements Deployer
       this.parentFirst = parentFirst;
    }
 
+   /**
+    * Set hierarchy flag.
+    *
+    * @param forceHierarchyLookup the flag
+    */
+   public void setForceHierarchyLookup(boolean forceHierarchyLookup)
+   {
+      this.forceHierarchyLookup = forceHierarchyLookup;
+   }
+
    public void undeploy(DeploymentUnit unit)
    {
       // Nothing
@@ -466,5 +480,22 @@ public abstract class AbstractDeployer implements Deployer
          DeploymentUnitExt ext = (DeploymentUnitExt) unit;
          ext.changeRelativeOrder(relativeOrder);
       }
+   }
+
+   /**
+    * Get attachment.
+    *
+    * @param unit the current deployment unit
+    * @param type the attachment type
+    * @return attachment or null
+    */
+   protected <T> T getAttachment(DeploymentUnit unit, Class<T> type)
+   {
+      if (forceHierarchyLookup == false && isComponentsOnly() && (unit instanceof LocalAttachments))
+      {
+         LocalAttachments la = (LocalAttachments) unit;
+         return la.getLocalAttachment(type);
+      }
+      return unit.getAttachment(type);
    }
 }
