@@ -24,7 +24,6 @@ package org.jboss.test.deployers.structure.attachments;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
-
 import org.jboss.test.deployers.structure.attachments.test.AbstractDeploymentContextPredeterminedManagedObjectsUnitTestCase;
 import org.jboss.test.deployers.structure.attachments.test.AbstractDeploymentContextTransientAttachmentsUnitTestCase;
 import org.jboss.test.deployers.structure.attachments.test.AbstractDeploymentContextTransientManagedObjectsUnitTestCase;
@@ -33,11 +32,13 @@ import org.jboss.test.deployers.structure.attachments.test.AbstractDeploymentUni
 import org.jboss.test.deployers.structure.attachments.test.AbstractDeploymentUnitPredeterminedManagedObjectsUnitTestCase;
 import org.jboss.test.deployers.structure.attachments.test.AbstractDeploymentUnitTransientAttachmentsUnitTestCase;
 import org.jboss.test.deployers.structure.attachments.test.AbstractDeploymentUnitTransientManagedObjectsUnitTestCase;
+import org.jboss.test.deployers.structure.attachments.test.AbstractLocalAttachmentsUnitTestCase;
 
 /**
  * StructureAttachmentsTestSuite.
  * 
  * @author <a href="adrian@jboss.org">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public class StructureAttachmentsTestSuite extends TestSuite
@@ -59,6 +60,7 @@ public class StructureAttachmentsTestSuite extends TestSuite
       suite.addTest(AbstractDeploymentUnitTransientAttachmentsUnitTestCase.suite());
       suite.addTest(AbstractDeploymentUnitAttachmentsUnitTestCase.suite());
       suite.addTest(AbstractDeploymentUnitAttachmentHierarchyUnitTestCase.suite());
+      suite.addTest(AbstractLocalAttachmentsUnitTestCase.suite());
 
       return suite;
    }

@@ -21,6 +21,25 @@
 */
 package org.jboss.deployers.structure.spi.helpers;
 
+import org.jboss.dependency.spi.DependencyInfo;
+import org.jboss.dependency.spi.DependencyItem;
+import org.jboss.deployers.client.spi.main.MainDeployer;
+import org.jboss.deployers.spi.DeploymentException;
+import org.jboss.deployers.spi.attachments.LocalAttachments;
+import org.jboss.deployers.spi.attachments.MutableAttachments;
+import org.jboss.deployers.spi.attachments.helpers.AbstractMutableAttachments;
+import org.jboss.deployers.spi.deployer.DeploymentStage;
+import org.jboss.deployers.structure.spi.ClassLoaderFactory;
+import org.jboss.deployers.structure.spi.DeploymentContext;
+import org.jboss.deployers.structure.spi.DeploymentContextExt;
+import org.jboss.deployers.structure.spi.DeploymentResourceLoader;
+import org.jboss.deployers.structure.spi.DeploymentUnit;
+import org.jboss.deployers.structure.spi.DeploymentUnitExt;
+import org.jboss.deployers.structure.spi.DeploymentUnitVisitor;
+import org.jboss.metadata.spi.MetaData;
+import org.jboss.metadata.spi.MutableMetaData;
+import org.jboss.metadata.spi.scope.ScopeKey;
+
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
@@ -31,18 +50,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.jboss.dependency.spi.DependencyInfo;
-import org.jboss.dependency.spi.DependencyItem;
-import org.jboss.deployers.client.spi.main.MainDeployer;
-import org.jboss.deployers.spi.DeploymentException;
-import org.jboss.deployers.spi.deployer.DeploymentStage;
-import org.jboss.deployers.spi.attachments.MutableAttachments;
-import org.jboss.deployers.spi.attachments.helpers.AbstractMutableAttachments;
-import org.jboss.deployers.structure.spi.*;
-import org.jboss.metadata.spi.MetaData;
-import org.jboss.metadata.spi.MutableMetaData;
-import org.jboss.metadata.spi.scope.ScopeKey;
 
 /**
  * AbstractDeploymentUnit.<p>
@@ -55,7 +62,7 @@ import org.jboss.metadata.spi.scope.ScopeKey;
  * @author <a href="ales.justin@jboss.com">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
-public class AbstractDeploymentUnit extends AbstractMutableAttachments implements DeploymentUnit, DeploymentUnitExt
+public class AbstractDeploymentUnit extends AbstractMutableAttachments implements DeploymentUnit, DeploymentUnitExt, LocalAttachments
 {
    /** The serialVersionUID */
    private static final long serialVersionUID = 1513962148798298768L;
@@ -354,9 +361,14 @@ public class AbstractDeploymentUnit extends AbstractMutableAttachments implement
 
    public Object getAttachment(String name)
    {
+      return getAttachmentInternal(name, getDeploymentContext().isComponent());
+   }
+
+   private Object getAttachmentInternal(String name, boolean checkParent)
+   {
       DeploymentContext deploymentContext = getDeploymentContext();
       DeploymentContext parent = deploymentContext.getParent();
-      if (deploymentContext.isComponent() == false)
+      if (checkParent == false)
          parent = null;
       Object result = deploymentContext.getPredeterminedManagedObjects().getAttachment(name);
       if (result != null)
@@ -408,9 +420,14 @@ public class AbstractDeploymentUnit extends AbstractMutableAttachments implement
 
    public Map<String, Object> getAttachments()
    {
+      return getAttachmentsInternal(getDeploymentContext().isComponent());
+   }
+
+   private Map<String, Object> getAttachmentsInternal(boolean checkParent)
+   {
       DeploymentContext deploymentContext = getDeploymentContext();
       DeploymentContext parent = deploymentContext.getParent();
-      if (deploymentContext.isComponent() == false)
+      if (checkParent == false)
          parent = null;
       HashMap<String, Object> result = new HashMap<String, Object>();
       if (parent != null)
@@ -429,6 +446,11 @@ public class AbstractDeploymentUnit extends AbstractMutableAttachments implement
 
    public boolean hasAttachments()
    {
+      return hasAttachmentsInternal(getDeploymentContext().isComponent());
+   }
+
+   private boolean hasAttachmentsInternal(boolean checkParent)
+   {
       DeploymentContext deploymentContext = getDeploymentContext();
       if (deploymentContext.getTransientAttachments().hasAttachments())
          return true;
@@ -436,17 +458,77 @@ public class AbstractDeploymentUnit extends AbstractMutableAttachments implement
          return true;
       else if (deploymentContext.getPredeterminedManagedObjects().hasAttachments())
          return true;
-      
-      if (deploymentContext.isComponent())
-         return deploymentContext.getParent().getDeploymentUnit().hasAttachments();
-      return false;
+
+      return checkParent && deploymentContext.getParent().getDeploymentUnit().hasAttachments();
    }
 
    public boolean isAttachmentPresent(String name)
    {
       return getAttachment(name) != null;
    }
-   
+
+   public Map<String, Object> getLocalAttachments()
+   {
+      return getAttachmentsInternal(false);
+   }
+
+   public Object getLocalAttachment(String name)
+   {
+      return getAttachmentInternal(name, false);
+   }
+
+   public <T> T getLocalAttachment(String name, Class<T> expectedType)
+   {
+      if (expectedType == null)
+         throw new IllegalArgumentException("Null expectedType");
+      Object result = getLocalAttachment(name);
+      if (result == null)
+         return null;
+      return expectedType.cast(result);
+   }
+
+   public <T> T getLocalAttachment(Class<T> type)
+   {
+      if (type == null)
+         throw new IllegalArgumentException("Null type");
+      return getLocalAttachment(type.getName(), type);
+   }
+
+   public boolean isLocalAttachmentPresent(String name)
+   {
+      return getLocalAttachment(name) != null;
+   }
+
+   public boolean isLocalAttachmentPresent(String name, Class<?> expectedType)
+   {
+      if (expectedType == null)
+         throw new IllegalArgumentException("Null expectedType");
+      Object result = getLocalAttachment(name);
+      if (result == null)
+         return false;
+      try
+      {
+         expectedType.cast(result);
+      }
+      catch (ClassCastException e)
+      {
+         return false;
+      }
+      return true;
+   }
+
+   public boolean isLocalAttachmentPresent(Class<?> type)
+   {
+      if (type == null)
+         throw new IllegalArgumentException("Null type");
+      return isLocalAttachmentPresent(type.getName(), type);
+   }
+
+   public boolean hasLocalAttachments()
+   {
+      return hasAttachmentsInternal(false);
+   }
+
    public ClassLoader getResourceClassLoader()
    {
       return getDeploymentContext().getResourceClassLoader();

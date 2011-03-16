@@ -22,6 +22,7 @@
 package org.jboss.deployers.spi.deployer.helpers;
 
 import org.jboss.deployers.spi.DeploymentException;
+import org.jboss.deployers.spi.attachments.LocalAttachments;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 
 /**
@@ -29,10 +30,14 @@ import org.jboss.deployers.structure.spi.DeploymentUnit;
  * 
  * @param <T> the input type
  * @author <a href="adrian@jboss.com">Adrian Brock</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public abstract class AbstractSimpleRealDeployer<T> extends AbstractRealDeployer
 {
+   /** The force hierarchy lookup flag */
+   private boolean forceHierarchyLookup;
+
    /**
     * Create a new AbstractSimpleRealDeployer
     *  
@@ -55,16 +60,32 @@ public abstract class AbstractSimpleRealDeployer<T> extends AbstractRealDeployer
       return (Class<? extends T>) input;
    }
 
+   /**
+    * Get attachment.
+    *
+    * @param unit the current deployment unit
+    * @return attachment or null
+    */
+   protected T getAttachment(DeploymentUnit unit)
+   {
+      if (forceHierarchyLookup == false && isComponentsOnly() && (unit instanceof LocalAttachments))
+      {
+         LocalAttachments la = (LocalAttachments) unit;
+         return la.getLocalAttachment(getInput());
+      }
+      return unit.getAttachment(getInput());
+   }
+
    public void internalDeploy(DeploymentUnit unit) throws DeploymentException
    {
-      T deployment = unit.getAttachment(getInput());
+      T deployment = getAttachment(unit);
       if (deployment != null)
          deploy(unit, deployment);
    }
 
    public void internalUndeploy(DeploymentUnit unit)
    {
-      T deployment = unit.getAttachment(getInput());
+      T deployment = getAttachment(unit);
       if (deployment != null)
          undeploy(unit, deployment);
    }
@@ -74,5 +95,15 @@ public abstract class AbstractSimpleRealDeployer<T> extends AbstractRealDeployer
    public void undeploy(DeploymentUnit unit, T deployment)
    {
       // Nothing
+   }
+
+   /**
+    * Set hierarchy flag.
+    *
+    * @param forceHierarchyLookup the flag
+    */
+   public void setForceHierarchyLookup(boolean forceHierarchyLookup)
+   {
+      this.forceHierarchyLookup = forceHierarchyLookup;
    }
 }
