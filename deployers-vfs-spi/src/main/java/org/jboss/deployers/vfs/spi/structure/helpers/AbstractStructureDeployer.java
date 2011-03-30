@@ -21,14 +21,18 @@
 */
 package org.jboss.deployers.vfs.spi.structure.helpers;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.jboss.deployers.spi.structure.*;
+import org.jboss.deployers.spi.structure.ClassPathEntry;
+import org.jboss.deployers.spi.structure.ContextInfo;
+import org.jboss.deployers.spi.structure.MetaDataEntry;
+import org.jboss.deployers.spi.structure.MetaDataType;
+import org.jboss.deployers.spi.structure.StructureMetaData;
+import org.jboss.deployers.spi.structure.StructureMetaDataFactory;
 import org.jboss.deployers.vfs.spi.structure.CandidateAnnotationsCallback;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
 import org.jboss.deployers.vfs.spi.structure.StructureDeployer;
@@ -228,7 +232,6 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
     * @param includeRootManifestCP - a flag indicating if the entry metainf
     *    manifest classpath should be included.
     * @param context - the context to populate
-    * @throws IOException on any IO error
     */
    protected void addClassPath(StructureContext structureContext, VirtualFile entry, boolean includeEntry, boolean includeRootManifestCP, ContextInfo context)
    {
@@ -381,7 +384,6 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
     * 
     * @param file the virtual file
     * @return true when it is a leaf
-    * @throws IOException for any error
     */
    protected static boolean isLeaf(VirtualFile file)
    {
@@ -548,7 +550,7 @@ public abstract class AbstractStructureDeployer implements StructureDeployer
    {
       if (result != null && contextInfoOrder != null)
       {
-         result.setRelativeOrder(contextInfoOrder.intValue());
+         result.setRelativeOrder(contextInfoOrder);
       }
    }
 }
