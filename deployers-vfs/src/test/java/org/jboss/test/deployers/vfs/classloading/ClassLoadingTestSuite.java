@@ -22,14 +22,14 @@
 
 package org.jboss.test.deployers.vfs.classloading;
 
-import org.jboss.test.deployers.vfs.classloading.test.ClassLoaderCachingTestCase;
-import org.jboss.test.deployers.vfs.classloading.test.ClassLoadingDomainMetaDataUnitTestCase;
-import org.jboss.test.deployers.vfs.classloading.test.DeploymentMetaDataUnitTestCase;
-import org.jboss.test.deployers.vfs.classloading.test.ResourceLookupUnitTestCase;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
+import org.jboss.test.deployers.vfs.classloading.test.ClassLoaderCachingTestCase;
+import org.jboss.test.deployers.vfs.classloading.test.ClassLoadingDomainMetaDataUnitTestCase;
+import org.jboss.test.deployers.vfs.classloading.test.ClassLoadingTranslatorsMetaDataUnitTestCase;
+import org.jboss.test.deployers.vfs.classloading.test.DeploymentMetaDataUnitTestCase;
+import org.jboss.test.deployers.vfs.classloading.test.ResourceLookupUnitTestCase;
 
 /**
  * ClassLoading test suite.
@@ -48,6 +48,7 @@ public class ClassLoadingTestSuite
       TestSuite suite = new TestSuite("VFS ClassLoading Tests");
 
       suite.addTest(DeploymentMetaDataUnitTestCase.suite());
+      suite.addTest(ClassLoadingTranslatorsMetaDataUnitTestCase.suite());
       suite.addTest(ClassLoadingDomainMetaDataUnitTestCase.suite());
       suite.addTest(ClassLoaderCachingTestCase.suite());
       suite.addTest(ResourceLookupUnitTestCase.suite());

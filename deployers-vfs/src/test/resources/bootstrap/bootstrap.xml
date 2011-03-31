@@ -114,6 +114,15 @@
       <property name="buildManagedObject">true</property>
       <property name="registerWithJBossXB">true</property>
    </bean>
+   <bean name="ClassLoadingTranslatorsMetaDataParser" class="org.jboss.deployers.vfs.spi.deployer.SchemaResolverDeployer">
+      <constructor>
+         <parameter>org.jboss.classloading.spi.metadata.ClassLoadingTranslatorsMetaData10</parameter>
+      </constructor>
+      <property name="attachmentKey">org.jboss.classloading.spi.metadata.ClassLoadingTranslatorsMetaData</property>
+      <property name="name">jboss-translator.xml</property>
+      <property name="buildManagedObject">true</property>
+      <property name="registerWithJBossXB">true</property>
+   </bean>
    <bean name="DeploymentMetaDataParser" class="org.jboss.deployers.vfs.spi.deployer.SchemaResolverDeployer">
       <constructor>
          <parameter>org.jboss.deployers.spi.classloading.DeploymentMetaData</parameter>
@@ -140,6 +149,9 @@
    </bean>
    <bean name="ClassLoaderDeployer" class="org.jboss.deployers.plugins.classloading.AbstractLevelClassLoaderSystemDeployer">
       <property name="classLoading"><inject bean="ClassLoading"/></property>
+      <property name="system"><inject bean="ClassLoaderSystem"/></property>
+   </bean>
+   <bean name="ClassLoaderTranslatorDeployer" class="org.jboss.deployers.plugins.classloading.AbstractTranslatorsDeployer">
       <property name="system"><inject bean="ClassLoaderSystem"/></property>
    </bean>
 </deployment>

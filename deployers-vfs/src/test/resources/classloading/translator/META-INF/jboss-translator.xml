@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<classloading-translators xmlns="urn:jboss:classloading-translators:1.0">
+    <translator class="org.jboss.test.deployers.vfs.classloading.support.MockTranslator" scope="DOMAIN" />
+</classloading-translators>

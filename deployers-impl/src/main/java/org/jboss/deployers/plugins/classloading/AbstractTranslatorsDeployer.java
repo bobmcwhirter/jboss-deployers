@@ -62,7 +62,15 @@ public class AbstractTranslatorsDeployer extends AbstractSimpleRealDeployer<Clas
       setStage(DeploymentStages.CLASSLOADER);
    }
 
-   @Override
+   /**
+    * Validate the config
+    */
+   public void create()
+   {
+      if (system == null)
+         throw new IllegalStateException("The system has not been set");
+   }
+
    public void deploy(DeploymentUnit unit, ClassLoadingTranslatorsMetaData deployment) throws DeploymentException
    {
       Module module = unit.getAttachment(Module.class);
