@@ -37,6 +37,7 @@ import org.jboss.classloading.spi.metadata.helpers.ReflectionTranslator;
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.deployer.DeploymentStages;
 import org.jboss.deployers.spi.deployer.helpers.AbstractSimpleRealDeployer;
+import org.jboss.deployers.spi.deployer.helpers.AttachmentLocator;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.util.loading.Translator;
 
@@ -74,7 +75,7 @@ public class AbstractTranslatorsDeployer extends AbstractSimpleRealDeployer<Clas
 
    public void deploy(DeploymentUnit unit, ClassLoadingTranslatorsMetaData deployment) throws DeploymentException
    {
-      Module module = unit.getAttachment(Module.class);
+      Module module = AttachmentLocator.searchAncestors(unit, Module.class);
       if (module == null || (module instanceof ClassLoaderPolicyModule == false))
          return;
 
@@ -130,7 +131,7 @@ public class AbstractTranslatorsDeployer extends AbstractSimpleRealDeployer<Clas
    @Override
    public void undeploy(DeploymentUnit unit, ClassLoadingTranslatorsMetaData deployment)
    {
-      Module module = unit.getAttachment(Module.class);
+      Module module = AttachmentLocator.searchAncestors(unit, Module.class);
       if (module == null || (module instanceof ClassLoaderPolicyModule == false))
          return;
 
