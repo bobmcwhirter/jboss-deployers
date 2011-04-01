@@ -59,6 +59,7 @@ public class AbstractTranslatorsDeployer extends AbstractSimpleRealDeployer<Clas
       super(ClassLoadingTranslatorsMetaData.class);
       // add this deployer right after ClassLoader is created
       addInput(ClassLoader.class);
+      addOutput(Translator.class);
       setStage(DeploymentStages.CLASSLOADER);
    }
 
