@@ -25,7 +25,10 @@ import java.util.List;
 
 import junit.framework.Test;
 import org.jboss.classloader.spi.ClassLoaderDomain;
+import org.jboss.classloader.spi.ClassLoaderPolicy;
 import org.jboss.classloader.spi.ClassLoaderSystem;
+import org.jboss.classloading.spi.dependency.Module;
+import org.jboss.classloading.spi.dependency.policy.ClassLoaderPolicyModule;
 import org.jboss.dependency.spi.ControllerState;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.test.deployers.BootstrapDeployersTest;
@@ -54,14 +57,24 @@ public class ClassLoadingTranslatorsMetaDataUnitTestCase extends BootstrapDeploy
       try
       {
          ClassLoaderSystem system = (ClassLoaderSystem) getBean("ClassLoaderSystem", ControllerState.INSTALLED);
+         assertTranslators(system.getTranslators(), 1);
+
          ClassLoaderDomain domain = system.getDefaultDomain();
-         List<Translator> translators = domain.getTranslators();
-         assertNotNull(translators);
-         assertEquals(1, translators.size());
+         assertTranslators(domain.getTranslators(), 1);
+
+         ClassLoaderPolicyModule module = du.getAttachment(Module.class.getName(), ClassLoaderPolicyModule.class);
+         ClassLoaderPolicy policy = module.getPolicy();
+         assertTranslators(policy.getTranslators(), 1);
       }
       finally
       {
          undeploy(du);
       }
+   }
+
+   protected void assertTranslators(List<Translator> translators, int size)
+   {
+      assertNotNull(translators);
+      assertEquals(size, translators.size());
    }
 }

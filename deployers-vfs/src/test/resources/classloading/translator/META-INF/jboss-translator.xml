@@ -2,4 +2,6 @@
 
 <classloading-translators xmlns="urn:jboss:classloading-translators:1.0">
     <translator class="org.jboss.test.deployers.vfs.classloading.support.MockTranslator" scope="DOMAIN" />
+    <translator class="org.jboss.test.deployers.vfs.classloading.support.IATranslator" method="transform" scope="POLICY" />
+    <translator class="org.jboss.test.deployers.vfs.classloading.support.BableFish" method="bable" scope="SYSTEM" />
 </classloading-translators>
