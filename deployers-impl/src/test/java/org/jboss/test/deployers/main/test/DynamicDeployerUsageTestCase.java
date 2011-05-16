@@ -19,39 +19,39 @@
 * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 */
-package org.jboss.test.deployers.main;
+package org.jboss.test.deployers.main.test;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
-import org.jboss.test.deployers.main.test.CycleCheckCompleteTestCase;
-import org.jboss.test.deployers.main.test.DeployerCheckCompleteTestCase;
-import org.jboss.test.deployers.main.test.DeployerIncompleteDeploymentsTestCase;
-import org.jboss.test.deployers.main.test.DeployerSingleDeploymentTestCase;
-import org.jboss.test.deployers.main.test.DynamicDeployerUsageTestCase;
+import org.jboss.deployers.client.spi.DeployerClient;
+import org.jboss.deployers.client.spi.Deployment;
+import org.jboss.test.deployers.AbstractDeployerTest;
+import org.jboss.test.deployers.main.support.MarkerDeployer;
 
 /**
- * Deployers Main Test Suite.
+ * Test dynamic adding / removing of deployer.
  *
- * @author <a href="ales.justin@jboss.com">Ales Justin</a>
+ * @author <a href="mailto:ales.justin@jboss.com">Ales Justin</a>
  */
-public class DeployersMainTestSuite extends TestSuite
+public class DynamicDeployerUsageTestCase extends AbstractDeployerTest
 {
-   public static void main(String[] args)
+   public DynamicDeployerUsageTestCase(String name)
    {
-      TestRunner.run(suite());
+      super(name);
    }
 
    public static Test suite()
    {
-      TestSuite suite = new TestSuite("Deployers Main Tests");
+      return suite(DynamicDeployerUsageTestCase.class);
+   }
 
-      suite.addTest(DeployerSingleDeploymentTestCase.suite());
-      suite.addTest(DeployerCheckCompleteTestCase.suite());
-      suite.addTest(DeployerIncompleteDeploymentsTestCase.suite());
-      suite.addTest(CycleCheckCompleteTestCase.suite());
-      suite.addTest(DynamicDeployerUsageTestCase.suite());
-
-      return suite;
+   public void testAddRemove() throws Exception
+   {
+      MarkerDeployer md = new MarkerDeployer();
+      DeployerClient main = createMainDeployer(md);
+      Deployment deployment = createSimpleDeployment("test");
+      main.deploy(deployment);
+      removeDeployer(main, md);
+      main.undeploy(deployment);
+      assertNull(md.unit);
    }
 }

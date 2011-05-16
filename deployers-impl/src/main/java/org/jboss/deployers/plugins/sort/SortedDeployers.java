@@ -1,7 +1,5 @@
 package org.jboss.deployers.plugins.sort;
 
-import org.jboss.deployers.spi.deployer.Deployer;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,6 +7,8 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.jboss.deployers.spi.deployer.Deployer;
 
 /**
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -136,7 +136,7 @@ public class SortedDeployers
       int esize = entries.size();
       for (int i = 0; i < esize; i++)
       {
-         if (entries.get(0).deployer == d)
+         if (entries.get(0).deployer.equals(d))
          {
             removed = entries.get(0);
             removeAt(i);
