@@ -46,12 +46,17 @@ public class DynamicDeployerUsageTestCase extends AbstractDeployerTest
 
    public void testAddRemove() throws Exception
    {
-      MarkerDeployer md = new MarkerDeployer();
-      DeployerClient main = createMainDeployer(md);
+      // make sure md1 is before md2
+      MarkerDeployer md1 = new MarkerDeployer();
+      md1.addOutput(MarkerDeployer.class);
+      MarkerDeployer md2 = new MarkerDeployer();
+      md2.addInput(MarkerDeployer.class);
+
+      DeployerClient main = createMainDeployer(md1, md2);
       Deployment deployment = createSimpleDeployment("test");
       main.deploy(deployment);
-      removeDeployer(main, md);
+      removeDeployer(main, md2);
       main.undeploy(deployment);
-      assertNull(md.unit);
+      assertNull(md2.unit);
    }
 }
