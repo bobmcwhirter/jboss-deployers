@@ -21,6 +21,7 @@
 */
 package org.jboss.test.deployers.vfs.classloading.test;
 
+import junit.framework.Test;
 import org.jboss.classloader.spi.ClassLoaderSystem;
 import org.jboss.classloader.spi.base.BaseClassLoader;
 import org.jboss.classloader.spi.jdk.JDKChecker;
@@ -30,8 +31,6 @@ import org.jboss.classloading.spi.metadata.ParentPolicyMetaData;
 import org.jboss.dependency.spi.ControllerState;
 import org.jboss.deployers.structure.spi.DeploymentUnit;
 import org.jboss.test.deployers.BootstrapDeployersTest;
-
-import junit.framework.Test;
 
 /**
  * ClassLoadingDomain metadata test case.
@@ -62,13 +61,11 @@ public class ClassLoadingDomainMetaDataUnitTestCase extends BootstrapDeployersTe
          FilterMetaData bf = ppmd.getBeforeFilter();
          assertNotNull(bf);
          Object value = bf.getValue();
-         assertInstanceOf(value, String[].class);
-         assertEquals(new String[]{"org.jboss.acme", "com.redhat.acme"}, (String[]) value);
+         assertEquals("org.jboss.acme,com.redhat.acme", value);
          FilterMetaData af = ppmd.getAfterFilter();
          assertNotNull(af);
          value = af.getValue();
-         assertInstanceOf(value, String[].class);
-         assertEquals(new String[]{"org.jboss.foobar", "com.redhat.foobar"}, (String[]) value);
+         assertEquals("org.jboss.foobar,com.redhat.foobar", value);
       }
       finally
       {
