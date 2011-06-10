@@ -21,7 +21,7 @@
   </scm>
 
   <properties>
-    <version.jboss.vfs>3.0.0.GA</version.jboss.vfs>
+    <version.jboss.vfs>3.0.1.GA</version.jboss.vfs>
     <version.jboss.reflect>2.2.0.GA</version.jboss.reflect>
     <version.jboss.classpool>1.0.0.GA</version.jboss.classpool>
     <version.jboss.man>2.1.1.SP2</version.jboss.man>

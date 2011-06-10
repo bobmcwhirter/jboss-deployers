@@ -42,6 +42,7 @@ import org.jboss.util.StringPropertyReplacer;
 import org.jboss.vfs.VFS;
 import org.jboss.vfs.VFSUtils;
 import org.jboss.vfs.VirtualFile;
+import org.jboss.vfs.util.automount.Automounter;
 
 /**
  * .vfslink.properties feature port
@@ -156,7 +157,7 @@ public class VFSLinkStructureDeployer implements StructureDeployer
       {
          VirtualFile linkChild = link.getChild(li.name);
          Closeable closeable = VFS.mountReal(new File(li.uri), linkChild);
-         // mount closeable to root for proper cleanup
+         Automounter.addHandle(root, closeable);
       }
    }
 
