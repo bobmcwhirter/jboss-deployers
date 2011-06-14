@@ -41,6 +41,7 @@ import org.jboss.xb.binding.UnmarshallerFactory;
  * 
  * @author Scott.Stark@jboss.org
  * @author <a href="jbailey@redhat.com">John Bailey</a>
+ * @author <a href="ales.justin@jboss.org">Ales Justin</a>
  * @version $Revision: 1.1 $
  */
 public class DeclaredStructure extends AbstractVFSArchiveStructureDeployer
@@ -49,7 +50,12 @@ public class DeclaredStructure extends AbstractVFSArchiveStructureDeployer
     * Set of suffixes used to determine if an archive mount is needed
     */
    private final Set<String> suffixes;
-   
+
+   /**
+    * Ignore relative path
+    */
+   private boolean ignoreRelativePath;
+
    /**
     * Construct with a default jar suffixes
     */
@@ -97,10 +103,21 @@ public class DeclaredStructure extends AbstractVFSArchiveStructureDeployer
                   if (trace)
                      log.trace("... context has a META-INF/jboss-structure.xml");
 
+                  StructureMetaDataObjectFactory ofactory;
+                  // check if this is a sub-context
+                  if (ignoreRelativePath == false && (structureContext.getParentContext() != null))
+                  {
+                     String relativePath = file.getPathNameRelativeTo(structureContext.getRoot()) + "/";
+                     ofactory = new StructureMetaDataObjectFactory(relativePath);
+                  }
+                  else
+                  {
+                     ofactory = new StructureMetaDataObjectFactory();
+                  }
+
                   URL url = jbossStructure.toURL();
                   UnmarshallerFactory factory = UnmarshallerFactory.newInstance();
                   Unmarshaller unmarshaller = factory.newUnmarshaller();
-                  StructureMetaDataObjectFactory ofactory = new StructureMetaDataObjectFactory();
                   unmarshaller.unmarshal(url.toString(), ofactory, structureContext.getMetaData());
                   mountChildren(structureContext);
                   isJBossStructure = true;
@@ -131,8 +148,8 @@ public class DeclaredStructure extends AbstractVFSArchiveStructureDeployer
    protected void mountChildren(StructureContext structureContext) throws IOException
    {
       final StructureMetaData structureMetaData = structureContext.getMetaData();
-      final VirtualFile structureRoot = structureContext.getRoot();
-      for(ContextInfo contextInfo : structureMetaData.getContexts()) 
+      final VirtualFile structureRoot = structureContext.getFile();
+      for(ContextInfo contextInfo : structureMetaData.getContexts())
       {
          final String contextPath = contextInfo.getPath(); 
          if(hasValidSuffix(contextPath))
@@ -144,5 +161,15 @@ public class DeclaredStructure extends AbstractVFSArchiveStructureDeployer
             }
          }
       }
+   }
+
+   /**
+    * Set ignore relative path flag.
+    *
+    * @param ignoreRelativePath the ignore relative path flag
+    */
+   public void setIgnoreRelativePath(boolean ignoreRelativePath)
+   {
+      this.ignoreRelativePath = ignoreRelativePath;
    }
 }

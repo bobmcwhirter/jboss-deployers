@@ -24,6 +24,7 @@ package org.jboss.test.deployers.vfs.structure.ear.test;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.jboss.deployers.vfs.plugins.structure.explicit.DeclaredStructure;
 import org.jboss.deployers.vfs.plugins.structure.file.FileStructure;
 import org.jboss.deployers.vfs.plugins.structure.jar.JARStructure;
 import org.jboss.deployers.vfs.plugins.structure.war.WARStructure;
@@ -75,7 +76,7 @@ public abstract class AbstractEARStructureTest extends AbstractStructureTest
          Set<String> suffixes = new HashSet<String>(jarStructure.getSuffixes());
          suffixes.add(".ejb3");
          jarStructure.setSuffixes(suffixes);
-         return determineStructureWithStructureDeployers(deployment, new FileStructure(), new WARStructure(), jarStructure, createEarStructureDeployer());
+         return determineStructureWithStructureDeployers(deployment, new DeclaredStructure(), new FileStructure(), new WARStructure(), jarStructure, createEarStructureDeployer());
       }
       finally
       {

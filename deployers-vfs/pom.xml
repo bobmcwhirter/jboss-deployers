@@ -38,12 +38,18 @@
   <dependencies>
     <!-- Global dependencies -->
     <dependency>
-      <groupId>org.jboss.deployers</groupId>
+        <groupId>org.jboss.deployers</groupId>
 	    <artifactId>jboss-deployers-vfs-spi</artifactId>
 	 </dependency>
     <dependency>
-      <groupId>org.jboss.kernel</groupId>
+        <groupId>org.jboss.kernel</groupId>
 	    <artifactId>jboss-kernel</artifactId>
+        <exclusions>
+          <exclusion>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging-spi</artifactId>
+          </exclusion>
+        </exclusions>
 	 </dependency>
       <dependency>
         <groupId>org.jboss.scanning</groupId>
@@ -109,6 +115,10 @@
               <groupId>org.hibernate</groupId>
               <artifactId>hibernate-entitymanager</artifactId>
             </exclusion>
+            <exclusion>
+              <groupId>org.jboss.logging</groupId>
+              <artifactId>jboss-logging-spi</artifactId>
+            </exclusion>
         </exclusions>
       </dependency>
     <dependency>
@@ -131,11 +141,21 @@
           <groupId>org.jboss.cl</groupId>
           <artifactId>jboss-classloading</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.jboss.logging</groupId>
+          <artifactId>jboss-logging-spi</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jboss.cl</groupId>
       <artifactId>jboss-classloader</artifactId>
+        <exclusions>
+          <exclusion>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging-spi</artifactId>
+          </exclusion>
+        </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jboss.deployers</groupId>
@@ -186,6 +206,12 @@
     <dependency>
       <groupId>org.jboss</groupId>
       <artifactId>jboss-reflect</artifactId>
+        <exclusions>
+          <exclusion>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging-spi</artifactId>
+          </exclusion>
+        </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jboss.man</groupId>
@@ -213,6 +239,10 @@
           <groupId>org.jboss</groupId>
           <artifactId>jboss-mdr</artifactId>
         </exclusion>
+          <exclusion>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging-spi</artifactId>
+          </exclusion>
       </exclusions>
     </dependency>
     <!-- Test dependencies -->
@@ -277,14 +307,19 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.jboss.logging</groupId>
-      <artifactId>jboss-logging-log4j</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.jboss.test</groupId>
       <artifactId>jboss-test</artifactId>
       <scope>test</scope>
+      <exclusions>
+          <exclusion>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging-spi</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging-log4j</artifactId>
+          </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -320,6 +355,10 @@
           <groupId>org.jboss.deployers</groupId>
           <artifactId>jboss-deployers-vfs</artifactId>
         </exclusion>
+          <exclusion>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging-spi</artifactId>
+          </exclusion>
       </exclusions>
     </dependency>
   </dependencies>

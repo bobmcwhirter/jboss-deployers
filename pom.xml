@@ -31,8 +31,7 @@
     <version.jboss.scanning>1.0.0.Alpha6</version.jboss.scanning>
     <version.jboss.classloading.spi>6.0.0-Alpha8</version.jboss.classloading.spi>
     <version.jboss.common.core>2.2.17.GA</version.jboss.common.core>
-    <version.jboss.logging.spi>2.2.0.CR1</version.jboss.logging.spi>
-    <version.jboss.logging.log4j>2.2.0.CR1</version.jboss.logging.log4j>
+    <version.jboss.logging>3.0.0.CR1</version.jboss.logging>
     <version.jbossxb>2.0.3.GA</version.jbossxb>
     <version.jboss.aop>2.2.1.GA</version.jboss.aop>
     <version.org.jboss.test>1.1.5.GA</version.org.jboss.test>
@@ -314,13 +313,8 @@
       </dependency>
       <dependency>
         <groupId>org.jboss.logging</groupId>
-        <artifactId>jboss-logging-spi</artifactId>
-        <version>${version.jboss.logging.spi}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.logging</groupId>
-        <artifactId>jboss-logging-log4j</artifactId>
-        <version>${version.jboss.logging.log4j}</version>
+        <artifactId>jboss-logging</artifactId>
+        <version>${version.jboss.logging}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss</groupId>

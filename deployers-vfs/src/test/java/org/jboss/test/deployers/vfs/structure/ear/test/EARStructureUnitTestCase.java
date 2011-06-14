@@ -24,6 +24,7 @@ package org.jboss.test.deployers.vfs.structure.ear.test;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.jboss.deployers.vfs.spi.structure.VFSDeploymentContext;
+import org.jboss.vfs.VirtualFile;
 
 /**
  * Mock ear structure deployer tests
@@ -141,5 +142,29 @@ public class EARStructureUnitTestCase extends AbstractEARStructureTest
    {
       VFSDeploymentContext ear = assertDeploy("/structure/ear", "scanning.ear");
       assertChildContexts(ear, "appc.jar", "ejbs.jar", "web.jar", "services.jar");
+   }
+
+   /**
+    * Test inner declared.
+    *
+    * @throws Throwable for any error
+    */
+   public void testInnerStructure() throws Throwable
+   {
+      VFSDeploymentContext root = assertDeploy("/structure/explicit", "z.ear");
+      try
+      {
+         VirtualFile rar = root.getRoot().getChild("x.rar");
+         VirtualFile lib = rar.getChild("lib");
+         assertTrue(lib.exists());
+         VirtualFile archive = lib.getChild("archive.jar");
+         assertTrue(archive.exists());
+         VirtualFile empty = archive.getChild("empty");
+         assertTrue(empty.exists());
+      }
+      finally
+      {
+         root.cleanup();
+      }
    }
 }

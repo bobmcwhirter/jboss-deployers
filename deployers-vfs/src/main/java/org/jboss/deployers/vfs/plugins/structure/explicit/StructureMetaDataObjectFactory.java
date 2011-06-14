@@ -45,6 +45,18 @@ import org.xml.sax.Attributes;
  */
 public class StructureMetaDataObjectFactory implements ObjectModelFactory
 {
+   private final String relativePath;
+
+   public StructureMetaDataObjectFactory()
+   {
+      this("");
+   }
+
+   public StructureMetaDataObjectFactory(String relativePath)
+   {
+      this.relativePath = relativePath;
+   }
+
    public StructureMetaDataImpl newRoot(Object root, UnmarshallingContext navigator, String namespaceURI, String localName, Attributes attrs)
    {
       StructureMetaDataImpl metaData;
@@ -113,7 +125,7 @@ public class StructureMetaDataObjectFactory implements ObjectModelFactory
       {
          String name = attrs.getValue("name");
          String suffixes = attrs.getValue("suffixes");
-         ClassPathEntry path = new ClassPathEntryImpl(name, suffixes);
+         ClassPathEntry path = new ClassPathEntryImpl(relativePath + name, suffixes);
          parent.add(path);
       }
       return child;

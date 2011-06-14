@@ -42,8 +42,8 @@ import org.jboss.logging.Logger;
 import org.jboss.vfs.VFSUtils;
 import org.jboss.vfs.VirtualFile;
 import org.jboss.vfs.VisitorAttributes;
-import org.jboss.vfs.util.automount.Automounter;
 import org.jboss.vfs.util.SuffixMatchFilter;
+import org.jboss.vfs.util.automount.Automounter;
 
 /**
  * VFSStructureBuilder.
@@ -188,6 +188,9 @@ public class VFSStructureBuilder extends AbstractStructureBuilder
                   {
                      throw DeploymentException.rethrowAsDeploymentException("Unable to find class path entry " + entry + " from " + root.getName(), t);
                   }
+                  // check if this child actually exists
+                  if (child.exists() == false)
+                     throw new DeploymentException("Unable to find class path entry " + entry + " from " + root.getName());
                }
                if (suffixes == null)
                {
