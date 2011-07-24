@@ -21,9 +21,9 @@
  */
 package org.jboss.deployers.vfs.plugins.dependency;
 
-import java.io.InputStream;
-import java.io.IOException;
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Set;
@@ -56,7 +56,9 @@ public class AliasesParserDeployer extends AbstractVFSParsingDeployer<Deployment
          String line;
          while ((line = br.readLine()) != null)
          {
-            alises.add(line);
+            line = line.trim();
+            if (line.length() > 0)
+               alises.add(line);
          }
       }
       finally

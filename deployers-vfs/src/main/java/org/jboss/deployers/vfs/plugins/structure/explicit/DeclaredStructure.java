@@ -27,6 +27,7 @@ import java.util.Set;
 
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.spi.structure.ContextInfo;
+import org.jboss.deployers.spi.structure.ModificationType;
 import org.jboss.deployers.spi.structure.StructureMetaData;
 import org.jboss.deployers.vfs.plugins.structure.AbstractVFSArchiveStructureDeployer;
 import org.jboss.deployers.vfs.plugins.structure.jar.JARStructure;
@@ -157,7 +158,10 @@ public class DeclaredStructure extends AbstractVFSArchiveStructureDeployer
             final VirtualFile child = structureRoot.getChild(contextPath);
             if(child.exists() && child.isFile()) 
             {
-               performMount(child);
+               if ((contextInfo.getModificationType() == ModificationType.EXPLODE) || isWAR(child))
+                  performExpandedMount(child);
+               else
+                  performMount(child);
             }
          }
       }

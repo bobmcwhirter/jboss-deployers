@@ -313,6 +313,9 @@ public class ContextInfoImpl extends PredeterminedManagedObjectAttachmentsImpl
       boolean isNullComparator = in.readBoolean();
       if (isNullComparator == false)
          setComparatorClassName(in.readUTF());
+      boolean isNullMT = in.readBoolean();
+      if (isNullMT == false)
+         setModificationType(ModificationType.values()[in.readInt()]);
    }
 
    /**
@@ -338,5 +341,9 @@ public class ContextInfoImpl extends PredeterminedManagedObjectAttachmentsImpl
       out.writeBoolean(isNullComparator);
       if (isNullComparator == false)
          out.writeUTF(comparator);
+      boolean isNullMT = (getModificationType() == null);
+      out.writeBoolean(isNullMT);
+      if (isNullMT == false)
+         out.writeInt(getModificationType().ordinal());
    }
 }

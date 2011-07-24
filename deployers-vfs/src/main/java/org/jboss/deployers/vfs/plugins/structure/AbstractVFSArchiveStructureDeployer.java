@@ -21,14 +21,14 @@
  */
 package org.jboss.deployers.vfs.plugins.structure;
 
+import java.io.IOException;
+
 import org.jboss.deployers.spi.DeploymentException;
 import org.jboss.deployers.vfs.spi.structure.StructureContext;
 import org.jboss.deployers.vfs.spi.structure.StructureDeployer;
 import org.jboss.vfs.VirtualFile;
 import org.jboss.vfs.util.automount.Automounter;
 import org.jboss.vfs.util.automount.MountOption;
-
-import java.io.IOException;
 
 /**
  * Abstract {@link StructureDeployer} used to help mount VFS archive based {@link StructureDeployer}s.
@@ -143,5 +143,27 @@ public abstract class AbstractVFSArchiveStructureDeployer extends AbstractVFSStr
    protected void performMount(VirtualFile file) throws IOException
    {
       Automounter.mount(file, MountOption.COPY);
+   }
+
+   /**
+    * Perform expanded mount.
+    *
+    * @param file the file to mount
+    * @throws IOException for any IO error
+    */
+   protected void performExpandedMount(VirtualFile file) throws IOException
+   {
+      Automounter.mount(file, MountOption.EXPANDED, MountOption.COPY);
+   }
+
+   /**
+    * Is the file web archive.
+    *
+    * @param file the file
+    * @return true if file is web archive, false otherwise
+    */
+   protected boolean isWAR(VirtualFile file)
+   {
+      return file.getName().endsWith(".war");
    }
 }
