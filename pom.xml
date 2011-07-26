@@ -25,8 +25,8 @@
     <version.jboss.reflect>2.2.0.GA</version.jboss.reflect>
     <version.jboss.classpool>1.0.0.GA</version.jboss.classpool>
     <version.jboss.man>2.1.1.SP2</version.jboss.man>
-    <version.jboss.mdr>2.2.0.GA</version.jboss.mdr>
-    <version.jboss.kernel>2.2.0.GA</version.jboss.kernel>
+    <version.jboss.mdr>2.2.0.SP1</version.jboss.mdr>
+    <version.jboss.kernel>2.2.0.SP1</version.jboss.kernel>
     <version.jboss.classloader>2.2.1.GA</version.jboss.classloader>
     <version.jboss.scanning>1.0.0.Alpha6</version.jboss.scanning>
     <version.jboss.classloading.spi>6.0.0-Alpha8</version.jboss.classloading.spi>
