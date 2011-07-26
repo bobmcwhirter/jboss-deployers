@@ -22,6 +22,10 @@
            <groupId>org.jboss.kernel</groupId>
            <artifactId>jboss-dependency</artifactId>
          </exclusion>
+             <exclusion>
+                 <groupId>org.jboss.logging</groupId>
+                 <artifactId>jboss-logging-spi</artifactId>
+             </exclusion>
        </exclusions>
     </dependency>
     <dependency>
@@ -145,6 +149,10 @@
             <exclusion>
               <groupId>org.hibernate</groupId>
               <artifactId>hibernate-entitymanager</artifactId>
+            </exclusion>
+            <exclusion>
+              <groupId>org.jboss.logging</groupId>
+              <artifactId>jboss-logging-spi</artifactId>
             </exclusion>
         </exclusions>
       </dependency>

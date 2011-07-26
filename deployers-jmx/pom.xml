@@ -33,10 +33,22 @@
     <dependency>
       <groupId>org.jboss.kernel</groupId>
 	    <artifactId>jboss-kernel</artifactId>
+        <exclusions>
+          <exclusion>
+              <groupId>org.jboss.logging</groupId>
+              <artifactId>jboss-logging-spi</artifactId>
+          </exclusion>
+        </exclusions>
 	 </dependency>
     <dependency>
       <groupId>org.jboss.kernel</groupId>
 	    <artifactId>jboss-jmx-mc-int</artifactId>
+        <exclusions>
+          <exclusion>
+              <groupId>org.jboss.logging</groupId>
+              <artifactId>jboss-logging-spi</artifactId>
+          </exclusion>
+        </exclusions>
 	 </dependency>
     <dependency>
       <groupId>org.jboss.cl</groupId>
@@ -171,6 +183,16 @@
       <groupId>org.jboss.test</groupId>
       <artifactId>jboss-test</artifactId>
       <scope>test</scope>
+        <exclusions>
+          <exclusion>
+              <groupId>org.jboss.logging</groupId>
+              <artifactId>jboss-logging-spi</artifactId>
+          </exclusion>
+          <exclusion>
+              <groupId>org.jboss.logging</groupId>
+              <artifactId>jboss-logging-log4j</artifactId>
+          </exclusion>
+        </exclusions>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
