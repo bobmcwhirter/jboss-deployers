@@ -32,7 +32,7 @@
     <version.jboss.aop>2.0.0.CR15</version.jboss.aop>
     <version.jboss.vfs>2.0.0.Beta22</version.jboss.vfs>
     <version.org.jboss.test>1.0.5.GA</version.org.jboss.test>
-    <version.junit>4.4</version.junit>
+    <version.junit>4.13.1</version.junit>
     <version.javassist>3.8.1.GA</version.javassist>
   </properties>
 
